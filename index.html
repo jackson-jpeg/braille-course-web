@@ -14,8 +14,9 @@
 <meta property="og:title" content="Learn Braille This Summer — Remote Course for Parents">
 <meta property="og:description" content="An 8-week introductory remote Braille course for parents and loved ones. Only 10 spots available. Starts June 8.">
 <meta property="og:type" content="website">
-<meta property="og:url" content="https://yoursite.com"> <!-- TODO: Replace -->
-<meta property="og:image" content="https://yoursite.com/braille-course-og.jpg"> <!-- TODO: Replace -->
+<meta property="og:url" content="https://braille-course-web.vercel.app">
+<!-- TODO: Replace with real OG image once available -->
+<meta property="og:image" content="https://braille-course-web.vercel.app/og-image.jpg">
 <meta name="twitter:card" content="summary_large_image">
 
 <!-- Braille favicon -->
@@ -966,6 +967,63 @@
   }
   .cta-button:hover svg { transform: translateX(3px); }
 
+  .cta-buttons {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 0;
+  }
+
+  .cta-or-divider {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    margin: 20px 0;
+    width: 100%;
+    max-width: 300px;
+  }
+  .cta-or-divider::before,
+  .cta-or-divider::after {
+    content: '';
+    flex: 1;
+    height: 1px;
+    background: rgba(255,255,255,0.15);
+  }
+  .cta-or-divider span {
+    font-size: 0.8rem;
+    font-weight: 500;
+    color: rgba(255,255,255,0.4);
+    letter-spacing: 1px;
+    text-transform: uppercase;
+  }
+
+  .cta-button-secondary {
+    display: inline-flex;
+    align-items: center;
+    gap: 10px;
+    background: transparent;
+    color: var(--gold-light);
+    font-family: 'Outfit', sans-serif;
+    font-size: 0.95rem;
+    font-weight: 600;
+    padding: 16px 36px;
+    border-radius: var(--radius-full);
+    text-decoration: none;
+    border: 2px solid rgba(212,168,83,0.4);
+    transition: all 0.35s var(--ease-out);
+  }
+  .cta-button-secondary:hover {
+    border-color: var(--gold);
+    background: rgba(212,168,83,0.08);
+    transform: translateY(-2px);
+    box-shadow: 0 4px 20px rgba(212,168,83,0.15);
+  }
+  .cta-button-secondary svg {
+    width: 16px; height: 16px;
+    transition: transform 0.3s ease;
+  }
+  .cta-button-secondary:hover svg { transform: translateX(3px); }
+
   .cta-note {
     margin-top: 24px;
     font-size: 0.82rem;
@@ -1244,7 +1302,7 @@
           What does this course cost?
         </div>
         <p class="faq-answer">
-          The total cost for 8 weeks of instruction (16 sessions) is <strong>$500 per learner</strong>. Full payment is required by <strong>May 1st</strong>.
+          The total cost for 8 weeks of instruction (16 sessions) is <strong>$500 per learner</strong>. You can pay in full upfront, or reserve your spot with a <strong>$150 deposit</strong> — the remaining <strong>$350</strong> will be charged automatically on <strong>May 1st</strong>.
         </p>
       </div>
     </div>
@@ -1366,19 +1424,23 @@
       Spots are limited and filled on a first-come, first-served basis. Reserve your place in this summer's introductory Braille course today.
     </p>
 
-    <!-- ============================================================
-         STRIPE PAYMENT LINK
-         1. Go to https://dashboard.stripe.com/payment-links
-         2. Click "+ New" → set price to $500, one-time
-         3. Copy the generated link (starts with https://buy.stripe.com/)
-         4. Replace href="#" below AND in the floating CTA above
-         ============================================================ -->
-    <a href="#" class="cta-button" id="stripeBtn" aria-label="Reserve your spot — pay $500 via Stripe">
-      Reserve Your Spot — $500
-      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" aria-hidden="true"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg>
-    </a>
+    <div class="cta-buttons">
+      <a href="/api/checkout?plan=full" class="cta-button" aria-label="Pay in full — $500">
+        Pay in Full — $500
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" aria-hidden="true"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg>
+      </a>
 
-    <p class="cta-note">Payment due by May 1st to confirm enrollment.</p>
+      <div class="cta-or-divider" aria-hidden="true">
+        <span>or</span>
+      </div>
+
+      <a href="/api/checkout?plan=deposit" class="cta-button-secondary" aria-label="Reserve with a $150 deposit — $350 due May 1st">
+        Reserve with a $150 Deposit
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" aria-hidden="true"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg>
+      </a>
+    </div>
+
+    <p class="cta-note">Pay in full today, or put down a $150 deposit with the remaining $350 charged on May 1st.</p>
 
     <div class="stripe-badge" aria-label="Secure checkout powered by Stripe">
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
