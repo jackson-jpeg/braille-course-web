@@ -1,5 +1,7 @@
 'use client';
 
+import { useEffect } from 'react';
+
 interface Props {
   title: string;
   message: string;
@@ -19,6 +21,12 @@ export default function AdminConfirmDialog({
   onCancel,
   loading,
 }: Props) {
+  useEffect(() => {
+    function handleKey(e: KeyboardEvent) { if (e.key === 'Escape') onCancel(); }
+    document.addEventListener('keydown', handleKey);
+    return () => document.removeEventListener('keydown', handleKey);
+  }, [onCancel]);
+
   return (
     <div className="admin-modal-overlay" onClick={onCancel}>
       <div className="admin-confirm-dialog" onClick={(e) => e.stopPropagation()}>

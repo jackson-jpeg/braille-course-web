@@ -5,29 +5,9 @@ import AdminStudentModal from './AdminStudentModal';
 import AdminConfirmDialog from './AdminConfirmDialog';
 import CopyButton from './CopyButton';
 import type { Section, Enrollment, Lead } from './admin-types';
-import { relativeTime, fullDate } from './admin-utils';
+import { relativeTime, fullDate, downloadCsv } from './admin-utils';
 
-function downloadCsv(enrollments: Enrollment[], scheduleMap: Record<string, string>) {
-  const headers = ['Email', 'Section', 'Schedule', 'Plan', 'Status', 'Stripe Customer', 'Date'];
-  const rows = enrollments.map((e) => [
-    e.email || '',
-    e.section.label,
-    scheduleMap[e.section.label] || e.section.label,
-    e.plan,
-    e.paymentStatus,
-    e.stripeCustomerId || '',
-    new Date(e.createdAt).toISOString(),
-  ]);
-
-  const csv = [headers, ...rows].map((r) => r.map((c) => `"${c}"`).join(',')).join('\n');
-  const blob = new Blob([csv], { type: 'text/csv' });
-  const url = URL.createObjectURL(blob);
-  const a = document.createElement('a');
-  a.href = url;
-  a.download = `students-${new Date().toISOString().slice(0, 10)}.csv`;
-  a.click();
-  URL.revokeObjectURL(url);
-}
+type StudentSortKey = 'email' | 'schedule' | 'plan' | 'status' | 'date';
 
 interface Props {
   sections: Section[];
@@ -47,6 +27,24 @@ export default function AdminStudentsTab({ sections, enrollments, leads: initial
   const [filterPlan, setFilterPlan] = useState('all');
   const [selectedStudent, setSelectedStudent] = useState<Enrollment | null>(null);
 
+  // Sorting for enrolled
+  const [sortKey, setSortKey] = useState<StudentSortKey>('date');
+  const [sortDir, setSortDir] = useState<'asc' | 'desc'>('desc');
+
+  function handleSort(key: StudentSortKey) {
+    if (sortKey === key) {
+      setSortDir(sortDir === 'asc' ? 'desc' : 'asc');
+    } else {
+      setSortKey(key);
+      setSortDir(key === 'date' ? 'desc' : 'asc');
+    }
+  }
+
+  function sortArrow(key: StudentSortKey) {
+    if (sortKey !== key) return '';
+    return sortDir === 'asc' ? ' \u2191' : ' \u2193';
+  }
+
   // ── Prospective state ──
   const [leadsList, setLeadsList] = useState<Lead[]>(initialLeads);
   const [leadSearch, setLeadSearch] = useState('');
@@ -63,6 +61,7 @@ export default function AdminStudentsTab({ sections, enrollments, leads: initial
   const [editNotes, setEditNotes] = useState('');
   const [deletingLead, setDeletingLead] = useState<Lead | null>(null);
   const [deleteLoading, setDeleteLoading] = useState(false);
+  const [expandedNoteId, setExpandedNoteId] = useState<string | null>(null);
   const hasSynced = useRef(false);
 
   // Fetch leads from API
@@ -87,16 +86,40 @@ export default function AdminStudentsTab({ sections, enrollments, leads: initial
     }
   }, [subTab, fetchLeads]);
 
-  // ── Enrolled filters ──
+  // ── Enrolled filters + sort ──
   const filtered = useMemo(() => {
-    return enrollments.filter((e) => {
+    const list = enrollments.filter((e) => {
       if (search && !(e.email || '').toLowerCase().includes(search.toLowerCase())) return false;
       if (filterSection !== 'all' && e.section.label !== filterSection) return false;
       if (filterStatus !== 'all' && e.paymentStatus !== filterStatus) return false;
       if (filterPlan !== 'all' && e.plan !== filterPlan) return false;
       return true;
     });
-  }, [enrollments, search, filterSection, filterStatus, filterPlan]);
+
+    list.sort((a, b) => {
+      let cmp = 0;
+      switch (sortKey) {
+        case 'email':
+          cmp = (a.email || '').localeCompare(b.email || '');
+          break;
+        case 'schedule':
+          cmp = (scheduleMap[a.section.label] || a.section.label).localeCompare(scheduleMap[b.section.label] || b.section.label);
+          break;
+        case 'plan':
+          cmp = a.plan.localeCompare(b.plan);
+          break;
+        case 'status':
+          cmp = a.paymentStatus.localeCompare(b.paymentStatus);
+          break;
+        case 'date':
+          cmp = new Date(a.createdAt).getTime() - new Date(b.createdAt).getTime();
+          break;
+      }
+      return sortDir === 'asc' ? cmp : -cmp;
+    });
+
+    return list;
+  }, [enrollments, search, filterSection, filterStatus, filterPlan, sortKey, sortDir, scheduleMap]);
 
   // ── Prospective filters ──
   const filteredLeads = useMemo(() => {
@@ -247,11 +270,11 @@ export default function AdminStudentsTab({ sections, enrollments, leads: initial
             <table className="admin-table">
               <thead>
                 <tr>
-                  <th>Email</th>
-                  <th>Schedule</th>
-                  <th>Plan</th>
-                  <th>Status</th>
-                  <th>Date</th>
+                  <th className="admin-sortable-th" onClick={() => handleSort('email')}>Email{sortArrow('email')}</th>
+                  <th className="admin-sortable-th" onClick={() => handleSort('schedule')}>Schedule{sortArrow('schedule')}</th>
+                  <th className="admin-sortable-th" onClick={() => handleSort('plan')}>Plan{sortArrow('plan')}</th>
+                  <th className="admin-sortable-th" onClick={() => handleSort('status')}>Status{sortArrow('status')}</th>
+                  <th className="admin-sortable-th" onClick={() => handleSort('date')}>Date{sortArrow('date')}</th>
                 </tr>
               </thead>
               <tbody>
@@ -473,8 +496,15 @@ export default function AdminStudentsTab({ sections, enrollments, leads: initial
                             {l.status}
                           </span>
                         </td>
-                        <td className="admin-notes-cell" title={l.notes || ''}>
-                          {l.notes ? (l.notes.length > 40 ? l.notes.slice(0, 40) + '\u2026' : l.notes) : '\u2014'}
+                        <td
+                          className="admin-notes-cell"
+                          title={l.notes || ''}
+                          style={{ cursor: l.notes && l.notes.length > 40 ? 'pointer' : undefined }}
+                          onClick={() => l.notes && l.notes.length > 40 && setExpandedNoteId(expandedNoteId === l.id ? null : l.id)}
+                        >
+                          {l.notes
+                            ? (expandedNoteId === l.id ? l.notes : (l.notes.length > 40 ? l.notes.slice(0, 40) + '\u2026' : l.notes))
+                            : '\u2014'}
                         </td>
                         <td title={fullDate(l.createdAt)}>{relativeTime(l.createdAt)}</td>
                         <td>

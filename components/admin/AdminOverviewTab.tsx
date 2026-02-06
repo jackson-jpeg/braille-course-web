@@ -2,7 +2,7 @@
 
 import { useState, useEffect, useCallback } from 'react';
 import type { Section, Enrollment, Lead, ResendEmail, PaymentSummary } from './admin-types';
-import { relativeTime } from './admin-utils';
+import { relativeTime, downloadCsv } from './admin-utils';
 
 interface Props {
   sections: Section[];
@@ -184,7 +184,7 @@ export default function AdminOverviewTab({ sections, enrollments, leads, schedul
           <button className="admin-quick-action" onClick={() => onNavigate('emails-compose')}>
             Email All Students
           </button>
-          <button className="admin-quick-action" onClick={() => onNavigate('students')}>
+          <button className="admin-quick-action" onClick={() => downloadCsv(enrollments, scheduleMap)}>
             Export Student List
           </button>
           <button className="admin-quick-action" onClick={() => onNavigate('payments')}>

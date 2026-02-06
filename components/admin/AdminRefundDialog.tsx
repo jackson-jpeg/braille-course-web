@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import type { StripeCharge } from './admin-types';
 
 interface Props {
@@ -10,6 +10,12 @@ interface Props {
 }
 
 export default function AdminRefundDialog({ charge, onClose, onSuccess }: Props) {
+  useEffect(() => {
+    function handleKey(e: KeyboardEvent) { if (e.key === 'Escape') onClose(); }
+    document.addEventListener('keydown', handleKey);
+    return () => document.removeEventListener('keydown', handleKey);
+  }, [onClose]);
+
   const [reason, setReason] = useState('requested_by_customer');
   const [customAmount, setCustomAmount] = useState('');
   const [isPartial, setIsPartial] = useState(false);

@@ -20,6 +20,14 @@ export default function AdminStudentModal({ enrollment, scheduleMap, onClose, on
   const [notes, setNotes] = useState<Note[]>([]);
   const [newNote, setNewNote] = useState('');
   const [noteLoading, setNoteLoading] = useState(false);
+  const [editingNoteId, setEditingNoteId] = useState<string | null>(null);
+  const [editingNoteContent, setEditingNoteContent] = useState('');
+
+  useEffect(() => {
+    function handleKey(e: KeyboardEvent) { if (e.key === 'Escape') onClose(); }
+    document.addEventListener('keydown', handleKey);
+    return () => document.removeEventListener('keydown', handleKey);
+  }, [onClose]);
 
   useEffect(() => {
     if (!enrollment.stripeCustomerId) {
@@ -79,6 +87,22 @@ export default function AdminStudentModal({ enrollment, scheduleMap, onClose, on
     try {
       const res = await fetch(`/api/admin/notes/${id}`, { method: 'DELETE' });
       if (res.ok) setNotes((prev) => prev.filter((n) => n.id !== id));
+    } catch { /* silent */ }
+  }
+
+  async function saveNoteEdit(id: string) {
+    if (!editingNoteContent.trim()) return;
+    try {
+      const res = await fetch(`/api/admin/notes/${id}`, {
+        method: 'PATCH',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ content: editingNoteContent.trim() }),
+      });
+      const json = await res.json();
+      if (res.ok) {
+        setNotes((prev) => prev.map((n) => n.id === id ? { ...n, content: json.note.content } : n));
+        setEditingNoteId(null);
+      }
     } catch { /* silent */ }
   }
 
@@ -170,6 +194,14 @@ export default function AdminStudentModal({ enrollment, scheduleMap, onClose, on
                             <span className={`admin-status admin-status-${c.status === 'succeeded' ? 'completed' : 'pending'}`}>
                               {c.status === 'succeeded' ? 'Successful' : c.status}
                             </span>
+                            <a
+                              href={`https://dashboard.stripe.com/payments/${c.id}`}
+                              target="_blank"
+                              rel="noopener noreferrer"
+                              className="admin-stripe-link"
+                            >
+                              Stripe
+                            </a>
                             {c.receipt_url && (
                               <a
                                 href={c.receipt_url}
@@ -202,6 +234,14 @@ export default function AdminStudentModal({ enrollment, scheduleMap, onClose, on
                               {inv.status_label}
                             </span>
                           </div>
+                          <a
+                            href={`https://dashboard.stripe.com/invoices/${inv.id}`}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            className="admin-stripe-link"
+                          >
+                            Stripe
+                          </a>
                           {inv.hosted_invoice_url && (
                             <a
                               href={inv.hosted_invoice_url}
@@ -248,11 +288,41 @@ export default function AdminStudentModal({ enrollment, scheduleMap, onClose, on
                   <div className="admin-notes-list">
                     {notes.map((n) => (
                       <div key={n.id} className="admin-note-item">
-                        <div className="admin-note-content">{n.content}</div>
-                        <div className="admin-note-meta">
-                          <span title={fullDate(n.createdAt)}>{relativeTime(n.createdAt)}</span>
-                          <button className="admin-note-delete" onClick={() => deleteNote(n.id)}>&times;</button>
-                        </div>
+                        {editingNoteId === n.id ? (
+                          <div>
+                            <textarea
+                              value={editingNoteContent}
+                              onChange={(e) => setEditingNoteContent(e.target.value)}
+                              className="admin-compose-input"
+                              rows={2}
+                              style={{ resize: 'vertical', fontSize: '0.85rem' }}
+                              autoFocus
+                              onKeyDown={(e) => {
+                                if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); saveNoteEdit(n.id); }
+                                if (e.key === 'Escape') setEditingNoteId(null);
+                              }}
+                            />
+                            <div style={{ display: 'flex', gap: 6, marginTop: 4 }}>
+                              <button className="admin-send-btn" style={{ fontSize: '0.75rem', padding: '3px 10px' }} onClick={() => saveNoteEdit(n.id)}>Save</button>
+                              <button className="admin-refresh-btn" style={{ fontSize: '0.75rem', padding: '3px 10px' }} onClick={() => setEditingNoteId(null)}>Cancel</button>
+                            </div>
+                          </div>
+                        ) : (
+                          <>
+                            <div className="admin-note-content">{n.content}</div>
+                            <div className="admin-note-meta">
+                              <span title={fullDate(n.createdAt)}>{relativeTime(n.createdAt)}</span>
+                              <button
+                                className="admin-stripe-link"
+                                style={{ fontSize: '0.75rem', background: 'none', border: 'none', cursor: 'pointer', padding: 0 }}
+                                onClick={() => { setEditingNoteId(n.id); setEditingNoteContent(n.content); }}
+                              >
+                                Edit
+                              </button>
+                              <button className="admin-note-delete" onClick={() => deleteNote(n.id)}>&times;</button>
+                            </div>
+                          </>
+                        )}
                       </div>
                     ))}
                   </div>

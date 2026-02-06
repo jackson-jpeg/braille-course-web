@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect, useRef, useCallback } from 'react';
+import { useState, useEffect, useRef, useCallback, useMemo } from 'react';
 import AdminConfirmDialog from './AdminConfirmDialog';
 import { useToast } from './AdminToast';
 import { SkeletonTable } from './AdminSkeleton';
@@ -13,6 +13,8 @@ function formatFileSize(bytes: number): string {
   if (bytes < 1024 * 1024) return `${(bytes / 1024).toFixed(1)} KB`;
   return `${(bytes / (1024 * 1024)).toFixed(1)} MB`;
 }
+
+type MaterialSortKey = 'filename' | 'category' | 'size' | 'date';
 
 interface Props {
   onEmailMaterial: (materialId: string) => void;
@@ -31,6 +33,22 @@ export default function AdminMaterialsTab({ onEmailMaterial }: Props) {
   const fileInputRef = useRef<HTMLInputElement>(null);
   const { showToast } = useToast();
 
+  // Search
+  const [materialSearch, setMaterialSearch] = useState('');
+
+  // Sorting
+  const [sortKey, setSortKey] = useState<MaterialSortKey>('date');
+  const [sortDir, setSortDir] = useState<'asc' | 'desc'>('desc');
+
+  // Last fetched
+  const [lastFetched, setLastFetched] = useState<Date | null>(null);
+
+  // Inline edit
+  const [editingId, setEditingId] = useState<string | null>(null);
+  const [editFilename, setEditFilename] = useState('');
+  const [editCategory, setEditCategory] = useState('');
+  const [editSaving, setEditSaving] = useState(false);
+
   useEffect(() => {
     fetchMaterials();
   }, []);
@@ -43,6 +61,7 @@ export default function AdminMaterialsTab({ onEmailMaterial }: Props) {
       const json = await res.json();
       if (!res.ok) throw new Error(json.error || 'Failed to fetch');
       setMaterials(json.materials);
+      setLastFetched(new Date());
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Failed to load materials');
     } finally {
@@ -118,9 +137,71 @@ export default function AdminMaterialsTab({ onEmailMaterial }: Props) {
     }
   }
 
-  const filteredMaterials = selectedCategory === 'All'
-    ? materials
-    : materials.filter((m) => m.category === selectedCategory);
+  function handleSort(key: MaterialSortKey) {
+    if (sortKey === key) setSortDir(sortDir === 'asc' ? 'desc' : 'asc');
+    else { setSortKey(key); setSortDir(key === 'date' ? 'desc' : 'asc'); }
+  }
+  function sortArrowFn(key: MaterialSortKey) {
+    if (sortKey !== key) return '';
+    return sortDir === 'asc' ? ' \u2191' : ' \u2193';
+  }
+  function lastUpdatedText() {
+    if (!lastFetched) return '';
+    const secs = Math.floor((Date.now() - lastFetched.getTime()) / 1000);
+    if (secs < 60) return 'Updated just now';
+    const mins = Math.floor(secs / 60);
+    return `Updated ${mins}m ago`;
+  }
+
+  function startEdit(m: Material) {
+    setEditingId(m.id);
+    setEditFilename(m.filename);
+    setEditCategory(m.category);
+  }
+
+  async function saveEdit(id: string) {
+    setEditSaving(true);
+    try {
+      const res = await fetch(`/api/admin/materials/${id}`, {
+        method: 'PATCH',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ filename: editFilename, category: editCategory }),
+      });
+      if (!res.ok) {
+        const json = await res.json();
+        throw new Error(json.error || 'Failed to update');
+      }
+      setMaterials((prev) => prev.map((m) => m.id === id ? { ...m, filename: editFilename, category: editCategory } : m));
+      setEditingId(null);
+      showToast('Material updated');
+    } catch (err) {
+      showToast(err instanceof Error ? err.message : 'Failed to update', 'error');
+    } finally {
+      setEditSaving(false);
+    }
+  }
+
+  const filteredMaterials = useMemo(() => {
+    let list = selectedCategory === 'All' ? [...materials] : materials.filter((m) => m.category === selectedCategory);
+
+    if (materialSearch.trim()) {
+      const q = materialSearch.toLowerCase();
+      list = list.filter((m) => m.filename.toLowerCase().includes(q) || m.category.toLowerCase().includes(q));
+    }
+
+    list.sort((a, b) => {
+      let cmp = 0;
+      switch (sortKey) {
+        case 'filename': cmp = a.filename.localeCompare(b.filename); break;
+        case 'category': cmp = a.category.localeCompare(b.category); break;
+        case 'size': cmp = a.size - b.size; break;
+        case 'date': cmp = new Date(a.createdAt).getTime() - new Date(b.createdAt).getTime(); break;
+      }
+      return sortDir === 'asc' ? cmp : -cmp;
+    });
+
+    return list;
+  }, [materials, selectedCategory, materialSearch, sortKey, sortDir]);
 
   return (
     <>
@@ -181,9 +262,17 @@ export default function AdminMaterialsTab({ onEmailMaterial }: Props) {
       </div>
 
       <div className="admin-payments-toolbar" style={{ marginTop: 8 }}>
+        <input
+          type="text"
+          className="admin-email-search"
+          placeholder="Search files\u2026"
+          value={materialSearch}
+          onChange={(e) => setMaterialSearch(e.target.value)}
+        />
         <button className="admin-refresh-btn" onClick={fetchMaterials} disabled={loading}>
           {loading ? 'Loading\u2026' : 'Refresh'}
         </button>
+        {lastFetched && <span className="admin-last-updated">{lastUpdatedText()}</span>}
         <span className="admin-result-count" style={{ marginLeft: 'auto' }}>
           {filteredMaterials.length} file{filteredMaterials.length !== 1 ? 's' : ''}
           {selectedCategory !== 'All' && ` in ${selectedCategory}`}
@@ -196,11 +285,11 @@ export default function AdminMaterialsTab({ onEmailMaterial }: Props) {
         <table className="admin-table">
           <thead>
             <tr>
-              <th>Filename</th>
-              <th>Category</th>
+              <th className="admin-sortable-th" onClick={() => handleSort('filename')}>Filename{sortArrowFn('filename')}</th>
+              <th className="admin-sortable-th" onClick={() => handleSort('category')}>Category{sortArrowFn('category')}</th>
               <th>Type</th>
-              <th>Size</th>
-              <th>Uploaded</th>
+              <th className="admin-sortable-th" onClick={() => handleSort('size')}>Size{sortArrowFn('size')}</th>
+              <th className="admin-sortable-th" onClick={() => handleSort('date')}>Uploaded{sortArrowFn('date')}</th>
               <th>Actions</th>
             </tr>
           </thead>
@@ -220,39 +309,90 @@ export default function AdminMaterialsTab({ onEmailMaterial }: Props) {
                 </td>
               </tr>
             ) : (
-              filteredMaterials.map((m) => (
-                <tr key={m.id}>
-                  <td>
-                    <a href={m.blobUrl} target="_blank" rel="noopener noreferrer" className="admin-stripe-link">
-                      {m.filename}
-                    </a>
-                  </td>
-                  <td>
-                    <span className="admin-category-badge">{m.category}</span>
-                  </td>
-                  <td>{m.contentType}</td>
-                  <td>{formatFileSize(m.size)}</td>
-                  <td>{new Date(m.createdAt).toLocaleDateString()}</td>
-                  <td>
-                    <div className="admin-payment-actions">
-                      <button
-                        className="admin-compose-btn"
-                        style={{ fontSize: '0.75rem', padding: '4px 10px' }}
-                        onClick={() => onEmailMaterial(m.id)}
+              filteredMaterials.map((m) =>
+                editingId === m.id ? (
+                  <tr key={m.id}>
+                    <td>
+                      <input
+                        type="text"
+                        value={editFilename}
+                        onChange={(e) => setEditFilename(e.target.value)}
+                        className="admin-compose-input"
+                        style={{ fontSize: '0.85rem', padding: '4px 8px' }}
+                        onKeyDown={(e) => {
+                          if (e.key === 'Enter') saveEdit(m.id);
+                          if (e.key === 'Escape') setEditingId(null);
+                        }}
+                        autoFocus
+                      />
+                    </td>
+                    <td>
+                      <select
+                        value={editCategory}
+                        onChange={(e) => setEditCategory(e.target.value)}
+                        className="admin-select"
+                        style={{ fontSize: '0.85rem', padding: '4px 8px' }}
                       >
-                        Email
-                      </button>
-                      <button
-                        className="admin-refund-confirm"
-                        style={{ fontSize: '0.75rem', padding: '4px 10px' }}
-                        onClick={() => setDeletingMaterial(m)}
-                      >
-                        Delete
-                      </button>
-                    </div>
-                  </td>
-                </tr>
-              ))
+                        {CATEGORIES.filter((c) => c !== 'All').map((c) => (
+                          <option key={c} value={c}>{c}</option>
+                        ))}
+                      </select>
+                    </td>
+                    <td>{m.contentType}</td>
+                    <td>{formatFileSize(m.size)}</td>
+                    <td>{new Date(m.createdAt).toLocaleDateString()}</td>
+                    <td>
+                      <div className="admin-payment-actions">
+                        <button className="admin-send-btn" style={{ fontSize: '0.75rem', padding: '4px 10px' }} onClick={() => saveEdit(m.id)} disabled={editSaving}>
+                          {editSaving ? 'Saving\u2026' : 'Save'}
+                        </button>
+                        <button className="admin-refresh-btn" style={{ fontSize: '0.75rem', padding: '4px 10px' }} onClick={() => setEditingId(null)}>
+                          Cancel
+                        </button>
+                      </div>
+                    </td>
+                  </tr>
+                ) : (
+                  <tr key={m.id}>
+                    <td>
+                      <a href={m.blobUrl} target="_blank" rel="noopener noreferrer" className="admin-stripe-link">
+                        {m.filename}
+                      </a>
+                    </td>
+                    <td>
+                      <span className="admin-category-badge">{m.category}</span>
+                    </td>
+                    <td>{m.contentType}</td>
+                    <td>{formatFileSize(m.size)}</td>
+                    <td>{new Date(m.createdAt).toLocaleDateString()}</td>
+                    <td>
+                      <div className="admin-payment-actions">
+                        <button
+                          className="admin-stripe-link"
+                          style={{ fontSize: '0.75rem', padding: '4px 10px', background: 'none', border: 'none', cursor: 'pointer' }}
+                          onClick={() => startEdit(m)}
+                        >
+                          Edit
+                        </button>
+                        <button
+                          className="admin-compose-btn"
+                          style={{ fontSize: '0.75rem', padding: '4px 10px' }}
+                          onClick={() => onEmailMaterial(m.id)}
+                        >
+                          Email
+                        </button>
+                        <button
+                          className="admin-refund-confirm"
+                          style={{ fontSize: '0.75rem', padding: '4px 10px' }}
+                          onClick={() => setDeletingMaterial(m)}
+                        >
+                          Delete
+                        </button>
+                      </div>
+                    </td>
+                  </tr>
+                )
+              )
             )}
           </tbody>
         </table>

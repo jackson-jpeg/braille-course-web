@@ -36,3 +36,28 @@ export function formatDate(ts: number): string {
 export function formatCurrency(cents: number): string {
   return `$${(cents / 100).toFixed(2)}`;
 }
+
+export function downloadCsv(
+  enrollments: { email: string | null; section: { label: string }; plan: string; paymentStatus: string; stripeCustomerId: string | null; createdAt: string }[],
+  scheduleMap: Record<string, string>,
+) {
+  const headers = ['Email', 'Section', 'Schedule', 'Plan', 'Status', 'Stripe Customer', 'Date'];
+  const rows = enrollments.map((e) => [
+    e.email || '',
+    e.section.label,
+    scheduleMap[e.section.label] || e.section.label,
+    e.plan,
+    e.paymentStatus,
+    e.stripeCustomerId || '',
+    new Date(e.createdAt).toISOString(),
+  ]);
+
+  const csv = [headers, ...rows].map((r) => r.map((c) => `"${c}"`).join(',')).join('\n');
+  const blob = new Blob([csv], { type: 'text/csv' });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url;
+  a.download = `students-${new Date().toISOString().slice(0, 10)}.csv`;
+  a.click();
+  URL.revokeObjectURL(url);
+}

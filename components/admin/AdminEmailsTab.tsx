@@ -52,9 +52,10 @@ interface Props {
   initialTemplate?: string;
   pendingAttachmentIds?: string[];
   onClearAttachments?: () => void;
+  onComposeDirty?: (dirty: boolean) => void;
 }
 
-export default function AdminEmailsTab({ enrollments, initialComposeTo, initialTemplate, pendingAttachmentIds, onClearAttachments }: Props) {
+export default function AdminEmailsTab({ enrollments, initialComposeTo, initialTemplate, pendingAttachmentIds, onClearAttachments, onComposeDirty }: Props) {
   const { showToast } = useToast();
   const [emailSubTab, setEmailSubTab] = useState<'sent' | 'received'>('sent');
   const [emails, setEmails] = useState<ResendEmail[]>([]);
@@ -84,6 +85,9 @@ export default function AdminEmailsTab({ enrollments, initialComposeTo, initialT
   const [showMaterialPicker, setShowMaterialPicker] = useState(false);
   const pickerRef = useRef<HTMLDivElement>(null);
 
+  // Last fetched
+  const [lastFetched, setLastFetched] = useState<Date | null>(null);
+
   // AI draft state
   const [showDraftInput, setShowDraftInput] = useState(false);
   const [draftBrief, setDraftBrief] = useState('');
@@ -99,6 +103,12 @@ export default function AdminEmailsTab({ enrollments, initialComposeTo, initialT
   const [receivedSearch, setReceivedSearch] = useState('');
   const [receivedSortKey, setReceivedSortKey] = useState<ReceivedSortKey>('date');
   const [receivedSortDir, setReceivedSortDir] = useState<SortDir>('desc');
+
+  // Track compose dirty state
+  useEffect(() => {
+    const isDirty = showCompose && (composeTo.trim() !== '' || composeSubject.trim() !== '' || composeBody.trim() !== '');
+    onComposeDirty?.(isDirty);
+  }, [showCompose, composeTo, composeSubject, composeBody, onComposeDirty]);
 
   // Update composeTo when initialComposeTo changes (from student modal)
   useEffect(() => {
@@ -206,6 +216,7 @@ export default function AdminEmailsTab({ enrollments, initialComposeTo, initialT
       const data = await res.json();
       if (!res.ok) throw new Error(data.error || 'Failed to fetch');
       setEmails(data.emails);
+      setLastFetched(new Date());
     } catch (err: unknown) {
       setEmailsError(err instanceof Error ? err.message : 'Failed to load emails');
     } finally {
@@ -515,6 +526,15 @@ export default function AdminEmailsTab({ enrollments, initialComposeTo, initialT
             <button onClick={fetchEmails} className="admin-refresh-btn" disabled={emailsLoading}>
               {emailsLoading ? 'Loading\u2026' : 'Refresh'}
             </button>
+            {lastFetched && (
+              <span className="admin-last-updated">
+                {(() => {
+                  const secs = Math.floor((Date.now() - lastFetched.getTime()) / 1000);
+                  if (secs < 60) return 'Updated just now';
+                  return `Updated ${Math.floor(secs / 60)}m ago`;
+                })()}
+              </span>
+            )}
           </div>
 
           {showCompose && (

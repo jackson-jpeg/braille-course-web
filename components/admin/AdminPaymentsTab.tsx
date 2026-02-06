@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect, useCallback } from 'react';
+import { useState, useEffect, useCallback, useMemo } from 'react';
 import AdminRefundDialog from './AdminRefundDialog';
 import AdminInvoiceDialog from './AdminInvoiceDialog';
 import AdminConfirmDialog from './AdminConfirmDialog';
@@ -22,6 +22,11 @@ interface ConfirmAction {
   variant: 'danger' | 'primary';
   onConfirm: () => Promise<void>;
 }
+
+type ChargeSortKey = 'date' | 'student' | 'amount' | 'status';
+type InvoiceSortKey = 'student' | 'amount' | 'status' | 'date';
+type CouponSortKey = 'name' | 'discount' | 'redeemed' | 'status';
+type LinkSortKey = 'name' | 'amount' | 'status';
 
 interface Props {
   enrollments: Enrollment[];
@@ -67,6 +72,26 @@ export default function AdminPaymentsTab({ enrollments }: Props) {
   const [editingCouponId, setEditingCouponId] = useState<string | null>(null);
   const [editingCouponName, setEditingCouponName] = useState('');
 
+  // Search + sort for charges
+  const [chargeSearch, setChargeSearch] = useState('');
+  const [chargeSortKey, setChargeSortKey] = useState<ChargeSortKey>('date');
+  const [chargeSortDir, setChargeSortDir] = useState<'asc' | 'desc'>('desc');
+
+  // Sort for invoices
+  const [invoiceSortKey, setInvoiceSortKey] = useState<InvoiceSortKey>('date');
+  const [invoiceSortDir, setInvoiceSortDir] = useState<'asc' | 'desc'>('desc');
+
+  // Sort for coupons
+  const [couponSortKey, setCouponSortKey] = useState<CouponSortKey>('name');
+  const [couponSortDir, setCouponSortDir] = useState<'asc' | 'desc'>('asc');
+
+  // Sort for payment links
+  const [linkSortKey, setLinkSortKey] = useState<LinkSortKey>('name');
+  const [linkSortDir, setLinkSortDir] = useState<'asc' | 'desc'>('asc');
+
+  // Last fetched timestamp
+  const [lastFetched, setLastFetched] = useState<Date | null>(null);
+
   const fetchPayments = useCallback(async () => {
     setLoading(true);
     setError('');
@@ -75,6 +100,7 @@ export default function AdminPaymentsTab({ enrollments }: Props) {
       const json = await res.json();
       if (!res.ok) throw new Error(json.error || 'Failed to fetch');
       setData(json);
+      setLastFetched(new Date());
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Failed to load payment data');
     } finally {
@@ -354,6 +380,125 @@ export default function AdminPaymentsTab({ enrollments }: Props) {
     }
   }
 
+  // ── Sort helpers ──
+  function handleChargeSort(key: ChargeSortKey) {
+    if (chargeSortKey === key) setChargeSortDir(chargeSortDir === 'asc' ? 'desc' : 'asc');
+    else { setChargeSortKey(key); setChargeSortDir(key === 'date' ? 'desc' : 'asc'); }
+  }
+  function handleInvoiceSort(key: InvoiceSortKey) {
+    if (invoiceSortKey === key) setInvoiceSortDir(invoiceSortDir === 'asc' ? 'desc' : 'asc');
+    else { setInvoiceSortKey(key); setInvoiceSortDir(key === 'date' ? 'desc' : 'asc'); }
+  }
+  function handleCouponSort(key: CouponSortKey) {
+    if (couponSortKey === key) setCouponSortDir(couponSortDir === 'asc' ? 'desc' : 'asc');
+    else { setCouponSortKey(key); setCouponSortDir('asc'); }
+  }
+  function handleLinkSort(key: LinkSortKey) {
+    if (linkSortKey === key) setLinkSortDir(linkSortDir === 'asc' ? 'desc' : 'asc');
+    else { setLinkSortKey(key); setLinkSortDir('asc'); }
+  }
+  function sortArrow(active: boolean, dir: 'asc' | 'desc') {
+    if (!active) return '';
+    return dir === 'asc' ? ' \u2191' : ' \u2193';
+  }
+
+  // ── Filtered + sorted charges ──
+  const filteredCharges = useMemo(() => {
+    if (!data) return [];
+    let list = [...data.charges];
+    if (chargeSearch.trim()) {
+      const q = chargeSearch.toLowerCase();
+      list = list.filter((c) => {
+        const email = c.customer?.email || '';
+        const name = c.customer?.name || '';
+        const amt = (c.amount / 100).toFixed(2);
+        return email.toLowerCase().includes(q) || name.toLowerCase().includes(q) || amt.includes(q) || c.status.toLowerCase().includes(q);
+      });
+    }
+    list.sort((a, b) => {
+      let cmp = 0;
+      switch (chargeSortKey) {
+        case 'date': cmp = a.created - b.created; break;
+        case 'student': cmp = (a.customer?.email || '').localeCompare(b.customer?.email || ''); break;
+        case 'amount': cmp = a.amount - b.amount; break;
+        case 'status': cmp = a.status.localeCompare(b.status); break;
+      }
+      return chargeSortDir === 'asc' ? cmp : -cmp;
+    });
+    return list;
+  }, [data, chargeSearch, chargeSortKey, chargeSortDir]);
+
+  // ── Filtered + sorted invoices ──
+  const filteredInvoices = useMemo(() => {
+    if (!data) return [];
+    let list = [...data.invoices];
+    if (chargeSearch.trim()) {
+      const q = chargeSearch.toLowerCase();
+      list = list.filter((inv) => {
+        const email = inv.customer?.email || '';
+        const name = inv.customer?.name || '';
+        const amt = (inv.amount_due / 100).toFixed(2);
+        return email.toLowerCase().includes(q) || name.toLowerCase().includes(q) || amt.includes(q) || inv.status.toLowerCase().includes(q);
+      });
+    }
+    list.sort((a, b) => {
+      let cmp = 0;
+      switch (invoiceSortKey) {
+        case 'student': cmp = (a.customer?.email || '').localeCompare(b.customer?.email || ''); break;
+        case 'amount': cmp = a.amount_due - b.amount_due; break;
+        case 'status': cmp = a.status.localeCompare(b.status); break;
+        case 'date': cmp = a.created - b.created; break;
+      }
+      return invoiceSortDir === 'asc' ? cmp : -cmp;
+    });
+    return list;
+  }, [data, chargeSearch, invoiceSortKey, invoiceSortDir]);
+
+  // ── Sorted coupons ──
+  const sortedCoupons = useMemo(() => {
+    const list = [...coupons];
+    list.sort((a, b) => {
+      let cmp = 0;
+      switch (couponSortKey) {
+        case 'name': cmp = (a.name || a.id).localeCompare(b.name || b.id); break;
+        case 'discount': cmp = (a.percent_off || 0) - (b.percent_off || 0) || (a.amount_off || 0) - (b.amount_off || 0); break;
+        case 'redeemed': cmp = a.times_redeemed - b.times_redeemed; break;
+        case 'status': cmp = Number(b.valid) - Number(a.valid); break;
+      }
+      return couponSortDir === 'asc' ? cmp : -cmp;
+    });
+    return list;
+  }, [coupons, couponSortKey, couponSortDir]);
+
+  // ── Sorted payment links ──
+  const sortedLinks = useMemo(() => {
+    const list = [...paymentLinks];
+    list.sort((a, b) => {
+      let cmp = 0;
+      switch (linkSortKey) {
+        case 'name': cmp = (a.name || '').localeCompare(b.name || ''); break;
+        case 'amount': {
+          const aAmt = a.line_items.reduce((s, li) => s + li.amount_total, 0);
+          const bAmt = b.line_items.reduce((s, li) => s + li.amount_total, 0);
+          cmp = aAmt - bAmt;
+          break;
+        }
+        case 'status': cmp = Number(b.active) - Number(a.active); break;
+      }
+      return linkSortDir === 'asc' ? cmp : -cmp;
+    });
+    return list;
+  }, [paymentLinks, linkSortKey, linkSortDir]);
+
+  // ── Last updated helper ──
+  function lastUpdatedText() {
+    if (!lastFetched) return '';
+    const secs = Math.floor((Date.now() - lastFetched.getTime()) / 1000);
+    if (secs < 60) return 'Updated just now';
+    const mins = Math.floor(secs / 60);
+    return `Updated ${mins}m ago`;
+  }
+
   if (loading && !data) {
     return (
       <>
@@ -422,6 +567,23 @@ export default function AdminPaymentsTab({ enrollments }: Props) {
             <button className="admin-refresh-btn" onClick={fetchPayments} disabled={loading}>
               {loading ? 'Refreshing\u2026' : 'Refresh'}
             </button>
+            {lastFetched && <span className="admin-last-updated">{lastUpdatedText()}</span>}
+          </div>
+
+          {/* Search */}
+          <div className="admin-email-filter-bar">
+            <input
+              type="text"
+              className="admin-email-search"
+              placeholder="Search by email, name, amount, status\u2026"
+              value={chargeSearch}
+              onChange={(e) => setChargeSearch(e.target.value)}
+            />
+            {chargeSearch && (
+              <span className="admin-result-count">
+                {filteredCharges.length} payment{filteredCharges.length !== 1 ? 's' : ''}, {filteredInvoices.length} invoice{filteredInvoices.length !== 1 ? 's' : ''}
+              </span>
+            )}
           </div>
 
           {error && data && <div className="admin-email-error">{error}</div>}
@@ -433,18 +595,18 @@ export default function AdminPaymentsTab({ enrollments }: Props) {
               <table className="admin-table">
                 <thead>
                   <tr>
-                    <th>Date</th>
-                    <th>Student</th>
-                    <th>Amount</th>
-                    <th>Status</th>
+                    <th className="admin-sortable-th" onClick={() => handleChargeSort('date')}>Date{sortArrow(chargeSortKey === 'date', chargeSortDir)}</th>
+                    <th className="admin-sortable-th" onClick={() => handleChargeSort('student')}>Student{sortArrow(chargeSortKey === 'student', chargeSortDir)}</th>
+                    <th className="admin-sortable-th" onClick={() => handleChargeSort('amount')}>Amount{sortArrow(chargeSortKey === 'amount', chargeSortDir)}</th>
+                    <th className="admin-sortable-th" onClick={() => handleChargeSort('status')}>Status{sortArrow(chargeSortKey === 'status', chargeSortDir)}</th>
                     <th>Actions</th>
                   </tr>
                 </thead>
                 <tbody>
-                  {data.charges.length === 0 ? (
-                    <tr><td colSpan={5} className="admin-empty"><div className="admin-empty-state"><p className="admin-empty-state-title">No payments yet</p><p className="admin-empty-state-sub">Payments will appear here once students complete checkout.</p></div></td></tr>
+                  {filteredCharges.length === 0 ? (
+                    <tr><td colSpan={5} className="admin-empty"><div className="admin-empty-state"><p className="admin-empty-state-title">{chargeSearch ? 'No matching payments' : 'No payments yet'}</p><p className="admin-empty-state-sub">{chargeSearch ? 'Try adjusting your search.' : 'Payments will appear here once students complete checkout.'}</p></div></td></tr>
                   ) : (
-                    data.charges.map((c) => (
+                    filteredCharges.map((c) => (
                       <tr key={c.id}>
                         <td>{formatDate(c.created)}</td>
                         <td>{c.customer?.email || c.customer?.name || '\u2014'}</td>
@@ -461,6 +623,14 @@ export default function AdminPaymentsTab({ enrollments }: Props) {
                         </td>
                         <td>
                           <div className="admin-payment-actions">
+                            <a
+                              href={`https://dashboard.stripe.com/payments/${c.id}`}
+                              target="_blank"
+                              rel="noopener noreferrer"
+                              className="admin-stripe-link"
+                            >
+                              Stripe
+                            </a>
                             {c.receipt_url && (
                               <a
                                 href={c.receipt_url}
@@ -505,22 +675,22 @@ export default function AdminPaymentsTab({ enrollments }: Props) {
           </div>
 
           {/* Invoices */}
-          {data.invoices.length > 0 && (
+          {filteredInvoices.length > 0 && (
             <div className="admin-overview-section">
               <h3 className="admin-overview-section-title">Invoices</h3>
               <div className="admin-table-wrap">
                 <table className="admin-table">
                   <thead>
                     <tr>
-                      <th>Student</th>
-                      <th>Amount</th>
-                      <th>Status</th>
-                      <th>Date</th>
+                      <th className="admin-sortable-th" onClick={() => handleInvoiceSort('student')}>Student{sortArrow(invoiceSortKey === 'student', invoiceSortDir)}</th>
+                      <th className="admin-sortable-th" onClick={() => handleInvoiceSort('amount')}>Amount{sortArrow(invoiceSortKey === 'amount', invoiceSortDir)}</th>
+                      <th className="admin-sortable-th" onClick={() => handleInvoiceSort('status')}>Status{sortArrow(invoiceSortKey === 'status', invoiceSortDir)}</th>
+                      <th className="admin-sortable-th" onClick={() => handleInvoiceSort('date')}>Date{sortArrow(invoiceSortKey === 'date', invoiceSortDir)}</th>
                       <th>Actions</th>
                     </tr>
                   </thead>
                   <tbody>
-                    {data.invoices.map((inv) => (
+                    {filteredInvoices.map((inv) => (
                       <tr key={inv.id}>
                         <td>{inv.customer?.email || inv.customer?.name || '\u2014'}</td>
                         <td>{formatCurrency(inv.amount_due)}</td>
@@ -532,6 +702,14 @@ export default function AdminPaymentsTab({ enrollments }: Props) {
                         <td>{formatDate(inv.created)}</td>
                         <td>
                           <div className="admin-payment-actions">
+                            <a
+                              href={`https://dashboard.stripe.com/invoices/${inv.id}`}
+                              target="_blank"
+                              rel="noopener noreferrer"
+                              className="admin-stripe-link"
+                            >
+                              Stripe
+                            </a>
                             {inv.hosted_invoice_url && (
                               <a
                                 href={inv.hosted_invoice_url}
@@ -708,11 +886,11 @@ export default function AdminPaymentsTab({ enrollments }: Props) {
               <table className="admin-table">
                 <thead>
                   <tr>
-                    <th>Name</th>
-                    <th>Discount</th>
+                    <th className="admin-sortable-th" onClick={() => handleCouponSort('name')}>Name{sortArrow(couponSortKey === 'name', couponSortDir)}</th>
+                    <th className="admin-sortable-th" onClick={() => handleCouponSort('discount')}>Discount{sortArrow(couponSortKey === 'discount', couponSortDir)}</th>
                     <th>Promo Code</th>
-                    <th>Redeemed</th>
-                    <th>Status</th>
+                    <th className="admin-sortable-th" onClick={() => handleCouponSort('redeemed')}>Redeemed{sortArrow(couponSortKey === 'redeemed', couponSortDir)}</th>
+                    <th className="admin-sortable-th" onClick={() => handleCouponSort('status')}>Status{sortArrow(couponSortKey === 'status', couponSortDir)}</th>
                     <th>Actions</th>
                   </tr>
                 </thead>
@@ -720,7 +898,7 @@ export default function AdminPaymentsTab({ enrollments }: Props) {
                   {coupons.length === 0 ? (
                     <tr><td colSpan={6} className="admin-empty"><div className="admin-empty-state"><p className="admin-empty-state-title">No coupons yet</p><p className="admin-empty-state-sub">Create a coupon to offer discounts on your courses.</p><button className="admin-empty-state-cta" onClick={() => setShowCreateCoupon(true)}>Create Coupon</button></div></td></tr>
                   ) : (
-                    coupons.map((c) => (
+                    sortedCoupons.map((c) => (
                       <tr key={c.id}>
                         <td>
                           {editingCouponId === c.id ? (
@@ -854,10 +1032,10 @@ export default function AdminPaymentsTab({ enrollments }: Props) {
               <table className="admin-table">
                 <thead>
                   <tr>
-                    <th>Name</th>
+                    <th className="admin-sortable-th" onClick={() => handleLinkSort('name')}>Name{sortArrow(linkSortKey === 'name', linkSortDir)}</th>
                     <th>Link</th>
-                    <th>Items</th>
-                    <th>Status</th>
+                    <th className="admin-sortable-th" onClick={() => handleLinkSort('amount')}>Items{sortArrow(linkSortKey === 'amount', linkSortDir)}</th>
+                    <th className="admin-sortable-th" onClick={() => handleLinkSort('status')}>Status{sortArrow(linkSortKey === 'status', linkSortDir)}</th>
                     <th>Actions</th>
                   </tr>
                 </thead>
@@ -865,7 +1043,7 @@ export default function AdminPaymentsTab({ enrollments }: Props) {
                   {paymentLinks.length === 0 ? (
                     <tr><td colSpan={5} className="admin-empty"><div className="admin-empty-state"><p className="admin-empty-state-title">No payment links</p><p className="admin-empty-state-sub">Create a payment link to share with students.</p><button className="admin-empty-state-cta" onClick={() => setShowCreateLink(true)}>Create Payment Link</button></div></td></tr>
                   ) : (
-                    paymentLinks.map((link) => (
+                    sortedLinks.map((link) => (
                       <tr key={link.id}>
                         <td>{link.name || '\u2014'}</td>
                         <td>

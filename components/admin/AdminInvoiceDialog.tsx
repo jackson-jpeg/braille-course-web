@@ -18,6 +18,12 @@ const TERMS_OPTIONS = [
 ];
 
 export default function AdminInvoiceDialog({ enrollments, onClose, onSuccess }: Props) {
+  useEffect(() => {
+    function handleKey(e: KeyboardEvent) { if (e.key === 'Escape') onClose(); }
+    document.addEventListener('keydown', handleKey);
+    return () => document.removeEventListener('keydown', handleKey);
+  }, [onClose]);
+
   const [email, setEmail] = useState('');
   const [name, setName] = useState('');
   const [description, setDescription] = useState('');
