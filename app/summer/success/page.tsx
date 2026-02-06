@@ -95,8 +95,8 @@ export default async function SuccessPage({
               <polyline points="22,6 12,13 2,6" />
             </svg>
             <span>
-              You&apos;ll receive scheduling details via <strong>email</strong>{' '}
-              soon
+              You&apos;ll receive a confirmation email with your section&apos;s{' '}
+              <strong>meeting link</strong> and schedule details soon
             </span>
           </div>
         </div>

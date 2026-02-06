@@ -117,6 +117,11 @@ export default function EnrollmentForm() {
                     {section.label}
                   </div>
                   <div className="enrollment-option-sub">
+                    {section.label === 'Section A'
+                      ? 'Mon & Wed, 1–2 PM ET'
+                      : 'Tue & Thu, 4–5 PM ET'}
+                  </div>
+                  <div className="enrollment-option-sub">
                     {isFull
                       ? 'Full'
                       : `${spotsLeft} spot${spotsLeft !== 1 ? 's' : ''} left`}

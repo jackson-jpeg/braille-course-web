@@ -221,9 +221,12 @@ export default async function SummerPage() {
                 You&apos;ll meet{' '}
                 <strong>twice per week for one hour each session</strong>. Over the
                 8-week course, that comes out to <strong>16 sessions total</strong>.
-                Two separate class sections will be offered, each with its own
-                schedule — so you&apos;ll choose the one that works best for you.
+                Two sections are available — pick the one that works best for you:
               </p>
+              <ul className="faq-answer" style={{ marginTop: '0.5rem', paddingLeft: '1.25rem' }}>
+                <li><strong>Section A:</strong> Monday &amp; Wednesday, 1–2 PM ET</li>
+                <li><strong>Section B:</strong> Tuesday &amp; Thursday, 4–5 PM ET</li>
+              </ul>
             </div>
 
             <div className="faq-item reveal">
@@ -316,7 +319,7 @@ export default async function SummerPage() {
               </div>
               <div className="label">Sessions</div>
               <div className="value">16 Total</div>
-              <div className="sub">2x per week, 1 hour each</div>
+              <div className="sub">Mon/Wed 1–2 PM or Tue/Thu 4–5 PM ET</div>
             </div>
 
             <div className="glance-card" role="listitem">
