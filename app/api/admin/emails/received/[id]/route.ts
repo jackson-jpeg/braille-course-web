@@ -1,10 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { resend } from '@/lib/resend';
-
-function isAuthorized(req: NextRequest): boolean {
-  const key = req.nextUrl.searchParams.get('key');
-  return !!process.env.ADMIN_PASSWORD && key === process.env.ADMIN_PASSWORD;
-}
+import { isAuthorized } from '@/lib/admin-auth';
 
 /* ── GET /api/admin/emails/received/[id]?key=...  ── get single received email ── */
 export async function GET(

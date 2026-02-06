@@ -1,27 +1,8 @@
 'use client';
 
 import { useState, useEffect, useCallback } from 'react';
-import type { Section, Enrollment, ResendEmail } from './admin-types';
-
-function relativeTime(dateStr: string): string {
-  const now = Date.now();
-  const then = new Date(dateStr).getTime();
-  const diff = now - then;
-  const seconds = Math.floor(diff / 1000);
-  const minutes = Math.floor(seconds / 60);
-  const hours = Math.floor(minutes / 60);
-  const days = Math.floor(hours / 24);
-
-  if (days > 30) {
-    return new Date(dateStr).toLocaleDateString('en-US', {
-      month: 'short', day: 'numeric', year: 'numeric',
-    });
-  }
-  if (days > 0) return `${days}d ago`;
-  if (hours > 0) return `${hours}h ago`;
-  if (minutes > 0) return `${minutes}m ago`;
-  return 'just now';
-}
+import type { Section, Enrollment, ResendEmail, PaymentSummary } from './admin-types';
+import { relativeTime } from './admin-utils';
 
 interface Props {
   sections: Section[];
@@ -42,11 +23,16 @@ interface ActivityItem {
 export default function AdminOverviewTab({ sections, enrollments, scheduleMap, adminKey, onNavigate }: Props) {
   const [recentEmails, setRecentEmails] = useState<ResendEmail[]>([]);
   const [emailsLoaded, setEmailsLoaded] = useState(false);
+  const [paymentSummary, setPaymentSummary] = useState<PaymentSummary | null>(null);
 
+  // Fallback estimates while real data loads
   const fullCount = enrollments.filter((e) => e.plan === 'FULL').length;
   const depositCount = enrollments.filter((e) => e.plan === 'DEPOSIT').length;
-  const revenueCollected = fullCount * 500 + depositCount * 150;
-  const pendingBalance = depositCount * 350;
+  const fallbackRevenue = fullCount * 500 + depositCount * 150;
+  const fallbackPending = depositCount * 350;
+
+  const revenueCollected = paymentSummary ? paymentSummary.totalCollected : fallbackRevenue;
+  const pendingBalance = paymentSummary ? paymentSummary.pendingInvoices : fallbackPending;
   const totalCapacity = sections.reduce((sum, s) => sum + s.maxCapacity, 0);
   const totalEnrolled = sections.reduce((sum, s) => sum + s.enrolledCount, 0);
   const openSpots = totalCapacity - totalEnrolled;
@@ -61,9 +47,21 @@ export default function AdminOverviewTab({ sections, enrollments, scheduleMap, a
     setEmailsLoaded(true);
   }, [adminKey]);
 
+  // Fetch real payment data from Stripe
+  const fetchPaymentSummary = useCallback(async () => {
+    try {
+      const res = await fetch(`/api/admin/payments?key=${encodeURIComponent(adminKey)}`);
+      const data = await res.json();
+      if (res.ok) setPaymentSummary(data.summary);
+    } catch { /* silent — fallback numbers remain */ }
+  }, [adminKey]);
+
   useEffect(() => {
-    if (!emailsLoaded) fetchRecentEmails();
-  }, [emailsLoaded, fetchRecentEmails]);
+    if (!emailsLoaded) {
+      fetchRecentEmails();
+      fetchPaymentSummary();
+    }
+  }, [emailsLoaded, fetchRecentEmails, fetchPaymentSummary]);
 
   // Build activity feed
   const activityItems: ActivityItem[] = [
@@ -94,12 +92,20 @@ export default function AdminOverviewTab({ sections, enrollments, scheduleMap, a
           <div className="admin-overview-card-label">Total Students</div>
         </div>
         <div className="admin-overview-card admin-overview-card-green">
-          <div className="admin-overview-card-value">${revenueCollected.toLocaleString()}</div>
-          <div className="admin-overview-card-label">Revenue Received</div>
+          <div className="admin-overview-card-value">
+            ${paymentSummary
+              ? revenueCollected.toLocaleString(undefined, { minimumFractionDigits: 2 })
+              : revenueCollected.toLocaleString()}
+          </div>
+          <div className="admin-overview-card-label">Revenue Collected</div>
         </div>
         <div className="admin-overview-card admin-overview-card-gold">
-          <div className="admin-overview-card-value">${pendingBalance.toLocaleString()}</div>
-          <div className="admin-overview-card-label">Upcoming May 1 Balance</div>
+          <div className="admin-overview-card-value">
+            ${paymentSummary
+              ? pendingBalance.toLocaleString(undefined, { minimumFractionDigits: 2 })
+              : pendingBalance.toLocaleString()}
+          </div>
+          <div className="admin-overview-card-label">Upcoming Invoices</div>
         </div>
         <div className="admin-overview-card">
           <div className="admin-overview-card-value">{openSpots}</div>

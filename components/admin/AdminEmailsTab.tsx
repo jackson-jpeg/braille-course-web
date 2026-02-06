@@ -2,34 +2,32 @@
 
 import { useState, useCallback, useEffect } from 'react';
 import AdminEmailModal from './AdminEmailModal';
+import AdminConfirmDialog from './AdminConfirmDialog';
 import type { ResendEmail, ReceivedEmail, EmailDetail, Enrollment } from './admin-types';
+import { relativeTime, fullDate } from './admin-utils';
 
-function relativeTime(dateStr: string): string {
-  const now = Date.now();
-  const then = new Date(dateStr).getTime();
-  const diff = now - then;
-  const seconds = Math.floor(diff / 1000);
-  const minutes = Math.floor(seconds / 60);
-  const hours = Math.floor(minutes / 60);
-  const days = Math.floor(hours / 24);
-
-  if (days > 30) {
-    return new Date(dateStr).toLocaleDateString('en-US', {
-      month: 'short', day: 'numeric', year: 'numeric',
-    });
-  }
-  if (days > 0) return `${days}d ago`;
-  if (hours > 0) return `${hours}h ago`;
-  if (minutes > 0) return `${minutes}m ago`;
-  return 'just now';
-}
-
-function fullDate(dateStr: string): string {
-  return new Date(dateStr).toLocaleString('en-US', {
-    weekday: 'short', month: 'short', day: 'numeric', year: 'numeric',
-    hour: 'numeric', minute: '2-digit',
-  });
-}
+const EMAIL_TEMPLATES = [
+  {
+    label: 'Class Reminder',
+    subject: 'Reminder: Upcoming Braille Class',
+    body: `Hi there!\n\nThis is a friendly reminder that your braille class is coming up soon. Please make sure you have your materials ready.\n\nIf you have any questions, feel free to reply to this email.\n\nSee you in class!\nDelaney`,
+  },
+  {
+    label: 'Payment Follow-up',
+    subject: 'Reminder: Remaining Balance Due',
+    body: `Hi there!\n\nThis is a friendly reminder that your remaining balance is due. Please check your email for the invoice, or reach out if you have any questions about your payment.\n\nThank you!\nDelaney`,
+  },
+  {
+    label: 'Course Update',
+    subject: 'Course Update',
+    body: `Hi everyone!\n\nI wanted to share a quick update about our braille course.\n\n[Your update here]\n\nLooking forward to our next class!\nDelaney`,
+  },
+  {
+    label: 'Welcome',
+    subject: 'Welcome to the Braille Course!',
+    body: `Welcome!\n\nThank you for enrolling in the summer braille course. I'm excited to have you in class!\n\nHere are a few things to know before we get started:\n\n- [Detail 1]\n- [Detail 2]\n- [Detail 3]\n\nFeel free to reply if you have any questions.\n\nBest,\nDelaney`,
+  },
+];
 
 interface Props {
   adminKey: string;
@@ -50,6 +48,8 @@ export default function AdminEmailsTab({ adminKey, enrollments, initialComposeTo
   const [composeBody, setComposeBody] = useState('');
   const [composeSending, setComposeSending] = useState(false);
   const [composeResult, setComposeResult] = useState<{ ok: boolean; msg: string } | null>(null);
+  const [selectedTemplate, setSelectedTemplate] = useState('');
+  const [showSendConfirm, setShowSendConfirm] = useState(false);
 
   const [receivedEmails, setReceivedEmails] = useState<ReceivedEmail[]>([]);
   const [receivedLoading, setReceivedLoading] = useState(false);
@@ -135,8 +135,7 @@ export default function AdminEmailsTab({ adminKey, enrollments, initialComposeTo
     }
   }
 
-  async function handleSendEmail(e: React.FormEvent) {
-    e.preventDefault();
+  async function doSendEmail() {
     setComposeSending(true);
     setComposeResult(null);
     try {
@@ -152,6 +151,7 @@ export default function AdminEmailsTab({ adminKey, enrollments, initialComposeTo
       setComposeTo('');
       setComposeSubject('');
       setComposeBody('');
+      setSelectedTemplate('');
       fetchEmails();
     } catch (err: unknown) {
       setComposeResult({ ok: false, msg: err instanceof Error ? err.message : 'Failed to send' });
@@ -160,8 +160,51 @@ export default function AdminEmailsTab({ adminKey, enrollments, initialComposeTo
     }
   }
 
-  const allEnrolledEmails = enrollments.map((e) => e.email).filter((e): e is string => !!e);
-  const uniqueEmails = [...new Set(allEnrolledEmails)];
+  function handleSendEmail(e: React.FormEvent) {
+    e.preventDefault();
+    const recipients = composeTo.split(',').map((s) => s.trim()).filter(Boolean);
+    if (recipients.length >= 3) {
+      setShowSendConfirm(true);
+    } else {
+      doSendEmail();
+    }
+  }
+
+  function handleTemplateChange(value: string) {
+    setSelectedTemplate(value);
+    if (value) {
+      const template = EMAIL_TEMPLATES.find((t) => t.label === value);
+      if (template) {
+        setComposeSubject(template.subject);
+        setComposeBody(template.body);
+      }
+    }
+  }
+
+  function handleReply(email: EmailDetail) {
+    const sender = email.from;
+    setComposeTo(sender);
+    setComposeSubject(email.subject.startsWith('Re: ') ? email.subject : `Re: ${email.subject}`);
+    const quotedText = email.text || '';
+    setComposeBody(`\n\n---\nOn ${fullDate(email.created_at)}, ${sender} wrote:\n\n${quotedText}`);
+    setShowCompose(true);
+    setEmailSubTab('sent');
+    setSelectedTemplate('');
+  }
+
+  function handleForward(email: EmailDetail) {
+    setComposeTo('');
+    setComposeSubject(email.subject.startsWith('Fwd: ') ? email.subject : `Fwd: ${email.subject}`);
+    const quotedText = email.text || '';
+    setComposeBody(`\n\n---\nForwarded message:\nFrom: ${email.from}\nDate: ${fullDate(email.created_at)}\nSubject: ${email.subject}\n\n${quotedText}`);
+    setShowCompose(true);
+    setEmailSubTab('sent');
+    setSelectedTemplate('');
+  }
+
+  // Only course students (from enrollment DB), not 1-1 invoice-only customers
+  const courseStudentEmails = enrollments.map((e) => e.email).filter((e): e is string => !!e);
+  const uniqueEmails = [...new Set(courseStudentEmails)];
 
   // Delivery stats
   const sentCount = emails.length;
@@ -218,6 +261,19 @@ export default function AdminEmailsTab({ adminKey, enrollments, initialComposeTo
             <div className="admin-compose">
               <form onSubmit={handleSendEmail}>
                 <div className="admin-compose-field">
+                  <label>Template</label>
+                  <select
+                    value={selectedTemplate}
+                    onChange={(e) => handleTemplateChange(e.target.value)}
+                    className="admin-select"
+                  >
+                    <option value="">Start from scratch</option>
+                    {EMAIL_TEMPLATES.map((t) => (
+                      <option key={t.label} value={t.label}>{t.label}</option>
+                    ))}
+                  </select>
+                </div>
+                <div className="admin-compose-field">
                   <label>To</label>
                   <div className="admin-compose-to-row">
                     <input
@@ -233,7 +289,7 @@ export default function AdminEmailsTab({ adminKey, enrollments, initialComposeTo
                       onClick={() => setComposeTo(uniqueEmails.join(', '))}
                       className="admin-fill-all-btn"
                     >
-                      All Enrolled ({uniqueEmails.length})
+                      All Course Students ({uniqueEmails.length})
                     </button>
                   </div>
                 </div>
@@ -345,7 +401,7 @@ export default function AdminEmailsTab({ adminKey, enrollments, initialComposeTo
                       <td>
                         {em.attachments && em.attachments.length > 0 ? (
                           <span className="admin-attachment-badge">{em.attachments.length}</span>
-                        ) : '—'}
+                        ) : '\u2014'}
                       </td>
                     </tr>
                   ))
@@ -361,7 +417,25 @@ export default function AdminEmailsTab({ adminKey, enrollments, initialComposeTo
         email={selectedEmail}
         loading={emailDetailLoading}
         onClose={() => { setSelectedEmail(null); setEmailDetailLoading(false); }}
+        onReply={handleReply}
+        onForward={handleForward}
       />
+
+      {/* Mass send confirmation dialog */}
+      {showSendConfirm && (
+        <AdminConfirmDialog
+          title="Send to Multiple Recipients"
+          message={`You're about to send this email to ${composeTo.split(',').map((s) => s.trim()).filter(Boolean).length} recipients. Continue?`}
+          confirmLabel="Send Email"
+          confirmVariant="primary"
+          loading={composeSending}
+          onConfirm={() => {
+            setShowSendConfirm(false);
+            doSendEmail();
+          }}
+          onCancel={() => setShowSendConfirm(false)}
+        />
+      )}
     </>
   );
 }

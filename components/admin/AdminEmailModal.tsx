@@ -1,25 +1,17 @@
 'use client';
 
 import type { EmailDetail } from './admin-types';
-
-function fullDate(dateStr: string): string {
-  return new Date(dateStr).toLocaleString('en-US', {
-    weekday: 'short',
-    month: 'short',
-    day: 'numeric',
-    year: 'numeric',
-    hour: 'numeric',
-    minute: '2-digit',
-  });
-}
+import { fullDate } from './admin-utils';
 
 interface Props {
   email: EmailDetail | null;
   loading: boolean;
   onClose: () => void;
+  onReply?: (email: EmailDetail) => void;
+  onForward?: (email: EmailDetail) => void;
 }
 
-export default function AdminEmailModal({ email, loading, onClose }: Props) {
+export default function AdminEmailModal({ email, loading, onClose, onReply, onForward }: Props) {
   if (!email && !loading) return null;
 
   return (
@@ -68,6 +60,24 @@ export default function AdminEmailModal({ email, loading, onClose }: Props) {
                   </span>
                 </div>
               )}
+              <div className="admin-modal-actions">
+                {onReply && (
+                  <button
+                    className="admin-compose-btn"
+                    onClick={() => { onReply(email); onClose(); }}
+                  >
+                    Reply
+                  </button>
+                )}
+                {onForward && (
+                  <button
+                    className="admin-refresh-btn"
+                    onClick={() => { onForward(email); onClose(); }}
+                  >
+                    Forward
+                  </button>
+                )}
+              </div>
             </div>
             <div className="admin-modal-body">
               {email.html ? (

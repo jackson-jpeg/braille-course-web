@@ -1,33 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { stripe } from '@/lib/stripe';
-
-function isAuthorized(req: NextRequest): boolean {
-  const key = req.nextUrl.searchParams.get('key');
-  return !!process.env.ADMIN_PASSWORD && key === process.env.ADMIN_PASSWORD;
-}
-
-function translateInvoiceStatus(status: string | null, dueDate: number | null): string {
-  if (!status) return 'Unknown';
-  switch (status) {
-    case 'draft':
-      if (dueDate) {
-        const d = new Date(dueDate * 1000);
-        return `Scheduled for ${d.toLocaleDateString('en-US', { month: 'short', day: 'numeric' })}`;
-      }
-      return 'Draft';
-    case 'open':
-      if (dueDate && dueDate * 1000 < Date.now()) return 'Payment Due (Overdue)';
-      return 'Payment Due';
-    case 'paid':
-      return 'Paid';
-    case 'void':
-      return 'Voided';
-    case 'uncollectible':
-      return 'Uncollectible';
-    default:
-      return status.charAt(0).toUpperCase() + status.slice(1);
-  }
-}
+import { isAuthorized } from '@/lib/admin-auth';
+import { translateInvoiceStatus } from '@/lib/stripe-utils';
 
 /* ── GET /api/admin/payments?key=... ── */
 export async function GET(req: NextRequest) {
@@ -36,10 +10,21 @@ export async function GET(req: NextRequest) {
   }
 
   try {
+    const chargesAfter = req.nextUrl.searchParams.get('charges_after') || undefined;
+    const invoicesAfter = req.nextUrl.searchParams.get('invoices_after') || undefined;
+
     const [balance, charges, invoices, refunds, transactions] = await Promise.all([
       stripe.balance.retrieve(),
-      stripe.charges.list({ limit: 50, expand: ['data.customer'] }),
-      stripe.invoices.list({ limit: 50, expand: ['data.customer'] }),
+      stripe.charges.list({
+        limit: 50,
+        expand: ['data.customer'],
+        ...(chargesAfter ? { starting_after: chargesAfter } : {}),
+      }),
+      stripe.invoices.list({
+        limit: 50,
+        expand: ['data.customer'],
+        ...(invoicesAfter ? { starting_after: invoicesAfter } : {}),
+      }),
       stripe.refunds.list({ limit: 20 }),
       stripe.balanceTransactions.list({ limit: 100, type: 'charge' }),
     ]);
@@ -108,6 +93,12 @@ export async function GET(req: NextRequest) {
       balance: {
         available: availableBalance / 100,
         pending: pendingBalance / 100,
+      },
+      pagination: {
+        hasMoreCharges: charges.has_more,
+        hasMoreInvoices: invoices.has_more,
+        lastChargeId: charges.data.length > 0 ? charges.data[charges.data.length - 1].id : undefined,
+        lastInvoiceId: invoices.data.length > 0 ? invoices.data[invoices.data.length - 1].id : undefined,
       },
     });
   } catch (err) {

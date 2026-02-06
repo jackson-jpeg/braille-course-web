@@ -4214,6 +4214,11 @@ body::after {
   display: inline-block;
   width: 60px;
 }
+.admin-modal-actions {
+  display: flex;
+  gap: 8px;
+  margin-top: 12px;
+}
 .admin-modal-body {
   flex: 1;
   overflow-y: auto;
@@ -4797,7 +4802,7 @@ body::after {
   opacity: 0.5;
   cursor: default;
 }
-.admin-send-btn {
+.admin-send-invoice-btn {
   padding: 4px 12px;
   background: rgba(168,191,160,0.15);
   color: var(--sage-dark);
@@ -4809,7 +4814,7 @@ body::after {
   cursor: pointer;
   transition: all 0.2s;
 }
-.admin-send-btn:hover {
+.admin-send-invoice-btn:hover {
   background: rgba(168,191,160,0.25);
   border-color: var(--sage-dark);
 }
@@ -4829,6 +4834,34 @@ body::after {
   background: rgba(220,80,80,0.06);
   color: #c44;
   border-color: rgba(220,80,80,0.4);
+}
+
+/* ── Admin Confirm Dialog ── */
+.admin-confirm-dialog {
+  background: white;
+  border-radius: var(--radius-lg);
+  max-width: 420px;
+  width: 90%;
+  padding: 32px;
+  position: relative;
+  box-shadow: 0 20px 60px rgba(0,0,0,0.15);
+}
+.admin-confirm-title {
+  font-size: 1.15rem;
+  font-weight: 600;
+  color: var(--navy);
+  margin: 0 0 12px;
+}
+.admin-confirm-message {
+  color: var(--text-secondary);
+  line-height: 1.6;
+  margin: 0 0 24px;
+  font-size: 0.92rem;
+}
+.admin-confirm-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 12px;
 }
 
 /* ── Admin Responsive ── */

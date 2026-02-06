@@ -1,10 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { stripe } from '@/lib/stripe';
-
-function isAuthorized(req: NextRequest): boolean {
-  const key = req.nextUrl.searchParams.get('key');
-  return !!process.env.ADMIN_PASSWORD && key === process.env.ADMIN_PASSWORD;
-}
+import { isAuthorized } from '@/lib/admin-auth';
 
 /* ── POST /api/admin/payments/refund?key=... ── */
 export async function POST(req: NextRequest) {

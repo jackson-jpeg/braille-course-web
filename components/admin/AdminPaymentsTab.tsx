@@ -3,16 +3,16 @@
 import { useState, useEffect, useCallback } from 'react';
 import AdminRefundDialog from './AdminRefundDialog';
 import AdminInvoiceDialog from './AdminInvoiceDialog';
+import AdminConfirmDialog from './AdminConfirmDialog';
 import type { PaymentsData, StripeCharge, StripeInvoice, Enrollment } from './admin-types';
+import { formatDate, formatCurrency } from './admin-utils';
 
-function formatDate(ts: number): string {
-  return new Date(ts * 1000).toLocaleDateString('en-US', {
-    month: 'short', day: 'numeric', year: 'numeric',
-  });
-}
-
-function formatCurrency(cents: number): string {
-  return `$${(cents / 100).toFixed(2)}`;
+interface ConfirmAction {
+  title: string;
+  message: string;
+  confirmLabel: string;
+  variant: 'danger' | 'primary';
+  onConfirm: () => Promise<void>;
 }
 
 interface Props {
@@ -26,6 +26,10 @@ export default function AdminPaymentsTab({ adminKey, enrollments }: Props) {
   const [error, setError] = useState('');
   const [refundCharge, setRefundCharge] = useState<StripeCharge | null>(null);
   const [showInvoiceDialog, setShowInvoiceDialog] = useState(false);
+  const [confirmAction, setConfirmAction] = useState<ConfirmAction | null>(null);
+  const [confirmLoading, setConfirmLoading] = useState(false);
+  const [loadingMoreCharges, setLoadingMoreCharges] = useState(false);
+  const [loadingMoreInvoices, setLoadingMoreInvoices] = useState(false);
 
   const fetchPayments = useCallback(async () => {
     setLoading(true);
@@ -46,36 +50,102 @@ export default function AdminPaymentsTab({ adminKey, enrollments }: Props) {
     if (!data && !loading) fetchPayments();
   }, [data, loading, fetchPayments]);
 
-  async function handleSendInvoice(inv: StripeInvoice) {
-    if (!confirm(`Send this invoice to ${inv.customer?.email || 'the customer'}? It will be finalized and emailed.`)) return;
+  async function loadMoreCharges() {
+    if (!data || !data.pagination?.hasMoreCharges || !data.pagination.lastChargeId) return;
+    setLoadingMoreCharges(true);
     try {
-      const res = await fetch(`/api/admin/invoices/send?key=${encodeURIComponent(adminKey)}`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ invoiceId: inv.id }),
-      });
+      const res = await fetch(
+        `/api/admin/payments?key=${encodeURIComponent(adminKey)}&charges_after=${data.pagination.lastChargeId}`
+      );
       const json = await res.json();
-      if (!res.ok) throw new Error(json.error || 'Failed to send invoice');
-      fetchPayments();
+      if (!res.ok) throw new Error(json.error || 'Failed to fetch');
+      setData((prev) => prev ? {
+        ...prev,
+        charges: [...prev.charges, ...json.charges],
+        pagination: json.pagination,
+      } : json);
     } catch (err) {
-      alert(err instanceof Error ? err.message : 'Failed to send invoice');
+      setError(err instanceof Error ? err.message : 'Failed to load more charges');
+    } finally {
+      setLoadingMoreCharges(false);
     }
   }
 
-  async function handleVoidInvoice(inv: StripeInvoice) {
-    if (!confirm(`Void this invoice for ${inv.customer?.email || 'the customer'}? This cannot be undone.`)) return;
+  async function loadMoreInvoices() {
+    if (!data || !data.pagination?.hasMoreInvoices || !data.pagination.lastInvoiceId) return;
+    setLoadingMoreInvoices(true);
     try {
-      const res = await fetch(`/api/admin/invoices/void?key=${encodeURIComponent(adminKey)}`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ invoiceId: inv.id }),
-      });
+      const res = await fetch(
+        `/api/admin/payments?key=${encodeURIComponent(adminKey)}&invoices_after=${data.pagination.lastInvoiceId}`
+      );
       const json = await res.json();
-      if (!res.ok) throw new Error(json.error || 'Failed to void invoice');
-      fetchPayments();
+      if (!res.ok) throw new Error(json.error || 'Failed to fetch');
+      setData((prev) => prev ? {
+        ...prev,
+        invoices: [...prev.invoices, ...json.invoices],
+        pagination: {
+          ...prev.pagination,
+          ...json.pagination,
+          // Keep charge pagination from previous state since this was an invoices-only load
+          hasMoreCharges: prev.pagination?.hasMoreCharges ?? false,
+          lastChargeId: prev.pagination?.lastChargeId,
+        },
+      } : json);
     } catch (err) {
-      alert(err instanceof Error ? err.message : 'Failed to void invoice');
+      setError(err instanceof Error ? err.message : 'Failed to load more invoices');
+    } finally {
+      setLoadingMoreInvoices(false);
     }
+  }
+
+  function handleSendInvoice(inv: StripeInvoice) {
+    setConfirmAction({
+      title: 'Send Invoice',
+      message: `Send this invoice to ${inv.customer?.email || 'the customer'}? It will be finalized and emailed.`,
+      confirmLabel: 'Send Invoice',
+      variant: 'primary',
+      onConfirm: async () => {
+        try {
+          const res = await fetch(`/api/admin/invoices/send?key=${encodeURIComponent(adminKey)}`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ invoiceId: inv.id }),
+          });
+          const json = await res.json();
+          if (!res.ok) throw new Error(json.error || 'Failed to send invoice');
+          setConfirmAction(null);
+          fetchPayments();
+        } catch (err) {
+          setConfirmAction(null);
+          setError(err instanceof Error ? err.message : 'Failed to send invoice');
+        }
+      },
+    });
+  }
+
+  function handleVoidInvoice(inv: StripeInvoice) {
+    setConfirmAction({
+      title: 'Void Invoice',
+      message: `Void this invoice for ${inv.customer?.email || 'the customer'}? This cannot be undone.`,
+      confirmLabel: 'Void Invoice',
+      variant: 'danger',
+      onConfirm: async () => {
+        try {
+          const res = await fetch(`/api/admin/invoices/void?key=${encodeURIComponent(adminKey)}`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ invoiceId: inv.id }),
+          });
+          const json = await res.json();
+          if (!res.ok) throw new Error(json.error || 'Failed to void invoice');
+          setConfirmAction(null);
+          fetchPayments();
+        } catch (err) {
+          setConfirmAction(null);
+          setError(err instanceof Error ? err.message : 'Failed to void invoice');
+        }
+      },
+    });
   }
 
   if (loading && !data) {
@@ -123,6 +193,8 @@ export default function AdminPaymentsTab({ adminKey, enrollments }: Props) {
           {loading ? 'Refreshing\u2026' : 'Refresh'}
         </button>
       </div>
+
+      {error && data && <div className="admin-email-error">{error}</div>}
 
       {/* Recent Payments */}
       <div className="admin-overview-section">
@@ -183,6 +255,21 @@ export default function AdminPaymentsTab({ adminKey, enrollments }: Props) {
                 ))
               )}
             </tbody>
+            {data.pagination?.hasMoreCharges && (
+              <tfoot>
+                <tr>
+                  <td colSpan={5} style={{ textAlign: 'center' }}>
+                    <button
+                      className="admin-refresh-btn"
+                      onClick={loadMoreCharges}
+                      disabled={loadingMoreCharges}
+                    >
+                      {loadingMoreCharges ? 'Loading\u2026' : 'Load More Payments'}
+                    </button>
+                  </td>
+                </tr>
+              </tfoot>
+            )}
           </table>
         </div>
       </div>
@@ -227,7 +314,7 @@ export default function AdminPaymentsTab({ adminKey, enrollments }: Props) {
                         )}
                         {inv.status === 'draft' && (
                           <button
-                            className="admin-send-btn"
+                            className="admin-send-invoice-btn"
                             onClick={() => handleSendInvoice(inv)}
                           >
                             Send
@@ -246,6 +333,21 @@ export default function AdminPaymentsTab({ adminKey, enrollments }: Props) {
                   </tr>
                 ))}
               </tbody>
+              {data.pagination?.hasMoreInvoices && (
+                <tfoot>
+                  <tr>
+                    <td colSpan={5} style={{ textAlign: 'center' }}>
+                      <button
+                        className="admin-refresh-btn"
+                        onClick={loadMoreInvoices}
+                        disabled={loadingMoreInvoices}
+                      >
+                        {loadingMoreInvoices ? 'Loading\u2026' : 'Load More Invoices'}
+                      </button>
+                    </td>
+                  </tr>
+                </tfoot>
+              )}
             </table>
           </div>
         </div>
@@ -274,6 +376,23 @@ export default function AdminPaymentsTab({ adminKey, enrollments }: Props) {
             setShowInvoiceDialog(false);
             fetchPayments();
           }}
+        />
+      )}
+
+      {/* Confirm Dialog */}
+      {confirmAction && (
+        <AdminConfirmDialog
+          title={confirmAction.title}
+          message={confirmAction.message}
+          confirmLabel={confirmAction.confirmLabel}
+          confirmVariant={confirmAction.variant}
+          loading={confirmLoading}
+          onConfirm={async () => {
+            setConfirmLoading(true);
+            await confirmAction.onConfirm();
+            setConfirmLoading(false);
+          }}
+          onCancel={() => setConfirmAction(null)}
         />
       )}
     </>

@@ -1,11 +1,8 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { stripe } from '@/lib/stripe';
 import { resend } from '@/lib/resend';
-
-function isAuthorized(req: NextRequest): boolean {
-  const key = req.nextUrl.searchParams.get('key');
-  return !!process.env.ADMIN_PASSWORD && key === process.env.ADMIN_PASSWORD;
-}
+import { isAuthorized } from '@/lib/admin-auth';
+import { translateInvoiceStatus } from '@/lib/stripe-utils';
 
 /* ── GET /api/admin/students/[customerId]?key=... ── */
 export async function GET(
@@ -63,33 +60,18 @@ export async function GET(
       amount_refunded: c.amount_refunded,
     }));
 
-    const serializedInvoices = invoices.data.map((inv) => {
-      let statusLabel = inv.status || 'Unknown';
-      if (inv.status === 'open') {
-        statusLabel = inv.due_date && inv.due_date * 1000 > Date.now()
-          ? `Due ${new Date(inv.due_date * 1000).toLocaleDateString('en-US', { month: 'short', day: 'numeric' })}`
-          : 'Payment Due';
-      } else if (inv.status === 'paid') {
-        statusLabel = 'Paid';
-      } else if (inv.status === 'draft') {
-        statusLabel = inv.due_date
-          ? `Scheduled for ${new Date(inv.due_date * 1000).toLocaleDateString('en-US', { month: 'short', day: 'numeric' })}`
-          : 'Draft';
-      }
-
-      return {
-        id: inv.id,
-        amount_due: inv.amount_due,
-        amount_paid: inv.amount_paid,
-        currency: inv.currency,
-        status: inv.status,
-        status_label: statusLabel,
-        due_date: inv.due_date,
-        created: inv.created,
-        hosted_invoice_url: inv.hosted_invoice_url,
-        customer: null,
-      };
-    });
+    const serializedInvoices = invoices.data.map((inv) => ({
+      id: inv.id,
+      amount_due: inv.amount_due,
+      amount_paid: inv.amount_paid,
+      currency: inv.currency,
+      status: inv.status,
+      status_label: translateInvoiceStatus(inv.status, inv.due_date),
+      due_date: inv.due_date,
+      created: inv.created,
+      hosted_invoice_url: inv.hosted_invoice_url,
+      customer: null,
+    }));
 
     return NextResponse.json({
       customer: {

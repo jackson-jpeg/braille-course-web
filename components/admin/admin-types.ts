@@ -108,6 +108,12 @@ export interface PaymentsData {
     available: number;
     pending: number;
   };
+  pagination?: {
+    hasMoreCharges: boolean;
+    hasMoreInvoices: boolean;
+    lastChargeId?: string;
+    lastInvoiceId?: string;
+  };
 }
 
 /* ── Student detail (from /api/admin/students/[customerId]) ── */
