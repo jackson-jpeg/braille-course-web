@@ -1432,6 +1432,37 @@ body::after {
   font-weight: 400;
 }
 
+.enrollment-sold-out {
+  max-width: 440px;
+  margin: 0 auto;
+  padding: 28px 24px;
+  background: rgba(255,255,255,0.06);
+  border: 1px solid rgba(212,168,83,0.2);
+  border-radius: var(--radius-md);
+  text-align: center;
+}
+.enrollment-sold-out p {
+  font-size: 0.95rem;
+  color: rgba(255,255,255,0.6);
+  font-weight: 300;
+  line-height: 1.7;
+}
+.enrollment-sold-out p:first-child {
+  font-weight: 500;
+  color: var(--gold-light);
+  margin-bottom: 8px;
+}
+.enrollment-sold-out a {
+  color: var(--gold-light);
+  text-decoration: none;
+  border-bottom: 1px solid rgba(240,222,180,0.3);
+  transition: all 0.2s ease;
+}
+.enrollment-sold-out a:hover {
+  border-bottom-color: var(--gold-light);
+  color: white;
+}
+
 @media (max-width: 768px) {
   .enrollment-submit { padding: 16px 32px; font-size: 0.95rem; }
 }
@@ -1473,11 +1504,13 @@ body::after {
   gap: 6px;
   margin-bottom: 24px;
   align-items: center;
+  perspective: 800px;
 }
 
 .wordle-row {
   display: flex;
   gap: 6px;
+  transform-style: preserve-3d;
 }
 
 .wordle-row.shake {
@@ -1504,6 +1537,7 @@ body::after {
   gap: 2px;
   transition: all 0.3s ease;
   background: white;
+  transform-style: preserve-3d;
 }
 
 .wordle-tile.active {
@@ -1585,6 +1619,109 @@ body::after {
 
 .wordle-tile.present .tile-letter {
   color: var(--navy);
+}
+
+/* --- Wordle Animations --- */
+
+/* Tile pop on letter entry */
+.wordle-tile.pop {
+  animation: tilePop 150ms ease-out;
+}
+
+@keyframes tilePop {
+  0% { transform: scale(1); }
+  50% { transform: scale(1.12); }
+  100% { transform: scale(1); }
+}
+
+/* Tile flip reveal */
+.wordle-tile.revealing {
+  animation: tileFlip var(--flip-duration, 500ms) ease-in-out var(--reveal-delay, 0ms) both;
+  border-color: rgba(212,168,83,0.2);
+  background: white;
+}
+
+@keyframes tileFlip {
+  0% { transform: rotateX(0deg); }
+  50% { transform: rotateX(90deg); }
+  100% { transform: rotateX(0deg); }
+}
+
+/* Color changes at the midpoint of the flip via data-status */
+.wordle-tile.revealing[data-status="correct"] {
+  animation: tileFlip var(--flip-duration, 500ms) ease-in-out var(--reveal-delay, 0ms) both,
+             tileColorCorrect var(--flip-duration, 500ms) step-end var(--reveal-delay, 0ms) both;
+}
+.wordle-tile.revealing[data-status="present"] {
+  animation: tileFlip var(--flip-duration, 500ms) ease-in-out var(--reveal-delay, 0ms) both,
+             tileColorPresent var(--flip-duration, 500ms) step-end var(--reveal-delay, 0ms) both;
+}
+.wordle-tile.revealing[data-status="absent"] {
+  animation: tileFlip var(--flip-duration, 500ms) ease-in-out var(--reveal-delay, 0ms) both,
+             tileColorAbsent var(--flip-duration, 500ms) step-end var(--reveal-delay, 0ms) both;
+}
+
+@keyframes tileColorCorrect {
+  0% { background: white; border-color: rgba(212,168,83,0.2); }
+  50% { background: var(--sage); border-color: var(--sage); }
+  100% { background: var(--sage); border-color: var(--sage); }
+}
+
+@keyframes tileColorPresent {
+  0% { background: white; border-color: rgba(212,168,83,0.2); }
+  50% { background: var(--gold); border-color: var(--gold); }
+  100% { background: var(--gold); border-color: var(--gold); }
+}
+
+@keyframes tileColorAbsent {
+  0% { background: white; border-color: rgba(212,168,83,0.2); }
+  50% { background: var(--slate); border-color: var(--slate); }
+  100% { background: var(--slate); border-color: var(--slate); }
+}
+
+/* Text + dot color flips at midpoint */
+.wordle-tile.revealing[data-status="correct"] .tile-letter,
+.wordle-tile.revealing[data-status="absent"] .tile-letter {
+  animation: tileTextWhite var(--flip-duration, 500ms) step-end var(--reveal-delay, 0ms) both;
+}
+.wordle-tile.revealing[data-status="correct"] .tile-dot.filled,
+.wordle-tile.revealing[data-status="absent"] .tile-dot.filled {
+  animation: tileDotWhite var(--flip-duration, 500ms) step-end var(--reveal-delay, 0ms) both;
+}
+.wordle-tile.revealing[data-status="correct"] .tile-dot.empty,
+.wordle-tile.revealing[data-status="absent"] .tile-dot.empty {
+  animation: tileDotEmptyWhite var(--flip-duration, 500ms) step-end var(--reveal-delay, 0ms) both;
+}
+
+@keyframes tileTextWhite {
+  0% { color: var(--navy); }
+  50% { color: white; }
+  100% { color: white; }
+}
+
+@keyframes tileDotWhite {
+  0% { background: var(--navy); }
+  50% { background: white; }
+  100% { background: white; }
+}
+
+@keyframes tileDotEmptyWhite {
+  0% { border-color: rgba(27,42,74,0.15); }
+  50% { border-color: rgba(255,255,255,0.3); }
+  100% { border-color: rgba(255,255,255,0.3); }
+}
+
+/* Win bounce */
+.wordle-tile.win-bounce {
+  animation: tileBounce 600ms ease var(--bounce-delay, 0ms) both;
+}
+
+@keyframes tileBounce {
+  0% { transform: translateY(0); }
+  25% { transform: translateY(-12px); }
+  50% { transform: translateY(0); }
+  75% { transform: translateY(-4px); }
+  100% { transform: translateY(0); }
 }
 
 /* On-screen keyboard */

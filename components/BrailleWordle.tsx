@@ -63,6 +63,9 @@ const KEY_STATUS_PRIORITY: Record<KeyStatus, number> = {
   correct: 3,
 };
 
+const FLIP_DURATION = 500; // ms per tile flip
+const FLIP_STAGGER = 250; // ms between each tile starting
+
 export default function BrailleWordle() {
   const [answer, setAnswer] = useState('');
   const [guesses, setGuesses] = useState<string[]>([]);
@@ -73,6 +76,12 @@ export default function BrailleWordle() {
   const [keyStatuses, setKeyStatuses] = useState<Record<string, KeyStatus>>({});
   const [shakeRow, setShakeRow] = useState<number | null>(null);
 
+  // Animation state
+  const [revealingRow, setRevealingRow] = useState<number | null>(null);
+  const [revealGuess, setRevealGuess] = useState<string | null>(null);
+  const [popTile, setPopTile] = useState<string | null>(null); // "row-col"
+  const [winBounce, setWinBounce] = useState(false);
+
   // Pick a word on mount
   useEffect(() => {
     setAnswer(pickWord());
@@ -80,7 +89,7 @@ export default function BrailleWordle() {
 
   const handleKey = useCallback(
     (key: string) => {
-      if (gameOver || !answer) return;
+      if (gameOver || !answer || revealingRow !== null) return;
 
       if (key === 'BACK') {
         setCurrentGuess((prev) => prev.slice(0, -1));
@@ -91,52 +100,66 @@ export default function BrailleWordle() {
         if (currentGuess.length !== COLS) return;
 
         if (!validGuesses.has(currentGuess)) {
-          // Invalid word: shake the current row
           setShakeRow(currentRow);
           setTimeout(() => setShakeRow(null), 500);
           return;
         }
 
-        const statuses = computeStatuses(currentGuess, answer);
-
-        // Update key statuses (correct > present > absent priority)
-        setKeyStatuses((prev) => {
-          const next = { ...prev };
-          for (let i = 0; i < COLS; i++) {
-            const letter = currentGuess[i];
-            const newStatus = statuses[i] as KeyStatus;
-            const currentStatus = next[letter] || 'unused';
-            if (KEY_STATUS_PRIORITY[newStatus] > KEY_STATUS_PRIORITY[currentStatus]) {
-              next[letter] = newStatus;
-            }
-          }
-          return next;
-        });
-
-        const newGuesses = [...guesses, currentGuess];
-        setGuesses(newGuesses);
-
-        const isWin = currentGuess === answer;
-        const isLastRow = currentRow === ROWS - 1;
-
-        if (isWin) {
-          setWon(true);
-          setGameOver(true);
-        } else if (isLastRow) {
-          setGameOver(true);
-        }
-
+        // Start reveal animation
+        const row = currentRow;
+        const guess = currentGuess;
+        setRevealingRow(row);
+        setRevealGuess(guess);
         setCurrentGuess('');
         setCurrentRow((prev) => prev + 1);
+
+        // After all tiles have flipped, finalize
+        const totalRevealTime = FLIP_STAGGER * (COLS - 1) + FLIP_DURATION;
+        setTimeout(() => {
+          const statuses = computeStatuses(guess, answer);
+
+          // Update key statuses
+          setKeyStatuses((prev) => {
+            const next = { ...prev };
+            for (let i = 0; i < COLS; i++) {
+              const letter = guess[i];
+              const newStatus = statuses[i] as KeyStatus;
+              const currentStatus = next[letter] || 'unused';
+              if (KEY_STATUS_PRIORITY[newStatus] > KEY_STATUS_PRIORITY[currentStatus]) {
+                next[letter] = newStatus;
+              }
+            }
+            return next;
+          });
+
+          setGuesses((prev) => [...prev, guess]);
+          setRevealingRow(null);
+          setRevealGuess(null);
+
+          const isWin = guess === answer;
+          const isLastRow = row === ROWS - 1;
+
+          if (isWin) {
+            setWon(true);
+            setGameOver(true);
+            setWinBounce(true);
+          } else if (isLastRow) {
+            setGameOver(true);
+          }
+        }, totalRevealTime);
+
         return;
       }
 
       // Letter key
       if (/^[A-Z]$/.test(key) && currentGuess.length < COLS) {
+        const col = currentGuess.length;
+        setPopTile(`${currentRow}-${col}`);
+        setTimeout(() => setPopTile(null), 150);
         setCurrentGuess((prev) => prev + key);
       }
     },
-    [answer, currentGuess, currentRow, gameOver, guesses]
+    [answer, currentGuess, currentRow, gameOver, revealingRow]
   );
 
   // Physical keyboard listener
@@ -165,23 +188,62 @@ export default function BrailleWordle() {
     setWon(false);
     setKeyStatuses({});
     setShakeRow(null);
+    setRevealingRow(null);
+    setRevealGuess(null);
+    setPopTile(null);
+    setWinBounce(false);
   }
 
   // Build the tile grid
-  function getTileData(row: number, col: number): { letter: string; status: TileStatus } {
+  function getTileData(row: number, col: number): {
+    letter: string;
+    status: TileStatus;
+    revealing: boolean;
+    revealIndex: number;
+    isWinBounce: boolean;
+  } {
+    // Currently revealing row — show the guess letters but status is still 'active' visually
+    // CSS handles the flip + color change via data-status
+    if (revealingRow === row && revealGuess) {
+      const letter = revealGuess[col] || '';
+      const statuses = computeStatuses(revealGuess, answer);
+      return {
+        letter,
+        status: statuses[col],
+        revealing: true,
+        revealIndex: col,
+        isWinBounce: false,
+      };
+    }
+
     if (row < guesses.length) {
       // Submitted row
       const letter = guesses[row][col];
       const statuses = computeStatuses(guesses[row], answer);
-      return { letter, status: statuses[col] };
+      const isLastGuess = row === guesses.length - 1;
+      return {
+        letter,
+        status: statuses[col],
+        revealing: false,
+        revealIndex: -1,
+        isWinBounce: winBounce && won && isLastGuess,
+      };
     }
+
     if (row === currentRow) {
       // Current input row
       const letter = currentGuess[col] || '';
-      return { letter, status: letter ? 'active' : 'empty' };
+      return {
+        letter,
+        status: letter ? 'active' : 'empty',
+        revealing: false,
+        revealIndex: -1,
+        isWinBounce: false,
+      };
     }
+
     // Future row
-    return { letter: '', status: 'empty' };
+    return { letter: '', status: 'empty', revealing: false, revealIndex: -1, isWinBounce: false };
   }
 
   return (
@@ -200,9 +262,31 @@ export default function BrailleWordle() {
               className={`wordle-row${shakeRow === row ? ' shake' : ''}`}
             >
               {Array.from({ length: COLS }).map((_, col) => {
-                const { letter, status } = getTileData(row, col);
+                const { letter, status, revealing, revealIndex, isWinBounce } = getTileData(row, col);
+                const isPop = popTile === `${row}-${col}`;
+
+                const tileClasses = [
+                  'wordle-tile',
+                  revealing ? 'revealing' : status,
+                  isPop ? 'pop' : '',
+                  isWinBounce ? 'win-bounce' : '',
+                ].filter(Boolean).join(' ');
+
+                const style: Record<string, string> = {};
+                if (revealing) {
+                  style['--reveal-delay'] = `${revealIndex * FLIP_STAGGER}ms`;
+                }
+                if (isWinBounce) {
+                  style['--bounce-delay'] = `${col * 100}ms`;
+                }
+
                 return (
-                  <div key={col} className={`wordle-tile ${status}`}>
+                  <div
+                    key={col}
+                    className={tileClasses}
+                    data-status={revealing ? status : undefined}
+                    style={style}
+                  >
                     {letter ? (
                       <>
                         <BrailleCell letter={letter} />

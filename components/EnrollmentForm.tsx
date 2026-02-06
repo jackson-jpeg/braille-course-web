@@ -1,43 +1,32 @@
 'use client';
 
-import { useState, useEffect, useCallback } from 'react';
+import { useState, useEffect } from 'react';
+import { useSpots } from '@/lib/spots-context';
 
-interface Section {
-  id: string;
-  label: string;
-  maxCapacity: number;
-  enrolledCount: number;
-  status: string;
-}
-
-export default function EnrollmentForm({
-  sections: initialSections,
-}: {
-  sections: Section[];
-}) {
-  const [sections, setSections] = useState<Section[]>(initialSections);
+export default function EnrollmentForm() {
+  const { sections, totalRemaining, refreshSections } = useSpots();
   const [selectedSection, setSelectedSection] = useState<string>('');
   const [selectedPlan, setSelectedPlan] = useState<string>('');
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
-  const refreshSections = useCallback(async () => {
-    try {
-      const res = await fetch('/api/sections');
-      if (res.ok) {
-        const data = await res.json();
-        setSections(data);
-      }
-    } catch {
-      // Silently fail — keep existing data
-    }
-  }, []);
-
-  // Poll every 30s
+  // Auto-select first available section on mount
   useEffect(() => {
-    const interval = setInterval(refreshSections, 30_000);
-    return () => clearInterval(interval);
-  }, [refreshSections]);
+    if (selectedSection) return;
+    const first = sections.find(
+      (s) => s.status !== 'FULL' && s.maxCapacity - s.enrolledCount > 0
+    );
+    if (first) setSelectedSection(first.id);
+  }, [sections, selectedSection]);
+
+  // If selected section becomes full, clear selection
+  useEffect(() => {
+    if (!selectedSection) return;
+    const section = sections.find((s) => s.id === selectedSection);
+    if (section && (section.status === 'FULL' || section.maxCapacity - section.enrolledCount <= 0)) {
+      setSelectedSection('');
+    }
+  }, [sections, selectedSection]);
 
   const handleSubmit = async () => {
     if (!selectedSection || !selectedPlan) return;
@@ -79,6 +68,21 @@ export default function EnrollmentForm({
       setLoading(false);
     }
   };
+
+  if (totalRemaining <= 0) {
+    return (
+      <div className="enrollment-sold-out">
+        <p>All spots have been filled for this session.</p>
+        <p>
+          Reach out to{' '}
+          <a href="mailto:delaneycostello23@gmail.com">
+            delaneycostello23@gmail.com
+          </a>{' '}
+          to join the waitlist.
+        </p>
+      </div>
+    );
+  }
 
   const canSubmit = selectedSection && selectedPlan && !loading;
 

@@ -4,6 +4,8 @@ import ScrollRevealInit from '@/components/ScrollRevealInit';
 import FloatingCta from '@/components/FloatingCta';
 import EnrollmentForm from '@/components/EnrollmentForm';
 import BrailleWordle from '@/components/BrailleWordle';
+import { SpotsProvider } from '@/lib/spots-context';
+import SpotsBadge from '@/components/SpotsBadge';
 
 export default async function HomePage() {
   let sections: { id: string; label: string; maxCapacity: number; enrolledCount: number; status: string }[] = [];
@@ -16,7 +18,7 @@ export default async function HomePage() {
   }
 
   return (
-    <>
+    <SpotsProvider initialSections={sections}>
       <ScrollRevealInit />
       <FloatingCta />
 
@@ -85,7 +87,7 @@ export default async function HomePage() {
                 <path d="M23 21v-2a4 4 0 0 0-3-3.87" />
                 <path d="M16 3.13a4 4 0 0 1 0 7.75" />
               </svg>
-              10 Spots Only
+              <SpotsBadge variant="hero-chip" />
             </span>
             <span className="meta-chip" role="listitem">
               <svg
@@ -474,8 +476,7 @@ export default async function HomePage() {
           </h2>
 
           <div className="spots-badge">
-            <span className="pulse-dot" aria-hidden="true"></span>
-            Only 10 spots available
+            <SpotsBadge variant="cta-badge" />
           </div>
 
           <p className="cta-sub">
@@ -484,7 +485,7 @@ export default async function HomePage() {
             today.
           </p>
 
-          <EnrollmentForm sections={sections} />
+          <EnrollmentForm />
 
           <p className="cta-note">
             Pay in full today, or put down a $150 deposit with the remaining $350
@@ -542,6 +543,6 @@ export default async function HomePage() {
           Remote Braille Instruction
         </p>
       </footer>
-    </>
+    </SpotsProvider>
   );
 }
