@@ -3,6 +3,8 @@
 import { useState, useCallback, useEffect } from 'react';
 import AdminEmailModal from './AdminEmailModal';
 import AdminConfirmDialog from './AdminConfirmDialog';
+import { useToast } from './AdminToast';
+import { SkeletonTable } from './AdminSkeleton';
 import type { ResendEmail, ReceivedEmail, EmailDetail, Enrollment, Material } from './admin-types';
 import { relativeTime, fullDate } from './admin-utils';
 
@@ -43,6 +45,7 @@ interface Props {
 }
 
 export default function AdminEmailsTab({ enrollments, initialComposeTo, initialTemplate, pendingAttachmentIds, onClearAttachments }: Props) {
+  const { showToast } = useToast();
   const [emailSubTab, setEmailSubTab] = useState<'sent' | 'received'>('sent');
   const [emails, setEmails] = useState<ResendEmail[]>([]);
   const [emailsLoading, setEmailsLoading] = useState(false);
@@ -193,16 +196,19 @@ export default function AdminEmailsTab({ enrollments, initialComposeTo, initialT
       });
       const data = await res.json();
       if (!res.ok) throw new Error(data.error || 'Failed to send');
-      setComposeResult({ ok: true, msg: 'Email sent successfully!' });
+      showToast('Email sent successfully');
+      setComposeResult(null);
       setComposeTo('');
       setComposeSubject('');
       setComposeBody('');
       setSelectedTemplate('');
       setAttachments([]);
       onClearAttachments?.();
+      setShowCompose(false);
       fetchEmails();
     } catch (err: unknown) {
-      setComposeResult({ ok: false, msg: err instanceof Error ? err.message : 'Failed to send' });
+      showToast(err instanceof Error ? err.message : 'Failed to send', 'error');
+      setComposeResult(null);
     } finally {
       setComposeSending(false);
     }
@@ -414,9 +420,9 @@ export default function AdminEmailsTab({ enrollments, initialComposeTo, initialT
               </thead>
               <tbody>
                 {emailsLoading && emails.length === 0 ? (
-                  <tr><td colSpan={4} className="admin-empty">Loading emails&hellip;</td></tr>
+                  <tr><td colSpan={4} className="admin-empty"><SkeletonTable rows={4} cols={4} /></td></tr>
                 ) : emails.length === 0 ? (
-                  <tr><td colSpan={4} className="admin-empty">No emails found.</td></tr>
+                  <tr><td colSpan={4} className="admin-empty"><div className="admin-empty-state"><p className="admin-empty-state-title">No emails sent yet</p><p className="admin-empty-state-sub">Compose your first email to get started.</p><button className="admin-empty-state-cta" onClick={() => { setShowCompose(true); setComposeResult(null); }}>Compose Email</button></div></td></tr>
                 ) : (
                   emails.map((em) => (
                     <tr key={em.id} className="admin-email-row" onClick={() => openEmailDetail(em.id)}>
@@ -460,9 +466,9 @@ export default function AdminEmailsTab({ enrollments, initialComposeTo, initialT
               </thead>
               <tbody>
                 {receivedLoading && receivedEmails.length === 0 ? (
-                  <tr><td colSpan={4} className="admin-empty">Loading received emails&hellip;</td></tr>
+                  <tr><td colSpan={4} className="admin-empty"><SkeletonTable rows={4} cols={4} /></td></tr>
                 ) : receivedEmails.length === 0 ? (
-                  <tr><td colSpan={4} className="admin-empty">No received emails found.</td></tr>
+                  <tr><td colSpan={4} className="admin-empty"><div className="admin-empty-state"><p className="admin-empty-state-title">No received emails</p><p className="admin-empty-state-sub">Emails sent to your course address will appear here.</p></div></td></tr>
                 ) : (
                   receivedEmails.map((em) => (
                     <tr key={em.id} className="admin-email-row" onClick={() => openReceivedEmailDetail(em.id)}>

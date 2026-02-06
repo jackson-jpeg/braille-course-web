@@ -1,7 +1,9 @@
 'use client';
 
-import { useState, useEffect, useRef } from 'react';
+import { useState, useEffect, useRef, useCallback } from 'react';
 import AdminConfirmDialog from './AdminConfirmDialog';
+import { useToast } from './AdminToast';
+import { SkeletonTable } from './AdminSkeleton';
 import type { Material } from './admin-types';
 
 function formatFileSize(bytes: number): string {
@@ -21,7 +23,9 @@ export default function AdminMaterialsTab({ onEmailMaterial }: Props) {
   const [uploading, setUploading] = useState(false);
   const [deletingMaterial, setDeletingMaterial] = useState<Material | null>(null);
   const [deleteLoading, setDeleteLoading] = useState(false);
+  const [dragOver, setDragOver] = useState(false);
   const fileInputRef = useRef<HTMLInputElement>(null);
+  const { showToast } = useToast();
 
   useEffect(() => {
     fetchMaterials();
@@ -42,10 +46,7 @@ export default function AdminMaterialsTab({ onEmailMaterial }: Props) {
     }
   }
 
-  async function handleUpload(e: React.ChangeEvent<HTMLInputElement>) {
-    const file = e.target.files?.[0];
-    if (!file) return;
-
+  const doUpload = useCallback(async (file: File) => {
     setUploading(true);
     setError('');
     try {
@@ -59,12 +60,37 @@ export default function AdminMaterialsTab({ onEmailMaterial }: Props) {
       const json = await res.json();
       if (!res.ok) throw new Error(json.error || 'Failed to upload');
       setMaterials((prev) => [json.material, ...prev]);
+      showToast(`Uploaded "${file.name}"`);
     } catch (err) {
-      setError(err instanceof Error ? err.message : 'Failed to upload file');
+      const msg = err instanceof Error ? err.message : 'Failed to upload file';
+      showToast(msg, 'error');
+      setError(msg);
     } finally {
       setUploading(false);
       if (fileInputRef.current) fileInputRef.current.value = '';
     }
+  }, [showToast]);
+
+  function handleFileInput(e: React.ChangeEvent<HTMLInputElement>) {
+    const file = e.target.files?.[0];
+    if (file) doUpload(file);
+  }
+
+  function handleDrop(e: React.DragEvent) {
+    e.preventDefault();
+    setDragOver(false);
+    const file = e.dataTransfer.files[0];
+    if (file) doUpload(file);
+  }
+
+  function handleDragOver(e: React.DragEvent) {
+    e.preventDefault();
+    setDragOver(true);
+  }
+
+  function handleDragLeave(e: React.DragEvent) {
+    e.preventDefault();
+    setDragOver(false);
   }
 
   async function handleDelete() {
@@ -77,9 +103,10 @@ export default function AdminMaterialsTab({ onEmailMaterial }: Props) {
         throw new Error(json.error || 'Failed to delete');
       }
       setMaterials((prev) => prev.filter((m) => m.id !== deletingMaterial.id));
+      showToast(`Deleted "${deletingMaterial.filename}"`);
       setDeletingMaterial(null);
     } catch (err) {
-      setError(err instanceof Error ? err.message : 'Failed to delete material');
+      showToast(err instanceof Error ? err.message : 'Failed to delete material', 'error');
       setDeletingMaterial(null);
     } finally {
       setDeleteLoading(false);
@@ -88,23 +115,36 @@ export default function AdminMaterialsTab({ onEmailMaterial }: Props) {
 
   return (
     <>
-      <div className="admin-payments-toolbar">
+      {/* Drop zone */}
+      <div
+        className={`admin-drop-zone ${dragOver ? 'admin-drop-zone-active' : ''} ${uploading ? 'admin-drop-zone-uploading' : ''}`}
+        onClick={() => !uploading && fileInputRef.current?.click()}
+        onDrop={handleDrop}
+        onDragOver={handleDragOver}
+        onDragLeave={handleDragLeave}
+      >
         <input
           ref={fileInputRef}
           type="file"
-          onChange={handleUpload}
+          onChange={handleFileInput}
           style={{ display: 'none' }}
         />
-        <button
-          className="admin-compose-btn"
-          onClick={() => fileInputRef.current?.click()}
-          disabled={uploading}
-        >
-          {uploading ? 'Uploading\u2026' : 'Upload File'}
-        </button>
+        <svg className="admin-drop-zone-icon" width="32" height="32" viewBox="0 0 24 24" fill="none">
+          <path d="M12 16V4m0 0l-4 4m4-4l4 4" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
+          <path d="M20 16v2a2 2 0 01-2 2H6a2 2 0 01-2-2v-2" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
+        </svg>
+        <p className="admin-drop-zone-text">
+          {uploading ? 'Uploading\u2026' : 'Drop files here or click to upload'}
+        </p>
+      </div>
+
+      <div className="admin-payments-toolbar" style={{ marginTop: 16 }}>
         <button className="admin-refresh-btn" onClick={fetchMaterials} disabled={loading}>
           {loading ? 'Loading\u2026' : 'Refresh'}
         </button>
+        <span className="admin-result-count" style={{ marginLeft: 'auto' }}>
+          {materials.length} file{materials.length !== 1 ? 's' : ''}
+        </span>
       </div>
 
       {error && <div className="admin-email-error">{error}</div>}
@@ -122,9 +162,17 @@ export default function AdminMaterialsTab({ onEmailMaterial }: Props) {
           </thead>
           <tbody>
             {loading && materials.length === 0 ? (
-              <tr><td colSpan={5} className="admin-empty">Loading materials&hellip;</td></tr>
+              <tr><td colSpan={5} className="admin-empty"><SkeletonTable rows={3} cols={5} /></td></tr>
             ) : materials.length === 0 ? (
-              <tr><td colSpan={5} className="admin-empty">No materials uploaded yet.</td></tr>
+              <tr>
+                <td colSpan={5} className="admin-empty">
+                  <div className="admin-empty-state">
+                    <p className="admin-empty-state-title">No materials uploaded yet</p>
+                    <p className="admin-empty-state-sub">Upload class handouts, worksheets, or other files for your students.</p>
+                    <button className="admin-empty-state-cta" onClick={() => fileInputRef.current?.click()}>Upload a File</button>
+                  </div>
+                </td>
+              </tr>
             ) : (
               materials.map((m) => (
                 <tr key={m.id}>

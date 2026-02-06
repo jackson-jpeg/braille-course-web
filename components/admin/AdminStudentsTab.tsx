@@ -3,6 +3,7 @@
 import { useState, useMemo, useEffect, useCallback, useRef } from 'react';
 import AdminStudentModal from './AdminStudentModal';
 import AdminConfirmDialog from './AdminConfirmDialog';
+import CopyButton from './CopyButton';
 import type { Section, Enrollment, Lead } from './admin-types';
 import { relativeTime, fullDate } from './admin-utils';
 
@@ -201,13 +202,18 @@ export default function AdminStudentsTab({ sections, enrollments, leads: initial
       {subTab === 'enrolled' && (
         <>
           <div className="admin-filters">
-            <input
-              type="text"
-              placeholder="Search by email\u2026"
-              value={search}
-              onChange={(e) => setSearch(e.target.value)}
-              className="admin-search"
-            />
+            <div className="admin-search-wrap">
+              <input
+                type="text"
+                placeholder="Search by email\u2026"
+                value={search}
+                onChange={(e) => setSearch(e.target.value)}
+                className="admin-search"
+              />
+              {search && (
+                <button className="admin-search-clear" onClick={() => setSearch('')} type="button">&times;</button>
+              )}
+            </div>
             <select value={filterSection} onChange={(e) => setFilterSection(e.target.value)} className="admin-select">
               <option value="all">All Sections</option>
               {sections.map((s) => (
@@ -230,6 +236,13 @@ export default function AdminStudentsTab({ sections, enrollments, leads: initial
             </button>
           </div>
 
+          {/* Result count */}
+          {search && (
+            <p className="admin-result-count">
+              Showing {filtered.length} of {enrollments.length} students
+            </p>
+          )}
+
           <div className="admin-table-wrap">
             <table className="admin-table">
               <thead>
@@ -245,7 +258,12 @@ export default function AdminStudentsTab({ sections, enrollments, leads: initial
                 {filtered.length === 0 ? (
                   <tr>
                     <td colSpan={5} className="admin-empty">
-                      {enrollments.length === 0 ? 'No students yet.' : 'No students match your filters.'}
+                      {enrollments.length === 0 ? (
+                        <div className="admin-empty-state">
+                          <p className="admin-empty-state-title">No students yet</p>
+                          <p className="admin-empty-state-sub">Students will appear here once they enroll in a course.</p>
+                        </div>
+                      ) : 'No students match your filters.'}
                     </td>
                   </tr>
                 ) : (
@@ -255,7 +273,12 @@ export default function AdminStudentsTab({ sections, enrollments, leads: initial
                       className={`admin-student-row-clickable ${e.paymentStatus === 'WAITLISTED' ? 'admin-row-warning' : ''}`}
                       onClick={() => setSelectedStudent(e)}
                     >
-                      <td>{e.email || '\u2014'}</td>
+                      <td>
+                        <span className="admin-email-cell">
+                          {e.email || '\u2014'}
+                          {e.email && <CopyButton text={e.email} label="Copy email" />}
+                        </span>
+                      </td>
                       <td>{scheduleMap[e.section.label] || e.section.label}</td>
                       <td>{e.plan === 'FULL' ? 'Full ($500)' : 'Deposit ($150 + $350 May 1)'}</td>
                       <td>
@@ -289,13 +312,18 @@ export default function AdminStudentsTab({ sections, enrollments, leads: initial
       {subTab === 'prospective' && (
         <>
           <div className="admin-filters">
-            <input
-              type="text"
-              placeholder="Search by email or name\u2026"
-              value={leadSearch}
-              onChange={(e) => setLeadSearch(e.target.value)}
-              className="admin-search"
-            />
+            <div className="admin-search-wrap">
+              <input
+                type="text"
+                placeholder="Search by email or name\u2026"
+                value={leadSearch}
+                onChange={(e) => setLeadSearch(e.target.value)}
+                className="admin-search"
+              />
+              {leadSearch && (
+                <button className="admin-search-clear" onClick={() => setLeadSearch('')} type="button">&times;</button>
+              )}
+            </div>
             <select value={leadFilterStatus} onChange={(e) => setLeadFilterStatus(e.target.value)} className="admin-select">
               <option value="all">All Statuses</option>
               <option value="NEW">New</option>
@@ -309,9 +337,16 @@ export default function AdminStudentsTab({ sections, enrollments, leads: initial
             </button>
           </div>
 
+          {/* Result count */}
+          {leadSearch && (
+            <p className="admin-result-count">
+              Showing {filteredLeads.length} of {leadsList.length} leads
+            </p>
+          )}
+
           {/* Add Lead form */}
           {showAddLead && (
-            <div className="admin-compose" style={{ marginBottom: 16 }}>
+            <div className="admin-compose admin-compose-animate" style={{ marginBottom: 16 }}>
               <form onSubmit={handleAddLead}>
                 <div className="admin-compose-field">
                   <label>Email (required)</label>
@@ -360,9 +395,13 @@ export default function AdminStudentsTab({ sections, enrollments, leads: initial
                 {filteredLeads.length === 0 ? (
                   <tr>
                     <td colSpan={6} className="admin-empty">
-                      {leadsList.length === 0
-                        ? 'No prospective students yet.'
-                        : 'No leads match your filters.'}
+                      {leadsList.length === 0 ? (
+                        <div className="admin-empty-state">
+                          <p className="admin-empty-state-title">No prospective students</p>
+                          <p className="admin-empty-state-sub">Add a lead or sync from your inbox to get started.</p>
+                          <button className="admin-empty-state-cta" onClick={() => { setShowAddLead(true); setAddError(''); }}>+ Add Lead</button>
+                        </div>
+                      ) : 'No leads match your filters.'}
                     </td>
                   </tr>
                 ) : (
@@ -422,7 +461,12 @@ export default function AdminStudentsTab({ sections, enrollments, leads: initial
                       </tr>
                     ) : (
                       <tr key={l.id}>
-                        <td>{l.email}</td>
+                        <td>
+                          <span className="admin-email-cell">
+                            {l.email}
+                            <CopyButton text={l.email} label="Copy email" />
+                          </span>
+                        </td>
                         <td>{l.name || '\u2014'}</td>
                         <td>
                           <span className={`admin-status admin-status-${l.status.toLowerCase()}`}>

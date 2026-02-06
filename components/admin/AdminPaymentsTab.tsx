@@ -4,6 +4,9 @@ import { useState, useEffect, useCallback } from 'react';
 import AdminRefundDialog from './AdminRefundDialog';
 import AdminInvoiceDialog from './AdminInvoiceDialog';
 import AdminConfirmDialog from './AdminConfirmDialog';
+import CopyButton from './CopyButton';
+import { useToast } from './AdminToast';
+import { SkeletonCards, SkeletonTable } from './AdminSkeleton';
 import type {
   PaymentsData, StripeCharge, StripeInvoice, Enrollment,
   PayoutsData, StripeCoupon, StripePaymentLink,
@@ -25,6 +28,7 @@ interface Props {
 }
 
 export default function AdminPaymentsTab({ enrollments }: Props) {
+  const { showToast } = useToast();
   const [paymentSubTab, setPaymentSubTab] = useState<PaymentSubTab>('overview');
   const [data, setData] = useState<PaymentsData | null>(null);
   const [loading, setLoading] = useState(false);
@@ -172,10 +176,11 @@ export default function AdminPaymentsTab({ enrollments }: Props) {
           const json = await res.json();
           if (!res.ok) throw new Error(json.error || 'Failed to send invoice');
           setConfirmAction(null);
+          showToast('Invoice sent successfully');
           fetchPayments();
         } catch (err) {
           setConfirmAction(null);
-          setError(err instanceof Error ? err.message : 'Failed to send invoice');
+          showToast(err instanceof Error ? err.message : 'Failed to send invoice', 'error');
         }
       },
     });
@@ -197,10 +202,11 @@ export default function AdminPaymentsTab({ enrollments }: Props) {
           const json = await res.json();
           if (!res.ok) throw new Error(json.error || 'Failed to void invoice');
           setConfirmAction(null);
+          showToast('Invoice voided');
           fetchPayments();
         } catch (err) {
           setConfirmAction(null);
-          setError(err instanceof Error ? err.message : 'Failed to void invoice');
+          showToast(err instanceof Error ? err.message : 'Failed to void invoice', 'error');
         }
       },
     });
@@ -231,10 +237,11 @@ export default function AdminPaymentsTab({ enrollments }: Props) {
       setCouponName('');
       setCouponValue('');
       setCouponPromoCode('');
+      showToast('Coupon created');
       // Refresh coupons
       setCoupons([]);
     } catch (err) {
-      setError(err instanceof Error ? err.message : 'Failed to create coupon');
+      showToast(err instanceof Error ? err.message : 'Failed to create coupon', 'error');
     } finally {
       setCouponCreating(false);
     }
@@ -245,7 +252,12 @@ export default function AdminPaymentsTab({ enrollments }: Props) {
   }
 
   if (loading && !data) {
-    return <div className="admin-payments-loading">Loading payment data from Stripe&hellip;</div>;
+    return (
+      <>
+        <SkeletonCards count={4} />
+        <SkeletonTable rows={5} cols={5} />
+      </>
+    );
   }
 
   if (error && !data) {
@@ -327,7 +339,7 @@ export default function AdminPaymentsTab({ enrollments }: Props) {
                 </thead>
                 <tbody>
                   {data.charges.length === 0 ? (
-                    <tr><td colSpan={5} className="admin-empty">No payments found.</td></tr>
+                    <tr><td colSpan={5} className="admin-empty"><div className="admin-empty-state"><p className="admin-empty-state-title">No payments yet</p><p className="admin-empty-state-sub">Payments will appear here once students complete checkout.</p></div></td></tr>
                   ) : (
                     data.charges.map((c) => (
                       <tr key={c.id}>
@@ -474,7 +486,7 @@ export default function AdminPaymentsTab({ enrollments }: Props) {
       {paymentSubTab === 'payouts' && (
         <div className="admin-overview-section">
           {payoutsLoading ? (
-            <div className="admin-payments-loading">Loading payouts&hellip;</div>
+            <><SkeletonCards count={2} /><SkeletonTable rows={4} cols={4} /></>
           ) : payoutsData ? (
             <>
               <div className="admin-payments-cards" style={{ marginBottom: 16 }}>
@@ -500,7 +512,7 @@ export default function AdminPaymentsTab({ enrollments }: Props) {
                   </thead>
                   <tbody>
                     {payoutsData.payouts.length === 0 ? (
-                      <tr><td colSpan={4} className="admin-empty">No payouts yet.</td></tr>
+                      <tr><td colSpan={4} className="admin-empty"><div className="admin-empty-state"><p className="admin-empty-state-title">No payouts yet</p><p className="admin-empty-state-sub">Stripe will deposit funds to your bank account automatically.</p></div></td></tr>
                     ) : (
                       payoutsData.payouts.map((p) => (
                         <tr key={p.id}>
@@ -587,7 +599,7 @@ export default function AdminPaymentsTab({ enrollments }: Props) {
           )}
 
           {couponsLoading ? (
-            <div className="admin-payments-loading">Loading coupons&hellip;</div>
+            <SkeletonTable rows={3} cols={5} />
           ) : (
             <div className="admin-table-wrap">
               <table className="admin-table">
@@ -602,7 +614,7 @@ export default function AdminPaymentsTab({ enrollments }: Props) {
                 </thead>
                 <tbody>
                   {coupons.length === 0 ? (
-                    <tr><td colSpan={5} className="admin-empty">No coupons found.</td></tr>
+                    <tr><td colSpan={5} className="admin-empty"><div className="admin-empty-state"><p className="admin-empty-state-title">No coupons yet</p><p className="admin-empty-state-sub">Create a coupon to offer discounts on your courses.</p><button className="admin-empty-state-cta" onClick={() => setShowCreateCoupon(true)}>Create Coupon</button></div></td></tr>
                   ) : (
                     coupons.map((c) => (
                       <tr key={c.id}>
@@ -611,9 +623,12 @@ export default function AdminPaymentsTab({ enrollments }: Props) {
                           {c.percent_off ? `${c.percent_off}% off` : c.amount_off ? `$${(c.amount_off / 100).toFixed(2)} off` : '\u2014'}
                         </td>
                         <td>
-                          {c.promotion_codes.length > 0
-                            ? c.promotion_codes.map((p) => p.code).join(', ')
-                            : '\u2014'}
+                          {c.promotion_codes.length > 0 ? (
+                            <span className="admin-email-cell">
+                              {c.promotion_codes.map((p) => p.code).join(', ')}
+                              <CopyButton text={c.promotion_codes.map((p) => p.code).join(', ')} label="Copy code" />
+                            </span>
+                          ) : '\u2014'}
                         </td>
                         <td>{c.times_redeemed}{c.max_redemptions ? ` / ${c.max_redemptions}` : ''}</td>
                         <td>
@@ -635,7 +650,7 @@ export default function AdminPaymentsTab({ enrollments }: Props) {
       {paymentSubTab === 'links' && (
         <div className="admin-overview-section">
           {linksLoading ? (
-            <div className="admin-payments-loading">Loading payment links&hellip;</div>
+            <SkeletonTable rows={3} cols={3} />
           ) : (
             <div className="admin-table-wrap">
               <table className="admin-table">
@@ -648,14 +663,17 @@ export default function AdminPaymentsTab({ enrollments }: Props) {
                 </thead>
                 <tbody>
                   {paymentLinks.length === 0 ? (
-                    <tr><td colSpan={3} className="admin-empty">No payment links found.</td></tr>
+                    <tr><td colSpan={3} className="admin-empty"><div className="admin-empty-state"><p className="admin-empty-state-title">No payment links</p><p className="admin-empty-state-sub">Payment links created in Stripe will appear here.</p></div></td></tr>
                   ) : (
                     paymentLinks.map((link) => (
                       <tr key={link.id}>
                         <td>
-                          <a href={link.url} target="_blank" rel="noopener noreferrer" className="admin-stripe-link">
-                            {link.url.length > 40 ? link.url.slice(0, 40) + '\u2026' : link.url}
-                          </a>
+                          <span className="admin-email-cell">
+                            <a href={link.url} target="_blank" rel="noopener noreferrer" className="admin-stripe-link">
+                              {link.url.length > 40 ? link.url.slice(0, 40) + '\u2026' : link.url}
+                            </a>
+                            <CopyButton text={link.url} label="Copy link" />
+                          </span>
                         </td>
                         <td>
                           {link.line_items.length > 0

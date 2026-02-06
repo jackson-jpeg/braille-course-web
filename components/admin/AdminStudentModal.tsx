@@ -1,6 +1,8 @@
 'use client';
 
 import { useState, useEffect } from 'react';
+import CopyButton from './CopyButton';
+import { SkeletonText } from './AdminSkeleton';
 import type { Enrollment, StudentDetail, Note } from './admin-types';
 import { relativeTime, formatDate, fullDate } from './admin-utils';
 
@@ -86,7 +88,7 @@ export default function AdminStudentModal({ enrollment, scheduleMap, onClose, on
         <button className="admin-modal-close" onClick={onClose}>&times;</button>
 
         {loading ? (
-          <div className="admin-modal-loading">Loading student details&hellip;</div>
+          <div className="admin-modal-loading"><SkeletonText lines={6} /></div>
         ) : error ? (
           <div className="admin-student-modal-content">
             <div className="admin-student-header">
@@ -100,7 +102,10 @@ export default function AdminStudentModal({ enrollment, scheduleMap, onClose, on
             <div className="admin-student-header">
               <h3>{data?.customer.name || enrollment.email || 'Unknown Student'}</h3>
               {data?.customer.name && enrollment.email && (
-                <p className="admin-student-email">{enrollment.email}</p>
+                <p className="admin-student-email">
+                  {enrollment.email}
+                  <CopyButton text={enrollment.email} label="Copy email" />
+                </p>
               )}
             </div>
 
