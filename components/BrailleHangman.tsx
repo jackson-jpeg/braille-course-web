@@ -2,7 +2,7 @@
 
 import { useState, useEffect, useCallback, useRef } from 'react';
 import { brailleMap, dotDescription } from '@/lib/braille-map';
-import { answerWords } from '@/lib/wordle-words';
+import { hangmanWords } from '@/lib/hangman-words';
 
 const MAX_WRONG = 6;
 
@@ -13,7 +13,7 @@ const KB_ROWS = [
 ];
 
 function pickWord(): string {
-  return answerWords[Math.floor(Math.random() * answerWords.length)];
+  return hangmanWords[Math.floor(Math.random() * hangmanWords.length)];
 }
 
 function BrailleCell({ letter }: { letter: string }) {
@@ -152,7 +152,7 @@ export default function BrailleHangman() {
       <div className="hangman-header">
         <span className="section-label">Challenge</span>
         <h2>Braille Hangman</h2>
-        <p>Guess the 4-letter word — 6 wrong guesses allowed</p>
+        <p>Guess the word — 6 wrong guesses allowed</p>
       </div>
 
       <div className="hangman-body">

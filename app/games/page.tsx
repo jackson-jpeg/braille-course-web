@@ -1,5 +1,5 @@
 import { Metadata } from 'next';
-import BrailleWordle from '@/components/BrailleWordle';
+import BrailleWordGame from '@/components/BrailleWordGame';
 import BrailleDotExplorer from '@/components/BrailleDotExplorer';
 import BrailleHangman from '@/components/BrailleHangman';
 import Footer from '@/components/Footer';
@@ -7,11 +7,11 @@ import Footer from '@/components/Footer';
 export const metadata: Metadata = {
   title: 'Braille Games — TeachBraille.org',
   description:
-    'Practice braille with interactive games. Play Braille Wordle, explore dot patterns with Dot Explorer, and test your skills with Braille Hangman.',
+    'Practice braille with interactive games. Play Braille Word Game, explore dot patterns with Dot Explorer, and test your skills with Braille Hangman.',
   openGraph: {
     title: 'Braille Games — TeachBraille.org',
     description:
-      'Interactive braille learning games: Wordle, Dot Explorer, and Hangman.',
+      'Interactive braille learning games: Word Game, Dot Explorer, and Hangman.',
   },
 };
 
@@ -33,14 +33,14 @@ export default function GamesPage() {
 
       {/* ========== IN-PAGE NAV ========== */}
       <nav className="games-nav" aria-label="Game navigation">
-        <a href="#wordle" className="games-nav-link">Wordle</a>
+        <a href="#wordgame" className="games-nav-link">Word Game</a>
         <a href="#explorer" className="games-nav-link">Dot Explorer</a>
         <a href="#hangman" className="games-nav-link">Hangman</a>
       </nav>
 
-      {/* ========== WORDLE ========== */}
-      <div id="wordle">
-        <BrailleWordle />
+      {/* ========== WORD GAME ========== */}
+      <div id="wordgame">
+        <BrailleWordGame />
       </div>
 
       {/* ========== DOT EXPLORER ========== */}

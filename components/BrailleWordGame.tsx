@@ -2,7 +2,7 @@
 
 import { useState, useEffect, useCallback, useRef } from 'react';
 import { brailleMap, dotDescription } from '@/lib/braille-map';
-import { answerWords, validGuesses } from '@/lib/wordle-words';
+import { answerWords, validGuesses } from '@/lib/game-words';
 
 type TileStatus = 'empty' | 'active' | 'correct' | 'present' | 'absent';
 type KeyStatus = 'unused' | 'correct' | 'present' | 'absent';
@@ -66,7 +66,7 @@ const KEY_STATUS_PRIORITY: Record<KeyStatus, number> = {
 const FLIP_DURATION = 500; // ms per tile flip
 const FLIP_STAGGER = 250; // ms between each tile starting
 
-export default function BrailleWordle() {
+export default function BrailleWordGame() {
   const [answer, setAnswer] = useState('');
   const [guesses, setGuesses] = useState<string[]>([]);
   const [currentGuess, setCurrentGuess] = useState('');
@@ -263,26 +263,26 @@ export default function BrailleWordle() {
   }
 
   return (
-    <section className="wordle-section" ref={sectionRef}>
-      <div className="wordle-inner">
-        <div className="wordle-header">
+    <section className="wordgame-section" ref={sectionRef}>
+      <div className="wordgame-inner">
+        <div className="wordgame-header">
           <span className="section-label">Practice</span>
-          <h2>Braille Wordle</h2>
+          <h2>Braille Word Game</h2>
           <p>Guess the 4-letter word</p>
         </div>
 
-        <div className="wordle-board" role="grid" aria-label="Game board">
+        <div className="wordgame-board" role="grid" aria-label="Game board">
           {Array.from({ length: ROWS }).map((_, row) => (
             <div
               key={row}
-              className={`wordle-row${shakeRow === row ? ' shake' : ''}`}
+              className={`wordgame-row${shakeRow === row ? ' shake' : ''}`}
             >
               {Array.from({ length: COLS }).map((_, col) => {
                 const { letter, status, revealing, revealIndex, isWinBounce } = getTileData(row, col);
                 const isPop = popTile === `${row}-${col}`;
 
                 const tileClasses = [
-                  'wordle-tile',
+                  'wordgame-tile',
                   revealing ? 'revealing' : status,
                   isPop ? 'pop' : '',
                   isWinBounce ? 'win-bounce' : '',
@@ -316,9 +316,9 @@ export default function BrailleWordle() {
           ))}
         </div>
 
-        <div className="wordle-keyboard">
+        <div className="wordgame-keyboard">
           {KB_ROWS.map((rowKeys, ri) => (
-            <div key={ri} className="wordle-kb-row">
+            <div key={ri} className="wordgame-kb-row">
               {rowKeys.map((key) => {
                 const isSpecial = key === 'ENTER' || key === 'BACK';
                 const ks = !isSpecial ? (keyStatuses[key] || 'unused') : 'unused';
@@ -334,7 +334,7 @@ export default function BrailleWordle() {
                 return (
                   <button
                     key={key}
-                    className={`wordle-key${wideClass}${statusClass}`}
+                    className={`wordgame-key${wideClass}${statusClass}`}
                     onClick={() => handleKey(key)}
                     aria-label={ariaLabel}
                   >
@@ -351,12 +351,12 @@ export default function BrailleWordle() {
 
         {gameOver && (
           <>
-            <div className="wordle-message">
+            <div className="wordgame-message">
               {won
                 ? 'Great job! You found the word!'
                 : `The word was ${answer}.`}
             </div>
-            <button className="wordle-play-again" onClick={resetGame}>
+            <button className="wordgame-play-again" onClick={resetGame}>
               Play Again
             </button>
           </>

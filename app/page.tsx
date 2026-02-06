@@ -100,7 +100,7 @@ export default function HubPage() {
                 </svg>
               </div>
               <h3>Braille Games</h3>
-              <p>Practice braille with interactive games — Wordle, Dot Explorer, and Hangman.</p>
+              <p>Practice braille with interactive games — Word Game, Dot Explorer, and Hangman.</p>
               <span className="hub-card-cta">
                 Start playing
                 <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" aria-hidden="true">

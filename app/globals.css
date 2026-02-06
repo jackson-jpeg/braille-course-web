@@ -1482,38 +1482,38 @@ body::after {
   .enrollment-submit { padding: 16px 32px; font-size: 0.95rem; }
 }
 
-/* ===== BRAILLE WORDLE ===== */
-.wordle-section {
+/* ===== BRAILLE WORD GAME ===== */
+.wordgame-section {
   position: relative;
   z-index: 1;
   padding: 80px 24px;
   background: var(--section-bg);
 }
 
-.wordle-inner {
+.wordgame-inner {
   max-width: 500px;
   margin: 0 auto;
   text-align: center;
 }
 
-.wordle-header {
+.wordgame-header {
   margin-bottom: 32px;
 }
 
-.wordle-header h2 {
+.wordgame-header h2 {
   font-family: 'DM Serif Display', serif;
   font-size: clamp(1.6rem, 3.5vw, 2.2rem);
   color: var(--navy);
   margin-bottom: 8px;
 }
 
-.wordle-header p {
+.wordgame-header p {
   font-size: 0.9rem;
   color: var(--text-secondary);
   font-weight: 300;
 }
 
-.wordle-board {
+.wordgame-board {
   display: flex;
   flex-direction: column;
   gap: 6px;
@@ -1522,17 +1522,17 @@ body::after {
   perspective: 800px;
 }
 
-.wordle-row {
+.wordgame-row {
   display: flex;
   gap: 6px;
   transform-style: preserve-3d;
 }
 
-.wordle-row.shake {
-  animation: wordleShake 0.5s ease;
+.wordgame-row.shake {
+  animation: wordgameShake 0.5s ease;
 }
 
-@keyframes wordleShake {
+@keyframes wordgameShake {
   0%, 100% { transform: translateX(0); }
   20% { transform: translateX(-8px); }
   40% { transform: translateX(8px); }
@@ -1540,7 +1540,7 @@ body::after {
   80% { transform: translateX(4px); }
 }
 
-.wordle-tile {
+.wordgame-tile {
   width: 64px;
   height: 76px;
   border: 2px solid rgba(212,168,83,0.2);
@@ -1555,29 +1555,29 @@ body::after {
   transform-style: preserve-3d;
 }
 
-.wordle-tile.active {
+.wordgame-tile.active {
   border-color: var(--gold);
 }
 
-.wordle-tile.correct {
+.wordgame-tile.correct {
   background: var(--sage);
   border-color: var(--sage);
   color: white;
 }
 
-.wordle-tile.present {
+.wordgame-tile.present {
   background: var(--gold);
   border-color: var(--gold);
   color: var(--navy);
 }
 
-.wordle-tile.absent {
+.wordgame-tile.absent {
   background: var(--slate);
   border-color: var(--slate);
   color: white;
 }
 
-.wordle-tile .tile-braille {
+.wordgame-tile .tile-braille {
   display: grid;
   grid-template-columns: 1fr 1fr;
   grid-template-rows: 1fr 1fr 1fr;
@@ -1586,40 +1586,40 @@ body::after {
   height: 30px;
 }
 
-.wordle-tile .tile-dot {
+.wordgame-tile .tile-dot {
   width: 7px;
   height: 7px;
   border-radius: 50%;
 }
 
-.wordle-tile .tile-dot.filled {
+.wordgame-tile .tile-dot.filled {
   background: var(--navy);
 }
 
-.wordle-tile .tile-dot.empty {
+.wordgame-tile .tile-dot.empty {
   background: transparent;
   border: 1px solid rgba(27,42,74,0.15);
 }
 
-.wordle-tile.correct .tile-dot.filled,
-.wordle-tile.absent .tile-dot.filled {
+.wordgame-tile.correct .tile-dot.filled,
+.wordgame-tile.absent .tile-dot.filled {
   background: white;
 }
 
-.wordle-tile.correct .tile-dot.empty,
-.wordle-tile.absent .tile-dot.empty {
+.wordgame-tile.correct .tile-dot.empty,
+.wordgame-tile.absent .tile-dot.empty {
   border-color: rgba(255,255,255,0.3);
 }
 
-.wordle-tile.present .tile-dot.filled {
+.wordgame-tile.present .tile-dot.filled {
   background: var(--navy);
 }
 
-.wordle-tile.present .tile-dot.empty {
+.wordgame-tile.present .tile-dot.empty {
   border-color: rgba(27,42,74,0.2);
 }
 
-.wordle-tile .tile-letter {
+.wordgame-tile .tile-letter {
   font-family: 'Outfit', sans-serif;
   font-size: 0.7rem;
   font-weight: 600;
@@ -1627,19 +1627,19 @@ body::after {
   line-height: 1;
 }
 
-.wordle-tile.correct .tile-letter,
-.wordle-tile.absent .tile-letter {
+.wordgame-tile.correct .tile-letter,
+.wordgame-tile.absent .tile-letter {
   color: white;
 }
 
-.wordle-tile.present .tile-letter {
+.wordgame-tile.present .tile-letter {
   color: var(--navy);
 }
 
-/* --- Wordle Animations --- */
+/* --- Word Game Animations --- */
 
 /* Tile pop on letter entry */
-.wordle-tile.pop {
+.wordgame-tile.pop {
   animation: tilePop 150ms ease-out;
 }
 
@@ -1650,7 +1650,7 @@ body::after {
 }
 
 /* Tile flip reveal */
-.wordle-tile.revealing {
+.wordgame-tile.revealing {
   animation: tileFlip var(--flip-duration, 500ms) ease-in-out var(--reveal-delay, 0ms) both;
   border-color: rgba(212,168,83,0.2);
   background: white;
@@ -1663,15 +1663,15 @@ body::after {
 }
 
 /* Color changes at the midpoint of the flip via data-status */
-.wordle-tile.revealing[data-status="correct"] {
+.wordgame-tile.revealing[data-status="correct"] {
   animation: tileFlip var(--flip-duration, 500ms) ease-in-out var(--reveal-delay, 0ms) both,
              tileColorCorrect var(--flip-duration, 500ms) step-end var(--reveal-delay, 0ms) both;
 }
-.wordle-tile.revealing[data-status="present"] {
+.wordgame-tile.revealing[data-status="present"] {
   animation: tileFlip var(--flip-duration, 500ms) ease-in-out var(--reveal-delay, 0ms) both,
              tileColorPresent var(--flip-duration, 500ms) step-end var(--reveal-delay, 0ms) both;
 }
-.wordle-tile.revealing[data-status="absent"] {
+.wordgame-tile.revealing[data-status="absent"] {
   animation: tileFlip var(--flip-duration, 500ms) ease-in-out var(--reveal-delay, 0ms) both,
              tileColorAbsent var(--flip-duration, 500ms) step-end var(--reveal-delay, 0ms) both;
 }
@@ -1695,16 +1695,16 @@ body::after {
 }
 
 /* Text + dot color flips at midpoint */
-.wordle-tile.revealing[data-status="correct"] .tile-letter,
-.wordle-tile.revealing[data-status="absent"] .tile-letter {
+.wordgame-tile.revealing[data-status="correct"] .tile-letter,
+.wordgame-tile.revealing[data-status="absent"] .tile-letter {
   animation: tileTextWhite var(--flip-duration, 500ms) step-end var(--reveal-delay, 0ms) both;
 }
-.wordle-tile.revealing[data-status="correct"] .tile-dot.filled,
-.wordle-tile.revealing[data-status="absent"] .tile-dot.filled {
+.wordgame-tile.revealing[data-status="correct"] .tile-dot.filled,
+.wordgame-tile.revealing[data-status="absent"] .tile-dot.filled {
   animation: tileDotWhite var(--flip-duration, 500ms) step-end var(--reveal-delay, 0ms) both;
 }
-.wordle-tile.revealing[data-status="correct"] .tile-dot.empty,
-.wordle-tile.revealing[data-status="absent"] .tile-dot.empty {
+.wordgame-tile.revealing[data-status="correct"] .tile-dot.empty,
+.wordgame-tile.revealing[data-status="absent"] .tile-dot.empty {
   animation: tileDotEmptyWhite var(--flip-duration, 500ms) step-end var(--reveal-delay, 0ms) both;
 }
 
@@ -1727,7 +1727,7 @@ body::after {
 }
 
 /* Win bounce */
-.wordle-tile.win-bounce {
+.wordgame-tile.win-bounce {
   animation: tileBounce 600ms ease var(--bounce-delay, 0ms) both;
 }
 
@@ -1740,19 +1740,19 @@ body::after {
 }
 
 /* On-screen keyboard */
-.wordle-keyboard {
+.wordgame-keyboard {
   display: flex;
   flex-direction: column;
   gap: 6px;
   align-items: center;
 }
 
-.wordle-kb-row {
+.wordgame-kb-row {
   display: flex;
   gap: 4px;
 }
 
-.wordle-key {
+.wordgame-key {
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -1769,16 +1769,16 @@ body::after {
   font-family: 'Outfit', sans-serif;
 }
 
-.wordle-key:hover {
+.wordgame-key:hover {
   background: var(--gold-soft);
   border-color: var(--gold-light);
 }
 
-.wordle-key:active {
+.wordgame-key:active {
   transform: scale(0.95);
 }
 
-.wordle-key.wide {
+.wordgame-key.wide {
   min-width: 56px;
   font-size: 0.65rem;
   font-weight: 600;
@@ -1786,26 +1786,26 @@ body::after {
   letter-spacing: 0.5px;
 }
 
-.wordle-key.correct {
+.wordgame-key.correct {
   background: var(--sage);
   border-color: var(--sage);
   color: white;
 }
 
-.wordle-key.present {
+.wordgame-key.present {
   background: var(--gold);
   border-color: var(--gold);
   color: var(--navy);
 }
 
-.wordle-key.absent {
+.wordgame-key.absent {
   background: var(--slate);
   border-color: var(--slate);
   color: white;
   opacity: 0.6;
 }
 
-.wordle-key .key-braille {
+.wordgame-key .key-braille {
   display: grid;
   grid-template-columns: 1fr 1fr;
   grid-template-rows: 1fr 1fr 1fr;
@@ -1814,51 +1814,51 @@ body::after {
   height: 18px;
 }
 
-.wordle-key .key-dot {
+.wordgame-key .key-dot {
   width: 4px;
   height: 4px;
   border-radius: 50%;
 }
 
-.wordle-key .key-dot.filled {
+.wordgame-key .key-dot.filled {
   background: var(--navy);
 }
 
-.wordle-key .key-dot.empty {
+.wordgame-key .key-dot.empty {
   background: transparent;
   border: 0.5px solid rgba(27,42,74,0.15);
 }
 
-.wordle-key.correct .key-dot.filled,
-.wordle-key.absent .key-dot.filled {
+.wordgame-key.correct .key-dot.filled,
+.wordgame-key.absent .key-dot.filled {
   background: white;
 }
 
-.wordle-key.correct .key-dot.empty,
-.wordle-key.absent .key-dot.empty {
+.wordgame-key.correct .key-dot.empty,
+.wordgame-key.absent .key-dot.empty {
   border-color: rgba(255,255,255,0.3);
 }
 
-.wordle-key .key-letter {
+.wordgame-key .key-letter {
   font-size: 0.55rem;
   font-weight: 600;
   color: var(--navy);
   line-height: 1;
 }
 
-.wordle-key.correct .key-letter,
-.wordle-key.absent .key-letter {
+.wordgame-key.correct .key-letter,
+.wordgame-key.absent .key-letter {
   color: white;
 }
 
-.wordle-message {
+.wordgame-message {
   margin-top: 20px;
   font-family: 'DM Serif Display', serif;
   font-size: 1.1rem;
   color: var(--navy);
 }
 
-.wordle-play-again {
+.wordgame-play-again {
   display: inline-flex;
   align-items: center;
   gap: 8px;
@@ -1875,22 +1875,22 @@ body::after {
   transition: all 0.3s ease;
 }
 
-.wordle-play-again:hover {
+.wordgame-play-again:hover {
   background: var(--navy-light);
   transform: translateY(-2px);
 }
 
 @media (max-width: 420px) {
-  .wordle-tile {
+  .wordgame-tile {
     width: 56px;
     height: 68px;
   }
-  .wordle-key {
+  .wordgame-key {
     min-width: 26px;
     height: 46px;
     padding: 3px 4px;
   }
-  .wordle-key.wide {
+  .wordgame-key.wide {
     min-width: 44px;
     font-size: 0.6rem;
   }
@@ -2712,7 +2712,7 @@ body::after {
 }
 
 /* Scroll offset for game anchors — clears sticky nav (60px) + games nav (~52px) */
-#wordle,
+#wordgame,
 #explorer,
 #hangman {
   scroll-margin-top: 120px;
