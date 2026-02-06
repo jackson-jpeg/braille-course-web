@@ -216,6 +216,17 @@ export interface Material {
   createdAt: string;
 }
 
+/* ── Generate Preview ── */
+export interface GeneratePreview {
+  slideTitles?: string[];
+  sectionHeadings?: string[];
+  questionCounts?: { 'multiple-choice': number; 'true-false': number; 'short-answer': number };
+  totalQuestions?: number;
+  worksheetSections?: { heading: string; type: string; itemCount: number }[];
+  totalItems?: number;
+  objectives?: string[];
+}
+
 /* ── Props ── */
 export interface AdminProps {
   sections: Section[];

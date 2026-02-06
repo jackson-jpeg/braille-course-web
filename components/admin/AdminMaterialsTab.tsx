@@ -6,7 +6,7 @@ import { useToast } from './AdminToast';
 import { SkeletonTable } from './AdminSkeleton';
 import type { Material } from './admin-types';
 
-const CATEGORIES = ['All', 'Lesson Plans', 'Handouts', 'Presentations', 'Study Guides', 'Worksheets', 'Other', 'Uncategorized'] as const;
+const CATEGORIES = ['All', 'Lesson Plans', 'Handouts', 'Presentations', 'Study Guides', 'Worksheets', 'Assessments', 'Other', 'Uncategorized'] as const;
 
 function formatFileSize(bytes: number): string {
   if (bytes < 1024) return `${bytes} B`;
