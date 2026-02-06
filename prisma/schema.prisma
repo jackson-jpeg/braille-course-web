@@ -1,0 +1,47 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider  = "postgresql"
+  url       = env("POSTGRES_PRISMA_URL")
+  directUrl = env("POSTGRES_URL_NON_POOLING")
+}
+
+enum SectionStatus {
+  OPEN
+  FULL
+}
+
+enum PaymentStatus {
+  PENDING
+  COMPLETED
+  WAITLISTED
+}
+
+model Section {
+  id            String        @id @default(cuid())
+  label         String        @unique
+  maxCapacity   Int           @default(5)
+  enrolledCount Int           @default(0)
+  status        SectionStatus @default(OPEN)
+  createdAt     DateTime      @default(now())
+  updatedAt     DateTime      @updatedAt
+  enrollments   Enrollment[]
+}
+
+model Enrollment {
+  id               String        @id @default(cuid())
+  email            String?
+  sectionId        String
+  section          Section       @relation(fields: [sectionId], references: [id])
+  plan             String        // "FULL" or "DEPOSIT"
+  stripeCustomerId String?
+  stripeSessionId  String        @unique
+  paymentStatus    PaymentStatus @default(PENDING)
+  createdAt        DateTime      @default(now())
+  updatedAt        DateTime      @updatedAt
+
+  @@index([sectionId])
+  @@index([email])
+}
