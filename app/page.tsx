@@ -106,10 +106,6 @@ export default async function HomePage() {
           </div>
         </div>
 
-        <div className="scroll-hint" aria-hidden="true">
-          <span>Learn More</span>
-          <div className="scroll-line"></div>
-        </div>
       </section>
 
       {/* ========== ABOUT ========== */}
@@ -125,10 +121,12 @@ export default async function HomePage() {
             parent had ever asked me, and I quickly agreed.
           </p>
 
-          <div className="pullquote reveal">
-            A summer Braille course for parents is one of the best ways I can
-            think to spend <em>my summer.</em>
-          </div>
+          <blockquote className="pullquote reveal">
+            <p>
+              A summer Braille course for parents is one of the best ways I can
+              think to spend <em>my summer.</em>
+            </p>
+          </blockquote>
 
           <p className="about-text">
             Over several weeks at the library, her home, and on virtual calls, she

@@ -488,10 +488,14 @@ body::after {
   line-height: 1.55;
   max-width: 540px;
   margin: 48px auto;
-  padding: 32px 0;
+  padding: 32px 24px;
   border-top: 2px solid var(--gold-light);
   border-bottom: 2px solid var(--gold-light);
   position: relative;
+  text-align: center;
+}
+.pullquote p {
+  margin: 0;
 }
 .pullquote::before {
   content: '\201C';
@@ -500,7 +504,17 @@ body::after {
   color: var(--gold);
   opacity: 0.25;
   position: absolute;
-  top: 12px; left: -6px;
+  top: 8px; left: 0;
+  line-height: 1;
+}
+.pullquote::after {
+  content: '\201D';
+  font-family: 'DM Serif Display', serif;
+  font-size: 4rem;
+  color: var(--gold);
+  opacity: 0.25;
+  position: absolute;
+  bottom: 2px; right: 0;
   line-height: 1;
 }
 .pullquote em {
@@ -1096,8 +1110,9 @@ body::after {
   .braille-decoration { gap: 4px; }
   .braille-cell { width: 24px; height: 38px; gap: 3px; }
   .braille-dot { width: 8px; height: 8px; }
-  .pullquote { font-size: 1.05rem; padding: 24px 0; margin: 36px auto; }
+  .pullquote { font-size: 1.05rem; padding: 24px 16px; margin: 36px auto; }
   .pullquote::before { font-size: 3rem; top: 8px; }
+  .pullquote::after { font-size: 3rem; bottom: 0; }
   .floating-cta { bottom: 16px; right: 16px; }
   .floating-cta a { padding: 12px 20px; font-size: 0.8rem; }
   .cta-button { padding: 16px 32px; font-size: 0.95rem; }
