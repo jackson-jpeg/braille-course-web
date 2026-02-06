@@ -27,15 +27,21 @@ const EMAIL_TEMPLATES = [
     subject: 'Welcome to the Braille Course!',
     body: `Welcome!\n\nThank you for enrolling in the summer braille course. I'm excited to have you in class!\n\nHere are a few things to know before we get started:\n\n- [Detail 1]\n- [Detail 2]\n- [Detail 3]\n\nFeel free to reply if you have any questions.\n\nBest,\nDelaney`,
   },
+  {
+    label: 'Inquiry Response',
+    subject: 'Re: Braille Session Inquiry',
+    body: `Hi there!\n\nThank you for reaching out about 1-on-1 braille sessions! I'd love to help.\n\nHere's what I offer:\n- [Session details]\n- [Pricing]\n- [Availability]\n\nWould you like to schedule a time to chat? Feel free to reply with any questions.\n\nBest,\nDelaney`,
+  },
 ];
 
 interface Props {
   adminKey: string;
   enrollments: Enrollment[];
   initialComposeTo?: string;
+  initialTemplate?: string;
 }
 
-export default function AdminEmailsTab({ adminKey, enrollments, initialComposeTo }: Props) {
+export default function AdminEmailsTab({ adminKey, enrollments, initialComposeTo, initialTemplate }: Props) {
   const [emailSubTab, setEmailSubTab] = useState<'sent' | 'received'>('sent');
   const [emails, setEmails] = useState<ResendEmail[]>([]);
   const [emailsLoading, setEmailsLoading] = useState(false);
@@ -62,6 +68,20 @@ export default function AdminEmailsTab({ adminKey, enrollments, initialComposeTo
       setShowCompose(true);
     }
   }, [initialComposeTo]);
+
+  // Auto-select template when initialTemplate is passed (from prospective leads)
+  useEffect(() => {
+    if (initialTemplate) {
+      const template = EMAIL_TEMPLATES.find((t) => t.label === initialTemplate);
+      if (template) {
+        setSelectedTemplate(template.label);
+        setComposeSubject(template.subject);
+        setComposeBody(template.body);
+        setShowCompose(true);
+        setEmailSubTab('sent');
+      }
+    }
+  }, [initialTemplate]);
 
   const fetchEmails = useCallback(async () => {
     setEmailsLoading(true);

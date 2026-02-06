@@ -9,9 +9,10 @@ import type { AdminProps } from './admin-types';
 
 type Tab = 'overview' | 'students' | 'payments' | 'emails';
 
-export default function AdminDashboard({ sections, enrollments, scheduleMap, adminKey }: AdminProps) {
+export default function AdminDashboard({ sections, enrollments, leads, scheduleMap, adminKey }: AdminProps) {
   const [tab, setTab] = useState<Tab>('overview');
   const [emailComposeTo, setEmailComposeTo] = useState('');
+  const [emailInitialTemplate, setEmailInitialTemplate] = useState('');
 
   function handleNavigate(target: string) {
     if (target === 'emails-compose') {
@@ -25,8 +26,9 @@ export default function AdminDashboard({ sections, enrollments, scheduleMap, adm
     }
   }
 
-  function handleSendEmail(email: string) {
+  function handleSendEmail(email: string, template?: string) {
     setEmailComposeTo(email);
+    setEmailInitialTemplate(template || '');
     setTab('emails');
   }
 
@@ -40,7 +42,7 @@ export default function AdminDashboard({ sections, enrollments, scheduleMap, adm
           <button
             key={t}
             className={`admin-tab ${tab === t ? 'admin-tab-active' : ''}`}
-            onClick={() => { setTab(t); if (t !== 'emails') setEmailComposeTo(''); }}
+            onClick={() => { setTab(t); if (t !== 'emails') { setEmailComposeTo(''); setEmailInitialTemplate(''); } }}
           >
             {t === 'overview' ? 'Overview' : t === 'students' ? 'Students' : t === 'payments' ? 'Payments' : 'Emails'}
           </button>
@@ -52,6 +54,7 @@ export default function AdminDashboard({ sections, enrollments, scheduleMap, adm
         <AdminOverviewTab
           sections={sections}
           enrollments={enrollments}
+          leads={leads}
           scheduleMap={scheduleMap}
           adminKey={adminKey}
           onNavigate={handleNavigate}
@@ -62,6 +65,7 @@ export default function AdminDashboard({ sections, enrollments, scheduleMap, adm
         <AdminStudentsTab
           sections={sections}
           enrollments={enrollments}
+          leads={leads}
           scheduleMap={scheduleMap}
           adminKey={adminKey}
           onSendEmail={handleSendEmail}
@@ -77,6 +81,7 @@ export default function AdminDashboard({ sections, enrollments, scheduleMap, adm
           adminKey={adminKey}
           enrollments={enrollments}
           initialComposeTo={emailComposeTo}
+          initialTemplate={emailInitialTemplate}
         />
       )}
     </div>

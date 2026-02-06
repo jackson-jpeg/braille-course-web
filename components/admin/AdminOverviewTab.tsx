@@ -1,12 +1,13 @@
 'use client';
 
 import { useState, useEffect, useCallback } from 'react';
-import type { Section, Enrollment, ResendEmail, PaymentSummary } from './admin-types';
+import type { Section, Enrollment, Lead, ResendEmail, PaymentSummary } from './admin-types';
 import { relativeTime } from './admin-utils';
 
 interface Props {
   sections: Section[];
   enrollments: Enrollment[];
+  leads: Lead[];
   scheduleMap: Record<string, string>;
   adminKey: string;
   onNavigate: (tab: string) => void;
@@ -14,13 +15,13 @@ interface Props {
 
 interface ActivityItem {
   id: string;
-  type: 'enrollment' | 'email';
+  type: 'enrollment' | 'email' | 'lead';
   label: string;
   time: string;
   timestamp: number;
 }
 
-export default function AdminOverviewTab({ sections, enrollments, scheduleMap, adminKey, onNavigate }: Props) {
+export default function AdminOverviewTab({ sections, enrollments, leads, scheduleMap, adminKey, onNavigate }: Props) {
   const [recentEmails, setRecentEmails] = useState<ResendEmail[]>([]);
   const [emailsLoaded, setEmailsLoaded] = useState(false);
   const [paymentSummary, setPaymentSummary] = useState<PaymentSummary | null>(null);
@@ -79,6 +80,13 @@ export default function AdminOverviewTab({ sections, enrollments, scheduleMap, a
       time: relativeTime(em.created_at),
       timestamp: new Date(em.created_at).getTime(),
     })),
+    ...leads.slice(0, 5).map((l) => ({
+      id: `lead-${l.id}`,
+      type: 'lead' as const,
+      label: `Inquiry from ${l.name || l.email}${l.status === 'NEW' ? ' (needs reply)' : ''}`,
+      time: relativeTime(l.createdAt),
+      timestamp: new Date(l.createdAt).getTime(),
+    })),
   ]
     .sort((a, b) => b.timestamp - a.timestamp)
     .slice(0, 8);
@@ -110,6 +118,12 @@ export default function AdminOverviewTab({ sections, enrollments, scheduleMap, a
         <div className="admin-overview-card">
           <div className="admin-overview-card-value">{openSpots}</div>
           <div className="admin-overview-card-label">Open Spots</div>
+        </div>
+        <div className="admin-overview-card" style={{ cursor: 'pointer' }} onClick={() => onNavigate('students')}>
+          <div className="admin-overview-card-value" style={{ color: '#2563eb' }}>
+            {leads.filter((l) => l.status === 'NEW').length}
+          </div>
+          <div className="admin-overview-card-label">New Inquiries</div>
         </div>
       </div>
 
@@ -153,7 +167,7 @@ export default function AdminOverviewTab({ sections, enrollments, scheduleMap, a
               <div
                 key={item.id}
                 className="admin-activity-item"
-                onClick={() => onNavigate(item.type === 'enrollment' ? 'students' : 'emails')}
+                onClick={() => onNavigate(item.type === 'email' ? 'emails' : 'students')}
               >
                 <span className={`admin-activity-dot admin-activity-dot-${item.type}`} />
                 <span className="admin-activity-label">{item.label}</span>

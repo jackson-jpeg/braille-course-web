@@ -19,12 +19,13 @@ export default async function AdminPage({
     return <AdminLogin />;
   }
 
-  const [sections, enrollments] = await Promise.all([
+  const [sections, enrollments, leads] = await Promise.all([
     prisma.section.findMany({ orderBy: { label: 'asc' } }),
     prisma.enrollment.findMany({
       include: { section: true },
       orderBy: { createdAt: 'desc' },
     }),
+    prisma.lead.findMany({ orderBy: { createdAt: 'desc' } }),
   ]);
 
   // Serialize for the client component (dates → strings)
@@ -47,11 +48,22 @@ export default async function AdminPage({
     status: s.status,
   }));
 
+  const serializedLeads = leads.map((l) => ({
+    id: l.id,
+    email: l.email,
+    name: l.name,
+    subject: l.subject,
+    status: l.status,
+    createdAt: l.createdAt.toISOString(),
+    updatedAt: l.updatedAt.toISOString(),
+  }));
+
   return (
     <div className="admin-page">
       <AdminDashboard
         sections={serializedSections}
         enrollments={serializedEnrollments}
+        leads={serializedLeads}
         scheduleMap={SECTION_SCHEDULES}
         adminKey={key}
       />

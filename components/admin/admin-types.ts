@@ -129,10 +129,22 @@ export interface StudentDetail {
   emails: ResendEmail[];
 }
 
+/* ── Prospective Lead ── */
+export interface Lead {
+  id: string;
+  email: string;
+  name: string | null;
+  subject: string | null;
+  status: string;
+  createdAt: string;
+  updatedAt: string;
+}
+
 /* ── Props ── */
 export interface AdminProps {
   sections: Section[];
   enrollments: Enrollment[];
+  leads: Lead[];
   scheduleMap: Record<string, string>;
   adminKey: string;
 }
