@@ -537,13 +537,13 @@ export default async function SummerPage() {
       <section className="games-link-section">
         <div className="games-link-inner reveal">
           <h3>Want to practice your Braille?</h3>
-          <p>Try our interactive braille games — Word Game, Dot Explorer, and Hangman.</p>
+          <p>Try our interactive braille activities — Word Game, Dot Explorer, Hangman, and more.</p>
           <Link href="/games" className="games-link-button">
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" aria-hidden="true">
               <circle cx="12" cy="12" r="10" />
               <polygon points="10,8 16,12 10,16" />
             </svg>
-            Play Braille Games
+            Try Interactive Practice
           </Link>
         </div>
       </section>

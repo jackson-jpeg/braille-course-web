@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect, useCallback, useRef } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 
 const brailleAlphabet: Record<string, number[]> = {
   B: [1, 0, 1, 0, 0, 0],
@@ -14,7 +14,7 @@ const brailleAlphabet: Record<string, number[]> = {
 const word = 'BRAILLE';
 
 export default function BrailleHero() {
-  const [dots, setDots] = useState<Record<string, boolean[]>>(() => {
+  const [dots] = useState<Record<string, boolean[]>>(() => {
     const initial: Record<string, boolean[]> = {};
     word.split('').forEach((letter, i) => {
       const key = `${letter}-${i}`;
@@ -25,31 +25,11 @@ export default function BrailleHero() {
 
   const [activeGroup, setActiveGroup] = useState<string | null>(null);
   const [hintVisible, setHintVisible] = useState(false);
-  const [popDots, setPopDots] = useState<Record<string, boolean>>({});
 
   useEffect(() => {
     const timer = setTimeout(() => setHintVisible(true), 2200);
     return () => clearTimeout(timer);
   }, []);
-
-  const toggleDot = useCallback(
-    (groupKey: string, dotIndex: number) => {
-      setDots((prev) => {
-        const newDots = { ...prev };
-        const arr = [...newDots[groupKey]];
-        arr[dotIndex] = !arr[dotIndex];
-        newDots[groupKey] = arr;
-        return newDots;
-      });
-
-      const popKey = `${groupKey}-${dotIndex}`;
-      setPopDots((prev) => ({ ...prev, [popKey]: true }));
-      setTimeout(() => {
-        setPopDots((prev) => ({ ...prev, [popKey]: false }));
-      }, 500);
-    },
-    []
-  );
 
   const activate = useCallback((key: string) => {
     setActiveGroup(key);
@@ -88,33 +68,18 @@ export default function BrailleHero() {
               onKeyDown={(e) => {
                 if (e.key === 'Enter' || e.key === ' ') {
                   e.preventDefault();
-                  const allFilled = dots[groupKey].every(Boolean);
-                  setDots((prev) => ({
-                    ...prev,
-                    [groupKey]: brailleAlphabet[letter].map((v) =>
-                      allFilled ? false : v === 1
-                    ),
-                  }));
+                  activate(groupKey);
                 }
               }}
             >
               <div className="braille-cell">
-                {dots[groupKey].map((filled, di) => {
-                  const popKey = `${groupKey}-${di}`;
-                  return (
+                {dots[groupKey].map((filled, di) => (
                     <span
                       key={di}
-                      className={`braille-dot ${filled ? 'filled' : 'empty'}${
-                        popDots[popKey] ? ' pop' : ''
-                      }`}
+                      className={`braille-dot ${filled ? 'filled' : 'empty'}`}
                       aria-hidden="true"
-                      onClick={(e) => {
-                        e.stopPropagation();
-                        toggleDot(groupKey, di);
-                      }}
                     />
-                  );
-                })}
+                  ))}
               </div>
               <span className="braille-letter-label">{letter}</span>
             </div>

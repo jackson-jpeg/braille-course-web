@@ -2724,6 +2724,7 @@ body::after {
   top: 60px;
   z-index: 100;
   display: flex;
+  flex-wrap: wrap;
   justify-content: center;
   gap: 8px;
   padding: 16px 24px;
@@ -3127,6 +3128,422 @@ body::after {
   .explorer-dot {
     width: 48px;
     height: 48px;
+  }
+}
+
+/* ============================================================
+   BRAILLE SPEED MATCH
+   ============================================================ */
+.speedmatch-section {
+  position: relative;
+  z-index: 1;
+  padding: 80px 24px;
+  background: white;
+}
+
+.speedmatch-container {
+  max-width: 520px;
+  margin: 0 auto;
+  text-align: center;
+}
+.speedmatch-header {
+  margin-bottom: 32px;
+}
+.speedmatch-header h2 {
+  font-family: 'DM Serif Display', serif;
+  font-size: 2rem;
+  color: var(--navy);
+  margin-top: 8px;
+}
+.speedmatch-header p {
+  color: var(--text-secondary);
+  font-size: 0.95rem;
+  margin-top: 6px;
+}
+
+.speedmatch-body {
+  background: white;
+  border: 1px solid rgba(212, 168, 83, 0.15);
+  border-radius: var(--radius-lg);
+  padding: 32px 24px;
+  box-shadow: 0 2px 12px rgba(27, 42, 74, 0.06);
+}
+
+/* Mode toggle pills */
+.speedmatch-mode-toggle {
+  display: flex;
+  justify-content: center;
+  gap: 4px;
+  background: var(--cream);
+  border-radius: var(--radius-full);
+  padding: 4px;
+  margin-bottom: 28px;
+}
+.speedmatch-mode-pill {
+  flex: 1;
+  padding: 10px 16px;
+  font-family: 'Outfit', sans-serif;
+  font-size: 0.85rem;
+  font-weight: 600;
+  border: none;
+  border-radius: var(--radius-full);
+  cursor: pointer;
+  background: transparent;
+  color: var(--text-secondary);
+  transition: all 0.25s ease;
+}
+.speedmatch-mode-pill.active {
+  background: var(--navy);
+  color: var(--gold-light);
+  box-shadow: 0 2px 8px rgba(27, 42, 74, 0.2);
+}
+
+/* Prompt area */
+.speedmatch-prompt {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: 120px;
+  margin-bottom: 24px;
+}
+.speedmatch-prompt-letter {
+  font-family: 'DM Serif Display', serif;
+  font-size: 4rem;
+  color: var(--navy);
+  line-height: 1;
+}
+
+/* Braille cells */
+.speedmatch-cell {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 6px;
+}
+.speedmatch-cell-large {
+  width: 80px;
+  height: 110px;
+  gap: 8px;
+}
+.speedmatch-cell-small {
+  width: 36px;
+  height: 50px;
+  gap: 4px;
+}
+.speedmatch-dot {
+  border-radius: 50%;
+  transition: background 0.15s ease;
+}
+.speedmatch-dot.filled {
+  background: var(--navy);
+}
+.speedmatch-dot.empty {
+  background: rgba(27, 42, 74, 0.1);
+}
+
+/* 4-choice grid */
+.speedmatch-choices {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 10px;
+  margin-bottom: 24px;
+}
+.speedmatch-choice {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  padding: 16px 12px;
+  background: var(--cream);
+  border: 2px solid rgba(212, 168, 83, 0.15);
+  border-radius: var(--radius-md);
+  cursor: pointer;
+  font-family: 'Outfit', sans-serif;
+  transition: all 0.2s ease;
+}
+.speedmatch-choice:hover:not(:disabled) {
+  border-color: var(--gold);
+  background: var(--gold-soft);
+  transform: translateY(-1px);
+}
+.speedmatch-choice:disabled {
+  cursor: default;
+}
+.speedmatch-choice-number {
+  position: absolute;
+  top: 6px;
+  left: 8px;
+  font-size: 0.7rem;
+  font-weight: 700;
+  color: var(--text-secondary);
+  opacity: 0.5;
+}
+.speedmatch-choice-letter {
+  font-family: 'DM Serif Display', serif;
+  font-size: 1.5rem;
+  color: var(--navy);
+}
+
+/* Correct/wrong flash */
+.speedmatch-correct {
+  border-color: var(--sage-dark) !important;
+  background: rgba(122, 155, 109, 0.15) !important;
+  animation: speedmatch-flash-correct 0.4s ease;
+}
+.speedmatch-wrong {
+  border-color: #c0392b !important;
+  background: rgba(192, 57, 43, 0.1) !important;
+  animation: speedmatch-flash-wrong 0.4s ease;
+}
+@keyframes speedmatch-flash-correct {
+  0% { transform: scale(1); }
+  50% { transform: scale(1.05); }
+  100% { transform: scale(1); }
+}
+@keyframes speedmatch-flash-wrong {
+  0%, 100% { transform: translateX(0); }
+  25% { transform: translateX(-4px); }
+  75% { transform: translateX(4px); }
+}
+
+/* Streak display */
+.speedmatch-streak {
+  display: flex;
+  justify-content: center;
+  gap: 32px;
+}
+.speedmatch-streak-current,
+.speedmatch-streak-best {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 2px;
+}
+.speedmatch-streak-value {
+  font-family: 'DM Serif Display', serif;
+  font-size: 1.8rem;
+  color: var(--navy);
+  line-height: 1;
+}
+.speedmatch-streak-label {
+  font-size: 0.75rem;
+  font-weight: 600;
+  color: var(--text-secondary);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+/* ============================================================
+   BRAILLE MEMORY MATCH
+   ============================================================ */
+.memorymatch-section {
+  position: relative;
+  z-index: 1;
+  padding: 80px 24px;
+  background: var(--section-bg);
+}
+
+.memorymatch-container {
+  max-width: 520px;
+  margin: 0 auto;
+  text-align: center;
+}
+.memorymatch-header {
+  margin-bottom: 32px;
+}
+.memorymatch-header h2 {
+  font-family: 'DM Serif Display', serif;
+  font-size: 2rem;
+  color: var(--navy);
+  margin-top: 8px;
+}
+.memorymatch-header p {
+  color: var(--text-secondary);
+  font-size: 0.95rem;
+  margin-top: 6px;
+}
+
+.memorymatch-body {
+  background: white;
+  border: 1px solid rgba(212, 168, 83, 0.15);
+  border-radius: var(--radius-lg);
+  padding: 32px 24px;
+  box-shadow: 0 2px 12px rgba(27, 42, 74, 0.06);
+}
+
+.memorymatch-stats {
+  display: flex;
+  justify-content: center;
+  gap: 24px;
+  margin-bottom: 24px;
+  font-size: 0.9rem;
+  color: var(--text-secondary);
+}
+.memorymatch-stats strong {
+  color: var(--navy);
+}
+
+/* 4x3 card grid */
+.memorymatch-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 10px;
+  margin-bottom: 24px;
+  perspective: 800px;
+}
+
+.memorymatch-card {
+  position: relative;
+  aspect-ratio: 3 / 4;
+  background: none;
+  border: none;
+  cursor: pointer;
+  padding: 0;
+  perspective: 800px;
+}
+.memorymatch-card:disabled {
+  cursor: default;
+}
+.memorymatch-card-inner {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  transition: transform 0.5s ease;
+  transform-style: preserve-3d;
+}
+.memorymatch-card.flipped .memorymatch-card-inner {
+  transform: rotateY(180deg);
+}
+
+.memorymatch-card-front,
+.memorymatch-card-back {
+  position: absolute;
+  inset: 0;
+  border-radius: var(--radius-sm);
+  backface-visibility: hidden;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.memorymatch-card-front {
+  background: white;
+  border: 2px solid rgba(212, 168, 83, 0.2);
+  transform: rotateY(180deg);
+}
+.memorymatch-card-back {
+  background: var(--navy);
+  border: 2px solid var(--navy-light);
+}
+.memorymatch-card-back-icon {
+  font-family: 'DM Serif Display', serif;
+  font-size: 1.4rem;
+  color: var(--gold-light);
+  opacity: 0.4;
+}
+
+/* Matched pair gold glow */
+.memorymatch-card.matched .memorymatch-card-front {
+  border-color: var(--gold);
+  box-shadow: 0 0 12px var(--gold-glow);
+}
+
+/* Braille pattern on card face */
+.memorymatch-braille {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 4px;
+  width: 30px;
+  height: 42px;
+}
+.memorymatch-dot {
+  border-radius: 50%;
+}
+.memorymatch-dot.filled {
+  background: var(--navy);
+}
+.memorymatch-dot.empty {
+  background: rgba(27, 42, 74, 0.1);
+}
+
+.memorymatch-card-letter {
+  font-family: 'DM Serif Display', serif;
+  font-size: 1.5rem;
+  color: var(--navy);
+}
+
+/* Win message */
+.memorymatch-win {
+  font-family: 'DM Serif Display', serif;
+  font-size: 1.1rem;
+  color: var(--navy);
+  margin-bottom: 12px;
+}
+
+/* Play Again button */
+.memorymatch-play-again {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 12px 28px;
+  background: var(--navy);
+  color: var(--gold-light);
+  font-family: 'Outfit', sans-serif;
+  font-size: 0.85rem;
+  font-weight: 600;
+  border: none;
+  border-radius: var(--radius-full);
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+.memorymatch-play-again:hover {
+  background: var(--navy-light);
+  transform: translateY(-2px);
+}
+
+/* Responsive */
+@media (max-width: 480px) {
+  .memorymatch-grid {
+    gap: 6px;
+  }
+  .memorymatch-braille {
+    width: 24px;
+    height: 34px;
+    gap: 3px;
+  }
+  .memorymatch-card-letter {
+    font-size: 1.2rem;
+  }
+  .speedmatch-cell-large {
+    width: 64px;
+    height: 88px;
+  }
+  .speedmatch-prompt-letter {
+    font-size: 3rem;
+  }
+}
+
+/* Reduced motion: fade instead of flip */
+@media (prefers-reduced-motion: reduce) {
+  .memorymatch-card-inner {
+    transition: opacity 0.2s ease;
+    transform-style: flat;
+  }
+  .memorymatch-card .memorymatch-card-front {
+    transform: none;
+    opacity: 0;
+  }
+  .memorymatch-card .memorymatch-card-back {
+    opacity: 1;
+  }
+  .memorymatch-card.flipped .memorymatch-card-inner {
+    transform: none;
+  }
+  .memorymatch-card.flipped .memorymatch-card-front {
+    opacity: 1;
+  }
+  .memorymatch-card.flipped .memorymatch-card-back {
+    opacity: 0;
   }
 }
 
@@ -4170,6 +4587,8 @@ body::after {
   font-weight: 400;
 }
 .admin-payments-toolbar {
+  display: flex;
+  gap: 10px;
   margin-bottom: 20px;
 }
 .admin-payment-actions {
@@ -4305,6 +4724,113 @@ body::after {
   color: #c44;
 }
 
+/* ── Invoice Dialog ── */
+.admin-invoice-dialog {
+  background: white;
+  border-radius: var(--radius-lg);
+  width: 100%;
+  max-width: 480px;
+  padding: 28px;
+  position: relative;
+  box-shadow: 0 24px 80px rgba(20,31,53,0.2);
+  max-height: 90vh;
+  overflow-y: auto;
+}
+.admin-invoice-title {
+  font-family: 'DM Serif Display', serif;
+  font-size: 1.3rem;
+  color: var(--navy);
+  margin-bottom: 20px;
+}
+.admin-invoice-draft-hint {
+  font-size: 0.8rem;
+  font-style: italic;
+  color: var(--text-secondary);
+  margin-top: 6px;
+  line-height: 1.4;
+}
+.admin-invoice-autocomplete {
+  position: relative;
+}
+.admin-invoice-autocomplete-list {
+  position: absolute;
+  top: 100%;
+  left: 0;
+  right: 0;
+  background: white;
+  border: 1px solid rgba(212,168,83,0.25);
+  border-radius: var(--radius-sm);
+  box-shadow: 0 8px 24px rgba(20,31,53,0.12);
+  list-style: none;
+  margin: 4px 0 0;
+  padding: 4px 0;
+  z-index: 10;
+  max-height: 200px;
+  overflow-y: auto;
+}
+.admin-invoice-autocomplete-item {
+  padding: 8px 14px;
+  font-size: 0.85rem;
+  color: var(--navy);
+  cursor: pointer;
+  transition: background 0.15s;
+}
+.admin-invoice-autocomplete-item:hover {
+  background: rgba(212,168,83,0.08);
+}
+.admin-invoice-create-btn {
+  padding: 10px 24px;
+  background: var(--sage-dark);
+  color: white;
+  border: none;
+  border-radius: var(--radius-sm);
+  font-family: 'Outfit', sans-serif;
+  font-size: 0.88rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background 0.2s;
+}
+.admin-invoice-create-btn:hover {
+  background: #6b8a5e;
+}
+.admin-invoice-create-btn:disabled {
+  opacity: 0.5;
+  cursor: default;
+}
+.admin-send-btn {
+  padding: 4px 12px;
+  background: rgba(168,191,160,0.15);
+  color: var(--sage-dark);
+  border: 1px solid rgba(122,155,109,0.3);
+  border-radius: var(--radius-sm);
+  font-family: 'Outfit', sans-serif;
+  font-size: 0.78rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+.admin-send-btn:hover {
+  background: rgba(168,191,160,0.25);
+  border-color: var(--sage-dark);
+}
+.admin-void-btn {
+  padding: 4px 12px;
+  background: none;
+  color: var(--text-secondary);
+  border: 1px solid rgba(74,85,104,0.2);
+  border-radius: var(--radius-sm);
+  font-family: 'Outfit', sans-serif;
+  font-size: 0.78rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+.admin-void-btn:hover {
+  background: rgba(220,80,80,0.06);
+  color: #c44;
+  border-color: rgba(220,80,80,0.4);
+}
+
 /* ── Admin Responsive ── */
 @media (max-width: 768px) {
   .admin-cards {
@@ -4353,6 +4879,10 @@ body::after {
     flex-direction: column;
   }
   .admin-refund-dialog {
+    max-width: 100%;
+    margin: 0 12px;
+  }
+  .admin-invoice-dialog {
     max-width: 100%;
     margin: 0 12px;
   }

@@ -2,7 +2,8 @@
 
 import { useState, useEffect, useCallback } from 'react';
 import AdminRefundDialog from './AdminRefundDialog';
-import type { PaymentsData, StripeCharge } from './admin-types';
+import AdminInvoiceDialog from './AdminInvoiceDialog';
+import type { PaymentsData, StripeCharge, StripeInvoice, Enrollment } from './admin-types';
 
 function formatDate(ts: number): string {
   return new Date(ts * 1000).toLocaleDateString('en-US', {
@@ -16,13 +17,15 @@ function formatCurrency(cents: number): string {
 
 interface Props {
   adminKey: string;
+  enrollments: Enrollment[];
 }
 
-export default function AdminPaymentsTab({ adminKey }: Props) {
+export default function AdminPaymentsTab({ adminKey, enrollments }: Props) {
   const [data, setData] = useState<PaymentsData | null>(null);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
   const [refundCharge, setRefundCharge] = useState<StripeCharge | null>(null);
+  const [showInvoiceDialog, setShowInvoiceDialog] = useState(false);
 
   const fetchPayments = useCallback(async () => {
     setLoading(true);
@@ -42,6 +45,38 @@ export default function AdminPaymentsTab({ adminKey }: Props) {
   useEffect(() => {
     if (!data && !loading) fetchPayments();
   }, [data, loading, fetchPayments]);
+
+  async function handleSendInvoice(inv: StripeInvoice) {
+    if (!confirm(`Send this invoice to ${inv.customer?.email || 'the customer'}? It will be finalized and emailed.`)) return;
+    try {
+      const res = await fetch(`/api/admin/invoices/send?key=${encodeURIComponent(adminKey)}`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ invoiceId: inv.id }),
+      });
+      const json = await res.json();
+      if (!res.ok) throw new Error(json.error || 'Failed to send invoice');
+      fetchPayments();
+    } catch (err) {
+      alert(err instanceof Error ? err.message : 'Failed to send invoice');
+    }
+  }
+
+  async function handleVoidInvoice(inv: StripeInvoice) {
+    if (!confirm(`Void this invoice for ${inv.customer?.email || 'the customer'}? This cannot be undone.`)) return;
+    try {
+      const res = await fetch(`/api/admin/invoices/void?key=${encodeURIComponent(adminKey)}`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ invoiceId: inv.id }),
+      });
+      const json = await res.json();
+      if (!res.ok) throw new Error(json.error || 'Failed to void invoice');
+      fetchPayments();
+    } catch (err) {
+      alert(err instanceof Error ? err.message : 'Failed to void invoice');
+    }
+  }
 
   if (loading && !data) {
     return <div className="admin-payments-loading">Loading payment data from Stripe&hellip;</div>;
@@ -81,6 +116,9 @@ export default function AdminPaymentsTab({ adminKey }: Props) {
       </div>
 
       <div className="admin-payments-toolbar">
+        <button className="admin-compose-btn" onClick={() => setShowInvoiceDialog(true)}>
+          Create Invoice
+        </button>
         <button className="admin-refresh-btn" onClick={fetchPayments} disabled={loading}>
           {loading ? 'Refreshing\u2026' : 'Refresh'}
         </button>
@@ -161,6 +199,7 @@ export default function AdminPaymentsTab({ adminKey }: Props) {
                   <th>Amount</th>
                   <th>Status</th>
                   <th>Date</th>
+                  <th>Actions</th>
                 </tr>
               </thead>
               <tbody>
@@ -173,19 +212,36 @@ export default function AdminPaymentsTab({ adminKey }: Props) {
                         {inv.status_label}
                       </span>
                     </td>
+                    <td>{formatDate(inv.created)}</td>
                     <td>
-                      {formatDate(inv.created)}
-                      {inv.hosted_invoice_url && (
-                        <a
-                          href={inv.hosted_invoice_url}
-                          target="_blank"
-                          rel="noopener noreferrer"
-                          className="admin-stripe-link"
-                          style={{ marginLeft: 8 }}
-                        >
-                          View
-                        </a>
-                      )}
+                      <div className="admin-payment-actions">
+                        {inv.hosted_invoice_url && (
+                          <a
+                            href={inv.hosted_invoice_url}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            className="admin-stripe-link"
+                          >
+                            View
+                          </a>
+                        )}
+                        {inv.status === 'draft' && (
+                          <button
+                            className="admin-send-btn"
+                            onClick={() => handleSendInvoice(inv)}
+                          >
+                            Send
+                          </button>
+                        )}
+                        {(inv.status === 'draft' || inv.status === 'open') && (
+                          <button
+                            className="admin-void-btn"
+                            onClick={() => handleVoidInvoice(inv)}
+                          >
+                            Void
+                          </button>
+                        )}
+                      </div>
                     </td>
                   </tr>
                 ))}
@@ -203,6 +259,19 @@ export default function AdminPaymentsTab({ adminKey }: Props) {
           onClose={() => setRefundCharge(null)}
           onSuccess={() => {
             setRefundCharge(null);
+            fetchPayments();
+          }}
+        />
+      )}
+
+      {/* Invoice Dialog */}
+      {showInvoiceDialog && (
+        <AdminInvoiceDialog
+          adminKey={adminKey}
+          enrollments={enrollments}
+          onClose={() => setShowInvoiceDialog(false)}
+          onSuccess={() => {
+            setShowInvoiceDialog(false);
             fetchPayments();
           }}
         />

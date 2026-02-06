@@ -69,7 +69,7 @@ export default function AdminDashboard({ sections, enrollments, scheduleMap, adm
       )}
 
       {tab === 'payments' && (
-        <AdminPaymentsTab adminKey={adminKey} />
+        <AdminPaymentsTab adminKey={adminKey} enrollments={enrollments} />
       )}
 
       {tab === 'emails' && (

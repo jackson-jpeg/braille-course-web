@@ -34,6 +34,15 @@ export const brailleMap: Record<string, number[]> = {
   Z: [1, 0, 0, 1, 1, 1],
 };
 
+/** Count how many of the 6 dot positions match between two patterns */
+export function computeSimilarity(a: number[], b: number[]): number {
+  let matches = 0;
+  for (let i = 0; i < 6; i++) {
+    if (a[i] === b[i]) matches++;
+  }
+  return matches;
+}
+
 /** Describe which dots are raised for a letter (e.g., "dots 1 2") */
 export function dotDescription(letter: string): string {
   const pattern = brailleMap[letter.toUpperCase()];

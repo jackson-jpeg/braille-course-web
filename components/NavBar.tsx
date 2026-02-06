@@ -8,7 +8,7 @@ const NAV_LINKS = [
   { href: '/', label: 'Home' },
   { href: '/summer', label: 'Summer Course' },
   { href: '/appointments', label: 'Appointments' },
-  { href: '/games', label: 'Games' },
+  { href: '/games', label: 'Interactive' },
 ];
 
 export default function NavBar() {

@@ -1,6 +1,7 @@
 import { Metadata } from 'next';
 import Link from 'next/link';
 import Footer from '@/components/Footer';
+import BrailleHero from '@/components/BrailleHero';
 
 export const metadata: Metadata = {
   title: 'Book an Appointment — TeachBraille.org',
@@ -21,6 +22,7 @@ export default function AppointmentsPage() {
       {/* ========== HERO ========== */}
       <section className="appointments-hero" id="top">
         <div className="appointments-hero-content" id="main-content">
+          <BrailleHero />
           <div className="section-label">1-on-1 Instruction</div>
           <h1>
             Book an <em>Appointment</em>

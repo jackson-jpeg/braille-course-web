@@ -99,10 +99,10 @@ export default function HubPage() {
                   <polygon points="10,8 16,12 10,16" />
                 </svg>
               </div>
-              <h3>Braille Games</h3>
-              <p>Practice braille with interactive games — Word Game, Dot Explorer, and Hangman.</p>
+              <h3>Interactive Practice</h3>
+              <p>Practice braille with interactive activities — Word Game, Dot Explorer, Hangman, and more.</p>
               <span className="hub-card-cta">
-                Start playing
+                Start practicing
                 <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" aria-hidden="true">
                   <line x1="5" y1="12" x2="19" y2="12" />
                   <polyline points="12 5 19 12 12 19" />

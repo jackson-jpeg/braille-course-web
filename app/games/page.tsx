@@ -2,16 +2,18 @@ import { Metadata } from 'next';
 import BrailleWordGame from '@/components/BrailleWordGame';
 import BrailleDotExplorer from '@/components/BrailleDotExplorer';
 import BrailleHangman from '@/components/BrailleHangman';
+import BrailleSpeedMatch from '@/components/BrailleSpeedMatch';
+import BrailleMemoryMatch from '@/components/BrailleMemoryMatch';
 import Footer from '@/components/Footer';
 
 export const metadata: Metadata = {
-  title: 'Braille Games — TeachBraille.org',
+  title: 'Interactive Braille Practice — TeachBraille.org',
   description:
-    'Practice braille with interactive games. Play Braille Word Game, explore dot patterns with Dot Explorer, and test your skills with Braille Hangman.',
+    'Practice braille with interactive activities. Word Game, Dot Explorer, Hangman, Speed Match, and Memory Match.',
   openGraph: {
-    title: 'Braille Games — TeachBraille.org',
+    title: 'Interactive Braille Practice — TeachBraille.org',
     description:
-      'Interactive braille learning games: Word Game, Dot Explorer, and Hangman.',
+      'Interactive braille learning: Word Game, Dot Explorer, Hangman, Speed Match, and Memory Match.',
   },
 };
 
@@ -23,10 +25,10 @@ export default function GamesPage() {
         <div className="games-hero-content" id="main-content">
           <div className="section-label">Interactive Learning</div>
           <h1>
-            Braille <em>Games</em>
+            Braille <em>Interactive</em>
           </h1>
           <p className="games-hero-sub">
-            Practice and build your braille skills with fun, interactive games.
+            Practice and build your braille skills with interactive activities.
           </p>
         </div>
       </section>
@@ -36,6 +38,8 @@ export default function GamesPage() {
         <a href="#wordgame" className="games-nav-link">Word Game</a>
         <a href="#explorer" className="games-nav-link">Dot Explorer</a>
         <a href="#hangman" className="games-nav-link">Hangman</a>
+        <a href="#speedmatch" className="games-nav-link">Speed Match</a>
+        <a href="#memorymatch" className="games-nav-link">Memory Match</a>
       </nav>
 
       {/* ========== WORD GAME ========== */}
@@ -51,6 +55,16 @@ export default function GamesPage() {
       {/* ========== HANGMAN ========== */}
       <section className="hangman-section" id="hangman">
         <BrailleHangman />
+      </section>
+
+      {/* ========== SPEED MATCH ========== */}
+      <section className="speedmatch-section" id="speedmatch">
+        <BrailleSpeedMatch />
+      </section>
+
+      {/* ========== MEMORY MATCH ========== */}
+      <section className="memorymatch-section" id="memorymatch">
+        <BrailleMemoryMatch />
       </section>
 
       <Footer />
