@@ -84,7 +84,7 @@ export async function POST(req: NextRequest) {
           sectionId,
         },
       },
-      success_url: `${siteUrl}/summer/success?plan=${plan}`,
+      success_url: `${siteUrl}/summer/success?session_id={CHECKOUT_SESSION_ID}`,
       cancel_url: `${siteUrl}/summer`,
     };
 

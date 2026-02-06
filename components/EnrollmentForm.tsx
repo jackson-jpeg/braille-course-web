@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from 'react';
 import { useSpots } from '@/lib/spots-context';
+import { SECTION_SCHEDULES } from '@/lib/schedule';
 
 export default function EnrollmentForm() {
   const { sections, totalRemaining, refreshSections } = useSpots();
@@ -90,7 +91,7 @@ export default function EnrollmentForm() {
     <div className="enrollment-form">
       {/* Step 1: Choose Section */}
       <div className="enrollment-step">
-        <div className="enrollment-step-label">1. Choose Your Section</div>
+        <div className="enrollment-step-label">1. Choose Your Schedule</div>
         <div className="enrollment-options">
           {sections.map((section) => {
             const spotsLeft = section.maxCapacity - section.enrolledCount;
@@ -114,12 +115,7 @@ export default function EnrollmentForm() {
                 />
                 <div className="enrollment-option-text">
                   <div className="enrollment-option-title">
-                    {section.label}
-                  </div>
-                  <div className="enrollment-option-sub">
-                    {section.label === 'Section A'
-                      ? 'Mon & Wed, 1–2 PM ET'
-                      : 'Tue & Thu, 4–5 PM ET'}
+                    {SECTION_SCHEDULES[section.label] || section.label}
                   </div>
                   <div className="enrollment-option-sub">
                     {isFull

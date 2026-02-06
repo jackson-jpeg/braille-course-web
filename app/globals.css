@@ -3129,3 +3129,151 @@ body::after {
     height: 48px;
   }
 }
+
+/* ============================================================
+   ADMIN DASHBOARD
+   ============================================================ */
+.admin-page {
+  min-height: 100vh;
+  background: var(--cream);
+  padding: 40px 24px;
+}
+.admin-inner {
+  max-width: 960px;
+  margin: 0 auto;
+}
+.admin-title {
+  font-family: 'DM Serif Display', serif;
+  font-size: clamp(1.6rem, 3.5vw, 2.2rem);
+  color: var(--navy);
+  margin-bottom: 32px;
+}
+.admin-auth-error {
+  max-width: 400px;
+  margin: 120px auto;
+  text-align: center;
+}
+.admin-auth-error h1 {
+  font-family: 'DM Serif Display', serif;
+  font-size: 1.8rem;
+  color: var(--navy);
+  margin-bottom: 8px;
+}
+.admin-auth-error p {
+  font-size: 1rem;
+  color: var(--text-secondary);
+  font-weight: 300;
+}
+
+/* Summary cards */
+.admin-cards {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+  gap: 16px;
+  margin-bottom: 36px;
+}
+.admin-card {
+  background: white;
+  border: 1px solid rgba(212,168,83,0.15);
+  border-radius: var(--radius-md);
+  padding: 20px;
+  text-align: center;
+}
+.admin-card-warning {
+  border-color: #e0a040;
+  background: #fffbf0;
+}
+.admin-card-value {
+  font-family: 'DM Serif Display', serif;
+  font-size: 2rem;
+  color: var(--navy);
+  line-height: 1.1;
+  margin-bottom: 4px;
+}
+.admin-card-label {
+  font-size: 0.78rem;
+  color: var(--text-secondary);
+  font-weight: 400;
+}
+
+/* Table */
+.admin-table-wrap {
+  overflow-x: auto;
+  background: white;
+  border: 1px solid rgba(212,168,83,0.15);
+  border-radius: var(--radius-md);
+}
+.admin-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.9rem;
+}
+.admin-table th {
+  text-align: left;
+  padding: 14px 16px;
+  font-size: 0.72rem;
+  font-weight: 600;
+  letter-spacing: 1px;
+  text-transform: uppercase;
+  color: var(--text-secondary);
+  border-bottom: 1px solid rgba(212,168,83,0.12);
+  white-space: nowrap;
+}
+.admin-table td {
+  padding: 12px 16px;
+  color: var(--text-primary);
+  border-bottom: 1px solid rgba(212,168,83,0.06);
+  font-weight: 300;
+}
+.admin-table tbody tr:last-child td {
+  border-bottom: none;
+}
+.admin-row-warning {
+  background: #fffbf0;
+}
+.admin-empty {
+  text-align: center;
+  color: var(--text-secondary);
+  padding: 40px 16px;
+  font-style: italic;
+}
+
+/* Status badges */
+.admin-status {
+  display: inline-block;
+  padding: 3px 10px;
+  border-radius: var(--radius-full);
+  font-size: 0.72rem;
+  font-weight: 600;
+  letter-spacing: 0.5px;
+}
+.admin-status-completed {
+  background: rgba(168,191,160,0.2);
+  color: var(--sage-dark);
+}
+.admin-status-pending {
+  background: rgba(212,168,83,0.15);
+  color: #b8930e;
+}
+.admin-status-waitlisted {
+  background: rgba(220,80,80,0.12);
+  color: #c44;
+}
+
+/* Error state icon on success page */
+.check-icon-error {
+  background: var(--slate);
+}
+
+@media (max-width: 768px) {
+  .admin-cards {
+    grid-template-columns: repeat(2, 1fr);
+  }
+  .admin-table {
+    font-size: 0.82rem;
+  }
+  .admin-table th,
+  .admin-table td {
+    padding: 10px 12px;
+  }
+}

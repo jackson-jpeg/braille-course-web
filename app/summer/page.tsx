@@ -221,11 +221,11 @@ export default async function SummerPage() {
                 You&apos;ll meet{' '}
                 <strong>twice per week for one hour each session</strong>. Over the
                 8-week course, that comes out to <strong>16 sessions total</strong>.
-                Two sections are available — pick the one that works best for you:
+                Two time slots are available — pick the one that works best for you:
               </p>
               <ul className="faq-answer" style={{ marginTop: '0.5rem', paddingLeft: '1.25rem' }}>
-                <li><strong>Section A:</strong> Monday &amp; Wednesday, 1–2 PM ET</li>
-                <li><strong>Section B:</strong> Tuesday &amp; Thursday, 4–5 PM ET</li>
+                <li>Monday &amp; Wednesday, 1–2 PM ET</li>
+                <li>Tuesday &amp; Thursday, 4–5 PM ET</li>
               </ul>
             </div>
 

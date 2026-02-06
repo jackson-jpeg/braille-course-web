@@ -1,6 +1,8 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { prisma } from '@/lib/prisma';
 import { stripe } from '@/lib/stripe';
+import { resend } from '@/lib/resend';
+import { getSchedule } from '@/lib/schedule';
 
 export async function POST(req: NextRequest) {
   // Env var validation
@@ -112,6 +114,57 @@ export async function POST(req: NextRequest) {
             },
           });
         });
+      }
+
+      // Send confirmation email (fire-and-forget)
+      if (email && sectionId) {
+        try {
+          const section = await prisma.section.findUnique({
+            where: { id: sectionId },
+          });
+          const schedule = section ? getSchedule(section.label) : 'Check your inbox for schedule details';
+          const isDeposit = plan === 'deposit';
+
+          await resend.emails.send({
+            from: process.env.RESEND_FROM_EMAIL || 'onboarding@resend.dev',
+            to: email,
+            subject: isDeposit
+              ? 'Your $150 Deposit Is Confirmed — Summer Braille Course'
+              : "You're Enrolled — Summer Braille Course",
+            html: `
+              <div style="font-family: sans-serif; max-width: 560px; margin: 0 auto; color: #1B2A4A;">
+                <h1 style="font-size: 24px; margin-bottom: 16px;">
+                  ${isDeposit ? 'Your $150 Deposit Is Confirmed!' : "You're All Set!"}
+                </h1>
+                <p style="font-size: 16px; line-height: 1.6; color: #4A5568;">
+                  ${isDeposit
+                    ? 'Thank you for reserving your spot in the Summer Braille Course! Your $150 deposit has been received.'
+                    : "Your $500 payment is confirmed — you're fully enrolled in the Summer Braille Course!"}
+                </p>
+                ${isDeposit
+                  ? `<div style="background: #F7EDD5; border: 1px solid #F0DEB4; border-radius: 8px; padding: 16px; margin: 20px 0;">
+                      <p style="margin: 0; font-size: 15px; color: #1B2A4A;">
+                        <strong>Remaining balance of $350</strong> will be charged automatically on <strong>May 1st</strong> to the card you used.
+                      </p>
+                    </div>`
+                  : ''}
+                <h2 style="font-size: 18px; margin-top: 28px; margin-bottom: 12px;">Course Details</h2>
+                <table style="font-size: 15px; line-height: 1.8; color: #4A5568;">
+                  <tr><td style="padding-right: 12px;"><strong>Schedule:</strong></td><td>${schedule}</td></tr>
+                  <tr><td style="padding-right: 12px;"><strong>Dates:</strong></td><td>June 8 – July 27, 2026</td></tr>
+                  <tr><td style="padding-right: 12px;"><strong>Sessions:</strong></td><td>16 total (twice per week, 1 hour each)</td></tr>
+                  <tr><td style="padding-right: 12px;"><strong>Format:</strong></td><td>Fully remote via video call</td></tr>
+                </table>
+                <p style="font-size: 14px; color: #4A5568; margin-top: 28px; line-height: 1.6;">
+                  Questions? Reach out anytime at
+                  <a href="mailto:delaneycostello23@gmail.com" style="color: #D4A853;">delaneycostello23@gmail.com</a>
+                </p>
+              </div>
+            `,
+          });
+        } catch (emailErr) {
+          console.error('Failed to send confirmation email:', (emailErr as Error).message);
+        }
       }
 
       // Retrieve PaymentIntent to check type
