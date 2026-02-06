@@ -18,9 +18,6 @@ export const metadata: Metadata = {
   twitter: {
     card: 'summary_large_image',
   },
-  icons: {
-    icon: "data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>⠃</text></svg>",
-  },
   robots: { index: true, follow: true },
 };
 

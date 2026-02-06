@@ -195,6 +195,7 @@ export interface StripePromotionCode {
 /* ── Stripe Payment Links ── */
 export interface StripePaymentLink {
   id: string;
+  name: string | null;
   url: string;
   active: boolean;
   metadata: Record<string, string>;

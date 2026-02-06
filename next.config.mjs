@@ -1,5 +1,10 @@
 /** @type {import('next').NextConfig} */
 const nextConfig = {
+  experimental: {
+    outputFileTracingIncludes: {
+      '/api/admin/generate': ['./node_modules/pdfkit/js/data/**/*.afm'],
+    },
+  },
   async headers() {
     return [
       {

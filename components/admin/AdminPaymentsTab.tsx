@@ -57,6 +57,15 @@ export default function AdminPaymentsTab({ enrollments }: Props) {
   // Payment Links state
   const [paymentLinks, setPaymentLinks] = useState<StripePaymentLink[]>([]);
   const [linksLoading, setLinksLoading] = useState(false);
+  const [showCreateLink, setShowCreateLink] = useState(false);
+  const [linkName, setLinkName] = useState('');
+  const [linkAmount, setLinkAmount] = useState('');
+  const [linkAllowPromo, setLinkAllowPromo] = useState(false);
+  const [linkCreating, setLinkCreating] = useState(false);
+
+  // Coupon inline edit state
+  const [editingCouponId, setEditingCouponId] = useState<string | null>(null);
+  const [editingCouponName, setEditingCouponName] = useState('');
 
   const fetchPayments = useCallback(async () => {
     setLoading(true);
@@ -249,6 +258,100 @@ export default function AdminPaymentsTab({ enrollments }: Props) {
 
   function handleExportCsv() {
     window.open('/api/admin/payments/export', '_blank');
+  }
+
+  async function handleUpdateCouponName(couponId: string) {
+    if (!editingCouponName.trim()) return;
+    try {
+      const res = await fetch(`/api/admin/payments/coupons/${couponId}`, {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ name: editingCouponName.trim() }),
+      });
+      if (!res.ok) {
+        const json = await res.json();
+        throw new Error(json.error || 'Failed to update coupon');
+      }
+      setEditingCouponId(null);
+      showToast('Coupon name updated');
+      setCoupons([]);
+    } catch (err) {
+      showToast(err instanceof Error ? err.message : 'Failed to update coupon', 'error');
+    }
+  }
+
+  function handleDeleteCoupon(coupon: StripeCoupon) {
+    setConfirmAction({
+      title: 'Delete Coupon',
+      message: `Delete coupon "${coupon.name || coupon.id}"? This cannot be undone.`,
+      confirmLabel: 'Delete Coupon',
+      variant: 'danger',
+      onConfirm: async () => {
+        try {
+          const res = await fetch(`/api/admin/payments/coupons/${coupon.id}`, {
+            method: 'DELETE',
+          });
+          if (!res.ok) {
+            const json = await res.json();
+            throw new Error(json.error || 'Failed to delete coupon');
+          }
+          setConfirmAction(null);
+          showToast('Coupon deleted');
+          setCoupons([]);
+        } catch (err) {
+          setConfirmAction(null);
+          showToast(err instanceof Error ? err.message : 'Failed to delete coupon', 'error');
+        }
+      },
+    });
+  }
+
+  async function handleCreateLink(e: React.FormEvent) {
+    e.preventDefault();
+    setLinkCreating(true);
+    try {
+      const res = await fetch('/api/admin/payments/links', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          name: linkName,
+          amount: linkAmount,
+          allowPromotion: linkAllowPromo,
+        }),
+      });
+      if (!res.ok) {
+        const json = await res.json();
+        throw new Error(json.error || 'Failed to create payment link');
+      }
+      setShowCreateLink(false);
+      setLinkName('');
+      setLinkAmount('');
+      setLinkAllowPromo(false);
+      showToast('Payment link created');
+      setPaymentLinks([]);
+    } catch (err) {
+      showToast(err instanceof Error ? err.message : 'Failed to create payment link', 'error');
+    } finally {
+      setLinkCreating(false);
+    }
+  }
+
+  async function handleToggleLink(link: StripePaymentLink) {
+    try {
+      const res = await fetch(`/api/admin/payments/links/${link.id}`, {
+        method: 'PATCH',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ active: !link.active }),
+      });
+      if (!res.ok) {
+        const json = await res.json();
+        throw new Error(json.error || 'Failed to update payment link');
+      }
+      showToast(link.active ? 'Payment link deactivated' : 'Payment link activated');
+      setPaymentLinks([]);
+    } catch (err) {
+      showToast(err instanceof Error ? err.message : 'Failed to update payment link', 'error');
+    }
   }
 
   if (loading && !data) {
@@ -610,15 +713,37 @@ export default function AdminPaymentsTab({ enrollments }: Props) {
                     <th>Promo Code</th>
                     <th>Redeemed</th>
                     <th>Status</th>
+                    <th>Actions</th>
                   </tr>
                 </thead>
                 <tbody>
                   {coupons.length === 0 ? (
-                    <tr><td colSpan={5} className="admin-empty"><div className="admin-empty-state"><p className="admin-empty-state-title">No coupons yet</p><p className="admin-empty-state-sub">Create a coupon to offer discounts on your courses.</p><button className="admin-empty-state-cta" onClick={() => setShowCreateCoupon(true)}>Create Coupon</button></div></td></tr>
+                    <tr><td colSpan={6} className="admin-empty"><div className="admin-empty-state"><p className="admin-empty-state-title">No coupons yet</p><p className="admin-empty-state-sub">Create a coupon to offer discounts on your courses.</p><button className="admin-empty-state-cta" onClick={() => setShowCreateCoupon(true)}>Create Coupon</button></div></td></tr>
                   ) : (
                     coupons.map((c) => (
                       <tr key={c.id}>
-                        <td>{c.name || c.id}</td>
+                        <td>
+                          {editingCouponId === c.id ? (
+                            <span className="admin-email-cell">
+                              <input
+                                type="text"
+                                value={editingCouponName}
+                                onChange={(e) => setEditingCouponName(e.target.value)}
+                                className="admin-compose-input"
+                                style={{ width: 160, padding: '2px 6px', fontSize: 13 }}
+                                onKeyDown={(e) => {
+                                  if (e.key === 'Enter') handleUpdateCouponName(c.id);
+                                  if (e.key === 'Escape') setEditingCouponId(null);
+                                }}
+                                autoFocus
+                              />
+                              <button className="admin-send-invoice-btn" onClick={() => handleUpdateCouponName(c.id)}>Save</button>
+                              <button className="admin-stripe-link" onClick={() => setEditingCouponId(null)}>Cancel</button>
+                            </span>
+                          ) : (
+                            c.name || c.id
+                          )}
+                        </td>
                         <td>
                           {c.percent_off ? `${c.percent_off}% off` : c.amount_off ? `$${(c.amount_off / 100).toFixed(2)} off` : '\u2014'}
                         </td>
@@ -636,6 +761,27 @@ export default function AdminPaymentsTab({ enrollments }: Props) {
                             {c.valid ? 'Active' : 'Expired'}
                           </span>
                         </td>
+                        <td>
+                          <div className="admin-payment-actions">
+                            {editingCouponId !== c.id && (
+                              <button
+                                className="admin-stripe-link"
+                                onClick={() => {
+                                  setEditingCouponId(c.id);
+                                  setEditingCouponName(c.name || '');
+                                }}
+                              >
+                                Edit
+                              </button>
+                            )}
+                            <button
+                              className="admin-void-btn"
+                              onClick={() => handleDeleteCoupon(c)}
+                            >
+                              Delete
+                            </button>
+                          </div>
+                        </td>
                       </tr>
                     ))
                   )}
@@ -649,24 +795,79 @@ export default function AdminPaymentsTab({ enrollments }: Props) {
       {/* ── PAYMENT LINKS SUB-TAB ── */}
       {paymentSubTab === 'links' && (
         <div className="admin-overview-section">
+          <div className="admin-payments-toolbar">
+            <button className="admin-compose-btn" onClick={() => setShowCreateLink(!showCreateLink)}>
+              {showCreateLink ? 'Cancel' : 'Create Payment Link'}
+            </button>
+          </div>
+
+          {showCreateLink && (
+            <div className="admin-compose" style={{ marginBottom: 16 }}>
+              <form onSubmit={handleCreateLink}>
+                <div className="admin-compose-field">
+                  <label>Name</label>
+                  <input
+                    type="text"
+                    value={linkName}
+                    onChange={(e) => setLinkName(e.target.value)}
+                    placeholder="e.g. Summer Course Full Payment"
+                    className="admin-compose-input"
+                    required
+                  />
+                </div>
+                <div className="admin-compose-field">
+                  <label>Amount ($)</label>
+                  <input
+                    type="number"
+                    step="0.01"
+                    min="0.50"
+                    value={linkAmount}
+                    onChange={(e) => setLinkAmount(e.target.value)}
+                    placeholder="500.00"
+                    className="admin-compose-input"
+                    required
+                  />
+                </div>
+                <div className="admin-compose-field">
+                  <label style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+                    <input
+                      type="checkbox"
+                      checked={linkAllowPromo}
+                      onChange={(e) => setLinkAllowPromo(e.target.checked)}
+                    />
+                    Allow promotion codes
+                  </label>
+                </div>
+                <div className="admin-compose-actions">
+                  <button type="submit" className="admin-send-btn" disabled={linkCreating}>
+                    {linkCreating ? 'Creating\u2026' : 'Create Payment Link'}
+                  </button>
+                </div>
+              </form>
+            </div>
+          )}
+
           {linksLoading ? (
-            <SkeletonTable rows={3} cols={3} />
+            <SkeletonTable rows={3} cols={5} />
           ) : (
             <div className="admin-table-wrap">
               <table className="admin-table">
                 <thead>
                   <tr>
+                    <th>Name</th>
                     <th>Link</th>
                     <th>Items</th>
                     <th>Status</th>
+                    <th>Actions</th>
                   </tr>
                 </thead>
                 <tbody>
                   {paymentLinks.length === 0 ? (
-                    <tr><td colSpan={3} className="admin-empty"><div className="admin-empty-state"><p className="admin-empty-state-title">No payment links</p><p className="admin-empty-state-sub">Payment links created in Stripe will appear here.</p></div></td></tr>
+                    <tr><td colSpan={5} className="admin-empty"><div className="admin-empty-state"><p className="admin-empty-state-title">No payment links</p><p className="admin-empty-state-sub">Create a payment link to share with students.</p><button className="admin-empty-state-cta" onClick={() => setShowCreateLink(true)}>Create Payment Link</button></div></td></tr>
                   ) : (
                     paymentLinks.map((link) => (
                       <tr key={link.id}>
+                        <td>{link.name || '\u2014'}</td>
                         <td>
                           <span className="admin-email-cell">
                             <a href={link.url} target="_blank" rel="noopener noreferrer" className="admin-stripe-link">
@@ -686,6 +887,16 @@ export default function AdminPaymentsTab({ enrollments }: Props) {
                           <span className={`admin-status admin-status-${link.active ? 'completed' : 'waitlisted'}`}>
                             {link.active ? 'Active' : 'Inactive'}
                           </span>
+                        </td>
+                        <td>
+                          <div className="admin-payment-actions">
+                            <button
+                              className={link.active ? 'admin-void-btn' : 'admin-send-invoice-btn'}
+                              onClick={() => handleToggleLink(link)}
+                            >
+                              {link.active ? 'Deactivate' : 'Activate'}
+                            </button>
+                          </div>
                         </td>
                       </tr>
                     ))
