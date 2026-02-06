@@ -1,3 +1,5 @@
+import Link from 'next/link';
+
 export default function Footer() {
   return (
     <footer className="footer">
@@ -14,6 +16,11 @@ export default function Footer() {
         </svg>
         Back to top
       </a>
+      <nav className="footer-links" aria-label="Legal">
+        <Link href="/policies#refunds">Refund Policy</Link>
+        <Link href="/policies#privacy">Privacy</Link>
+        <Link href="/policies#terms">Terms</Link>
+      </nav>
       <p>
         &copy; 2026 Delaney Costello, Teacher of the Visually Impaired &middot;
         Remote Braille Instruction

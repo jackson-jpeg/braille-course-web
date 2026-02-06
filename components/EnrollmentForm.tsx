@@ -1,6 +1,7 @@
 'use client';
 
 import { useState, useEffect } from 'react';
+import Link from 'next/link';
 import { useSpots } from '@/lib/spots-context';
 import { SECTION_SCHEDULES } from '@/lib/schedule';
 
@@ -196,6 +197,12 @@ export default function EnrollmentForm() {
       </button>
 
       {error && <div className="enrollment-error">{error}</div>}
+
+      <p className="enrollment-legal">
+        By enrolling, you agree to our{' '}
+        <Link href="/policies#refunds">Refund Policy</Link> and{' '}
+        <Link href="/policies#terms">Terms of Service</Link>.
+      </p>
     </div>
   );
 }
