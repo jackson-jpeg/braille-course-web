@@ -3,7 +3,7 @@
 import { useState, useEffect, useCallback, useRef } from 'react';
 import { brailleMap, computeSimilarity } from '@/lib/braille-map';
 
-const LETTERS = Object.keys(brailleMap);
+const LETTERS = Object.keys(brailleMap).filter((k) => /^[A-Z]$/.test(k));
 
 type Mode = 'read' | 'write';
 

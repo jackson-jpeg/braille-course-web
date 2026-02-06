@@ -166,7 +166,7 @@ export default function ServicesPage() {
               </div>
               <h3>Expanded Core Curriculum</h3>
               <p>
-                Instruction across <a href="#ecc">7 of the 9 ECC areas</a> —
+                Instruction across <a href="#ecc">8 of the 9 ECC areas</a> —
                 building the essential skills that go beyond academics for
                 students with visual impairments.
               </p>
@@ -198,7 +198,7 @@ export default function ServicesPage() {
           <h2 id="services-ecc-heading">The Expanded Core Curriculum</h2>
           <p className="services-ecc-intro">
             The ECC encompasses 9 skill areas essential for students with visual
-            impairments. Delaney provides direct instruction in the following 7
+            impairments. Delaney provides direct instruction in the following 8
             areas:
           </p>
           <div className="services-ecc-grid">
@@ -263,6 +263,17 @@ export default function ServicesPage() {
               </div>
               <h3>Sensory Efficiency</h3>
               <p>Maximizing use of residual vision, hearing, touch, and other senses for learning.</p>
+            </div>
+            <div className="services-ecc-item">
+              <div className="services-ecc-icon" aria-hidden="true">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                  <rect x="2" y="3" width="20" height="14" rx="2" />
+                  <line x1="8" y1="21" x2="16" y2="21" />
+                  <line x1="12" y1="17" x2="12" y2="21" />
+                </svg>
+              </div>
+              <h3>Assistive Technology</h3>
+              <p>Screen readers, magnification software, braille displays, and other adaptive tools for learning and communication.</p>
             </div>
             <div className="services-ecc-item">
               <div className="services-ecc-icon" aria-hidden="true">
