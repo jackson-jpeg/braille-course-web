@@ -85,6 +85,18 @@ export default function BrailleHero() {
               onFocus={() => activate(groupKey)}
               onBlur={deactivate}
               onTouchStart={() => activate(groupKey)}
+              onKeyDown={(e) => {
+                if (e.key === 'Enter' || e.key === ' ') {
+                  e.preventDefault();
+                  const allFilled = dots[groupKey].every(Boolean);
+                  setDots((prev) => ({
+                    ...prev,
+                    [groupKey]: brailleAlphabet[letter].map((v) =>
+                      allFilled ? false : v === 1
+                    ),
+                  }));
+                }
+              }}
             >
               <div className="braille-cell">
                 {dots[groupKey].map((filled, di) => {

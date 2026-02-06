@@ -1104,7 +1104,7 @@ body::after {
 }
 
 @media (max-width: 420px) {
-  .glance-grid { grid-template-columns: 1fr 1fr; gap: 12px; }
+  .glance-grid { grid-template-columns: 1fr; gap: 12px; }
   .glance-card { padding: 24px 16px; }
   .hero-meta { flex-direction: column; align-items: center; }
   .include-item { padding: 16px 18px; }
@@ -1339,6 +1339,11 @@ body::after {
   flex-shrink: 0;
   position: relative;
   transition: all 0.2s ease;
+}
+
+.enrollment-option:has(input:focus-visible) {
+  border-color: rgba(212,168,83,0.5);
+  background: rgba(212,168,83,0.06);
 }
 
 .enrollment-option input[type="radio"]:checked {

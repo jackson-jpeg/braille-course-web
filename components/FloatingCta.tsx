@@ -25,7 +25,6 @@ export default function FloatingCta() {
   return (
     <div
       className={`floating-cta${visible ? ' visible' : ''}`}
-      aria-hidden="true"
     >
       <a href="#cta">
         <svg

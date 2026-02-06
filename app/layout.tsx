@@ -11,7 +11,6 @@ export const metadata: Metadata = {
       'An 8-week introductory remote Braille course for parents and loved ones. Only 10 spots available. Starts June 8.',
     type: 'website',
     url: 'https://braille-course-web.vercel.app',
-    images: ['https://braille-course-web.vercel.app/og-image.jpg'],
   },
   twitter: {
     card: 'summary_large_image',

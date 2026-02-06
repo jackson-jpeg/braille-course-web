@@ -23,6 +23,7 @@ export async function GET(req: NextRequest) {
     );
 
     let finalized = 0;
+    let failed = 0;
     for (const invoice of balanceInvoices) {
       await stripe.invoices.finalizeInvoice(invoice.id);
       console.log(
@@ -31,7 +32,7 @@ export async function GET(req: NextRequest) {
       finalized++;
     }
 
-    return NextResponse.json({ ok: true, finalized });
+    return NextResponse.json({ ok: true, finalized, failed });
   } catch (err) {
     console.error('Cron finalize-balance failed:', (err as Error).message);
     return NextResponse.json(

@@ -193,7 +193,7 @@ export default function BrailleWordle() {
           <p>Guess the 4-letter word</p>
         </div>
 
-        <div className="wordle-board">
+        <div className="wordle-board" role="grid" aria-label="Game board">
           {Array.from({ length: ROWS }).map((_, row) => (
             <div
               key={row}

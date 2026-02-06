@@ -59,6 +59,7 @@ export default function EnrollmentForm({
         setError(
           'This section just filled up! Please choose another section.'
         );
+        setSelectedSection('');
         await refreshSections();
         setLoading(false);
         return;
@@ -104,7 +105,7 @@ export default function EnrollmentForm({
                   name="section"
                   value={section.id}
                   checked={isSelected}
-                  disabled={isFull}
+                  disabled={isFull || loading}
                   onChange={() => setSelectedSection(section.id)}
                 />
                 <div className="enrollment-option-text">
@@ -137,6 +138,7 @@ export default function EnrollmentForm({
               name="plan"
               value="full"
               checked={selectedPlan === 'full'}
+              disabled={loading}
               onChange={() => setSelectedPlan('full')}
             />
             <div className="enrollment-option-text">
@@ -154,6 +156,7 @@ export default function EnrollmentForm({
               name="plan"
               value="deposit"
               checked={selectedPlan === 'deposit'}
+              disabled={loading}
               onChange={() => setSelectedPlan('deposit')}
             />
             <div className="enrollment-option-text">

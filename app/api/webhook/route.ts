@@ -4,8 +4,8 @@ import { stripe } from '@/lib/stripe';
 
 export async function POST(req: NextRequest) {
   // Env var validation
-  if (!process.env.STRIPE_PRICE_BALANCE) {
-    console.error('Missing STRIPE_PRICE_BALANCE env var');
+  if (!process.env.STRIPE_PRICE_BALANCE || !process.env.STRIPE_WEBHOOK_SECRET) {
+    console.error('Missing required env var: STRIPE_PRICE_BALANCE or STRIPE_WEBHOOK_SECRET');
     return NextResponse.json(
       { error: 'Server configuration error' },
       { status: 500 }
@@ -27,7 +27,7 @@ export async function POST(req: NextRequest) {
     event = stripe.webhooks.constructEvent(
       rawBody,
       sig,
-      process.env.STRIPE_WEBHOOK_SECRET!
+      process.env.STRIPE_WEBHOOK_SECRET
     );
   } catch (err) {
     console.error(
