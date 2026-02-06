@@ -1,8 +1,8 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { resend } from '@/lib/resend';
+import { getReceivedEmail } from '@/lib/icloud-mail';
 import { isAuthorized } from '@/lib/admin-auth';
 
-/* ── GET /api/admin/emails/received/[id]?key=...  ── get single received email ── */
+/* ── GET /api/admin/emails/received/[id]?key=...  ── get single received email via iCloud IMAP ── */
 export async function GET(
   req: NextRequest,
   { params }: { params: Promise<{ id: string }> }
@@ -14,17 +14,18 @@ export async function GET(
   const { id } = await params;
 
   try {
-    const result = await resend.emails.receiving.get(id);
+    const email = await getReceivedEmail(id);
 
-    if (result.error) {
+    if (!email) {
       return NextResponse.json(
-        { error: result.error.message },
-        { status: 500 }
+        { error: 'Email not found' },
+        { status: 404 }
       );
     }
 
-    return NextResponse.json({ email: result.data });
-  } catch {
+    return NextResponse.json({ email });
+  } catch (err) {
+    console.error('IMAP fetch failed:', (err as Error).message);
     return NextResponse.json(
       { error: 'Failed to fetch received email' },
       { status: 500 }

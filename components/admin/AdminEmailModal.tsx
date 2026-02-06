@@ -1,8 +1,14 @@
 'use client';
 
-import { useEffect } from 'react';
+import { useCallback, useEffect, useRef } from 'react';
 import type { EmailDetail } from './admin-types';
 import { fullDate } from './admin-utils';
+
+function injectBaseTarget(html: string): string {
+  const tag = '<base target="_blank">';
+  if (/<head[\s>]/i.test(html)) return html.replace(/<head[\s>][^>]*>/i, '$&' + tag);
+  return tag + html;
+}
 
 interface Props {
   email: EmailDetail | null;
@@ -13,6 +19,17 @@ interface Props {
 }
 
 export default function AdminEmailModal({ email, loading, onClose, onReply, onForward }: Props) {
+  const iframeRef = useRef<HTMLIFrameElement>(null);
+
+  const handleIframeLoad = useCallback(() => {
+    try {
+      const doc = iframeRef.current?.contentDocument;
+      if (doc?.body) {
+        iframeRef.current!.style.height = doc.body.scrollHeight + 'px';
+      }
+    } catch { /* cross-origin fallback: keep min-height */ }
+  }, []);
+
   useEffect(() => {
     function handleKey(e: KeyboardEvent) { if (e.key === 'Escape') onClose(); }
     document.addEventListener('keydown', handleKey);
@@ -89,10 +106,12 @@ export default function AdminEmailModal({ email, loading, onClose, onReply, onFo
             <div className="admin-modal-body">
               {email.html ? (
                 <iframe
-                  srcDoc={email.html}
+                  ref={iframeRef}
+                  srcDoc={injectBaseTarget(email.html)}
                   title="Email preview"
                   className="admin-modal-iframe"
-                  sandbox=""
+                  sandbox="allow-popups allow-popups-to-escape-sandbox allow-same-origin"
+                  onLoad={handleIframeLoad}
                 />
               ) : (
                 <pre className="admin-modal-text">{email.text || '(no content)'}</pre>

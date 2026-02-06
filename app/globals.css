@@ -4984,7 +4984,8 @@ body::after {
 }
 .admin-modal-iframe {
   width: 100%;
-  min-height: 500px;
+  min-height: 200px;
+  height: auto;
   border: none;
 }
 .admin-modal-text {

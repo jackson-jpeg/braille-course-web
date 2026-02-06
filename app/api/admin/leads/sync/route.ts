@@ -1,25 +1,21 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { prisma } from '@/lib/prisma';
-import { resend } from '@/lib/resend';
+import { searchEmailsBySubject } from '@/lib/icloud-mail';
 import { isAuthorized } from '@/lib/admin-auth';
 
-/* ── POST /api/admin/leads/sync?key=... — auto-sync inquiry emails from Resend ── */
+/* ── POST /api/admin/leads/sync?key=... — auto-sync inquiry emails from iCloud IMAP ── */
 export async function POST(req: NextRequest) {
   if (!isAuthorized(req)) {
     return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
   }
 
   try {
-    const result = await resend.emails.receiving.list();
-    const emails = result.data?.data ?? [];
+    const emails = await searchEmailsBySubject('braille session inquiry');
 
     let synced = 0;
 
     for (const em of emails) {
-      const subject = (em as { subject?: string }).subject || '';
-      if (!subject.toLowerCase().includes('braille session inquiry')) continue;
-
-      const fromRaw = (em as { from?: string }).from || '';
+      const fromRaw = em.from || '';
       const nameMatch = fromRaw.match(/^(.+?)\s*<(.+?)>$/);
       const email = nameMatch ? nameMatch[2] : fromRaw.replace(/[<>]/g, '').trim();
       const name = nameMatch ? nameMatch[1].trim() : null;
@@ -28,7 +24,7 @@ export async function POST(req: NextRequest) {
 
       await prisma.lead.upsert({
         where: { email },
-        create: { email, name, subject },
+        create: { email, name, subject: em.subject },
         update: {},
       });
       synced++;
