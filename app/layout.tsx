@@ -1,17 +1,19 @@
 import type { Metadata } from 'next';
 import { Analytics } from '@vercel/analytics/next';
+import NavBar from '@/components/NavBar';
+import ScrollRevealInit from '@/components/ScrollRevealInit';
 import './globals.css';
 
 export const metadata: Metadata = {
-  title: 'Summer Braille Course for Parents — Delaney Costello, TVI',
+  title: 'TeachBraille.org — Delaney Costello, TVI',
   description:
-    'An 8-week introductory remote Braille course for parents and loved ones of visually impaired individuals. Taught by Delaney Costello, Teacher of the Visually Impaired. Only 10 spots available — Summer 2026.',
+    'Learn braille with Delaney Costello, a Teacher of the Visually Impaired with 9 years of experience. Summer courses, 1-on-1 appointments, and interactive braille games.',
   openGraph: {
-    title: 'Learn Braille This Summer — Remote Course for Parents',
+    title: 'TeachBraille.org — Learn Braille with Delaney Costello',
     description:
-      'An 8-week introductory remote Braille course for parents and loved ones. Only 10 spots available. Starts June 8.',
+      'Summer courses, 1-on-1 braille instruction, and interactive games. Taught by a Teacher of the Visually Impaired.',
     type: 'website',
-    url: 'https://braille-course-web.vercel.app',
+    url: 'https://teachbraille.org',
   },
   twitter: {
     card: 'summary_large_image',
@@ -40,6 +42,8 @@ export default function RootLayout({
           Skip to content
         </a>
         <div className="braille-bg" aria-hidden="true"></div>
+        <NavBar />
+        <ScrollRevealInit />
         {children}
         <Analytics />
       </body>

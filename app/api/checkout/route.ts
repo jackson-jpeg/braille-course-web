@@ -84,8 +84,8 @@ export async function POST(req: NextRequest) {
           sectionId,
         },
       },
-      success_url: `${siteUrl}/success?plan=${plan}`,
-      cancel_url: siteUrl,
+      success_url: `${siteUrl}/summer/success?plan=${plan}`,
+      cancel_url: `${siteUrl}/summer`,
     };
 
     // Deposit: save card for future $350 charge, show balance reminder

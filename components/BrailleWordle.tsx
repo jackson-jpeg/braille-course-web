@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect, useCallback } from 'react';
+import { useState, useEffect, useCallback, useRef } from 'react';
 import { brailleMap, dotDescription } from '@/lib/braille-map';
 import { answerWords, validGuesses } from '@/lib/wordle-words';
 
@@ -82,6 +82,21 @@ export default function BrailleWordle() {
   const [popTile, setPopTile] = useState<string | null>(null); // "row-col"
   const [winBounce, setWinBounce] = useState(false);
 
+  // Visibility-scoped keyboard: only capture keys when this section is visible
+  const sectionRef = useRef<HTMLElement>(null);
+  const visibleRef = useRef(true);
+
+  useEffect(() => {
+    const el = sectionRef.current;
+    if (!el) return;
+    const observer = new IntersectionObserver(
+      ([entry]) => { visibleRef.current = entry.isIntersecting; },
+      { threshold: 0.3 }
+    );
+    observer.observe(el);
+    return () => observer.disconnect();
+  }, []);
+
   // Pick a word on mount
   useEffect(() => {
     setAnswer(pickWord());
@@ -162,9 +177,10 @@ export default function BrailleWordle() {
     [answer, currentGuess, currentRow, gameOver, revealingRow]
   );
 
-  // Physical keyboard listener
+  // Physical keyboard listener (only when this game section is visible)
   useEffect(() => {
     function onKeyDown(e: KeyboardEvent) {
+      if (!visibleRef.current) return;
       if (e.ctrlKey || e.metaKey || e.altKey) return;
       const k = e.key;
       if (k === 'Enter') {
@@ -247,7 +263,7 @@ export default function BrailleWordle() {
   }
 
   return (
-    <section className="wordle-section">
+    <section className="wordle-section" ref={sectionRef}>
       <div className="wordle-inner">
         <div className="wordle-header">
           <span className="section-label">Practice</span>

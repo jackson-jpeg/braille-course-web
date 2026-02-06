@@ -108,7 +108,7 @@ export default async function SuccessPage({
           </a>
         </p>
 
-        <Link href="/" className="home-button">
+        <Link href="/summer" className="home-button">
           <svg
             viewBox="0 0 24 24"
             fill="none"
@@ -119,7 +119,7 @@ export default async function SuccessPage({
             <line x1="19" y1="12" x2="5" y2="12" />
             <polyline points="12 19 5 12 12 5" />
           </svg>
-          Back to Home
+          Back to Course
         </Link>
       </div>
     </div>
