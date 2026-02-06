@@ -21,7 +21,12 @@ function createClient() {
       user: process.env.ICLOUD_EMAIL!,
       pass: process.env.ICLOUD_APP_PASSWORD!,
     },
-    logger: false,
+    logger: {
+      debug: () => {},
+      info: (obj: unknown) => console.log('[IMAP]', JSON.stringify(obj)),
+      warn: (obj: unknown) => console.warn('[IMAP]', JSON.stringify(obj)),
+      error: (obj: unknown) => console.error('[IMAP]', JSON.stringify(obj)),
+    },
   });
 }
 
@@ -46,6 +51,9 @@ export interface ImapEmailDetail extends ImapEmail {
 }
 
 export async function listReceivedEmails(limit = 50): Promise<ImapEmail[]> {
+  if (!process.env.ICLOUD_EMAIL || !process.env.ICLOUD_APP_PASSWORD) {
+    throw new Error('Missing ICLOUD_EMAIL or ICLOUD_APP_PASSWORD env vars');
+  }
   const client = createClient();
   const emails: ImapEmail[] = [];
 
@@ -118,6 +126,9 @@ function walkStructure(node: any, out: { filename: string; content_type: string;
 }
 
 export async function getReceivedEmail(uid: string): Promise<ImapEmailDetail | null> {
+  if (!process.env.ICLOUD_EMAIL || !process.env.ICLOUD_APP_PASSWORD) {
+    throw new Error('Missing ICLOUD_EMAIL or ICLOUD_APP_PASSWORD env vars');
+  }
   const client = createClient();
 
   try {

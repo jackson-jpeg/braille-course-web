@@ -27,9 +27,14 @@ export async function GET(
 
     return NextResponse.json({ email });
   } catch (err) {
-    console.error('IMAP fetch failed:', (err as Error).message);
+    const e = err as Error & { responseStatus?: string; responseText?: string };
+    console.error('IMAP fetch failed:', {
+      message: e.message,
+      responseStatus: e.responseStatus,
+      responseText: e.responseText,
+    });
     return NextResponse.json(
-      { error: 'Failed to fetch received email' },
+      { error: `Failed to fetch received email: ${e.message}` },
       { status: 500 }
     );
   }

@@ -246,10 +246,10 @@ export default function AdminEmailsTab({ enrollments, initialComposeTo, initialT
   }, [emailSubTab, emails.length, emailsLoading, fetchEmails]);
 
   useEffect(() => {
-    if (emailSubTab === 'received' && receivedEmails.length === 0 && !receivedLoading) {
+    if (emailSubTab === 'received' && receivedEmails.length === 0 && !receivedLoading && !receivedError) {
       fetchReceivedEmails();
     }
-  }, [emailSubTab, receivedEmails.length, receivedLoading, fetchReceivedEmails]);
+  }, [emailSubTab, receivedEmails.length, receivedLoading, receivedError, fetchReceivedEmails]);
 
   async function openEmailDetail(id: string) {
     setEmailDetailLoading(true);

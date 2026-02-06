@@ -18,9 +18,14 @@ export async function GET(req: NextRequest) {
       has_more: false,
     });
   } catch (err) {
-    console.error('IMAP fetch failed:', (err as Error).message);
+    const e = err as Error & { responseStatus?: string; responseText?: string };
+    console.error('IMAP fetch failed:', {
+      message: e.message,
+      responseStatus: e.responseStatus,
+      responseText: e.responseText,
+    });
     return NextResponse.json(
-      { error: 'Failed to fetch received emails' },
+      { error: `Failed to fetch received emails: ${e.message}` },
       { status: 500 }
     );
   }
