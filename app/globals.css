@@ -2503,6 +2503,136 @@ body::after {
   border-bottom-color: var(--navy);
 }
 
+/* -- How It Works steps -- */
+.appointments-how {
+  position: relative;
+  z-index: 1;
+  padding: 80px 24px;
+  background: white;
+}
+.appointments-how-inner {
+  max-width: 900px;
+  margin: 0 auto;
+  text-align: center;
+}
+.appointments-how h2 {
+  font-family: 'DM Serif Display', serif;
+  font-size: clamp(1.6rem, 3.5vw, 2.2rem);
+  color: var(--navy);
+  margin-bottom: 48px;
+}
+.appointments-steps {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 32px;
+}
+.appointments-step {
+  text-align: center;
+  padding: 32px 20px;
+}
+.appointments-step-number {
+  width: 48px;
+  height: 48px;
+  border-radius: 50%;
+  background: var(--gold-soft);
+  color: var(--gold);
+  font-family: 'DM Serif Display', serif;
+  font-size: 1.3rem;
+  font-weight: 700;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin: 0 auto 20px;
+  border: 2px solid rgba(212,168,83,0.25);
+}
+.appointments-step h3 {
+  font-family: 'DM Serif Display', serif;
+  font-size: 1.15rem;
+  color: var(--navy);
+  margin-bottom: 10px;
+}
+.appointments-step p {
+  font-size: 0.95rem;
+  line-height: 1.65;
+  color: var(--text-secondary);
+  font-weight: 300;
+}
+
+/* -- Enhanced email CTA -- */
+.appointments-cta-block {
+  text-align: center;
+}
+.appointments-email-cta {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  background: var(--navy);
+  color: var(--gold-light);
+  font-family: 'Outfit', sans-serif;
+  font-size: 1.05rem;
+  font-weight: 600;
+  padding: 18px 40px;
+  border-radius: var(--radius-full);
+  text-decoration: none;
+  transition: all 0.35s var(--ease-out);
+  box-shadow: 0 4px 16px rgba(27,42,74,0.15);
+}
+.appointments-email-cta:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 28px rgba(27,42,74,0.2);
+  background: var(--navy-light);
+}
+.appointments-email-cta svg {
+  width: 20px;
+  height: 20px;
+}
+.appointments-email-sub {
+  margin-top: 16px;
+  font-size: 0.95rem;
+  color: var(--text-secondary);
+  font-weight: 300;
+}
+.appointments-response-note {
+  margin-top: 8px;
+  font-size: 0.85rem;
+  color: var(--text-secondary);
+  font-weight: 300;
+  opacity: 0.7;
+}
+
+/* -- Cross-link to summer course -- */
+.appointments-crosslink {
+  position: relative;
+  z-index: 1;
+  padding: 48px 24px;
+  background: white;
+  text-align: center;
+}
+.appointments-crosslink-inner {
+  max-width: 600px;
+  margin: 0 auto;
+  padding: 28px 32px;
+  background: var(--section-bg);
+  border-radius: var(--radius-lg);
+  border: 1px solid rgba(212,168,83,0.12);
+}
+.appointments-crosslink p {
+  font-size: 1rem;
+  color: var(--text-secondary);
+  font-weight: 300;
+}
+.appointments-crosslink a {
+  color: var(--gold);
+  text-decoration: none;
+  font-weight: 500;
+  border-bottom: 1px solid var(--gold-light);
+  transition: all 0.2s ease;
+}
+.appointments-crosslink a:hover {
+  color: var(--navy);
+  border-bottom-color: var(--navy);
+}
+
 @media (max-width: 768px) {
   .appointments-features {
     grid-template-columns: 1fr;
@@ -2510,6 +2640,17 @@ body::after {
   }
   .appointments-hero {
     min-height: auto;
+  }
+  .appointments-steps {
+    grid-template-columns: 1fr;
+    gap: 16px;
+  }
+  .appointments-how {
+    padding: 60px 24px;
+  }
+  .appointments-email-cta {
+    font-size: 0.95rem;
+    padding: 16px 32px;
   }
 }
 
