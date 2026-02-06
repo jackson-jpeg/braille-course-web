@@ -1,10 +1,10 @@
 import { prisma } from '@/lib/prisma';
 import { SECTION_SCHEDULES } from '@/lib/schedule';
 import AdminLogin from '@/components/AdminLogin';
-import AdminDashboard from '@/components/AdminDashboard';
+import AdminDashboard from '@/components/admin/AdminDashboard';
 
 export const metadata = {
-  title: 'Admin — Enrollments',
+  title: 'Admin Dashboard',
   robots: { index: false, follow: false },
 };
 
@@ -34,6 +34,7 @@ export default async function AdminPage({
     plan: e.plan,
     paymentStatus: e.paymentStatus,
     stripeCustomerId: e.stripeCustomerId,
+    stripeSessionId: e.stripeSessionId,
     createdAt: e.createdAt.toISOString(),
     section: { label: e.section.label },
   }));

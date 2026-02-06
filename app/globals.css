@@ -3821,9 +3821,499 @@ body::after {
   background: var(--slate);
 }
 
+/* ── Overview Tab ── */
+.admin-overview-metrics {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 14px;
+  margin-bottom: 28px;
+}
+.admin-overview-card {
+  background: white;
+  border: 1px solid rgba(212,168,83,0.15);
+  border-radius: var(--radius-md);
+  padding: 24px 20px;
+  text-align: center;
+}
+.admin-overview-card-green {
+  border-color: rgba(122,155,109,0.3);
+  background: rgba(168,191,160,0.08);
+}
+.admin-overview-card-gold {
+  border-color: rgba(212,168,83,0.3);
+  background: rgba(212,168,83,0.06);
+}
+.admin-overview-card-value {
+  font-family: 'DM Serif Display', serif;
+  font-size: 1.8rem;
+  color: var(--navy);
+  line-height: 1.1;
+  margin-bottom: 4px;
+}
+.admin-overview-card-label {
+  font-size: 0.75rem;
+  color: var(--text-secondary);
+  font-weight: 400;
+}
+
+.admin-overview-section {
+  margin-bottom: 28px;
+}
+.admin-overview-section-title {
+  font-family: 'DM Serif Display', serif;
+  font-size: 1.15rem;
+  color: var(--navy);
+  margin-bottom: 14px;
+}
+.admin-overview-empty {
+  font-size: 0.88rem;
+  color: var(--text-secondary);
+  font-style: italic;
+}
+
+/* ── Activity Feed ── */
+.admin-activity-feed {
+  background: white;
+  border: 1px solid rgba(212,168,83,0.15);
+  border-radius: var(--radius-md);
+  overflow: hidden;
+}
+.admin-activity-item {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 12px 20px;
+  font-size: 0.88rem;
+  color: var(--text-primary);
+  border-bottom: 1px solid rgba(212,168,83,0.06);
+  cursor: pointer;
+  transition: background 0.15s;
+  font-weight: 300;
+}
+.admin-activity-item:last-child {
+  border-bottom: none;
+}
+.admin-activity-item:hover {
+  background: rgba(212,168,83,0.04);
+}
+.admin-activity-dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  flex-shrink: 0;
+}
+.admin-activity-dot-enrollment {
+  background: var(--sage-dark);
+}
+.admin-activity-dot-email {
+  background: var(--gold);
+}
+.admin-activity-label {
+  flex: 1;
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.admin-activity-time {
+  font-size: 0.78rem;
+  color: var(--text-secondary);
+  white-space: nowrap;
+}
+
+/* ── Quick Actions ── */
+.admin-quick-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+}
+.admin-quick-action {
+  padding: 10px 24px;
+  background: white;
+  color: var(--navy);
+  border: 1px solid rgba(212,168,83,0.25);
+  border-radius: var(--radius-sm);
+  font-family: 'Outfit', sans-serif;
+  font-size: 0.88rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+.admin-quick-action:hover {
+  border-color: var(--gold);
+  background: rgba(212,168,83,0.04);
+}
+
+/* ── Clickable Student Row ── */
+.admin-student-row-clickable {
+  cursor: pointer;
+}
+.admin-student-row-clickable:hover {
+  background: rgba(212,168,83,0.06) !important;
+}
+
+/* ── Student Detail Modal ── */
+.admin-student-modal {
+  background: white;
+  border-radius: var(--radius-lg);
+  width: 100%;
+  max-width: 800px;
+  max-height: 85vh;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  box-shadow: 0 24px 80px rgba(20,31,53,0.2);
+  position: relative;
+}
+.admin-student-modal-content {
+  overflow-y: auto;
+  flex: 1;
+}
+.admin-student-header {
+  padding: 24px 24px 16px;
+  border-bottom: 1px solid rgba(212,168,83,0.12);
+}
+.admin-student-header h3 {
+  font-family: 'DM Serif Display', serif;
+  font-size: 1.3rem;
+  color: var(--navy);
+  margin: 0;
+}
+.admin-student-email {
+  font-size: 0.88rem;
+  color: var(--text-secondary);
+  font-weight: 300;
+  margin-top: 4px;
+}
+.admin-student-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 0;
+}
+.admin-student-info {
+  padding: 20px 24px;
+  border-right: 1px solid rgba(212,168,83,0.12);
+}
+.admin-student-history {
+  padding: 20px 24px;
+  overflow-y: auto;
+}
+.admin-student-info-section {
+  margin-bottom: 20px;
+}
+.admin-student-info-section h4 {
+  font-size: 0.72rem;
+  font-weight: 600;
+  letter-spacing: 1px;
+  text-transform: uppercase;
+  color: var(--text-secondary);
+  margin-bottom: 10px;
+}
+.admin-student-detail-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 6px 0;
+  font-size: 0.85rem;
+  color: var(--text-primary);
+  font-weight: 300;
+}
+.admin-student-detail-row span:first-child {
+  color: var(--text-secondary);
+}
+.admin-student-card {
+  font-size: 0.88rem;
+  color: var(--navy);
+  font-weight: 400;
+}
+.admin-student-actions {
+  padding-top: 12px;
+}
+.admin-student-empty {
+  font-size: 0.85rem;
+  color: var(--text-secondary);
+  font-style: italic;
+  font-weight: 300;
+}
+.admin-student-payment-list {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+.admin-student-payment-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 8px 12px;
+  background: var(--cream);
+  border-radius: var(--radius-sm);
+  font-size: 0.85rem;
+}
+.admin-student-payment-info {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+.admin-student-payment-date {
+  font-size: 0.78rem;
+  color: var(--text-secondary);
+  font-weight: 300;
+}
+.admin-student-payment-actions {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+.admin-student-email-list {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+.admin-student-email-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 6px 0;
+  font-size: 0.85rem;
+  border-bottom: 1px solid rgba(212,168,83,0.06);
+}
+.admin-student-email-row:last-child {
+  border-bottom: none;
+}
+.admin-student-email-subject {
+  font-weight: 300;
+  color: var(--text-primary);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  max-width: 200px;
+}
+.admin-student-email-meta {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 0.78rem;
+  color: var(--text-secondary);
+  white-space: nowrap;
+}
+
+/* ── Invoice Badges ── */
+.admin-invoice-badge {
+  display: inline-block;
+  padding: 3px 10px;
+  border-radius: var(--radius-full);
+  font-size: 0.72rem;
+  font-weight: 600;
+  letter-spacing: 0.5px;
+}
+.admin-invoice-paid {
+  background: rgba(168,191,160,0.2);
+  color: var(--sage-dark);
+}
+.admin-invoice-open {
+  background: rgba(212,168,83,0.15);
+  color: #b8930e;
+}
+.admin-invoice-draft {
+  background: rgba(100,160,220,0.12);
+  color: #3b7cc0;
+}
+.admin-invoice-void,
+.admin-invoice-uncollectible {
+  background: rgba(220,80,80,0.12);
+  color: #c44;
+}
+
+/* ── Payments Tab ── */
+.admin-payments-loading {
+  text-align: center;
+  padding: 60px 20px;
+  color: var(--text-secondary);
+  font-style: italic;
+  font-size: 0.92rem;
+}
+.admin-payments-cards {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 14px;
+  margin-bottom: 20px;
+}
+.admin-payments-card {
+  background: white;
+  border: 1px solid rgba(212,168,83,0.15);
+  border-radius: var(--radius-md);
+  padding: 24px 20px;
+  text-align: center;
+}
+.admin-payments-card-green {
+  border-color: rgba(122,155,109,0.3);
+  background: rgba(168,191,160,0.08);
+}
+.admin-payments-card-gold {
+  border-color: rgba(212,168,83,0.3);
+  background: rgba(212,168,83,0.06);
+}
+.admin-payments-card-navy {
+  border-color: rgba(27,42,74,0.2);
+  background: rgba(27,42,74,0.04);
+}
+.admin-payments-card-value {
+  font-family: 'DM Serif Display', serif;
+  font-size: 1.6rem;
+  color: var(--navy);
+  line-height: 1.1;
+  margin-bottom: 4px;
+}
+.admin-payments-card-label {
+  font-size: 0.75rem;
+  color: var(--text-secondary);
+  font-weight: 400;
+}
+.admin-payments-toolbar {
+  margin-bottom: 20px;
+}
+.admin-payment-actions {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+.admin-refund-btn {
+  padding: 4px 12px;
+  background: none;
+  color: #c44;
+  border: 1px solid rgba(220,80,80,0.25);
+  border-radius: var(--radius-sm);
+  font-family: 'Outfit', sans-serif;
+  font-size: 0.78rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+.admin-refund-btn:hover {
+  background: rgba(220,80,80,0.06);
+  border-color: #c44;
+}
+
+/* ── Refund Dialog ── */
+.admin-refund-dialog {
+  background: white;
+  border-radius: var(--radius-lg);
+  width: 100%;
+  max-width: 440px;
+  padding: 28px;
+  position: relative;
+  box-shadow: 0 24px 80px rgba(20,31,53,0.2);
+}
+.admin-refund-title {
+  font-family: 'DM Serif Display', serif;
+  font-size: 1.3rem;
+  color: var(--navy);
+  margin-bottom: 16px;
+}
+.admin-refund-warning {
+  background: #fff8f0;
+  border: 1px solid rgba(220,160,64,0.3);
+  border-radius: var(--radius-sm);
+  padding: 12px 16px;
+  font-size: 0.85rem;
+  color: #8a6520;
+  line-height: 1.5;
+  margin-bottom: 20px;
+  font-weight: 400;
+}
+.admin-refund-details {
+  margin-bottom: 20px;
+}
+.admin-refund-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 8px 0;
+  font-size: 0.88rem;
+  color: var(--text-primary);
+  border-bottom: 1px solid rgba(212,168,83,0.08);
+  font-weight: 300;
+}
+.admin-refund-row:last-child {
+  border-bottom: none;
+}
+.admin-refund-field {
+  margin-bottom: 16px;
+}
+.admin-refund-field > label {
+  display: block;
+  font-size: 0.82rem;
+  font-weight: 500;
+  color: var(--text-secondary);
+  margin-bottom: 6px;
+}
+.admin-refund-field input[type="checkbox"] {
+  margin-right: 6px;
+}
+.admin-refund-actions {
+  display: flex;
+  gap: 10px;
+  justify-content: flex-end;
+  margin-top: 20px;
+}
+.admin-refund-confirm {
+  padding: 10px 24px;
+  background: #c44;
+  color: white;
+  border: none;
+  border-radius: var(--radius-sm);
+  font-family: 'Outfit', sans-serif;
+  font-size: 0.88rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background 0.2s;
+}
+.admin-refund-confirm:hover {
+  background: #b33;
+}
+.admin-refund-confirm:disabled {
+  opacity: 0.5;
+  cursor: default;
+}
+
+/* ── Delivery Stats Bar ── */
+.admin-delivery-stats {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-bottom: 16px;
+}
+.admin-delivery-pill {
+  display: inline-block;
+  padding: 5px 14px;
+  border-radius: var(--radius-full);
+  font-size: 0.78rem;
+  font-weight: 600;
+  background: rgba(212,168,83,0.1);
+  color: var(--text-secondary);
+}
+.admin-delivery-delivered {
+  background: rgba(168,191,160,0.2);
+  color: var(--sage-dark);
+}
+.admin-delivery-opened {
+  background: rgba(100,160,220,0.15);
+  color: #3b7cc0;
+}
+.admin-delivery-bounced {
+  background: rgba(220,80,80,0.12);
+  color: #c44;
+}
+
 /* ── Admin Responsive ── */
 @media (max-width: 768px) {
   .admin-cards {
+    grid-template-columns: repeat(2, 1fr);
+  }
+  .admin-overview-metrics {
+    grid-template-columns: repeat(2, 1fr);
+  }
+  .admin-payments-cards {
     grid-template-columns: repeat(2, 1fr);
   }
   .admin-filters {
@@ -3845,8 +4335,26 @@ body::after {
   .admin-modal {
     max-height: 90vh;
   }
+  .admin-student-modal {
+    max-width: 100%;
+    max-height: 90vh;
+  }
+  .admin-student-grid {
+    grid-template-columns: 1fr;
+  }
+  .admin-student-info {
+    border-right: none;
+    border-bottom: 1px solid rgba(212,168,83,0.12);
+  }
   .admin-email-actions {
     flex-wrap: wrap;
+  }
+  .admin-quick-actions {
+    flex-direction: column;
+  }
+  .admin-refund-dialog {
+    max-width: 100%;
+    margin: 0 12px;
   }
 }
 @media (max-width: 480px) {
@@ -3856,9 +4364,18 @@ body::after {
   .admin-cards {
     grid-template-columns: 1fr;
   }
+  .admin-overview-metrics {
+    grid-template-columns: 1fr 1fr;
+  }
+  .admin-payments-cards {
+    grid-template-columns: 1fr 1fr;
+  }
   .admin-login {
     margin: 60px auto;
     padding: 36px 24px;
+  }
+  .admin-delivery-stats {
+    flex-wrap: wrap;
   }
 }
 
