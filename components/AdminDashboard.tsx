@@ -29,6 +29,15 @@ interface ResendEmail {
   last_event?: string;
 }
 
+interface ReceivedEmail {
+  id: string;
+  from: string;
+  to: string | string[];
+  subject: string;
+  created_at: string;
+  attachments?: { filename: string; content_type: string; size?: number }[];
+}
+
 interface EmailDetail {
   id: string;
   to: string | string[];
@@ -38,6 +47,7 @@ interface EmailDetail {
   created_at: string;
   last_event?: string;
   from: string;
+  attachments?: { filename: string; content_type: string; size?: number }[];
 }
 
 interface Props {
@@ -131,6 +141,7 @@ export default function AdminDashboard({ sections, enrollments, scheduleMap, adm
   const pendingBalance = depositCount * 350;
 
   /* ── Emails state ── */
+  const [emailSubTab, setEmailSubTab] = useState<'sent' | 'received'>('sent');
   const [emails, setEmails] = useState<ResendEmail[]>([]);
   const [emailsLoading, setEmailsLoading] = useState(false);
   const [emailsError, setEmailsError] = useState('');
@@ -142,6 +153,11 @@ export default function AdminDashboard({ sections, enrollments, scheduleMap, adm
   const [composeBody, setComposeBody] = useState('');
   const [composeSending, setComposeSending] = useState(false);
   const [composeResult, setComposeResult] = useState<{ ok: boolean; msg: string } | null>(null);
+
+  /* ── Received emails state ── */
+  const [receivedEmails, setReceivedEmails] = useState<ReceivedEmail[]>([]);
+  const [receivedLoading, setReceivedLoading] = useState(false);
+  const [receivedError, setReceivedError] = useState('');
 
   const fetchEmails = useCallback(async () => {
     setEmailsLoading(true);
@@ -158,18 +174,54 @@ export default function AdminDashboard({ sections, enrollments, scheduleMap, adm
     }
   }, [adminKey]);
 
+  const fetchReceivedEmails = useCallback(async () => {
+    setReceivedLoading(true);
+    setReceivedError('');
+    try {
+      const res = await fetch(`/api/admin/emails/received?key=${encodeURIComponent(adminKey)}`);
+      const data = await res.json();
+      if (!res.ok) throw new Error(data.error || 'Failed to fetch');
+      setReceivedEmails(data.emails);
+    } catch (err: unknown) {
+      setReceivedError(err instanceof Error ? err.message : 'Failed to load received emails');
+    } finally {
+      setReceivedLoading(false);
+    }
+  }, [adminKey]);
+
   // Load emails when switching to tab
   useEffect(() => {
-    if (tab === 'emails' && emails.length === 0 && !emailsLoading) {
+    if (tab === 'emails' && emailSubTab === 'sent' && emails.length === 0 && !emailsLoading) {
       fetchEmails();
     }
-  }, [tab, emails.length, emailsLoading, fetchEmails]);
+  }, [tab, emailSubTab, emails.length, emailsLoading, fetchEmails]);
+
+  useEffect(() => {
+    if (tab === 'emails' && emailSubTab === 'received' && receivedEmails.length === 0 && !receivedLoading) {
+      fetchReceivedEmails();
+    }
+  }, [tab, emailSubTab, receivedEmails.length, receivedLoading, fetchReceivedEmails]);
 
   async function openEmailDetail(id: string) {
     setEmailDetailLoading(true);
     setSelectedEmail(null);
     try {
       const res = await fetch(`/api/admin/emails/${id}?key=${encodeURIComponent(adminKey)}`);
+      const data = await res.json();
+      if (!res.ok) throw new Error(data.error || 'Failed to fetch');
+      setSelectedEmail(data.email);
+    } catch {
+      // silently fail — modal just won't open
+    } finally {
+      setEmailDetailLoading(false);
+    }
+  }
+
+  async function openReceivedEmailDetail(id: string) {
+    setEmailDetailLoading(true);
+    setSelectedEmail(null);
+    try {
+      const res = await fetch(`/api/admin/emails/received/${id}?key=${encodeURIComponent(adminKey)}`);
       const data = await res.json();
       if (!res.ok) throw new Error(data.error || 'Failed to fetch');
       setSelectedEmail(data.email);
@@ -389,117 +441,198 @@ export default function AdminDashboard({ sections, enrollments, scheduleMap, adm
       {/* ═══════════════════════════ EMAILS TAB ═══════════════════════════ */}
       {tab === 'emails' && (
         <>
-          <div className="admin-email-actions">
-            <button onClick={() => { setShowCompose(!showCompose); setComposeResult(null); }} className="admin-compose-btn">
-              {showCompose ? 'Cancel' : 'Compose Email'}
+          {/* Sub-toggle: Sent / Received */}
+          <div className="admin-email-subtabs">
+            <button
+              className={`admin-email-subtab ${emailSubTab === 'sent' ? 'admin-email-subtab-active' : ''}`}
+              onClick={() => setEmailSubTab('sent')}
+            >
+              Sent
             </button>
-            <button onClick={fetchEmails} className="admin-refresh-btn" disabled={emailsLoading}>
-              {emailsLoading ? 'Loading…' : 'Refresh'}
+            <button
+              className={`admin-email-subtab ${emailSubTab === 'received' ? 'admin-email-subtab-active' : ''}`}
+              onClick={() => setEmailSubTab('received')}
+            >
+              Received
             </button>
           </div>
 
-          {/* Compose Form */}
-          {showCompose && (
-            <div className="admin-compose">
-              <form onSubmit={handleSendEmail}>
-                <div className="admin-compose-field">
-                  <label>To</label>
-                  <div className="admin-compose-to-row">
-                    <input
-                      type="text"
-                      value={composeTo}
-                      onChange={(e) => setComposeTo(e.target.value)}
-                      placeholder="email@example.com, email2@example.com"
-                      className="admin-compose-input"
-                      required
-                    />
-                    <button type="button" onClick={fillAllEnrolled} className="admin-fill-all-btn">
-                      All Enrolled ({uniqueEmails.length})
-                    </button>
-                  </div>
-                </div>
-                <div className="admin-compose-field">
-                  <label>Subject</label>
-                  <input
-                    type="text"
-                    value={composeSubject}
-                    onChange={(e) => setComposeSubject(e.target.value)}
-                    placeholder="Subject line"
-                    className="admin-compose-input"
-                    required
-                  />
-                </div>
-                <div className="admin-compose-field">
-                  <label>Body (plain text — wrapped in branded template)</label>
-                  <textarea
-                    value={composeBody}
-                    onChange={(e) => setComposeBody(e.target.value)}
-                    placeholder="Write your email here…"
-                    className="admin-compose-textarea"
-                    rows={8}
-                    required
-                  />
-                </div>
-                <div className="admin-compose-actions">
-                  <button type="submit" className="admin-send-btn" disabled={composeSending}>
-                    {composeSending ? 'Sending…' : 'Send Email'}
-                  </button>
-                  {composeResult && (
-                    <span className={`admin-compose-result ${composeResult.ok ? 'admin-compose-success' : 'admin-compose-error'}`}>
-                      {composeResult.msg}
-                    </span>
-                  )}
-                </div>
-              </form>
-            </div>
-          )}
+          {/* ── SENT sub-tab ── */}
+          {emailSubTab === 'sent' && (
+            <>
+              <div className="admin-email-actions">
+                <button onClick={() => { setShowCompose(!showCompose); setComposeResult(null); }} className="admin-compose-btn">
+                  {showCompose ? 'Cancel' : 'Compose Email'}
+                </button>
+                <button onClick={fetchEmails} className="admin-refresh-btn" disabled={emailsLoading}>
+                  {emailsLoading ? 'Loading…' : 'Refresh'}
+                </button>
+              </div>
 
-          {/* Email error */}
-          {emailsError && (
-            <div className="admin-email-error">{emailsError}</div>
-          )}
-
-          {/* Email Log Table */}
-          <div className="admin-table-wrap">
-            <table className="admin-table">
-              <thead>
-                <tr>
-                  <th>To</th>
-                  <th>Subject</th>
-                  <th>Status</th>
-                  <th>Date</th>
-                </tr>
-              </thead>
-              <tbody>
-                {emailsLoading && emails.length === 0 ? (
-                  <tr>
-                    <td colSpan={4} className="admin-empty">Loading emails…</td>
-                  </tr>
-                ) : emails.length === 0 ? (
-                  <tr>
-                    <td colSpan={4} className="admin-empty">No emails found.</td>
-                  </tr>
-                ) : (
-                  emails.map((em) => (
-                    <tr
-                      key={em.id}
-                      className="admin-email-row"
-                      onClick={() => openEmailDetail(em.id)}
-                    >
-                      <td>{Array.isArray(em.to) ? em.to.join(', ') : em.to}</td>
-                      <td>{em.subject || '(no subject)'}</td>
-                      <td>
-                        <span className={`admin-email-status admin-email-status-${(em.last_event || 'queued').toLowerCase()}`}>
-                          {em.last_event || 'queued'}
+              {/* Compose Form */}
+              {showCompose && (
+                <div className="admin-compose">
+                  <form onSubmit={handleSendEmail}>
+                    <div className="admin-compose-field">
+                      <label>To</label>
+                      <div className="admin-compose-to-row">
+                        <input
+                          type="text"
+                          value={composeTo}
+                          onChange={(e) => setComposeTo(e.target.value)}
+                          placeholder="email@example.com, email2@example.com"
+                          className="admin-compose-input"
+                          required
+                        />
+                        <button type="button" onClick={fillAllEnrolled} className="admin-fill-all-btn">
+                          All Enrolled ({uniqueEmails.length})
+                        </button>
+                      </div>
+                    </div>
+                    <div className="admin-compose-field">
+                      <label>Subject</label>
+                      <input
+                        type="text"
+                        value={composeSubject}
+                        onChange={(e) => setComposeSubject(e.target.value)}
+                        placeholder="Subject line"
+                        className="admin-compose-input"
+                        required
+                      />
+                    </div>
+                    <div className="admin-compose-field">
+                      <label>Body (plain text — wrapped in branded template)</label>
+                      <textarea
+                        value={composeBody}
+                        onChange={(e) => setComposeBody(e.target.value)}
+                        placeholder="Write your email here…"
+                        className="admin-compose-textarea"
+                        rows={8}
+                        required
+                      />
+                    </div>
+                    <div className="admin-compose-actions">
+                      <button type="submit" className="admin-send-btn" disabled={composeSending}>
+                        {composeSending ? 'Sending…' : 'Send Email'}
+                      </button>
+                      {composeResult && (
+                        <span className={`admin-compose-result ${composeResult.ok ? 'admin-compose-success' : 'admin-compose-error'}`}>
+                          {composeResult.msg}
                         </span>
-                      </td>
-                      <td title={fullDate(em.created_at)}>{relativeTime(em.created_at)}</td>
+                      )}
+                    </div>
+                  </form>
+                </div>
+              )}
+
+              {/* Email error */}
+              {emailsError && (
+                <div className="admin-email-error">{emailsError}</div>
+              )}
+
+              {/* Sent Email Log Table */}
+              <div className="admin-table-wrap">
+                <table className="admin-table">
+                  <thead>
+                    <tr>
+                      <th>To</th>
+                      <th>Subject</th>
+                      <th>Status</th>
+                      <th>Date</th>
                     </tr>
-                  ))
-                )}
-              </tbody>
-            </table>
-          </div>
+                  </thead>
+                  <tbody>
+                    {emailsLoading && emails.length === 0 ? (
+                      <tr>
+                        <td colSpan={4} className="admin-empty">Loading emails…</td>
+                      </tr>
+                    ) : emails.length === 0 ? (
+                      <tr>
+                        <td colSpan={4} className="admin-empty">No emails found.</td>
+                      </tr>
+                    ) : (
+                      emails.map((em) => (
+                        <tr
+                          key={em.id}
+                          className="admin-email-row"
+                          onClick={() => openEmailDetail(em.id)}
+                        >
+                          <td>{Array.isArray(em.to) ? em.to.join(', ') : em.to}</td>
+                          <td>{em.subject || '(no subject)'}</td>
+                          <td>
+                            <span className={`admin-email-status admin-email-status-${(em.last_event || 'queued').toLowerCase()}`}>
+                              {em.last_event || 'queued'}
+                            </span>
+                          </td>
+                          <td title={fullDate(em.created_at)}>{relativeTime(em.created_at)}</td>
+                        </tr>
+                      ))
+                    )}
+                  </tbody>
+                </table>
+              </div>
+            </>
+          )}
+
+          {/* ── RECEIVED sub-tab ── */}
+          {emailSubTab === 'received' && (
+            <>
+              <div className="admin-email-actions">
+                <button onClick={fetchReceivedEmails} className="admin-refresh-btn" disabled={receivedLoading}>
+                  {receivedLoading ? 'Loading…' : 'Refresh'}
+                </button>
+              </div>
+
+              {receivedError && (
+                <div className="admin-email-error">{receivedError}</div>
+              )}
+
+              <div className="admin-table-wrap">
+                <table className="admin-table">
+                  <thead>
+                    <tr>
+                      <th>From</th>
+                      <th>Subject</th>
+                      <th>Date</th>
+                      <th>Attachments</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {receivedLoading && receivedEmails.length === 0 ? (
+                      <tr>
+                        <td colSpan={4} className="admin-empty">Loading received emails…</td>
+                      </tr>
+                    ) : receivedEmails.length === 0 ? (
+                      <tr>
+                        <td colSpan={4} className="admin-empty">No received emails found.</td>
+                      </tr>
+                    ) : (
+                      receivedEmails.map((em) => (
+                        <tr
+                          key={em.id}
+                          className="admin-email-row"
+                          onClick={() => openReceivedEmailDetail(em.id)}
+                        >
+                          <td>{em.from}</td>
+                          <td>{em.subject || '(no subject)'}</td>
+                          <td title={fullDate(em.created_at)}>{relativeTime(em.created_at)}</td>
+                          <td>
+                            {em.attachments && em.attachments.length > 0 ? (
+                              <span className="admin-attachment-badge">
+                                {em.attachments.length}
+                              </span>
+                            ) : (
+                              '—'
+                            )}
+                          </td>
+                        </tr>
+                      ))
+                    )}
+                  </tbody>
+                </table>
+              </div>
+            </>
+          )}
         </>
       )}
 
@@ -527,12 +660,27 @@ export default function AdminDashboard({ sections, enrollments, scheduleMap, adm
                   <div className="admin-modal-meta">
                     <strong>Date:</strong> {fullDate(selectedEmail.created_at)}
                   </div>
-                  <div className="admin-modal-meta">
-                    <strong>Status:</strong>{' '}
-                    <span className={`admin-email-status admin-email-status-${(selectedEmail.last_event || 'queued').toLowerCase()}`}>
-                      {selectedEmail.last_event || 'queued'}
-                    </span>
-                  </div>
+                  {selectedEmail.last_event !== undefined && (
+                    <div className="admin-modal-meta">
+                      <strong>Status:</strong>{' '}
+                      <span className={`admin-email-status admin-email-status-${(selectedEmail.last_event || 'queued').toLowerCase()}`}>
+                        {selectedEmail.last_event || 'queued'}
+                      </span>
+                    </div>
+                  )}
+                  {selectedEmail.attachments && selectedEmail.attachments.length > 0 && (
+                    <div className="admin-modal-meta">
+                      <strong>Files:</strong>{' '}
+                      <span className="admin-attachment-list">
+                        {selectedEmail.attachments.map((a, i) => (
+                          <span key={i} className="admin-attachment-chip">
+                            {a.filename}
+                            {a.size != null && <span className="admin-attachment-size"> ({Math.round(a.size / 1024)}KB)</span>}
+                          </span>
+                        ))}
+                      </span>
+                    </div>
+                  )}
                 </div>
                 <div className="admin-modal-body">
                   {selectedEmail.html ? (
