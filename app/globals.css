@@ -272,14 +272,11 @@ body::after {
 }
 .braille-hint.visible { opacity: 0.5; }
 
-/* Staggered wave entrance */
-.braille-letter-group:nth-child(1) .braille-dot.filled { animation: waveIn 0.6s ease-out 0.2s both; }
-.braille-letter-group:nth-child(2) .braille-dot.filled { animation: waveIn 0.6s ease-out 0.35s both; }
-.braille-letter-group:nth-child(3) .braille-dot.filled { animation: waveIn 0.6s ease-out 0.5s both; }
-.braille-letter-group:nth-child(4) .braille-dot.filled { animation: waveIn 0.6s ease-out 0.65s both; }
-.braille-letter-group:nth-child(5) .braille-dot.filled { animation: waveIn 0.6s ease-out 0.8s both; }
-.braille-letter-group:nth-child(6) .braille-dot.filled { animation: waveIn 0.6s ease-out 0.95s both; }
-.braille-letter-group:nth-child(7) .braille-dot.filled { animation: waveIn 0.6s ease-out 1.1s both; }
+/* Staggered wave entrance — delay is set via inline style */
+.braille-letter-group .braille-dot.filled { animation: waveIn 0.6s ease-out both; }
+
+/* Spacer between words */
+.braille-spacer { width: 16px; flex-shrink: 0; }
 
 @keyframes waveIn {
   0% { transform: scale(0); opacity: 0; }
@@ -1107,9 +1104,10 @@ body::after {
   .glance-grid { grid-template-columns: repeat(2, 1fr); }
   .faq-answer { padding-left: 0; }
   .faq-question { font-size: 1.05rem; }
-  .braille-decoration { gap: 4px; }
-  .braille-cell { width: 24px; height: 38px; gap: 3px; }
-  .braille-dot { width: 8px; height: 8px; }
+  .braille-decoration { gap: 3px; }
+  .braille-cell { width: 20px; height: 32px; gap: 2px; padding: 3px; }
+  .braille-dot { width: 7px; height: 7px; }
+  .braille-spacer { width: 10px; }
   .pullquote { font-size: 1.05rem; padding: 24px 16px; margin: 36px auto; }
   .pullquote::before { font-size: 3rem; top: 8px; }
   .pullquote::after { font-size: 3rem; bottom: 0; }
@@ -1123,6 +1121,10 @@ body::after {
   .glance-card { padding: 24px 16px; }
   .hero-meta { flex-direction: column; align-items: center; }
   .include-item { padding: 16px 18px; }
+  .braille-decoration { gap: 2px; }
+  .braille-cell { width: 16px; height: 26px; gap: 1px; padding: 2px; }
+  .braille-dot { width: 6px; height: 6px; }
+  .braille-spacer { width: 8px; }
 }
 
 /* ===== SUCCESS PAGE ===== */

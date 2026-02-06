@@ -32,6 +32,13 @@ export async function POST(req: NextRequest) {
   }
 
   try {
+    if (!process.env.BLOB_READ_WRITE_TOKEN) {
+      return NextResponse.json(
+        { error: 'BLOB_READ_WRITE_TOKEN is not set — add it to .env.local' },
+        { status: 500 },
+      );
+    }
+
     const formData = await req.formData();
     const file = formData.get('file') as File | null;
 
@@ -53,7 +60,8 @@ export async function POST(req: NextRequest) {
     return NextResponse.json({
       material: { ...material, createdAt: material.createdAt.toISOString() },
     });
-  } catch {
-    return NextResponse.json({ error: 'Failed to upload material' }, { status: 500 });
+  } catch (err) {
+    const message = err instanceof Error ? err.message : 'Failed to upload material';
+    return NextResponse.json({ error: message }, { status: 500 });
   }
 }

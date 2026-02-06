@@ -1,24 +1,17 @@
 'use client';
 
 import { useState, useEffect, useCallback } from 'react';
+import { brailleMap } from '@/lib/braille-map';
 
-const brailleAlphabet: Record<string, number[]> = {
-  B: [1, 0, 1, 0, 0, 0],
-  R: [1, 0, 1, 1, 1, 0],
-  A: [1, 0, 0, 0, 0, 0],
-  I: [0, 1, 1, 0, 0, 0],
-  L: [1, 0, 1, 0, 1, 0],
-  E: [1, 0, 0, 1, 0, 0],
-};
-
-const word = 'BRAILLE';
+const word = 'DELANEY COSTELLO';
 
 export default function BrailleHero() {
   const [dots] = useState<Record<string, boolean[]>>(() => {
     const initial: Record<string, boolean[]> = {};
-    word.split('').forEach((letter, i) => {
-      const key = `${letter}-${i}`;
-      initial[key] = brailleAlphabet[letter].map((v) => v === 1);
+    word.split('').forEach((char, i) => {
+      if (char === ' ') return;
+      const key = `${char}-${i}`;
+      initial[key] = brailleMap[char].map((v) => v === 1);
     });
     return initial;
   });
@@ -40,25 +33,33 @@ export default function BrailleHero() {
     setActiveGroup(null);
   }, []);
 
+  let letterIndex = 0;
+
   return (
     <div
       className="braille-interactive-area"
-      aria-label="Interactive braille cells spelling BRAILLE"
+      aria-label="Interactive braille cells spelling DELANEY COSTELLO"
     >
       <div
         className="braille-decoration"
         role="group"
         aria-label="Braille letter cells"
       >
-        {word.split('').map((letter, i) => {
-          const groupKey = `${letter}-${i}`;
+        {word.split('').map((char, i) => {
+          if (char === ' ') {
+            return <div key={`space-${i}`} className="braille-spacer" />;
+          }
+
+          const groupKey = `${char}-${i}`;
           const isActive = activeGroup === groupKey;
+          const currentLetterIndex = letterIndex++;
+
           return (
             <div
               key={groupKey}
               className={`braille-letter-group${isActive ? ' active' : ''}`}
               role="button"
-              aria-label={`Braille letter ${letter}`}
+              aria-label={`Braille letter ${char}`}
               tabIndex={0}
               onMouseEnter={() => activate(groupKey)}
               onMouseLeave={deactivate}
@@ -77,11 +78,12 @@ export default function BrailleHero() {
                     <span
                       key={di}
                       className={`braille-dot ${filled ? 'filled' : 'empty'}`}
+                      style={filled ? { animationDelay: `${currentLetterIndex * 0.15 + 0.2}s` } : undefined}
                       aria-hidden="true"
                     />
                   ))}
               </div>
-              <span className="braille-letter-label">{letter}</span>
+              <span className="braille-letter-label">{char}</span>
             </div>
           );
         })}
