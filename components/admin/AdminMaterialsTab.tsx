@@ -6,6 +6,8 @@ import { useToast } from './AdminToast';
 import { SkeletonTable } from './AdminSkeleton';
 import type { Material } from './admin-types';
 
+const CATEGORIES = ['All', 'Lesson Plans', 'Handouts', 'Presentations', 'Study Guides', 'Worksheets', 'Other', 'Uncategorized'] as const;
+
 function formatFileSize(bytes: number): string {
   if (bytes < 1024) return `${bytes} B`;
   if (bytes < 1024 * 1024) return `${(bytes / 1024).toFixed(1)} KB`;
@@ -24,6 +26,8 @@ export default function AdminMaterialsTab({ onEmailMaterial }: Props) {
   const [deletingMaterial, setDeletingMaterial] = useState<Material | null>(null);
   const [deleteLoading, setDeleteLoading] = useState(false);
   const [dragOver, setDragOver] = useState(false);
+  const [selectedCategory, setSelectedCategory] = useState<string>('All');
+  const [uploadCategory, setUploadCategory] = useState<string>('Uncategorized');
   const fileInputRef = useRef<HTMLInputElement>(null);
   const { showToast } = useToast();
 
@@ -52,6 +56,7 @@ export default function AdminMaterialsTab({ onEmailMaterial }: Props) {
     try {
       const formData = new FormData();
       formData.append('file', file);
+      formData.append('category', uploadCategory);
 
       const res = await fetch('/api/admin/materials', {
         method: 'POST',
@@ -69,7 +74,7 @@ export default function AdminMaterialsTab({ onEmailMaterial }: Props) {
       setUploading(false);
       if (fileInputRef.current) fileInputRef.current.value = '';
     }
-  }, [showToast]);
+  }, [showToast, uploadCategory]);
 
   function handleFileInput(e: React.ChangeEvent<HTMLInputElement>) {
     const file = e.target.files?.[0];
@@ -113,37 +118,75 @@ export default function AdminMaterialsTab({ onEmailMaterial }: Props) {
     }
   }
 
+  const filteredMaterials = selectedCategory === 'All'
+    ? materials
+    : materials.filter((m) => m.category === selectedCategory);
+
   return (
     <>
-      {/* Drop zone */}
-      <div
-        className={`admin-drop-zone ${dragOver ? 'admin-drop-zone-active' : ''} ${uploading ? 'admin-drop-zone-uploading' : ''}`}
-        onClick={() => !uploading && fileInputRef.current?.click()}
-        onDrop={handleDrop}
-        onDragOver={handleDragOver}
-        onDragLeave={handleDragLeave}
-      >
-        <input
-          ref={fileInputRef}
-          type="file"
-          onChange={handleFileInput}
-          style={{ display: 'none' }}
-        />
-        <svg className="admin-drop-zone-icon" width="32" height="32" viewBox="0 0 24 24" fill="none">
-          <path d="M12 16V4m0 0l-4 4m4-4l4 4" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
-          <path d="M20 16v2a2 2 0 01-2 2H6a2 2 0 01-2-2v-2" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
-        </svg>
-        <p className="admin-drop-zone-text">
-          {uploading ? 'Uploading\u2026' : 'Drop files here or click to upload'}
-        </p>
+      {/* Upload zone with category selector */}
+      <div className="admin-materials-upload-row">
+        <div
+          className={`admin-drop-zone ${dragOver ? 'admin-drop-zone-active' : ''} ${uploading ? 'admin-drop-zone-uploading' : ''}`}
+          onClick={() => !uploading && fileInputRef.current?.click()}
+          onDrop={handleDrop}
+          onDragOver={handleDragOver}
+          onDragLeave={handleDragLeave}
+          style={{ flex: 1 }}
+        >
+          <input
+            ref={fileInputRef}
+            type="file"
+            onChange={handleFileInput}
+            style={{ display: 'none' }}
+          />
+          <svg className="admin-drop-zone-icon" width="32" height="32" viewBox="0 0 24 24" fill="none">
+            <path d="M12 16V4m0 0l-4 4m4-4l4 4" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
+            <path d="M20 16v2a2 2 0 01-2 2H6a2 2 0 01-2-2v-2" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
+          </svg>
+          <p className="admin-drop-zone-text">
+            {uploading ? 'Uploading\u2026' : 'Drop files here or click to upload'}
+          </p>
+        </div>
+        <div className="admin-upload-category-select">
+          <label>Category</label>
+          <select
+            value={uploadCategory}
+            onChange={(e) => setUploadCategory(e.target.value)}
+            className="admin-select"
+          >
+            {CATEGORIES.filter((c) => c !== 'All').map((c) => (
+              <option key={c} value={c}>{c}</option>
+            ))}
+          </select>
+        </div>
       </div>
 
-      <div className="admin-payments-toolbar" style={{ marginTop: 16 }}>
+      {/* Category filter bar */}
+      <div className="admin-category-filter">
+        {CATEGORIES.map((cat) => {
+          const count = cat === 'All' ? materials.length : materials.filter((m) => m.category === cat).length;
+          if (cat !== 'All' && count === 0) return null;
+          return (
+            <button
+              key={cat}
+              className={`admin-category-pill ${selectedCategory === cat ? 'admin-category-pill-active' : ''}`}
+              onClick={() => setSelectedCategory(cat)}
+            >
+              {cat}
+              <span className="admin-category-pill-count">{count}</span>
+            </button>
+          );
+        })}
+      </div>
+
+      <div className="admin-payments-toolbar" style={{ marginTop: 8 }}>
         <button className="admin-refresh-btn" onClick={fetchMaterials} disabled={loading}>
           {loading ? 'Loading\u2026' : 'Refresh'}
         </button>
         <span className="admin-result-count" style={{ marginLeft: 'auto' }}>
-          {materials.length} file{materials.length !== 1 ? 's' : ''}
+          {filteredMaterials.length} file{filteredMaterials.length !== 1 ? 's' : ''}
+          {selectedCategory !== 'All' && ` in ${selectedCategory}`}
         </span>
       </div>
 
@@ -154,6 +197,7 @@ export default function AdminMaterialsTab({ onEmailMaterial }: Props) {
           <thead>
             <tr>
               <th>Filename</th>
+              <th>Category</th>
               <th>Type</th>
               <th>Size</th>
               <th>Uploaded</th>
@@ -162,24 +206,29 @@ export default function AdminMaterialsTab({ onEmailMaterial }: Props) {
           </thead>
           <tbody>
             {loading && materials.length === 0 ? (
-              <tr><td colSpan={5} className="admin-empty"><SkeletonTable rows={3} cols={5} /></td></tr>
-            ) : materials.length === 0 ? (
+              <tr><td colSpan={6} className="admin-empty"><SkeletonTable rows={3} cols={6} /></td></tr>
+            ) : filteredMaterials.length === 0 ? (
               <tr>
-                <td colSpan={5} className="admin-empty">
+                <td colSpan={6} className="admin-empty">
                   <div className="admin-empty-state">
-                    <p className="admin-empty-state-title">No materials uploaded yet</p>
+                    <p className="admin-empty-state-title">
+                      {selectedCategory === 'All' ? 'No materials uploaded yet' : `No materials in "${selectedCategory}"`}
+                    </p>
                     <p className="admin-empty-state-sub">Upload class handouts, worksheets, or other files for your students.</p>
                     <button className="admin-empty-state-cta" onClick={() => fileInputRef.current?.click()}>Upload a File</button>
                   </div>
                 </td>
               </tr>
             ) : (
-              materials.map((m) => (
+              filteredMaterials.map((m) => (
                 <tr key={m.id}>
                   <td>
                     <a href={m.blobUrl} target="_blank" rel="noopener noreferrer" className="admin-stripe-link">
                       {m.filename}
                     </a>
+                  </td>
+                  <td>
+                    <span className="admin-category-badge">{m.category}</span>
                   </td>
                   <td>{m.contentType}</td>
                   <td>{formatFileSize(m.size)}</td>

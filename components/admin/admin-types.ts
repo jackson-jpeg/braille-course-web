@@ -211,6 +211,7 @@ export interface Material {
   contentType: string;
   size: number;
   blobUrl: string;
+  category: string;
   createdAt: string;
 }
 

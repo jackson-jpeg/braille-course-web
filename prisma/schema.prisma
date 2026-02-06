@@ -79,5 +79,6 @@ model Material {
   contentType String
   size        Int
   blobUrl     String
+  category    String   @default("Uncategorized")
   createdAt   DateTime @default(now())
 }

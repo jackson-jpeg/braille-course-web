@@ -7,10 +7,11 @@ import AdminOverviewTab from './AdminOverviewTab';
 import AdminStudentsTab from './AdminStudentsTab';
 import AdminPaymentsTab from './AdminPaymentsTab';
 import AdminEmailsTab from './AdminEmailsTab';
+import AdminCreateTab from './AdminCreateTab';
 import AdminMaterialsTab from './AdminMaterialsTab';
 import type { AdminProps } from './admin-types';
 
-type Tab = 'overview' | 'students' | 'payments' | 'emails' | 'materials';
+type Tab = 'overview' | 'students' | 'payments' | 'emails' | 'create' | 'materials';
 
 function getGreeting(): string {
   const h = new Date().getHours();
@@ -56,6 +57,14 @@ const TAB_META: Record<Tab, { label: string; icon: JSX.Element }> = {
       <svg width="15" height="15" viewBox="0 0 16 16" fill="none">
         <rect x="1.5" y="3" width="13" height="10" rx="1.5" stroke="currentColor" strokeWidth="1.5"/>
         <path d="M1.5 5l6.5 4 6.5-4" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
+      </svg>
+    ),
+  },
+  create: {
+    label: 'Create',
+    icon: (
+      <svg width="15" height="15" viewBox="0 0 16 16" fill="none">
+        <path d="M8 1L6 6l-5 .7 3.6 3.5-.9 5L8 13l4.3 2.2-.9-5L15 6.7 10 6 8 1z" stroke="currentColor" strokeWidth="1.3" strokeLinejoin="round"/>
       </svg>
     ),
   },
@@ -123,7 +132,7 @@ export default function AdminDashboard({ sections, enrollments, leads, scheduleM
 
         {/* Tabs */}
         <div className="admin-tabs">
-          {(['overview', 'students', 'payments', 'emails', 'materials'] as Tab[]).map((t) => (
+          {(['overview', 'students', 'payments', 'emails', 'create', 'materials'] as Tab[]).map((t) => (
             <button
               key={t}
               className={`admin-tab ${tab === t ? 'admin-tab-active' : ''}`}
@@ -172,6 +181,10 @@ export default function AdminDashboard({ sections, enrollments, leads, scheduleM
               pendingAttachmentIds={pendingAttachmentIds}
               onClearAttachments={() => setPendingAttachmentIds([])}
             />
+          )}
+
+          {tab === 'create' && (
+            <AdminCreateTab onEmailMaterial={handleEmailMaterial} />
           )}
 
           {tab === 'materials' && (

@@ -6142,3 +6142,422 @@ body::after {
     font-size: 0.75rem;
   }
 }
+
+/* ============================================================
+   MATERIAL PICKER (Email Compose)
+   ============================================================ */
+.admin-material-picker {
+  position: relative;
+}
+.admin-material-picker-tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  margin-bottom: 8px;
+}
+.admin-material-picker-tag {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  background: var(--gold-soft);
+  color: var(--navy);
+  padding: 4px 10px;
+  border-radius: 6px;
+  font-size: 0.85rem;
+  font-weight: 500;
+}
+.admin-material-picker-tag-remove {
+  background: none;
+  border: none;
+  cursor: pointer;
+  font-size: 1rem;
+  line-height: 1;
+  padding: 0;
+  color: var(--navy);
+  opacity: 0.6;
+}
+.admin-material-picker-tag-remove:hover {
+  opacity: 1;
+}
+.admin-material-picker-dropdown {
+  position: absolute;
+  top: 100%;
+  left: 0;
+  z-index: 50;
+  background: white;
+  border: 1px solid #e0e0e0;
+  border-radius: 10px;
+  box-shadow: 0 8px 24px rgba(0,0,0,0.12);
+  width: 380px;
+  max-height: 300px;
+  overflow-y: auto;
+  margin-top: 4px;
+}
+.admin-material-picker-item {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  width: 100%;
+  padding: 10px 14px;
+  background: none;
+  border: none;
+  border-bottom: 1px solid #f0f0f0;
+  cursor: pointer;
+  text-align: left;
+  font-family: inherit;
+  font-size: 0.85rem;
+  transition: background 0.15s;
+}
+.admin-material-picker-item:hover {
+  background: var(--gold-soft);
+}
+.admin-material-picker-item:last-of-type {
+  border-bottom: none;
+}
+.admin-material-picker-item-name {
+  font-weight: 500;
+  color: var(--navy);
+  flex: 1;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  margin-right: 8px;
+}
+.admin-material-picker-item-meta {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  color: var(--slate);
+  font-size: 0.75rem;
+  flex-shrink: 0;
+}
+.admin-material-picker-empty {
+  padding: 20px 14px;
+  text-align: center;
+  color: var(--slate);
+  font-size: 0.85rem;
+}
+.admin-material-picker-refresh {
+  display: block;
+  width: 100%;
+  padding: 8px;
+  background: #fafafa;
+  border: none;
+  border-top: 1px solid #e0e0e0;
+  color: var(--navy-light);
+  font-size: 0.8rem;
+  cursor: pointer;
+  text-align: center;
+  font-family: inherit;
+  border-radius: 0 0 10px 10px;
+}
+.admin-material-picker-refresh:hover {
+  background: #f0f0f0;
+}
+
+/* ============================================================
+   CATEGORY FILTER & BADGES (Materials Tab)
+   ============================================================ */
+.admin-materials-upload-row {
+  display: flex;
+  gap: 16px;
+  align-items: stretch;
+}
+.admin-upload-category-select {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  min-width: 160px;
+}
+.admin-upload-category-select label {
+  font-size: 0.8rem;
+  font-weight: 600;
+  color: var(--slate);
+  text-transform: uppercase;
+  letter-spacing: 0.03em;
+}
+.admin-category-filter {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  margin-top: 14px;
+}
+.admin-category-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  padding: 5px 12px;
+  border: 1px solid #ddd;
+  border-radius: 100px;
+  background: white;
+  font-size: 0.82rem;
+  font-family: inherit;
+  color: var(--slate);
+  cursor: pointer;
+  transition: all 0.2s;
+}
+.admin-category-pill:hover {
+  border-color: var(--gold);
+  color: var(--navy);
+}
+.admin-category-pill-active {
+  background: var(--navy);
+  color: var(--gold-light);
+  border-color: var(--navy);
+}
+.admin-category-pill-active:hover {
+  color: var(--gold-light);
+}
+.admin-category-pill-count {
+  background: rgba(0,0,0,0.08);
+  padding: 1px 6px;
+  border-radius: 100px;
+  font-size: 0.75rem;
+  font-weight: 600;
+}
+.admin-category-pill-active .admin-category-pill-count {
+  background: rgba(255,255,255,0.15);
+}
+.admin-category-badge {
+  display: inline-block;
+  padding: 2px 8px;
+  border-radius: 100px;
+  background: var(--gold-soft);
+  color: var(--navy);
+  font-size: 0.75rem;
+  font-weight: 600;
+}
+
+/* ============================================================
+   AI DRAFT (Email Compose)
+   ============================================================ */
+.admin-compose-template-row {
+  display: flex;
+  gap: 8px;
+  align-items: center;
+}
+.admin-ai-draft-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  padding: 7px 14px;
+  background: linear-gradient(135deg, var(--navy) 0%, var(--navy-light) 100%);
+  color: var(--gold-light);
+  border: none;
+  border-radius: var(--radius-sm);
+  font-family: inherit;
+  font-size: 0.82rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: opacity 0.2s;
+  white-space: nowrap;
+}
+.admin-ai-draft-btn:hover {
+  opacity: 0.9;
+}
+.admin-ai-draft-field {
+  background: linear-gradient(135deg, rgba(27,42,74,0.03) 0%, rgba(212,168,83,0.06) 100%);
+  border-radius: var(--radius-sm);
+  padding: 12px;
+  border: 1px dashed var(--gold);
+}
+.admin-ai-draft-row {
+  display: flex;
+  gap: 8px;
+}
+
+/* ============================================================
+   CREATE TAB
+   ============================================================ */
+.admin-create-tab {
+  max-width: 720px;
+}
+.admin-create-form {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+.admin-create-header {
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+  margin-bottom: 12px;
+  color: var(--navy);
+}
+.admin-create-header h3 {
+  font-size: 1.1rem;
+  margin-bottom: 2px;
+}
+.admin-create-header p {
+  font-size: 0.85rem;
+  color: var(--slate);
+}
+.admin-create-format-options {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 10px;
+}
+.admin-create-format-btn {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 6px;
+  padding: 14px 10px;
+  border: 2px solid #e0e0e0;
+  border-radius: var(--radius-md);
+  background: white;
+  cursor: pointer;
+  font-family: inherit;
+  transition: all 0.2s;
+  text-align: center;
+}
+.admin-create-format-btn:hover {
+  border-color: var(--gold);
+}
+.admin-create-format-btn-active {
+  border-color: var(--navy);
+  background: var(--gold-soft);
+}
+.admin-create-format-icon {
+  color: var(--navy);
+}
+.admin-create-format-label {
+  font-weight: 600;
+  font-size: 0.9rem;
+  color: var(--navy);
+}
+.admin-create-format-desc {
+  font-size: 0.75rem;
+  color: var(--slate);
+  line-height: 1.3;
+}
+.admin-create-spinner {
+  display: inline-block;
+  width: 14px;
+  height: 14px;
+  border: 2px solid rgba(255,255,255,0.3);
+  border-top-color: white;
+  border-radius: 50%;
+  animation: admin-spin 0.6s linear infinite;
+  margin-right: 6px;
+  vertical-align: middle;
+}
+@keyframes admin-spin {
+  to { transform: rotate(360deg); }
+}
+.admin-create-result {
+  text-align: center;
+}
+.admin-create-result-header {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  color: var(--sage-dark);
+  margin-bottom: 16px;
+}
+.admin-create-result-header h3 {
+  font-size: 1.15rem;
+  color: var(--navy);
+}
+.admin-create-result-card {
+  background: white;
+  border: 1px solid #e0e0e0;
+  border-radius: var(--radius-md);
+  padding: 20px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 14px;
+}
+.admin-create-result-info {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex-wrap: wrap;
+  justify-content: center;
+}
+.admin-create-result-filename {
+  font-weight: 600;
+  color: var(--navy);
+  font-size: 1rem;
+}
+.admin-create-result-size {
+  font-size: 0.82rem;
+  color: var(--slate);
+}
+.admin-create-result-actions {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+  justify-content: center;
+}
+.admin-create-recent {
+  margin-top: 32px;
+}
+.admin-create-recent h4 {
+  font-size: 0.95rem;
+  color: var(--navy);
+  margin-bottom: 10px;
+}
+
+/* ============================================================
+   EMAIL FILTER BAR + SORTABLE HEADERS
+   ============================================================ */
+.admin-email-filter-bar {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-top: 12px;
+  margin-bottom: 4px;
+}
+.admin-email-search {
+  flex: 1;
+  padding: 7px 12px;
+  border: 1px solid #ddd;
+  border-radius: var(--radius-sm);
+  font-family: inherit;
+  font-size: 0.85rem;
+  outline: none;
+  transition: border-color 0.2s;
+}
+.admin-email-search:focus {
+  border-color: var(--gold);
+}
+.admin-email-status-filter {
+  min-width: 140px;
+}
+.admin-sortable-th {
+  cursor: pointer;
+  user-select: none;
+  white-space: nowrap;
+}
+.admin-sortable-th:hover {
+  color: var(--gold);
+}
+
+/* ============================================================
+   RESPONSIVE: Material picker + Create tab + Email filters
+   ============================================================ */
+@media (max-width: 600px) {
+  .admin-material-picker-dropdown {
+    width: calc(100vw - 48px);
+    max-width: 380px;
+  }
+  .admin-create-format-options {
+    grid-template-columns: 1fr;
+  }
+  .admin-materials-upload-row {
+    flex-direction: column;
+  }
+  .admin-email-filter-bar {
+    flex-wrap: wrap;
+  }
+  .admin-compose-template-row {
+    flex-direction: column;
+    align-items: stretch;
+  }
+  .admin-ai-draft-row {
+    flex-direction: column;
+  }
+}
