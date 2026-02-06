@@ -139,7 +139,7 @@ export default function AppointmentsPage() {
           ) : (
             <div className="appointments-cta-block">
               <a
-                href="mailto:delaneycostello23@gmail.com?subject=Braille%20Session%20Inquiry"
+                href="mailto:Delaney@TeachBraille.org?subject=Braille%20Session%20Inquiry"
                 className="appointments-email-cta"
               >
                 <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" aria-hidden="true">

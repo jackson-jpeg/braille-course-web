@@ -77,8 +77,8 @@ export default function EnrollmentForm() {
         <p>All spots have been filled for this session.</p>
         <p>
           Reach out to{' '}
-          <a href="mailto:delaneycostello23@gmail.com">
-            delaneycostello23@gmail.com
+          <a href="mailto:Delaney@TeachBraille.org">
+            Delaney@TeachBraille.org
           </a>{' '}
           to join the waitlist.
         </p>

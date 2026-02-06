@@ -48,8 +48,8 @@ export default function PoliciesPage() {
             <h3>How to Request a Refund</h3>
             <p>
               Email{' '}
-              <a href="mailto:delaneycostello23@gmail.com">
-                delaneycostello23@gmail.com
+              <a href="mailto:Delaney@TeachBraille.org">
+                Delaney@TeachBraille.org
               </a>{' '}
               with your name and enrollment details. Approved refunds are
               processed back to the original payment method within 5–10 business
@@ -101,8 +101,8 @@ export default function PoliciesPage() {
             <h3>Contact</h3>
             <p>
               For privacy questions or data deletion requests, email{' '}
-              <a href="mailto:delaneycostello23@gmail.com">
-                delaneycostello23@gmail.com
+              <a href="mailto:Delaney@TeachBraille.org">
+                Delaney@TeachBraille.org
               </a>
               .
             </p>
@@ -136,8 +136,8 @@ export default function PoliciesPage() {
 
             <p>
               Questions about these terms? Email{' '}
-              <a href="mailto:delaneycostello23@gmail.com">
-                delaneycostello23@gmail.com
+              <a href="mailto:Delaney@TeachBraille.org">
+                Delaney@TeachBraille.org
               </a>
               .
             </p>

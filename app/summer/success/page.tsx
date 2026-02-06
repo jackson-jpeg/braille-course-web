@@ -258,8 +258,8 @@ export default async function SuccessPage({
 
         <p className="contact-note">
           Questions? Reach out anytime at{' '}
-          <a href="mailto:delaneycostello23@gmail.com">
-            delaneycostello23@gmail.com
+          <a href="mailto:Delaney@TeachBraille.org">
+            Delaney@TeachBraille.org
           </a>
         </p>
 

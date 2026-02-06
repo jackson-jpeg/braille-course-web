@@ -526,8 +526,8 @@ export default async function SummerPage() {
 
           <p className="cta-email">
             Questions? Reach out at{' '}
-            <a href="mailto:delaneycostello23@gmail.com">
-              delaneycostello23@gmail.com
+            <a href="mailto:Delaney@TeachBraille.org">
+              Delaney@TeachBraille.org
             </a>
           </p>
         </div>
