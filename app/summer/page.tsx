@@ -37,7 +37,7 @@ export default async function SummerPage() {
       {/* ========== HERO ========== */}
       <section className="hero" id="top">
         <div className="hero-content" id="main-content">
-          <BrailleHero />
+          <BrailleHero word="SUMMER" />
 
           <div className="hero-badge">Summer 2026 · Remote Course</div>
 

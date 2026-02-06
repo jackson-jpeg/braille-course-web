@@ -21,7 +21,7 @@ export default function IntroPage() {
       {/* ========== HERO ========== */}
       <section className="intro-hero" id="top">
         <div className="intro-hero-content" id="main-content">
-          <BrailleHero />
+          <BrailleHero word="INTRO TO BRAILLE" />
           <div className="section-label">Learn the Basics</div>
           <h1>
             Intro to <em>Braille</em>

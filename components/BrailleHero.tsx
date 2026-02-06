@@ -3,9 +3,7 @@
 import { useState, useEffect, useCallback } from 'react';
 import { brailleMap } from '@/lib/braille-map';
 
-const word = 'DELANEY COSTELLO';
-
-export default function BrailleHero() {
+export default function BrailleHero({ word = 'DELANEY COSTELLO' }: { word?: string }) {
   const [dots] = useState<Record<string, boolean[]>>(() => {
     const initial: Record<string, boolean[]> = {};
     word.split('').forEach((char, i) => {
@@ -38,7 +36,7 @@ export default function BrailleHero() {
   return (
     <div
       className="braille-interactive-area"
-      aria-label="Interactive braille cells spelling DELANEY COSTELLO"
+      aria-label={`Interactive braille cells spelling ${word}`}
     >
       <div
         className="braille-decoration"
