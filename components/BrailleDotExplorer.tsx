@@ -46,6 +46,7 @@ export default function BrailleDotExplorer() {
     'strong': 'Strong contraction',
     'groupsign-strong': 'Strong groupsign',
     'groupsign-lower': 'Lower groupsign',
+    'wordsign-lower': 'Lower wordsign',
   };
 
   // Which dot numbers are currently raised

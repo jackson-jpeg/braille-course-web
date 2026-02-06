@@ -9,7 +9,8 @@ export type ContractionType =
   | 'wordsign'
   | 'strong'
   | 'groupsign-strong'
-  | 'groupsign-lower';
+  | 'groupsign-lower'
+  | 'wordsign-lower';
 
 export interface ContractionEntry {
   label: string;
@@ -71,11 +72,18 @@ const strongGroupsigns: ContractionEntry[] = [
 
 /** Lower groupsigns — dots 2,3,5,6 region */
 const lowerGroupsigns: ContractionEntry[] = [
-  { label: 'be', pattern: [0, 0, 1, 0, 1, 0], type: 'groupsign-lower' },
-  { label: 'con', pattern: [0, 0, 1, 1, 0, 0], type: 'groupsign-lower' },
-  { label: 'dis', pattern: [0, 0, 1, 1, 0, 1], type: 'groupsign-lower' },
-  { label: 'en', pattern: [0, 0, 1, 0, 0, 1], type: 'groupsign-lower' },
-  { label: 'in', pattern: [0, 0, 0, 1, 1, 0], type: 'groupsign-lower' },
+  { label: 'be', pattern: [0, 0, 1, 0, 1, 0], type: 'groupsign-lower' },     // dots 2,3
+  { label: 'con', pattern: [0, 0, 1, 1, 0, 0], type: 'groupsign-lower' },    // dots 2,5
+  { label: 'dis', pattern: [0, 0, 1, 1, 0, 1], type: 'groupsign-lower' },    // dots 2,5,6
+  { label: 'en (enough)', pattern: [0, 0, 1, 0, 0, 1], type: 'groupsign-lower' },  // dots 2,6
+  { label: 'in', pattern: [0, 0, 0, 1, 1, 0], type: 'groupsign-lower' },     // dots 3,5
+];
+
+/** Lower wordsigns — standalone words using lower cell region */
+const lowerWordsigns: ContractionEntry[] = [
+  { label: 'his', pattern: [0, 0, 1, 0, 1, 1], type: 'wordsign-lower' },     // dots 2,3,6
+  { label: 'was', pattern: [0, 0, 0, 1, 1, 1], type: 'wordsign-lower' },     // dots 3,5,6
+  { label: 'were', pattern: [0, 0, 1, 1, 1, 1], type: 'wordsign-lower' },    // dots 2,3,5,6
 ];
 
 /** All contracted braille entries */
@@ -84,6 +92,7 @@ export const contractedBrailleEntries: ContractionEntry[] = [
   ...strongContractions,
   ...strongGroupsigns,
   ...lowerGroupsigns,
+  ...lowerWordsigns,
 ];
 
 /** Build a reverse lookup: pattern key → ContractionEntry */

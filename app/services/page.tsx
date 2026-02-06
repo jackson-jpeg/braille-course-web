@@ -47,11 +47,20 @@ export default function ServicesPage() {
           </p>
           <p className="services-about-text">
             In 2023, Delaney expanded to <strong>remote service delivery</strong>,
-            obtaining teaching licenses in <strong>Kansas and Georgia</strong>.
+            obtaining teaching licenses beyond Florida. She is currently
+            licensed in <strong>Florida, Georgia, Kansas, and Virginia</strong> —
+            and is always willing to obtain licensure in additional states.
             Today she operates a <strong>hybrid model</strong> — offering remote
             services nationwide and in-person instruction in the Tampa, Florida
             area — giving schools and districts flexible access to a highly
             qualified vision specialist.
+          </p>
+          <p className="services-about-text">
+            Collaboration with other teachers, service providers, and members
+            of the student&apos;s educational team is guaranteed with every
+            contract. This includes full participation in <strong>IEP meetings,
+            504 meetings</strong>, and any other meetings related to the
+            student&apos;s education.
           </p>
           <blockquote className="pullquote">
             <p>
@@ -86,7 +95,7 @@ export default function ServicesPage() {
               <div className="services-timeline-year">2023</div>
               <div className="services-timeline-content">
                 <h3>Remote Expansion</h3>
-                <p>Obtained Kansas &amp; Georgia teaching licenses for remote service delivery</p>
+                <p>Expanded beyond Florida with teaching licenses in Georgia, Kansas, and Virginia</p>
               </div>
             </div>
             <div className="services-timeline-item">
@@ -157,9 +166,25 @@ export default function ServicesPage() {
               </div>
               <h3>Expanded Core Curriculum</h3>
               <p>
-                Instruction across all <a href="#ecc">7 ECC areas</a> —
+                Instruction across <a href="#ecc">7 of the 9 ECC areas</a> —
                 building the essential skills that go beyond academics for
                 students with visual impairments.
+              </p>
+            </div>
+            <div className="services-card">
+              <div className="services-card-icon" aria-hidden="true">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                  <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2" />
+                  <circle cx="9" cy="7" r="4" />
+                  <path d="M23 21v-2a4 4 0 0 0-3-3.87" />
+                  <path d="M16 3.13a4 4 0 0 1 0 7.75" />
+                </svg>
+              </div>
+              <h3>Team Collaboration</h3>
+              <p>
+                Full participation in IEP meetings, 504 meetings, and
+                collaboration with teachers, service providers, and the
+                student&apos;s entire educational team.
               </p>
             </div>
           </div>
@@ -170,7 +195,12 @@ export default function ServicesPage() {
       <section className="services-ecc" aria-labelledby="services-ecc-heading" id="ecc">
         <div className="services-ecc-inner reveal">
           <div className="section-label">Expanded Core Curriculum</div>
-          <h2 id="services-ecc-heading">The 7 Areas of the ECC</h2>
+          <h2 id="services-ecc-heading">The Expanded Core Curriculum</h2>
+          <p className="services-ecc-intro">
+            The ECC encompasses 9 skill areas essential for students with visual
+            impairments. Delaney provides direct instruction in the following 7
+            areas:
+          </p>
           <div className="services-ecc-grid">
             <div className="services-ecc-item">
               <div className="services-ecc-icon" aria-hidden="true">

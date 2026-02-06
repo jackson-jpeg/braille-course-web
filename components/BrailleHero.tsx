@@ -3,7 +3,7 @@
 import { useState, useEffect, useCallback } from 'react';
 import { brailleMap } from '@/lib/braille-map';
 
-export default function BrailleHero({ word = 'DELANEY COSTELLO' }: { word?: string }) {
+export default function BrailleHero({ word = '^DELANEY ^COSTELLO' }: { word?: string }) {
   const [dots] = useState<Record<string, boolean[]>>(() => {
     const initial: Record<string, boolean[]> = {};
     word.split('').forEach((char, i) => {

@@ -3045,7 +3045,15 @@ body::after {
   font-family: 'DM Serif Display', serif;
   font-size: clamp(1.6rem, 3.5vw, 2.2rem);
   color: var(--navy);
-  margin-bottom: 48px;
+  margin-bottom: 16px;
+}
+.services-ecc-intro {
+  max-width: 640px;
+  margin: 0 auto 48px;
+  color: var(--text-secondary);
+  font-size: 1.05rem;
+  line-height: 1.7;
+  text-align: center;
 }
 .services-ecc-grid {
   display: grid;

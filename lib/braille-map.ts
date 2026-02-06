@@ -32,6 +32,8 @@ export const brailleMap: Record<string, number[]> = {
   X: [1, 1, 0, 0, 1, 1],
   Y: [1, 1, 0, 1, 1, 1],
   Z: [1, 0, 0, 1, 1, 1],
+  '^': [0, 0, 0, 0, 0, 1], // capital indicator (dot 6)
+  '#': [0, 1, 0, 1, 1, 1], // numeric indicator (dots 3, 4, 5, 6)
   '0': [0, 1, 1, 1, 0, 0], // J
   '1': [1, 0, 0, 0, 0, 0], // A
   '2': [1, 0, 1, 0, 0, 0], // B
