@@ -2,6 +2,8 @@ import { NextRequest, NextResponse } from 'next/server';
 import { getReceivedEmail } from '@/lib/icloud-mail';
 import { isAuthorized } from '@/lib/admin-auth';
 
+export const maxDuration = 60;
+
 /* ── GET /api/admin/emails/received/[id]?key=...  ── get single received email via iCloud IMAP ── */
 export async function GET(
   req: NextRequest,
