@@ -34,6 +34,100 @@ export default function AppointmentsPage() {
         </div>
       </section>
 
+      {/* ========== MEET DELANEY ========== */}
+      <section className="appointments-about" aria-labelledby="appt-about-heading">
+        <div className="appointments-about-inner reveal">
+          <div className="section-label">Meet Your Instructor</div>
+          <h2 id="appt-about-heading">Delaney Costello</h2>
+          <p className="appointments-about-text">
+            Delaney is a <strong>Teacher of the Visually Impaired</strong> with{' '}
+            <strong>9 years of teaching experience</strong> — 6 years in person
+            and 3 years in a hybrid of in-person and remote services.
+          </p>
+          <p className="appointments-about-text">
+            Whether you&apos;re a parent wanting to connect with your child, a
+            family member hoping to read alongside a loved one, or a professional
+            building braille skills, Delaney tailors every session to meet you
+            where you are.
+          </p>
+        </div>
+      </section>
+
+      {/* ========== BENEFIT CALLOUT ========== */}
+      <section className="benefit-callout" aria-labelledby="appt-benefit-heading">
+        <div className="benefit-inner reveal">
+          <div className="benefit-icon" aria-hidden="true">
+            <svg
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              strokeWidth="2"
+            >
+              <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z" />
+            </svg>
+          </div>
+          <h2 id="appt-benefit-heading">Why Learn Braille?</h2>
+          <p>
+            Learning Braille is a wonderful way to connect with a child, parent,
+            spouse, sibling, or friend who is visually impaired. A strong knowledge
+            of Braille allows you to write a note, assist with homework, or
+            transcribe someone&apos;s written work — bridging the gap between the
+            sighted and visually impaired worlds with understanding and love.
+          </p>
+        </div>
+      </section>
+
+      {/* ========== WHY PRIVATE SESSIONS ========== */}
+      <section className="appointments-why" aria-labelledby="appt-why-heading">
+        <div className="appointments-why-inner reveal">
+          <h2 id="appt-why-heading">Why Choose Private Sessions?</h2>
+          <div className="appointments-why-grid">
+            <div className="appointments-why-item">
+              <div className="appointments-why-icon" aria-hidden="true">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                  <circle cx="12" cy="12" r="10" />
+                  <polyline points="12,6 12,12 16,14" />
+                </svg>
+              </div>
+              <h3>Learn at Your Own Pace</h3>
+              <p>
+                Every minute is focused on your progress — no need to keep up
+                with a group or wait for others to catch up.
+              </p>
+            </div>
+            <div className="appointments-why-item">
+              <div className="appointments-why-icon" aria-hidden="true">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                  <path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z" />
+                  <path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z" />
+                </svg>
+              </div>
+              <h3>Curriculum Built Around You</h3>
+              <p>
+                Lessons are tailored to your specific goals — whether that&apos;s
+                reading to your child, writing notes, or building professional
+                skills.
+              </p>
+            </div>
+            <div className="appointments-why-item">
+              <div className="appointments-why-icon" aria-hidden="true">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                  <rect x="3" y="4" width="18" height="18" rx="2" />
+                  <line x1="16" y1="2" x2="16" y2="6" />
+                  <line x1="8" y1="2" x2="8" y2="6" />
+                  <line x1="3" y1="10" x2="21" y2="10" />
+                </svg>
+              </div>
+              <h3>Flexible Commitment</h3>
+              <p>
+                No 8-week commitment required. Book sessions as you need them,
+                on a schedule that works for you.
+              </p>
+            </div>
+          </div>
+        </div>
+      </section>
+
       {/* ========== INFO ========== */}
       <section className="appointments-info" aria-labelledby="appt-info-heading">
         <div className="appointments-info-inner reveal">

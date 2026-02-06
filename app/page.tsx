@@ -32,13 +32,58 @@ export default function HubPage() {
       <section className="hub-about" aria-labelledby="hub-about-heading">
         <div className="hub-about-inner reveal">
           <div className="section-label">About Delaney</div>
-          <h2 id="hub-about-heading">Passionate About Teaching Braille</h2>
+          <h2 id="hub-about-heading">Hi, I&apos;m Delaney Costello</h2>
+          <p className="hub-about-text">
+            I am a <strong>Teacher of the Visually Impaired</strong> with{' '}
+            <strong>9 years of teaching experience</strong> — 6 years in person
+            and 3 years in a hybrid of in-person and remote services. Whether
+            through a structured summer course, personalized one-on-one sessions,
+            or fun interactive games, my goal is to make braille accessible and
+            enjoyable for everyone.
+          </p>
+          <p className="hub-about-text">
+            Last summer, a former student&apos;s mother reached out hoping to
+            learn Braille. It was the first time a parent had ever asked me, and
+            I quickly agreed.
+          </p>
+
+          <blockquote className="pullquote reveal">
+            <p>
+              Teaching braille to families is one of the most rewarding ways I
+              can think to spend <em>my time.</em>
+            </p>
+          </blockquote>
+
+          <p className="hub-about-text">
+            Over several weeks she built a strong foundation — learning half the
+            alphabet and gaining confidence in reading and writing Braille. Her
+            curiosity and determination inspired me to offer this opportunity to
+            other families through courses, private sessions, and free practice
+            games.
+          </p>
+        </div>
+      </section>
+
+      {/* ========== BENEFIT CALLOUT ========== */}
+      <section className="benefit-callout" aria-labelledby="hub-benefit-heading">
+        <div className="benefit-inner reveal">
+          <div className="benefit-icon" aria-hidden="true">
+            <svg
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              strokeWidth="2"
+            >
+              <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z" />
+            </svg>
+          </div>
+          <h2 id="hub-benefit-heading">Why Learn Braille?</h2>
           <p>
-            With <strong>9 years of teaching experience</strong> as a Teacher of
-            the Visually Impaired, Delaney Costello brings dedication and expertise
-            to every lesson. Whether through a structured summer course,
-            personalized one-on-one sessions, or fun interactive games, her goal is
-            to make braille accessible and enjoyable for everyone.
+            Learning Braille is a wonderful way to connect with a child, parent,
+            spouse, sibling, or friend who is visually impaired. A strong knowledge
+            of Braille allows you to write a note, assist with homework, or
+            transcribe someone&apos;s written work — bridging the gap between the
+            sighted and visually impaired worlds with understanding and love.
           </p>
         </div>
       </section>

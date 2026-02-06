@@ -120,17 +120,18 @@ export default async function SummerPage() {
 
       </section>
 
-      {/* ========== ABOUT ========== */}
+      {/* ========== WHY THIS COURSE EXISTS ========== */}
       <section className="about-section" aria-labelledby="about-heading">
         <div className="about-inner reveal">
-          <div className="section-label">Meet Your Instructor</div>
-          <h2 id="about-heading">Hi, I&apos;m Delaney Costello</h2>
+          <div className="section-label">Why This Course Exists</div>
+          <h2 id="about-heading">Built From a Parent&apos;s Request</h2>
           <p className="about-text">
-            I am a <strong>Teacher of the Visually Impaired</strong> with 9 years
-            of teaching experience — 6 years in person and 3 years in a hybrid of
-            in-person and remote services. Last summer, a former student&apos;s
-            mother reached out hoping to learn Braille. It was the first time a
-            parent had ever asked me, and I quickly agreed.
+            Last summer, a former student&apos;s mother reached out hoping to
+            learn Braille — the first time a parent had ever asked. Over several
+            weeks at the library, her home, and on virtual calls, she learned
+            half the alphabet and gained real confidence in reading and writing
+            Braille. Her curiosity and determination inspired this course, so
+            more families can share that same experience.
           </p>
 
           <blockquote className="pullquote reveal">
@@ -139,37 +140,6 @@ export default async function SummerPage() {
               think to spend <em>my summer.</em>
             </p>
           </blockquote>
-
-          <p className="about-text">
-            Over several weeks at the library, her home, and on virtual calls, she
-            built a strong foundation — learning half the alphabet and gaining
-            confidence in reading and writing Braille. Her curiosity and
-            determination inspired me to offer this opportunity to other families.
-          </p>
-        </div>
-      </section>
-
-      {/* ========== BENEFIT CALLOUT ========== */}
-      <section className="benefit-callout" aria-labelledby="benefit-heading">
-        <div className="benefit-inner reveal">
-          <div className="benefit-icon" aria-hidden="true">
-            <svg
-              viewBox="0 0 24 24"
-              fill="none"
-              stroke="currentColor"
-              strokeWidth="2"
-            >
-              <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z" />
-            </svg>
-          </div>
-          <h2 id="benefit-heading">Why Learn Braille?</h2>
-          <p>
-            Learning Braille is a wonderful way to connect with a child, parent,
-            spouse, sibling, or friend who is visually impaired. A strong knowledge
-            of Braille allows you to write a note, assist with homework, or
-            transcribe someone&apos;s written work — bridging the gap between the
-            sighted and visually impaired worlds with understanding and love.
-          </p>
         </div>
       </section>
 

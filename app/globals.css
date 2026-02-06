@@ -2112,7 +2112,7 @@ body::after {
   background: white;
 }
 .hub-about-inner {
-  max-width: 700px;
+  max-width: 800px;
   margin: 0 auto;
   text-align: center;
 }
@@ -2132,6 +2132,17 @@ body::after {
 .hub-about p strong {
   color: var(--navy);
   font-weight: 500;
+}
+.hub-about-text {
+  font-size: 1.02rem;
+  line-height: 1.9;
+  color: var(--text-secondary);
+  font-weight: 300;
+  max-width: 650px;
+  margin: 0 auto;
+}
+.hub-about-text + .hub-about-text {
+  margin-top: 20px;
 }
 
 /* Hub Cards */
@@ -2633,6 +2644,104 @@ body::after {
   border-bottom-color: var(--navy);
 }
 
+/* -- Meet Delaney (appointments) -- */
+.appointments-about {
+  position: relative;
+  z-index: 1;
+  padding: 100px 24px;
+  background: white;
+}
+.appointments-about-inner {
+  max-width: 800px;
+  margin: 0 auto;
+  text-align: center;
+}
+.appointments-about h2 {
+  font-family: 'DM Serif Display', serif;
+  font-size: clamp(1.8rem, 4vw, 2.6rem);
+  color: var(--navy);
+  line-height: 1.25;
+  margin-bottom: 28px;
+}
+.appointments-about-text {
+  font-size: 1.02rem;
+  line-height: 1.9;
+  color: var(--text-secondary);
+  font-weight: 300;
+  max-width: 650px;
+  margin: 0 auto;
+}
+.appointments-about-text + .appointments-about-text {
+  margin-top: 20px;
+}
+.appointments-about-text strong {
+  color: var(--navy);
+  font-weight: 500;
+}
+
+/* -- Why Choose Private Sessions -- */
+.appointments-why {
+  position: relative;
+  z-index: 1;
+  padding: 80px 24px;
+  background: var(--section-bg);
+}
+.appointments-why-inner {
+  max-width: 960px;
+  margin: 0 auto;
+  text-align: center;
+}
+.appointments-why h2 {
+  font-family: 'DM Serif Display', serif;
+  font-size: clamp(1.6rem, 3.5vw, 2.4rem);
+  color: var(--navy);
+  margin-bottom: 48px;
+  line-height: 1.25;
+}
+.appointments-why-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 24px;
+}
+.appointments-why-item {
+  background: white;
+  border-radius: var(--radius-lg);
+  padding: 36px 28px;
+  border: 1px solid rgba(212,168,83,0.12);
+  text-align: center;
+  transition: transform 0.3s var(--ease-out), box-shadow 0.3s ease;
+}
+.appointments-why-item:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 12px 40px rgba(27,42,74,0.08);
+}
+.appointments-why-item h3 {
+  font-family: 'DM Serif Display', serif;
+  font-size: 1.2rem;
+  color: var(--navy);
+  margin-bottom: 12px;
+}
+.appointments-why-item p {
+  font-size: 0.95rem;
+  line-height: 1.7;
+  color: var(--text-secondary);
+  font-weight: 300;
+}
+.appointments-why-icon {
+  width: 56px; height: 56px;
+  margin: 0 auto 20px;
+  background: rgba(212,168,83,0.1);
+  border: 1px solid rgba(212,168,83,0.18);
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.appointments-why-icon svg {
+  width: 24px; height: 24px;
+  color: var(--gold);
+}
+
 @media (max-width: 768px) {
   .appointments-features {
     grid-template-columns: 1fr;
@@ -2651,6 +2760,10 @@ body::after {
   .appointments-email-cta {
     font-size: 0.95rem;
     padding: 16px 32px;
+  }
+  .appointments-why-grid {
+    grid-template-columns: 1fr;
+    gap: 16px;
   }
 }
 
