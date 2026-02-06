@@ -6,6 +6,12 @@ const nextConfig = {
       '/api/admin/generate': ['./node_modules/pdfkit/js/data/**/*.afm'],
     },
   },
+  webpack: (config, { isServer }) => {
+    if (isServer) {
+      config.externals = [...(config.externals || []), 'imapflow', 'mailparser'];
+    }
+    return config;
+  },
   async headers() {
     return [
       {
