@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from 'next/server';
 import { resend } from '@/lib/resend';
 import { customEmail } from '@/lib/email-templates';
 import { isAuthorized } from '@/lib/admin-auth';
+import { prisma } from '@/lib/prisma';
 
 /* ── GET /api/admin/emails?key=...  ── list sent emails ── */
 export async function GET(req: NextRequest) {
@@ -35,7 +36,7 @@ export async function POST(req: NextRequest) {
   }
 
   try {
-    const { to, subject, body } = await req.json();
+    const { to, subject, body, attachmentIds } = await req.json();
 
     if (!to || !subject || !body) {
       return NextResponse.json(
@@ -47,11 +48,31 @@ export async function POST(req: NextRequest) {
     const recipients = Array.isArray(to) ? to : [to];
     const html = customEmail({ subject, body });
 
+    // Build attachments array if material IDs provided
+    const emailAttachments: { filename: string; content: Buffer }[] = [];
+    if (attachmentIds && Array.isArray(attachmentIds) && attachmentIds.length > 0) {
+      const materials = await prisma.material.findMany({
+        where: { id: { in: attachmentIds } },
+      });
+
+      for (const mat of materials) {
+        const response = await fetch(mat.blobUrl);
+        if (response.ok) {
+          const arrayBuffer = await response.arrayBuffer();
+          emailAttachments.push({
+            filename: mat.filename,
+            content: Buffer.from(arrayBuffer),
+          });
+        }
+      }
+    }
+
     const result = await resend.emails.send({
       from: 'Delaney Costello <delaney@teachbraille.org>',
       to: recipients,
       subject,
       html,
+      ...(emailAttachments.length > 0 ? { attachments: emailAttachments } : {}),
     });
 
     if (result.error) {

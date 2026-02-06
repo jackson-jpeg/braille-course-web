@@ -9,7 +9,6 @@ interface Props {
   enrollments: Enrollment[];
   leads: Lead[];
   scheduleMap: Record<string, string>;
-  adminKey: string;
   onNavigate: (tab: string) => void;
 }
 
@@ -21,7 +20,7 @@ interface ActivityItem {
   timestamp: number;
 }
 
-export default function AdminOverviewTab({ sections, enrollments, leads, scheduleMap, adminKey, onNavigate }: Props) {
+export default function AdminOverviewTab({ sections, enrollments, leads, scheduleMap, onNavigate }: Props) {
   const [recentEmails, setRecentEmails] = useState<ResendEmail[]>([]);
   const [emailsLoaded, setEmailsLoaded] = useState(false);
   const [paymentSummary, setPaymentSummary] = useState<PaymentSummary | null>(null);
@@ -41,21 +40,21 @@ export default function AdminOverviewTab({ sections, enrollments, leads, schedul
   // Fetch recent emails for activity feed
   const fetchRecentEmails = useCallback(async () => {
     try {
-      const res = await fetch(`/api/admin/emails?key=${encodeURIComponent(adminKey)}`);
+      const res = await fetch('/api/admin/emails');
       const data = await res.json();
       if (res.ok) setRecentEmails(data.emails?.slice(0, 5) || []);
     } catch { /* silent */ }
     setEmailsLoaded(true);
-  }, [adminKey]);
+  }, []);
 
   // Fetch real payment data from Stripe
   const fetchPaymentSummary = useCallback(async () => {
     try {
-      const res = await fetch(`/api/admin/payments?key=${encodeURIComponent(adminKey)}`);
+      const res = await fetch('/api/admin/payments');
       const data = await res.json();
       if (res.ok) setPaymentSummary(data.summary);
     } catch { /* silent — fallback numbers remain */ }
-  }, [adminKey]);
+  }, []);
 
   useEffect(() => {
     if (!emailsLoaded) {

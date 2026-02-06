@@ -7,11 +7,11 @@ import './globals.css';
 export const metadata: Metadata = {
   title: 'TeachBraille.org — Delaney Costello, TVI',
   description:
-    'Learn braille with Delaney Costello, a Teacher of the Visually Impaired with 9 years of experience. Summer courses, 1-on-1 appointments, and interactive braille games.',
+    'Delaney Costello is a Teacher of the Visually Impaired with 9 years of experience offering braille instruction, assistive technology, compensatory skills, and educational team consultation.',
   openGraph: {
-    title: 'TeachBraille.org — Learn Braille with Delaney Costello',
+    title: 'TeachBraille.org — Delaney Costello, Teacher of the Visually Impaired',
     description:
-      'Summer courses, 1-on-1 braille instruction, and interactive games. Taught by a Teacher of the Visually Impaired.',
+      'TVI services including braille instruction, assistive technology, and compensatory skills. Summer courses, 1-on-1 sessions, and free interactive braille practice.',
     type: 'website',
     url: 'https://teachbraille.org',
   },

@@ -1,5 +1,7 @@
+import { cookies } from 'next/headers';
 import { prisma } from '@/lib/prisma';
 import { SECTION_SCHEDULES } from '@/lib/schedule';
+import { verifySessionToken } from '@/lib/admin-auth';
 import AdminLogin from '@/components/AdminLogin';
 import AdminDashboard from '@/components/admin/AdminDashboard';
 
@@ -8,14 +10,11 @@ export const metadata = {
   robots: { index: false, follow: false },
 };
 
-export default async function AdminPage({
-  searchParams,
-}: {
-  searchParams: Promise<{ key?: string }>;
-}) {
-  const { key } = await searchParams;
+export default async function AdminPage() {
+  const cookieStore = await cookies();
+  const session = cookieStore.get('admin_session')?.value;
 
-  if (!process.env.ADMIN_PASSWORD || key !== process.env.ADMIN_PASSWORD) {
+  if (!session || !verifySessionToken(session)) {
     return <AdminLogin />;
   }
 
@@ -54,6 +53,7 @@ export default async function AdminPage({
     name: l.name,
     subject: l.subject,
     status: l.status,
+    notes: l.notes,
     createdAt: l.createdAt.toISOString(),
     updatedAt: l.updatedAt.toISOString(),
   }));
@@ -65,7 +65,6 @@ export default async function AdminPage({
         enrollments={serializedEnrollments}
         leads={serializedLeads}
         scheduleMap={SECTION_SCHEDULES}
-        adminKey={key}
       />
     </div>
   );

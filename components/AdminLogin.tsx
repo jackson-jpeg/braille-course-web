@@ -5,12 +5,31 @@ import { useRouter } from 'next/navigation';
 
 export default function AdminLogin() {
   const [password, setPassword] = useState('');
+  const [error, setError] = useState('');
+  const [loading, setLoading] = useState(false);
   const router = useRouter();
 
-  function handleSubmit(e: React.FormEvent) {
+  async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
-    if (password.trim()) {
-      router.push(`/admin?key=${encodeURIComponent(password.trim())}`);
+    if (!password.trim()) return;
+
+    setLoading(true);
+    setError('');
+    try {
+      const res = await fetch('/api/admin/login', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ password: password.trim() }),
+      });
+      if (!res.ok) {
+        setError('Invalid password');
+        return;
+      }
+      router.refresh();
+    } catch {
+      setError('Login failed. Please try again.');
+    } finally {
+      setLoading(false);
     }
   }
 
@@ -29,8 +48,9 @@ export default function AdminLogin() {
             className="admin-login-input"
             autoFocus
           />
-          <button type="submit" className="admin-login-btn">
-            Sign In
+          {error && <p className="admin-login-error">{error}</p>}
+          <button type="submit" className="admin-login-btn" disabled={loading}>
+            {loading ? 'Signing in\u2026' : 'Sign In'}
           </button>
         </form>
       </div>

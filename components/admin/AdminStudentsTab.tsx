@@ -33,11 +33,10 @@ interface Props {
   enrollments: Enrollment[];
   leads: Lead[];
   scheduleMap: Record<string, string>;
-  adminKey: string;
   onSendEmail: (email: string, template?: string) => void;
 }
 
-export default function AdminStudentsTab({ sections, enrollments, leads: initialLeads, scheduleMap, adminKey, onSendEmail }: Props) {
+export default function AdminStudentsTab({ sections, enrollments, leads: initialLeads, scheduleMap, onSendEmail }: Props) {
   const [subTab, setSubTab] = useState<'enrolled' | 'prospective'>('enrolled');
 
   // ── Enrolled state ──
@@ -60,6 +59,7 @@ export default function AdminStudentsTab({ sections, enrollments, leads: initial
   const [editName, setEditName] = useState('');
   const [editEmail, setEditEmail] = useState('');
   const [editStatus, setEditStatus] = useState('');
+  const [editNotes, setEditNotes] = useState('');
   const [deletingLead, setDeletingLead] = useState<Lead | null>(null);
   const [deleteLoading, setDeleteLoading] = useState(false);
   const hasSynced = useRef(false);
@@ -67,11 +67,11 @@ export default function AdminStudentsTab({ sections, enrollments, leads: initial
   // Fetch leads from API
   const fetchLeads = useCallback(async () => {
     try {
-      const res = await fetch(`/api/admin/leads?key=${encodeURIComponent(adminKey)}`);
+      const res = await fetch('/api/admin/leads');
       const data = await res.json();
       if (res.ok) setLeadsList(data.leads);
     } catch { /* silent */ }
-  }, [adminKey]);
+  }, []);
 
   // Auto-sync on first Prospective open
   useEffect(() => {
@@ -79,14 +79,12 @@ export default function AdminStudentsTab({ sections, enrollments, leads: initial
       hasSynced.current = true;
       (async () => {
         try {
-          await fetch(`/api/admin/leads/sync?key=${encodeURIComponent(adminKey)}`, {
-            method: 'POST',
-          });
+          await fetch('/api/admin/leads/sync', { method: 'POST' });
           await fetchLeads();
         } catch { /* silent */ }
       })();
     }
-  }, [subTab, adminKey, fetchLeads]);
+  }, [subTab, fetchLeads]);
 
   // ── Enrolled filters ──
   const filtered = useMemo(() => {
@@ -117,7 +115,7 @@ export default function AdminStudentsTab({ sections, enrollments, leads: initial
     setAddError('');
     setAddLoading(true);
     try {
-      const res = await fetch(`/api/admin/leads?key=${encodeURIComponent(adminKey)}`, {
+      const res = await fetch('/api/admin/leads', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ email: addEmail, name: addName || undefined }),
@@ -140,14 +138,15 @@ export default function AdminStudentsTab({ sections, enrollments, leads: initial
     setEditName(lead.name || '');
     setEditEmail(lead.email);
     setEditStatus(lead.status);
+    setEditNotes(lead.notes || '');
   }
 
   async function saveEdit(id: string) {
     try {
-      await fetch(`/api/admin/leads/${id}?key=${encodeURIComponent(adminKey)}`, {
+      await fetch(`/api/admin/leads/${id}`, {
         method: 'PATCH',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ name: editName, email: editEmail, status: editStatus }),
+        body: JSON.stringify({ name: editName, email: editEmail, status: editStatus, notes: editNotes }),
       });
       setEditingLead(null);
       await fetchLeads();
@@ -158,7 +157,7 @@ export default function AdminStudentsTab({ sections, enrollments, leads: initial
     if (!deletingLead) return;
     setDeleteLoading(true);
     try {
-      await fetch(`/api/admin/leads/${deletingLead.id}?key=${encodeURIComponent(adminKey)}`, {
+      await fetch(`/api/admin/leads/${deletingLead.id}`, {
         method: 'DELETE',
       });
       setDeletingLead(null);
@@ -170,7 +169,7 @@ export default function AdminStudentsTab({ sections, enrollments, leads: initial
   async function handleSendToLead(lead: Lead) {
     // Mark as CONTACTED
     try {
-      await fetch(`/api/admin/leads/${lead.id}?key=${encodeURIComponent(adminKey)}`, {
+      await fetch(`/api/admin/leads/${lead.id}`, {
         method: 'PATCH',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ status: 'CONTACTED' }),
@@ -276,7 +275,6 @@ export default function AdminStudentsTab({ sections, enrollments, leads: initial
             <AdminStudentModal
               enrollment={selectedStudent}
               scheduleMap={scheduleMap}
-              adminKey={adminKey}
               onClose={() => setSelectedStudent(null)}
               onSendEmail={(email) => {
                 setSelectedStudent(null);
@@ -353,6 +351,7 @@ export default function AdminStudentsTab({ sections, enrollments, leads: initial
                   <th>Email</th>
                   <th>Name</th>
                   <th>Status</th>
+                  <th>Notes</th>
                   <th>Date</th>
                   <th>Actions</th>
                 </tr>
@@ -360,7 +359,7 @@ export default function AdminStudentsTab({ sections, enrollments, leads: initial
               <tbody>
                 {filteredLeads.length === 0 ? (
                   <tr>
-                    <td colSpan={5} className="admin-empty">
+                    <td colSpan={6} className="admin-empty">
                       {leadsList.length === 0
                         ? 'No prospective students yet.'
                         : 'No leads match your filters.'}
@@ -399,6 +398,16 @@ export default function AdminStudentsTab({ sections, enrollments, leads: initial
                             <option value="CONTACTED">CONTACTED</option>
                           </select>
                         </td>
+                        <td>
+                          <textarea
+                            value={editNotes}
+                            onChange={(e) => setEditNotes(e.target.value)}
+                            className="admin-compose-input"
+                            placeholder="Add notes..."
+                            rows={2}
+                            style={{ fontSize: '0.85rem', padding: '4px 8px', resize: 'vertical' }}
+                          />
+                        </td>
                         <td title={fullDate(l.createdAt)}>{relativeTime(l.createdAt)}</td>
                         <td>
                           <div style={{ display: 'flex', gap: 6 }}>
@@ -419,6 +428,9 @@ export default function AdminStudentsTab({ sections, enrollments, leads: initial
                           <span className={`admin-status admin-status-${l.status.toLowerCase()}`}>
                             {l.status}
                           </span>
+                        </td>
+                        <td className="admin-notes-cell" title={l.notes || ''}>
+                          {l.notes ? (l.notes.length > 40 ? l.notes.slice(0, 40) + '\u2026' : l.notes) : '\u2014'}
                         </td>
                         <td title={fullDate(l.createdAt)}>{relativeTime(l.createdAt)}</td>
                         <td>

@@ -1,18 +1,22 @@
 'use client';
 
 import { useState } from 'react';
+import { useRouter } from 'next/navigation';
 import AdminOverviewTab from './AdminOverviewTab';
 import AdminStudentsTab from './AdminStudentsTab';
 import AdminPaymentsTab from './AdminPaymentsTab';
 import AdminEmailsTab from './AdminEmailsTab';
+import AdminMaterialsTab from './AdminMaterialsTab';
 import type { AdminProps } from './admin-types';
 
-type Tab = 'overview' | 'students' | 'payments' | 'emails';
+type Tab = 'overview' | 'students' | 'payments' | 'emails' | 'materials';
 
-export default function AdminDashboard({ sections, enrollments, leads, scheduleMap, adminKey }: AdminProps) {
+export default function AdminDashboard({ sections, enrollments, leads, scheduleMap }: AdminProps) {
   const [tab, setTab] = useState<Tab>('overview');
   const [emailComposeTo, setEmailComposeTo] = useState('');
   const [emailInitialTemplate, setEmailInitialTemplate] = useState('');
+  const [pendingAttachmentIds, setPendingAttachmentIds] = useState<string[]>([]);
+  const router = useRouter();
 
   function handleNavigate(target: string) {
     if (target === 'emails-compose') {
@@ -32,19 +36,33 @@ export default function AdminDashboard({ sections, enrollments, leads, scheduleM
     setTab('emails');
   }
 
+  function handleEmailMaterial(materialId: string) {
+    setPendingAttachmentIds([materialId]);
+    setTab('emails');
+  }
+
+  async function handleLogout() {
+    await fetch('/api/admin/logout', { method: 'POST' });
+    router.push('/admin');
+    router.refresh();
+  }
+
   return (
     <div className="admin-inner">
-      <h1 className="admin-title">Admin Dashboard</h1>
+      <div className="admin-header-row">
+        <h1 className="admin-title">Admin Dashboard</h1>
+        <button className="admin-logout-btn" onClick={handleLogout}>Sign Out</button>
+      </div>
 
       {/* Tabs */}
       <div className="admin-tabs">
-        {(['overview', 'students', 'payments', 'emails'] as Tab[]).map((t) => (
+        {(['overview', 'students', 'payments', 'emails', 'materials'] as Tab[]).map((t) => (
           <button
             key={t}
             className={`admin-tab ${tab === t ? 'admin-tab-active' : ''}`}
-            onClick={() => { setTab(t); if (t !== 'emails') { setEmailComposeTo(''); setEmailInitialTemplate(''); } }}
+            onClick={() => { setTab(t); if (t !== 'emails') { setEmailComposeTo(''); setEmailInitialTemplate(''); setPendingAttachmentIds([]); } }}
           >
-            {t === 'overview' ? 'Overview' : t === 'students' ? 'Students' : t === 'payments' ? 'Payments' : 'Emails'}
+            {t.charAt(0).toUpperCase() + t.slice(1)}
           </button>
         ))}
       </div>
@@ -56,7 +74,6 @@ export default function AdminDashboard({ sections, enrollments, leads, scheduleM
           enrollments={enrollments}
           leads={leads}
           scheduleMap={scheduleMap}
-          adminKey={adminKey}
           onNavigate={handleNavigate}
         />
       )}
@@ -67,22 +84,26 @@ export default function AdminDashboard({ sections, enrollments, leads, scheduleM
           enrollments={enrollments}
           leads={leads}
           scheduleMap={scheduleMap}
-          adminKey={adminKey}
           onSendEmail={handleSendEmail}
         />
       )}
 
       {tab === 'payments' && (
-        <AdminPaymentsTab adminKey={adminKey} enrollments={enrollments} />
+        <AdminPaymentsTab enrollments={enrollments} />
       )}
 
       {tab === 'emails' && (
         <AdminEmailsTab
-          adminKey={adminKey}
           enrollments={enrollments}
           initialComposeTo={emailComposeTo}
           initialTemplate={emailInitialTemplate}
+          pendingAttachmentIds={pendingAttachmentIds}
+          onClearAttachments={() => setPendingAttachmentIds([])}
         />
+      )}
+
+      {tab === 'materials' && (
+        <AdminMaterialsTab onEmailMaterial={handleEmailMaterial} />
       )}
     </div>
   );

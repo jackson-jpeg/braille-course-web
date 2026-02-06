@@ -3,7 +3,7 @@
 import { useState, useCallback, useEffect } from 'react';
 import AdminEmailModal from './AdminEmailModal';
 import AdminConfirmDialog from './AdminConfirmDialog';
-import type { ResendEmail, ReceivedEmail, EmailDetail, Enrollment } from './admin-types';
+import type { ResendEmail, ReceivedEmail, EmailDetail, Enrollment, Material } from './admin-types';
 import { relativeTime, fullDate } from './admin-utils';
 
 const EMAIL_TEMPLATES = [
@@ -35,13 +35,14 @@ const EMAIL_TEMPLATES = [
 ];
 
 interface Props {
-  adminKey: string;
   enrollments: Enrollment[];
   initialComposeTo?: string;
   initialTemplate?: string;
+  pendingAttachmentIds?: string[];
+  onClearAttachments?: () => void;
 }
 
-export default function AdminEmailsTab({ adminKey, enrollments, initialComposeTo, initialTemplate }: Props) {
+export default function AdminEmailsTab({ enrollments, initialComposeTo, initialTemplate, pendingAttachmentIds, onClearAttachments }: Props) {
   const [emailSubTab, setEmailSubTab] = useState<'sent' | 'received'>('sent');
   const [emails, setEmails] = useState<ResendEmail[]>([]);
   const [emailsLoading, setEmailsLoading] = useState(false);
@@ -61,6 +62,9 @@ export default function AdminEmailsTab({ adminKey, enrollments, initialComposeTo
   const [receivedLoading, setReceivedLoading] = useState(false);
   const [receivedError, setReceivedError] = useState('');
 
+  // Attachment state
+  const [attachments, setAttachments] = useState<Material[]>([]);
+
   // Update composeTo when initialComposeTo changes (from student modal)
   useEffect(() => {
     if (initialComposeTo) {
@@ -68,6 +72,24 @@ export default function AdminEmailsTab({ adminKey, enrollments, initialComposeTo
       setShowCompose(true);
     }
   }, [initialComposeTo]);
+
+  // Fetch material metadata when pendingAttachmentIds arrives
+  useEffect(() => {
+    if (pendingAttachmentIds && pendingAttachmentIds.length > 0) {
+      setShowCompose(true);
+      setEmailSubTab('sent');
+      // Fetch metadata for each attachment
+      Promise.all(
+        pendingAttachmentIds.map((id) =>
+          fetch('/api/admin/materials')
+            .then((r) => r.json())
+            .then((json) => (json.materials as Material[]).find((m) => m.id === id))
+        )
+      ).then((results) => {
+        setAttachments(results.filter((m): m is Material => !!m));
+      });
+    }
+  }, [pendingAttachmentIds]);
 
   // Auto-select template when initialTemplate is passed (from prospective leads)
   useEffect(() => {
@@ -87,7 +109,7 @@ export default function AdminEmailsTab({ adminKey, enrollments, initialComposeTo
     setEmailsLoading(true);
     setEmailsError('');
     try {
-      const res = await fetch(`/api/admin/emails?key=${encodeURIComponent(adminKey)}`);
+      const res = await fetch('/api/admin/emails');
       const data = await res.json();
       if (!res.ok) throw new Error(data.error || 'Failed to fetch');
       setEmails(data.emails);
@@ -96,13 +118,13 @@ export default function AdminEmailsTab({ adminKey, enrollments, initialComposeTo
     } finally {
       setEmailsLoading(false);
     }
-  }, [adminKey]);
+  }, []);
 
   const fetchReceivedEmails = useCallback(async () => {
     setReceivedLoading(true);
     setReceivedError('');
     try {
-      const res = await fetch(`/api/admin/emails/received?key=${encodeURIComponent(adminKey)}`);
+      const res = await fetch('/api/admin/emails/received');
       const data = await res.json();
       if (!res.ok) throw new Error(data.error || 'Failed to fetch');
       setReceivedEmails(data.emails);
@@ -111,7 +133,7 @@ export default function AdminEmailsTab({ adminKey, enrollments, initialComposeTo
     } finally {
       setReceivedLoading(false);
     }
-  }, [adminKey]);
+  }, []);
 
   useEffect(() => {
     if (emailSubTab === 'sent' && emails.length === 0 && !emailsLoading) {
@@ -129,7 +151,7 @@ export default function AdminEmailsTab({ adminKey, enrollments, initialComposeTo
     setEmailDetailLoading(true);
     setSelectedEmail(null);
     try {
-      const res = await fetch(`/api/admin/emails/${id}?key=${encodeURIComponent(adminKey)}`);
+      const res = await fetch(`/api/admin/emails/${id}`);
       const data = await res.json();
       if (!res.ok) throw new Error(data.error || 'Failed to fetch');
       setSelectedEmail(data.email);
@@ -144,7 +166,7 @@ export default function AdminEmailsTab({ adminKey, enrollments, initialComposeTo
     setEmailDetailLoading(true);
     setSelectedEmail(null);
     try {
-      const res = await fetch(`/api/admin/emails/received/${id}?key=${encodeURIComponent(adminKey)}`);
+      const res = await fetch(`/api/admin/emails/received/${id}`);
       const data = await res.json();
       if (!res.ok) throw new Error(data.error || 'Failed to fetch');
       setSelectedEmail(data.email);
@@ -160,10 +182,14 @@ export default function AdminEmailsTab({ adminKey, enrollments, initialComposeTo
     setComposeResult(null);
     try {
       const recipients = composeTo.split(',').map((s) => s.trim()).filter(Boolean);
-      const res = await fetch(`/api/admin/emails?key=${encodeURIComponent(adminKey)}`, {
+      const payload: Record<string, unknown> = { to: recipients, subject: composeSubject, body: composeBody };
+      if (attachments.length > 0) {
+        payload.attachmentIds = attachments.map((a) => a.id);
+      }
+      const res = await fetch('/api/admin/emails', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ to: recipients, subject: composeSubject, body: composeBody }),
+        body: JSON.stringify(payload),
       });
       const data = await res.json();
       if (!res.ok) throw new Error(data.error || 'Failed to send');
@@ -172,6 +198,8 @@ export default function AdminEmailsTab({ adminKey, enrollments, initialComposeTo
       setComposeSubject('');
       setComposeBody('');
       setSelectedTemplate('');
+      setAttachments([]);
+      onClearAttachments?.();
       fetchEmails();
     } catch (err: unknown) {
       setComposeResult({ ok: false, msg: err instanceof Error ? err.message : 'Failed to send' });
@@ -335,9 +363,32 @@ export default function AdminEmailsTab({ adminKey, enrollments, initialComposeTo
                     required
                   />
                 </div>
+                {attachments.length > 0 && (
+                  <div className="admin-compose-field">
+                    <label>Attachments</label>
+                    <div style={{ display: 'flex', flexWrap: 'wrap', gap: 8 }}>
+                      {attachments.map((a) => (
+                        <span key={a.id} style={{
+                          display: 'inline-flex', alignItems: 'center', gap: 6,
+                          background: 'var(--bg-secondary, #f0f0f0)', padding: '4px 10px',
+                          borderRadius: 6, fontSize: '0.85rem',
+                        }}>
+                          {a.filename}
+                          <button
+                            type="button"
+                            onClick={() => setAttachments((prev) => prev.filter((m) => m.id !== a.id))}
+                            style={{ background: 'none', border: 'none', cursor: 'pointer', fontSize: '1rem', lineHeight: 1, padding: 0 }}
+                          >
+                            &times;
+                          </button>
+                        </span>
+                      ))}
+                    </div>
+                  </div>
+                )}
                 <div className="admin-compose-actions">
                   <button type="submit" className="admin-send-btn" disabled={composeSending}>
-                    {composeSending ? 'Sending\u2026' : 'Send Email'}
+                    {composeSending ? 'Sending\u2026' : attachments.length > 0 ? `Send Email (${attachments.length} attachment${attachments.length > 1 ? 's' : ''})` : 'Send Email'}
                   </button>
                   {composeResult && (
                     <span className={`admin-compose-result ${composeResult.ok ? 'admin-compose-success' : 'admin-compose-error'}`}>

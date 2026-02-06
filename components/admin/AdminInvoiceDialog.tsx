@@ -4,7 +4,6 @@ import { useState, useRef, useEffect } from 'react';
 import type { Enrollment } from './admin-types';
 
 interface Props {
-  adminKey: string;
   enrollments: Enrollment[];
   onClose: () => void;
   onSuccess: () => void;
@@ -18,7 +17,7 @@ const TERMS_OPTIONS = [
   { label: 'Net 60', days: 60 },
 ];
 
-export default function AdminInvoiceDialog({ adminKey, enrollments, onClose, onSuccess }: Props) {
+export default function AdminInvoiceDialog({ enrollments, onClose, onSuccess }: Props) {
   const [email, setEmail] = useState('');
   const [name, setName] = useState('');
   const [description, setDescription] = useState('');
@@ -80,7 +79,7 @@ export default function AdminInvoiceDialog({ adminKey, enrollments, onClose, onS
 
     setLoading(true);
     try {
-      const res = await fetch(`/api/admin/invoices?key=${encodeURIComponent(adminKey)}`, {
+      const res = await fetch('/api/admin/invoices', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({

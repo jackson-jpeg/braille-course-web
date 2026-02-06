@@ -129,6 +129,14 @@ export interface StudentDetail {
   emails: ResendEmail[];
 }
 
+/* ── Notes ── */
+export interface Note {
+  id: string;
+  content: string;
+  studentEmail: string;
+  createdAt: string;
+}
+
 /* ── Prospective Lead ── */
 export interface Lead {
   id: string;
@@ -136,8 +144,74 @@ export interface Lead {
   name: string | null;
   subject: string | null;
   status: string;
+  notes: string | null;
   createdAt: string;
   updatedAt: string;
+}
+
+/* ── Stripe Payouts ── */
+export interface StripePayout {
+  id: string;
+  amount: number;
+  currency: string;
+  status: string;
+  arrival_date: number;
+  created: number;
+}
+
+export interface PayoutsData {
+  payouts: StripePayout[];
+  balance: {
+    available: number;
+    pending: number;
+  };
+}
+
+/* ── Stripe Coupons / Promo Codes ── */
+export interface StripeCoupon {
+  id: string;
+  name: string | null;
+  percent_off: number | null;
+  amount_off: number | null;
+  currency: string | null;
+  duration: string;
+  max_redemptions: number | null;
+  times_redeemed: number;
+  valid: boolean;
+  created: number;
+  redeem_by: number | null;
+  promotion_codes: StripePromotionCode[];
+}
+
+export interface StripePromotionCode {
+  id: string;
+  code: string;
+  active: boolean;
+  max_redemptions: number | null;
+  times_redeemed: number;
+  expires_at: number | null;
+}
+
+/* ── Stripe Payment Links ── */
+export interface StripePaymentLink {
+  id: string;
+  url: string;
+  active: boolean;
+  metadata: Record<string, string>;
+  line_items: {
+    description: string | null;
+    amount_total: number;
+  }[];
+}
+
+/* ── Materials ── */
+export interface Material {
+  id: string;
+  filename: string;
+  contentType: string;
+  size: number;
+  blobUrl: string;
+  createdAt: string;
 }
 
 /* ── Props ── */
@@ -146,5 +220,4 @@ export interface AdminProps {
   enrollments: Enrollment[];
   leads: Lead[];
   scheduleMap: Record<string, string>;
-  adminKey: string;
 }

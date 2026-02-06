@@ -5,12 +5,11 @@ import type { StripeCharge } from './admin-types';
 
 interface Props {
   charge: StripeCharge;
-  adminKey: string;
   onClose: () => void;
   onSuccess: () => void;
 }
 
-export default function AdminRefundDialog({ charge, adminKey, onClose, onSuccess }: Props) {
+export default function AdminRefundDialog({ charge, onClose, onSuccess }: Props) {
   const [reason, setReason] = useState('requested_by_customer');
   const [customAmount, setCustomAmount] = useState('');
   const [isPartial, setIsPartial] = useState(false);
@@ -40,7 +39,7 @@ export default function AdminRefundDialog({ charge, adminKey, onClose, onSuccess
         body.amount = refundAmount;
       }
 
-      const res = await fetch(`/api/admin/payments/refund?key=${encodeURIComponent(adminKey)}`, {
+      const res = await fetch('/api/admin/payments/refund', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(body),

@@ -23,7 +23,7 @@ export default function Footer() {
       </nav>
       <p>
         &copy; 2026 Delaney Costello, Teacher of the Visually Impaired &middot;
-        Remote Braille Instruction
+        TVI Services &amp; Braille Instruction
       </p>
     </footer>
   );

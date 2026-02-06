@@ -4,8 +4,13 @@ import { useState, useEffect, useCallback } from 'react';
 import AdminRefundDialog from './AdminRefundDialog';
 import AdminInvoiceDialog from './AdminInvoiceDialog';
 import AdminConfirmDialog from './AdminConfirmDialog';
-import type { PaymentsData, StripeCharge, StripeInvoice, Enrollment } from './admin-types';
+import type {
+  PaymentsData, StripeCharge, StripeInvoice, Enrollment,
+  PayoutsData, StripeCoupon, StripePaymentLink,
+} from './admin-types';
 import { formatDate, formatCurrency } from './admin-utils';
+
+type PaymentSubTab = 'overview' | 'payouts' | 'coupons' | 'links';
 
 interface ConfirmAction {
   title: string;
@@ -16,11 +21,11 @@ interface ConfirmAction {
 }
 
 interface Props {
-  adminKey: string;
   enrollments: Enrollment[];
 }
 
-export default function AdminPaymentsTab({ adminKey, enrollments }: Props) {
+export default function AdminPaymentsTab({ enrollments }: Props) {
+  const [paymentSubTab, setPaymentSubTab] = useState<PaymentSubTab>('overview');
   const [data, setData] = useState<PaymentsData | null>(null);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
@@ -31,11 +36,29 @@ export default function AdminPaymentsTab({ adminKey, enrollments }: Props) {
   const [loadingMoreCharges, setLoadingMoreCharges] = useState(false);
   const [loadingMoreInvoices, setLoadingMoreInvoices] = useState(false);
 
+  // Payouts state
+  const [payoutsData, setPayoutsData] = useState<PayoutsData | null>(null);
+  const [payoutsLoading, setPayoutsLoading] = useState(false);
+
+  // Coupons state
+  const [coupons, setCoupons] = useState<StripeCoupon[]>([]);
+  const [couponsLoading, setCouponsLoading] = useState(false);
+  const [showCreateCoupon, setShowCreateCoupon] = useState(false);
+  const [couponName, setCouponName] = useState('');
+  const [couponType, setCouponType] = useState<'percent' | 'amount'>('percent');
+  const [couponValue, setCouponValue] = useState('');
+  const [couponPromoCode, setCouponPromoCode] = useState('');
+  const [couponCreating, setCouponCreating] = useState(false);
+
+  // Payment Links state
+  const [paymentLinks, setPaymentLinks] = useState<StripePaymentLink[]>([]);
+  const [linksLoading, setLinksLoading] = useState(false);
+
   const fetchPayments = useCallback(async () => {
     setLoading(true);
     setError('');
     try {
-      const res = await fetch(`/api/admin/payments?key=${encodeURIComponent(adminKey)}`);
+      const res = await fetch('/api/admin/payments');
       const json = await res.json();
       if (!res.ok) throw new Error(json.error || 'Failed to fetch');
       setData(json);
@@ -44,18 +67,54 @@ export default function AdminPaymentsTab({ adminKey, enrollments }: Props) {
     } finally {
       setLoading(false);
     }
-  }, [adminKey]);
+  }, []);
 
   useEffect(() => {
     if (!data && !loading) fetchPayments();
   }, [data, loading, fetchPayments]);
+
+  // Fetch payouts when sub-tab opens
+  useEffect(() => {
+    if (paymentSubTab === 'payouts' && !payoutsData && !payoutsLoading) {
+      setPayoutsLoading(true);
+      fetch('/api/admin/payments/payouts')
+        .then((r) => r.json())
+        .then((json) => setPayoutsData(json))
+        .catch(() => {})
+        .finally(() => setPayoutsLoading(false));
+    }
+  }, [paymentSubTab, payoutsData, payoutsLoading]);
+
+  // Fetch coupons when sub-tab opens
+  useEffect(() => {
+    if (paymentSubTab === 'coupons' && coupons.length === 0 && !couponsLoading) {
+      setCouponsLoading(true);
+      fetch('/api/admin/payments/coupons')
+        .then((r) => r.json())
+        .then((json) => setCoupons(json.coupons || []))
+        .catch(() => {})
+        .finally(() => setCouponsLoading(false));
+    }
+  }, [paymentSubTab, coupons.length, couponsLoading]);
+
+  // Fetch links when sub-tab opens
+  useEffect(() => {
+    if (paymentSubTab === 'links' && paymentLinks.length === 0 && !linksLoading) {
+      setLinksLoading(true);
+      fetch('/api/admin/payments/links')
+        .then((r) => r.json())
+        .then((json) => setPaymentLinks(json.links || []))
+        .catch(() => {})
+        .finally(() => setLinksLoading(false));
+    }
+  }, [paymentSubTab, paymentLinks.length, linksLoading]);
 
   async function loadMoreCharges() {
     if (!data || !data.pagination?.hasMoreCharges || !data.pagination.lastChargeId) return;
     setLoadingMoreCharges(true);
     try {
       const res = await fetch(
-        `/api/admin/payments?key=${encodeURIComponent(adminKey)}&charges_after=${data.pagination.lastChargeId}`
+        `/api/admin/payments?charges_after=${data.pagination.lastChargeId}`
       );
       const json = await res.json();
       if (!res.ok) throw new Error(json.error || 'Failed to fetch');
@@ -76,7 +135,7 @@ export default function AdminPaymentsTab({ adminKey, enrollments }: Props) {
     setLoadingMoreInvoices(true);
     try {
       const res = await fetch(
-        `/api/admin/payments?key=${encodeURIComponent(adminKey)}&invoices_after=${data.pagination.lastInvoiceId}`
+        `/api/admin/payments?invoices_after=${data.pagination.lastInvoiceId}`
       );
       const json = await res.json();
       if (!res.ok) throw new Error(json.error || 'Failed to fetch');
@@ -86,7 +145,6 @@ export default function AdminPaymentsTab({ adminKey, enrollments }: Props) {
         pagination: {
           ...prev.pagination,
           ...json.pagination,
-          // Keep charge pagination from previous state since this was an invoices-only load
           hasMoreCharges: prev.pagination?.hasMoreCharges ?? false,
           lastChargeId: prev.pagination?.lastChargeId,
         },
@@ -106,7 +164,7 @@ export default function AdminPaymentsTab({ adminKey, enrollments }: Props) {
       variant: 'primary',
       onConfirm: async () => {
         try {
-          const res = await fetch(`/api/admin/invoices/send?key=${encodeURIComponent(adminKey)}`, {
+          const res = await fetch('/api/admin/invoices/send', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({ invoiceId: inv.id }),
@@ -131,7 +189,7 @@ export default function AdminPaymentsTab({ adminKey, enrollments }: Props) {
       variant: 'danger',
       onConfirm: async () => {
         try {
-          const res = await fetch(`/api/admin/invoices/void?key=${encodeURIComponent(adminKey)}`, {
+          const res = await fetch('/api/admin/invoices/void', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({ invoiceId: inv.id }),
@@ -146,6 +204,44 @@ export default function AdminPaymentsTab({ adminKey, enrollments }: Props) {
         }
       },
     });
+  }
+
+  async function handleCreateCoupon(e: React.FormEvent) {
+    e.preventDefault();
+    setCouponCreating(true);
+    try {
+      const body: Record<string, unknown> = {
+        name: couponName || undefined,
+        duration: 'once',
+      };
+      if (couponType === 'percent') body.percent_off = parseFloat(couponValue);
+      else body.amount_off = parseFloat(couponValue);
+      if (couponPromoCode) body.promoCode = couponPromoCode;
+
+      const res = await fetch('/api/admin/payments/coupons', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(body),
+      });
+      if (!res.ok) {
+        const json = await res.json();
+        throw new Error(json.error || 'Failed to create coupon');
+      }
+      setShowCreateCoupon(false);
+      setCouponName('');
+      setCouponValue('');
+      setCouponPromoCode('');
+      // Refresh coupons
+      setCoupons([]);
+    } catch (err) {
+      setError(err instanceof Error ? err.message : 'Failed to create coupon');
+    } finally {
+      setCouponCreating(false);
+    }
+  }
+
+  function handleExportCsv() {
+    window.open('/api/admin/payments/export', '_blank');
   }
 
   if (loading && !data) {
@@ -165,191 +261,421 @@ export default function AdminPaymentsTab({ adminKey, enrollments }: Props) {
 
   return (
     <>
-      {/* Summary Cards */}
-      <div className="admin-payments-cards">
-        <div className="admin-payments-card admin-payments-card-green">
-          <div className="admin-payments-card-value">${data.summary.totalCollected.toLocaleString(undefined, { minimumFractionDigits: 2 })}</div>
-          <div className="admin-payments-card-label">Revenue Collected</div>
-        </div>
-        <div className="admin-payments-card admin-payments-card-gold">
-          <div className="admin-payments-card-value">${data.summary.pendingInvoices.toLocaleString(undefined, { minimumFractionDigits: 2 })}</div>
-          <div className="admin-payments-card-label">Upcoming Charges</div>
-        </div>
-        <div className="admin-payments-card">
-          <div className="admin-payments-card-value">${data.summary.stripeFees.toLocaleString(undefined, { minimumFractionDigits: 2 })}</div>
-          <div className="admin-payments-card-label">Processing Fees</div>
-        </div>
-        <div className="admin-payments-card admin-payments-card-navy">
-          <div className="admin-payments-card-value">${data.summary.netRevenue.toLocaleString(undefined, { minimumFractionDigits: 2 })}</div>
-          <div className="admin-payments-card-label">Take-Home Revenue</div>
-        </div>
+      {/* Sub-tab navigation */}
+      <div className="admin-email-subtabs">
+        {(['overview', 'payouts', 'coupons', 'links'] as PaymentSubTab[]).map((t) => (
+          <button
+            key={t}
+            className={`admin-email-subtab ${paymentSubTab === t ? 'admin-email-subtab-active' : ''}`}
+            onClick={() => setPaymentSubTab(t)}
+          >
+            {t === 'overview' ? 'Overview' : t === 'payouts' ? 'Payouts' : t === 'coupons' ? 'Coupons' : 'Payment Links'}
+          </button>
+        ))}
       </div>
 
-      <div className="admin-payments-toolbar">
-        <button className="admin-compose-btn" onClick={() => setShowInvoiceDialog(true)}>
-          Create Invoice
-        </button>
-        <button className="admin-refresh-btn" onClick={fetchPayments} disabled={loading}>
-          {loading ? 'Refreshing\u2026' : 'Refresh'}
-        </button>
-      </div>
-
-      {error && data && <div className="admin-email-error">{error}</div>}
-
-      {/* Recent Payments */}
-      <div className="admin-overview-section">
-        <h3 className="admin-overview-section-title">Recent Payments</h3>
-        <div className="admin-table-wrap">
-          <table className="admin-table">
-            <thead>
-              <tr>
-                <th>Date</th>
-                <th>Student</th>
-                <th>Amount</th>
-                <th>Status</th>
-                <th>Actions</th>
-              </tr>
-            </thead>
-            <tbody>
-              {data.charges.length === 0 ? (
-                <tr><td colSpan={5} className="admin-empty">No payments found.</td></tr>
-              ) : (
-                data.charges.map((c) => (
-                  <tr key={c.id}>
-                    <td>{formatDate(c.created)}</td>
-                    <td>{c.customer?.email || c.customer?.name || '\u2014'}</td>
-                    <td>{formatCurrency(c.amount)}</td>
-                    <td>
-                      <span className={`admin-status admin-status-${c.status === 'succeeded' ? 'completed' : c.status === 'pending' ? 'pending' : 'waitlisted'}`}>
-                        {c.status === 'succeeded' ? 'Successful' : c.status === 'pending' ? 'Processing' : 'Failed'}
-                      </span>
-                      {c.refunded && (
-                        <span className="admin-status admin-status-waitlisted" style={{ marginLeft: 6 }}>
-                          Refunded
-                        </span>
-                      )}
-                    </td>
-                    <td>
-                      <div className="admin-payment-actions">
-                        {c.receipt_url && (
-                          <a
-                            href={c.receipt_url}
-                            target="_blank"
-                            rel="noopener noreferrer"
-                            className="admin-stripe-link"
-                          >
-                            Receipt
-                          </a>
-                        )}
-                        {c.status === 'succeeded' && !c.refunded && (
-                          <button
-                            className="admin-refund-btn"
-                            onClick={() => setRefundCharge(c)}
-                          >
-                            Refund
-                          </button>
-                        )}
-                      </div>
-                    </td>
-                  </tr>
-                ))
-              )}
-            </tbody>
-            {data.pagination?.hasMoreCharges && (
-              <tfoot>
-                <tr>
-                  <td colSpan={5} style={{ textAlign: 'center' }}>
-                    <button
-                      className="admin-refresh-btn"
-                      onClick={loadMoreCharges}
-                      disabled={loadingMoreCharges}
-                    >
-                      {loadingMoreCharges ? 'Loading\u2026' : 'Load More Payments'}
-                    </button>
-                  </td>
-                </tr>
-              </tfoot>
-            )}
-          </table>
-        </div>
-      </div>
-
-      {/* Invoices */}
-      {data.invoices.length > 0 && (
-        <div className="admin-overview-section">
-          <h3 className="admin-overview-section-title">Invoices</h3>
-          <div className="admin-table-wrap">
-            <table className="admin-table">
-              <thead>
-                <tr>
-                  <th>Student</th>
-                  <th>Amount</th>
-                  <th>Status</th>
-                  <th>Date</th>
-                  <th>Actions</th>
-                </tr>
-              </thead>
-              <tbody>
-                {data.invoices.map((inv) => (
-                  <tr key={inv.id}>
-                    <td>{inv.customer?.email || inv.customer?.name || '\u2014'}</td>
-                    <td>{formatCurrency(inv.amount_due)}</td>
-                    <td>
-                      <span className={`admin-invoice-badge admin-invoice-${inv.status}`}>
-                        {inv.status_label}
-                      </span>
-                    </td>
-                    <td>{formatDate(inv.created)}</td>
-                    <td>
-                      <div className="admin-payment-actions">
-                        {inv.hosted_invoice_url && (
-                          <a
-                            href={inv.hosted_invoice_url}
-                            target="_blank"
-                            rel="noopener noreferrer"
-                            className="admin-stripe-link"
-                          >
-                            View
-                          </a>
-                        )}
-                        {inv.status === 'draft' && (
-                          <button
-                            className="admin-send-invoice-btn"
-                            onClick={() => handleSendInvoice(inv)}
-                          >
-                            Send
-                          </button>
-                        )}
-                        {(inv.status === 'draft' || inv.status === 'open') && (
-                          <button
-                            className="admin-void-btn"
-                            onClick={() => handleVoidInvoice(inv)}
-                          >
-                            Void
-                          </button>
-                        )}
-                      </div>
-                    </td>
-                  </tr>
-                ))}
-              </tbody>
-              {data.pagination?.hasMoreInvoices && (
-                <tfoot>
-                  <tr>
-                    <td colSpan={5} style={{ textAlign: 'center' }}>
-                      <button
-                        className="admin-refresh-btn"
-                        onClick={loadMoreInvoices}
-                        disabled={loadingMoreInvoices}
-                      >
-                        {loadingMoreInvoices ? 'Loading\u2026' : 'Load More Invoices'}
-                      </button>
-                    </td>
-                  </tr>
-                </tfoot>
-              )}
-            </table>
+      {/* ── OVERVIEW SUB-TAB ── */}
+      {paymentSubTab === 'overview' && (
+        <>
+          {/* Summary Cards */}
+          <div className="admin-payments-cards">
+            <div className="admin-payments-card admin-payments-card-green">
+              <div className="admin-payments-card-value">${data.summary.totalCollected.toLocaleString(undefined, { minimumFractionDigits: 2 })}</div>
+              <div className="admin-payments-card-label">Revenue Collected</div>
+            </div>
+            <div className="admin-payments-card admin-payments-card-gold">
+              <div className="admin-payments-card-value">${data.summary.pendingInvoices.toLocaleString(undefined, { minimumFractionDigits: 2 })}</div>
+              <div className="admin-payments-card-label">Upcoming Charges</div>
+            </div>
+            <div className="admin-payments-card">
+              <div className="admin-payments-card-value">${data.summary.stripeFees.toLocaleString(undefined, { minimumFractionDigits: 2 })}</div>
+              <div className="admin-payments-card-label">Processing Fees</div>
+            </div>
+            <div className="admin-payments-card admin-payments-card-navy">
+              <div className="admin-payments-card-value">${data.summary.netRevenue.toLocaleString(undefined, { minimumFractionDigits: 2 })}</div>
+              <div className="admin-payments-card-label">Take-Home Revenue</div>
+            </div>
           </div>
+
+          <div className="admin-payments-toolbar">
+            <button className="admin-compose-btn" onClick={() => setShowInvoiceDialog(true)}>
+              Create Invoice
+            </button>
+            <button className="admin-export-btn" onClick={handleExportCsv}>
+              Export CSV
+            </button>
+            <button className="admin-refresh-btn" onClick={fetchPayments} disabled={loading}>
+              {loading ? 'Refreshing\u2026' : 'Refresh'}
+            </button>
+          </div>
+
+          {error && data && <div className="admin-email-error">{error}</div>}
+
+          {/* Recent Payments */}
+          <div className="admin-overview-section">
+            <h3 className="admin-overview-section-title">Recent Payments</h3>
+            <div className="admin-table-wrap">
+              <table className="admin-table">
+                <thead>
+                  <tr>
+                    <th>Date</th>
+                    <th>Student</th>
+                    <th>Amount</th>
+                    <th>Status</th>
+                    <th>Actions</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {data.charges.length === 0 ? (
+                    <tr><td colSpan={5} className="admin-empty">No payments found.</td></tr>
+                  ) : (
+                    data.charges.map((c) => (
+                      <tr key={c.id}>
+                        <td>{formatDate(c.created)}</td>
+                        <td>{c.customer?.email || c.customer?.name || '\u2014'}</td>
+                        <td>{formatCurrency(c.amount)}</td>
+                        <td>
+                          <span className={`admin-status admin-status-${c.status === 'succeeded' ? 'completed' : c.status === 'pending' ? 'pending' : 'waitlisted'}`}>
+                            {c.status === 'succeeded' ? 'Successful' : c.status === 'pending' ? 'Processing' : 'Failed'}
+                          </span>
+                          {c.refunded && (
+                            <span className="admin-status admin-status-waitlisted" style={{ marginLeft: 6 }}>
+                              Refunded
+                            </span>
+                          )}
+                        </td>
+                        <td>
+                          <div className="admin-payment-actions">
+                            {c.receipt_url && (
+                              <a
+                                href={c.receipt_url}
+                                target="_blank"
+                                rel="noopener noreferrer"
+                                className="admin-stripe-link"
+                              >
+                                Receipt
+                              </a>
+                            )}
+                            {c.status === 'succeeded' && !c.refunded && (
+                              <button
+                                className="admin-refund-btn"
+                                onClick={() => setRefundCharge(c)}
+                              >
+                                Refund
+                              </button>
+                            )}
+                          </div>
+                        </td>
+                      </tr>
+                    ))
+                  )}
+                </tbody>
+                {data.pagination?.hasMoreCharges && (
+                  <tfoot>
+                    <tr>
+                      <td colSpan={5} style={{ textAlign: 'center' }}>
+                        <button
+                          className="admin-refresh-btn"
+                          onClick={loadMoreCharges}
+                          disabled={loadingMoreCharges}
+                        >
+                          {loadingMoreCharges ? 'Loading\u2026' : 'Load More Payments'}
+                        </button>
+                      </td>
+                    </tr>
+                  </tfoot>
+                )}
+              </table>
+            </div>
+          </div>
+
+          {/* Invoices */}
+          {data.invoices.length > 0 && (
+            <div className="admin-overview-section">
+              <h3 className="admin-overview-section-title">Invoices</h3>
+              <div className="admin-table-wrap">
+                <table className="admin-table">
+                  <thead>
+                    <tr>
+                      <th>Student</th>
+                      <th>Amount</th>
+                      <th>Status</th>
+                      <th>Date</th>
+                      <th>Actions</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {data.invoices.map((inv) => (
+                      <tr key={inv.id}>
+                        <td>{inv.customer?.email || inv.customer?.name || '\u2014'}</td>
+                        <td>{formatCurrency(inv.amount_due)}</td>
+                        <td>
+                          <span className={`admin-invoice-badge admin-invoice-${inv.status}`}>
+                            {inv.status_label}
+                          </span>
+                        </td>
+                        <td>{formatDate(inv.created)}</td>
+                        <td>
+                          <div className="admin-payment-actions">
+                            {inv.hosted_invoice_url && (
+                              <a
+                                href={inv.hosted_invoice_url}
+                                target="_blank"
+                                rel="noopener noreferrer"
+                                className="admin-stripe-link"
+                              >
+                                View
+                              </a>
+                            )}
+                            {inv.status === 'draft' && (
+                              <button
+                                className="admin-send-invoice-btn"
+                                onClick={() => handleSendInvoice(inv)}
+                              >
+                                Send
+                              </button>
+                            )}
+                            {(inv.status === 'draft' || inv.status === 'open') && (
+                              <button
+                                className="admin-void-btn"
+                                onClick={() => handleVoidInvoice(inv)}
+                              >
+                                Void
+                              </button>
+                            )}
+                          </div>
+                        </td>
+                      </tr>
+                    ))}
+                  </tbody>
+                  {data.pagination?.hasMoreInvoices && (
+                    <tfoot>
+                      <tr>
+                        <td colSpan={5} style={{ textAlign: 'center' }}>
+                          <button
+                            className="admin-refresh-btn"
+                            onClick={loadMoreInvoices}
+                            disabled={loadingMoreInvoices}
+                          >
+                            {loadingMoreInvoices ? 'Loading\u2026' : 'Load More Invoices'}
+                          </button>
+                        </td>
+                      </tr>
+                    </tfoot>
+                  )}
+                </table>
+              </div>
+            </div>
+          )}
+        </>
+      )}
+
+      {/* ── PAYOUTS SUB-TAB ── */}
+      {paymentSubTab === 'payouts' && (
+        <div className="admin-overview-section">
+          {payoutsLoading ? (
+            <div className="admin-payments-loading">Loading payouts&hellip;</div>
+          ) : payoutsData ? (
+            <>
+              <div className="admin-payments-cards" style={{ marginBottom: 16 }}>
+                <div className="admin-payments-card admin-payments-card-green">
+                  <div className="admin-payments-card-value">${payoutsData.balance.available.toLocaleString(undefined, { minimumFractionDigits: 2 })}</div>
+                  <div className="admin-payments-card-label">Available Balance</div>
+                </div>
+                <div className="admin-payments-card admin-payments-card-gold">
+                  <div className="admin-payments-card-value">${payoutsData.balance.pending.toLocaleString(undefined, { minimumFractionDigits: 2 })}</div>
+                  <div className="admin-payments-card-label">Pending Balance</div>
+                </div>
+              </div>
+              <h3 className="admin-overview-section-title">Payout History</h3>
+              <div className="admin-table-wrap">
+                <table className="admin-table">
+                  <thead>
+                    <tr>
+                      <th>Date</th>
+                      <th>Amount</th>
+                      <th>Status</th>
+                      <th>Arrival</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {payoutsData.payouts.length === 0 ? (
+                      <tr><td colSpan={4} className="admin-empty">No payouts yet.</td></tr>
+                    ) : (
+                      payoutsData.payouts.map((p) => (
+                        <tr key={p.id}>
+                          <td>{formatDate(p.created)}</td>
+                          <td>{formatCurrency(p.amount)}</td>
+                          <td>
+                            <span className={`admin-status admin-status-${p.status === 'paid' ? 'completed' : p.status === 'pending' || p.status === 'in_transit' ? 'pending' : 'waitlisted'}`}>
+                              {p.status === 'paid' ? 'Paid' : p.status === 'in_transit' ? 'In Transit' : p.status === 'pending' ? 'Pending' : p.status}
+                            </span>
+                          </td>
+                          <td>{formatDate(p.arrival_date)}</td>
+                        </tr>
+                      ))
+                    )}
+                  </tbody>
+                </table>
+              </div>
+            </>
+          ) : (
+            <div className="admin-empty">Failed to load payouts.</div>
+          )}
+        </div>
+      )}
+
+      {/* ── COUPONS SUB-TAB ── */}
+      {paymentSubTab === 'coupons' && (
+        <div className="admin-overview-section">
+          <div className="admin-payments-toolbar">
+            <button className="admin-compose-btn" onClick={() => setShowCreateCoupon(!showCreateCoupon)}>
+              {showCreateCoupon ? 'Cancel' : 'Create Coupon'}
+            </button>
+          </div>
+
+          {showCreateCoupon && (
+            <div className="admin-compose" style={{ marginBottom: 16 }}>
+              <form onSubmit={handleCreateCoupon}>
+                <div className="admin-compose-field">
+                  <label>Coupon Name</label>
+                  <input
+                    type="text"
+                    value={couponName}
+                    onChange={(e) => setCouponName(e.target.value)}
+                    placeholder="e.g. Summer Discount"
+                    className="admin-compose-input"
+                  />
+                </div>
+                <div className="admin-compose-field">
+                  <label>Discount Type</label>
+                  <select value={couponType} onChange={(e) => setCouponType(e.target.value as 'percent' | 'amount')} className="admin-select">
+                    <option value="percent">Percentage Off</option>
+                    <option value="amount">Fixed Amount Off</option>
+                  </select>
+                </div>
+                <div className="admin-compose-field">
+                  <label>{couponType === 'percent' ? 'Percent Off' : 'Amount Off ($)'}</label>
+                  <input
+                    type="number"
+                    step={couponType === 'percent' ? '1' : '0.01'}
+                    min="0"
+                    value={couponValue}
+                    onChange={(e) => setCouponValue(e.target.value)}
+                    placeholder={couponType === 'percent' ? '10' : '25.00'}
+                    className="admin-compose-input"
+                    required
+                  />
+                </div>
+                <div className="admin-compose-field">
+                  <label>Promo Code (optional)</label>
+                  <input
+                    type="text"
+                    value={couponPromoCode}
+                    onChange={(e) => setCouponPromoCode(e.target.value.toUpperCase())}
+                    placeholder="e.g. SUMMER2026"
+                    className="admin-compose-input"
+                  />
+                </div>
+                <div className="admin-compose-actions">
+                  <button type="submit" className="admin-send-btn" disabled={couponCreating}>
+                    {couponCreating ? 'Creating\u2026' : 'Create Coupon'}
+                  </button>
+                </div>
+              </form>
+            </div>
+          )}
+
+          {couponsLoading ? (
+            <div className="admin-payments-loading">Loading coupons&hellip;</div>
+          ) : (
+            <div className="admin-table-wrap">
+              <table className="admin-table">
+                <thead>
+                  <tr>
+                    <th>Name</th>
+                    <th>Discount</th>
+                    <th>Promo Code</th>
+                    <th>Redeemed</th>
+                    <th>Status</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {coupons.length === 0 ? (
+                    <tr><td colSpan={5} className="admin-empty">No coupons found.</td></tr>
+                  ) : (
+                    coupons.map((c) => (
+                      <tr key={c.id}>
+                        <td>{c.name || c.id}</td>
+                        <td>
+                          {c.percent_off ? `${c.percent_off}% off` : c.amount_off ? `$${(c.amount_off / 100).toFixed(2)} off` : '\u2014'}
+                        </td>
+                        <td>
+                          {c.promotion_codes.length > 0
+                            ? c.promotion_codes.map((p) => p.code).join(', ')
+                            : '\u2014'}
+                        </td>
+                        <td>{c.times_redeemed}{c.max_redemptions ? ` / ${c.max_redemptions}` : ''}</td>
+                        <td>
+                          <span className={`admin-status admin-status-${c.valid ? 'completed' : 'waitlisted'}`}>
+                            {c.valid ? 'Active' : 'Expired'}
+                          </span>
+                        </td>
+                      </tr>
+                    ))
+                  )}
+                </tbody>
+              </table>
+            </div>
+          )}
+        </div>
+      )}
+
+      {/* ── PAYMENT LINKS SUB-TAB ── */}
+      {paymentSubTab === 'links' && (
+        <div className="admin-overview-section">
+          {linksLoading ? (
+            <div className="admin-payments-loading">Loading payment links&hellip;</div>
+          ) : (
+            <div className="admin-table-wrap">
+              <table className="admin-table">
+                <thead>
+                  <tr>
+                    <th>Link</th>
+                    <th>Items</th>
+                    <th>Status</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {paymentLinks.length === 0 ? (
+                    <tr><td colSpan={3} className="admin-empty">No payment links found.</td></tr>
+                  ) : (
+                    paymentLinks.map((link) => (
+                      <tr key={link.id}>
+                        <td>
+                          <a href={link.url} target="_blank" rel="noopener noreferrer" className="admin-stripe-link">
+                            {link.url.length > 40 ? link.url.slice(0, 40) + '\u2026' : link.url}
+                          </a>
+                        </td>
+                        <td>
+                          {link.line_items.length > 0
+                            ? link.line_items.map((li) =>
+                                `${li.description || 'Item'} (${formatCurrency(li.amount_total)})`
+                              ).join(', ')
+                            : '\u2014'}
+                        </td>
+                        <td>
+                          <span className={`admin-status admin-status-${link.active ? 'completed' : 'waitlisted'}`}>
+                            {link.active ? 'Active' : 'Inactive'}
+                          </span>
+                        </td>
+                      </tr>
+                    ))
+                  )}
+                </tbody>
+              </table>
+            </div>
+          )}
         </div>
       )}
 
@@ -357,7 +683,6 @@ export default function AdminPaymentsTab({ adminKey, enrollments }: Props) {
       {refundCharge && (
         <AdminRefundDialog
           charge={refundCharge}
-          adminKey={adminKey}
           onClose={() => setRefundCharge(null)}
           onSuccess={() => {
             setRefundCharge(null);
@@ -369,7 +694,6 @@ export default function AdminPaymentsTab({ adminKey, enrollments }: Props) {
       {/* Invoice Dialog */}
       {showInvoiceDialog && (
         <AdminInvoiceDialog
-          adminKey={adminKey}
           enrollments={enrollments}
           onClose={() => setShowInvoiceDialog(false)}
           onSuccess={() => {

@@ -56,9 +56,28 @@ model Lead {
   email     String     @unique
   name      String?
   subject   String?
+  notes     String?
   status    LeadStatus @default(NEW)
   createdAt DateTime   @default(now())
   updatedAt DateTime   @updatedAt
 
   @@index([status])
+}
+
+model Note {
+  id           String   @id @default(cuid())
+  content      String
+  studentEmail String
+  createdAt    DateTime @default(now())
+
+  @@index([studentEmail])
+}
+
+model Material {
+  id          String   @id @default(cuid())
+  filename    String
+  contentType String
+  size        Int
+  blobUrl     String
+  createdAt   DateTime @default(now())
 }

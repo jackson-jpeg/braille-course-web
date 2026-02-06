@@ -1,21 +1,23 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import type { Enrollment, StudentDetail } from './admin-types';
-import { relativeTime, formatDate } from './admin-utils';
+import type { Enrollment, StudentDetail, Note } from './admin-types';
+import { relativeTime, formatDate, fullDate } from './admin-utils';
 
 interface Props {
   enrollment: Enrollment;
   scheduleMap: Record<string, string>;
-  adminKey: string;
   onClose: () => void;
   onSendEmail: (email: string) => void;
 }
 
-export default function AdminStudentModal({ enrollment, scheduleMap, adminKey, onClose, onSendEmail }: Props) {
+export default function AdminStudentModal({ enrollment, scheduleMap, onClose, onSendEmail }: Props) {
   const [data, setData] = useState<StudentDetail | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
+  const [notes, setNotes] = useState<Note[]>([]);
+  const [newNote, setNewNote] = useState('');
+  const [noteLoading, setNoteLoading] = useState(false);
 
   useEffect(() => {
     if (!enrollment.stripeCustomerId) {
@@ -26,9 +28,7 @@ export default function AdminStudentModal({ enrollment, scheduleMap, adminKey, o
 
     async function fetchStudent() {
       try {
-        const res = await fetch(
-          `/api/admin/students/${enrollment.stripeCustomerId}?key=${encodeURIComponent(adminKey)}`
-        );
+        const res = await fetch(`/api/admin/students/${enrollment.stripeCustomerId}`);
         const json = await res.json();
         if (!res.ok) throw new Error(json.error || 'Failed to fetch');
         setData(json);
@@ -40,7 +40,45 @@ export default function AdminStudentModal({ enrollment, scheduleMap, adminKey, o
     }
 
     fetchStudent();
-  }, [enrollment.stripeCustomerId, adminKey]);
+  }, [enrollment.stripeCustomerId]);
+
+  // Fetch notes for this student
+  useEffect(() => {
+    if (!enrollment.email) return;
+    async function fetchNotes() {
+      try {
+        const res = await fetch(`/api/admin/notes?email=${encodeURIComponent(enrollment.email!)}`);
+        const json = await res.json();
+        if (res.ok) setNotes(json.notes);
+      } catch { /* silent */ }
+    }
+    fetchNotes();
+  }, [enrollment.email]);
+
+  async function addNote() {
+    if (!newNote.trim() || !enrollment.email) return;
+    setNoteLoading(true);
+    try {
+      const res = await fetch('/api/admin/notes', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ email: enrollment.email, content: newNote.trim() }),
+      });
+      const json = await res.json();
+      if (res.ok) {
+        setNotes((prev) => [json.note, ...prev]);
+        setNewNote('');
+      }
+    } catch { /* silent */ }
+    setNoteLoading(false);
+  }
+
+  async function deleteNote(id: string) {
+    try {
+      const res = await fetch(`/api/admin/notes/${id}`, { method: 'DELETE' });
+      if (res.ok) setNotes((prev) => prev.filter((n) => n.id !== id));
+    } catch { /* silent */ }
+  }
 
   return (
     <div className="admin-modal-overlay" onClick={onClose}>
@@ -197,6 +235,40 @@ export default function AdminStudentModal({ enrollment, scheduleMap, adminKey, o
                   ) : (
                     <p className="admin-student-empty">No emails sent to this student</p>
                   )}
+                </div>
+
+                {/* Notes */}
+                <div className="admin-student-info-section">
+                  <h4>Notes</h4>
+                  <div className="admin-notes-list">
+                    {notes.map((n) => (
+                      <div key={n.id} className="admin-note-item">
+                        <div className="admin-note-content">{n.content}</div>
+                        <div className="admin-note-meta">
+                          <span title={fullDate(n.createdAt)}>{relativeTime(n.createdAt)}</span>
+                          <button className="admin-note-delete" onClick={() => deleteNote(n.id)}>&times;</button>
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                  <div className="admin-note-add">
+                    <textarea
+                      value={newNote}
+                      onChange={(e) => setNewNote(e.target.value)}
+                      placeholder="Add a note about this student..."
+                      className="admin-compose-input"
+                      rows={2}
+                      style={{ resize: 'vertical' }}
+                    />
+                    <button
+                      className="admin-send-btn"
+                      onClick={addNote}
+                      disabled={noteLoading || !newNote.trim()}
+                      style={{ marginTop: 6, fontSize: '0.8rem', padding: '4px 12px' }}
+                    >
+                      {noteLoading ? 'Adding\u2026' : 'Add Note'}
+                    </button>
+                  </div>
                 </div>
               </div>
             </div>

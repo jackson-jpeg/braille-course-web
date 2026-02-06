@@ -2,6 +2,9 @@
 
 import { useState, useMemo } from 'react';
 import { brailleMap } from '@/lib/braille-map';
+import { buildContractedReverseLookup } from '@/lib/contracted-braille-map';
+
+type ExplorerMode = 'alphabetic' | 'contracted';
 
 // Build reverse lookup: dot pattern string → letter
 function buildReverseLookup(): Map<string, string> {
@@ -17,10 +20,13 @@ const DOT_NUMBERS = [1, 4, 2, 5, 3, 6];
 
 export default function BrailleDotExplorer() {
   const [dots, setDots] = useState<number[]>([0, 0, 0, 0, 0, 0]);
+  const [mode, setMode] = useState<ExplorerMode>('alphabetic');
   const reverseLookup = useMemo(() => buildReverseLookup(), []);
+  const contractedLookup = useMemo(() => buildContractedReverseLookup(), []);
 
   const patternKey = dots.join(',');
   const matchedLetter = reverseLookup.get(patternKey) || null;
+  const matchedContraction = contractedLookup.get(patternKey) || null;
   const anyActive = dots.some((d) => d === 1);
 
   function toggleDot(index: number) {
@@ -35,6 +41,13 @@ export default function BrailleDotExplorer() {
     setDots([0, 0, 0, 0, 0, 0]);
   }
 
+  const contractionTypeLabels: Record<string, string> = {
+    'wordsign': 'Alphabetic wordsign',
+    'strong': 'Strong contraction',
+    'groupsign-strong': 'Strong groupsign',
+    'groupsign-lower': 'Lower groupsign',
+  };
+
   // Which dot numbers are currently raised
   const raisedDots = dots
     .map((v, i) => (v ? DOT_NUMBERS[i] : null))
@@ -46,7 +59,26 @@ export default function BrailleDotExplorer() {
       <div className="explorer-header">
         <span className="section-label">Explore</span>
         <h2>Dot Explorer</h2>
-        <p>Toggle dots to discover braille letters</p>
+        <p>Toggle dots to discover braille {mode === 'contracted' ? 'contractions' : 'letters'}</p>
+      </div>
+
+      <div className="explorer-mode-toggle" role="radiogroup" aria-label="Explorer mode">
+        <button
+          className={`explorer-mode-pill${mode === 'alphabetic' ? ' active' : ''}`}
+          role="radio"
+          aria-checked={mode === 'alphabetic'}
+          onClick={() => setMode('alphabetic')}
+        >
+          Alphabetic
+        </button>
+        <button
+          className={`explorer-mode-pill${mode === 'contracted' ? ' active' : ''}`}
+          role="radio"
+          aria-checked={mode === 'contracted'}
+          onClick={() => setMode('contracted')}
+        >
+          Contracted
+        </button>
       </div>
 
       <div className="explorer-body">
@@ -66,20 +98,41 @@ export default function BrailleDotExplorer() {
 
         <div className="explorer-result">
           {anyActive ? (
-            matchedLetter ? (
-              <>
-                <div className="explorer-letter">{matchedLetter}</div>
-                <div className="explorer-dots-label">
-                  Dots {raisedDots.join(', ')}
-                </div>
-              </>
+            mode === 'alphabetic' ? (
+              matchedLetter ? (
+                <>
+                  <div className="explorer-letter">{matchedLetter}</div>
+                  <div className="explorer-dots-label">
+                    Dots {raisedDots.join(', ')}
+                  </div>
+                </>
+              ) : (
+                <>
+                  <div className="explorer-letter explorer-no-match">?</div>
+                  <div className="explorer-dots-label">
+                    Dots {raisedDots.join(', ')} — No match
+                  </div>
+                </>
+              )
             ) : (
-              <>
-                <div className="explorer-letter explorer-no-match">?</div>
-                <div className="explorer-dots-label">
-                  Dots {raisedDots.join(', ')} — No match
-                </div>
-              </>
+              matchedContraction ? (
+                <>
+                  <div className="explorer-contraction">{matchedContraction.label}</div>
+                  <div className="explorer-contraction-type">
+                    {contractionTypeLabels[matchedContraction.type]}
+                  </div>
+                  <div className="explorer-dots-label">
+                    Dots {raisedDots.join(', ')}
+                  </div>
+                </>
+              ) : (
+                <>
+                  <div className="explorer-letter explorer-no-match">?</div>
+                  <div className="explorer-dots-label">
+                    Dots {raisedDots.join(', ')} — No match
+                  </div>
+                </>
+              )
             )
           ) : (
             <div className="explorer-prompt">
