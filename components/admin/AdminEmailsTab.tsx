@@ -87,6 +87,7 @@ export default function AdminEmailsTab({ enrollments, initialComposeTo, initialT
 
   // Last fetched
   const [lastFetched, setLastFetched] = useState<Date | null>(null);
+  const [receivedLastFetched, setReceivedLastFetched] = useState<Date | null>(null);
 
   // AI draft state
   const [showDraftInput, setShowDraftInput] = useState(false);
@@ -232,6 +233,7 @@ export default function AdminEmailsTab({ enrollments, initialComposeTo, initialT
       const data = await res.json();
       if (!res.ok) throw new Error(data.error || 'Failed to fetch');
       setReceivedEmails(data.emails);
+      setReceivedLastFetched(new Date());
     } catch (err: unknown) {
       setReceivedError(err instanceof Error ? err.message : 'Failed to load received emails');
     } finally {
@@ -503,13 +505,13 @@ export default function AdminEmailsTab({ enrollments, initialComposeTo, initialT
           className={`admin-email-subtab ${emailSubTab === 'sent' ? 'admin-email-subtab-active' : ''}`}
           onClick={() => setEmailSubTab('sent')}
         >
-          Sent
+          Sent{emails.length > 0 && ` (${emails.length})`}
         </button>
         <button
           className={`admin-email-subtab ${emailSubTab === 'received' ? 'admin-email-subtab-active' : ''}`}
           onClick={() => setEmailSubTab('received')}
         >
-          Received
+          Received{receivedEmails.length > 0 && ` (${receivedEmails.length})`}
         </button>
       </div>
 
@@ -798,9 +800,29 @@ export default function AdminEmailsTab({ enrollments, initialComposeTo, initialT
             <button onClick={fetchReceivedEmails} className="admin-refresh-btn" disabled={receivedLoading}>
               {receivedLoading ? 'Loading\u2026' : 'Refresh'}
             </button>
+            {receivedLastFetched && (
+              <span className="admin-last-updated">
+                {(() => {
+                  const secs = Math.floor((Date.now() - receivedLastFetched.getTime()) / 1000);
+                  if (secs < 60) return 'Updated just now';
+                  return `Updated ${Math.floor(secs / 60)}m ago`;
+                })()}
+              </span>
+            )}
           </div>
 
-          {receivedError && <div className="admin-email-error">{receivedError}</div>}
+          {receivedError && (
+            <div className="admin-email-error">
+              {receivedError}
+              <button
+                className="admin-refresh-btn"
+                style={{ marginLeft: 12, fontSize: '0.82rem', padding: '4px 12px' }}
+                onClick={() => { setReceivedError(''); fetchReceivedEmails(); }}
+              >
+                Try again
+              </button>
+            </div>
+          )}
 
           {/* Search bar for received emails */}
           {receivedEmails.length > 0 && (
