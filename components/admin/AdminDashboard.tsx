@@ -90,6 +90,7 @@ export default function AdminDashboard({ sections, enrollments, leads, scheduleM
 
   // Badge counts
   const newInquiryCount = useMemo(() => leads.filter((l) => l.status === 'NEW').length, [leads]);
+  const waitlistedCount = useMemo(() => enrollments.filter((e) => e.paymentStatus === 'WAITLISTED').length, [enrollments]);
   const [pendingInvoiceCount, setPendingInvoiceCount] = useState(0);
   const [hasUnsavedCompose, setHasUnsavedCompose] = useState(false);
 
@@ -149,6 +150,9 @@ export default function AdminDashboard({ sections, enrollments, leads, scheduleM
       { id: 'act-compose', label: 'Compose Email', action: () => { handleNavigate('emails-compose'); setShowPalette(false); } },
       { id: 'act-invoice', label: 'Create Invoice', detail: 'Open invoice dialog', action: () => { setTab('payments'); setShowPalette(false); } },
       { id: 'act-export', label: 'Export Students', detail: 'Download CSV', action: () => { downloadCsv(enrollments, scheduleMap); setShowPalette(false); } },
+      { id: 'act-attendance', label: 'Take Attendance', detail: 'Go to Attendance tab', action: () => { setTab('students'); setShowPalette(false); } },
+      { id: 'act-waitlist', label: 'Manage Waitlist', detail: 'View waitlisted students', action: () => { setTab('students'); setShowPalette(false); } },
+      { id: 'act-scheduled', label: 'View Scheduled Emails', detail: 'Upcoming emails', action: () => { setTab('emails'); setShowPalette(false); } },
     ];
 
     // Tab navigation
@@ -307,8 +311,8 @@ export default function AdminDashboard({ sections, enrollments, leads, scheduleM
             >
               <span className="admin-tab-icon">{TAB_META[t].icon}</span>
               {TAB_META[t].label}
-              {t === 'students' && newInquiryCount > 0 && (
-                <span className="admin-tab-badge admin-tab-badge-red" />
+              {t === 'students' && (newInquiryCount > 0 || waitlistedCount > 0) && (
+                <span className={`admin-tab-badge ${waitlistedCount > 0 ? 'admin-tab-badge-orange' : 'admin-tab-badge-red'}`} />
               )}
               {t === 'payments' && pendingInvoiceCount > 0 && (
                 <span className="admin-tab-badge admin-tab-badge-gold" />

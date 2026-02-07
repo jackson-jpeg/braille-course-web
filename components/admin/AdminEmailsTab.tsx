@@ -3,6 +3,7 @@
 import { useState, useCallback, useEffect, useRef, useMemo } from 'react';
 import AdminEmailModal from './AdminEmailModal';
 import AdminConfirmDialog from './AdminConfirmDialog';
+import AdminScheduledEmailsPanel from './AdminScheduledEmailsPanel';
 import { useToast } from './AdminToast';
 import { SkeletonTable } from './AdminSkeleton';
 import type { ResendEmail, ReceivedEmail, EmailDetail, Enrollment, Material } from './admin-types';
@@ -57,7 +58,9 @@ interface Props {
 
 export default function AdminEmailsTab({ enrollments, initialComposeTo, initialTemplate, pendingAttachmentIds, onClearAttachments, onComposeDirty }: Props) {
   const { showToast } = useToast();
-  const [emailSubTab, setEmailSubTab] = useState<'sent' | 'received'>('sent');
+  const [emailSubTab, setEmailSubTab] = useState<'sent' | 'received' | 'scheduled'>('sent');
+  const [sendMode, setSendMode] = useState<'now' | 'schedule'>('now');
+  const [scheduleDateTime, setScheduleDateTime] = useState('');
   const [emails, setEmails] = useState<ResendEmail[]>([]);
   const [emailsLoading, setEmailsLoading] = useState(false);
   const [emailsError, setEmailsError] = useState('');
@@ -320,8 +323,58 @@ export default function AdminEmailsTab({ enrollments, initialComposeTo, initialT
     }
   }
 
+  async function doScheduleEmail() {
+    setComposeSending(true);
+    setComposeResult(null);
+    try {
+      const recipients = composeTo.split(',').map((s) => s.trim()).filter(Boolean);
+      const payload: Record<string, unknown> = {
+        to: recipients,
+        subject: composeSubject,
+        body: composeBody,
+        scheduledFor: new Date(scheduleDateTime).toISOString(),
+      };
+      if (attachments.length > 0) {
+        payload.attachmentIds = attachments.map((a) => a.id);
+      }
+      const res = await fetch('/api/admin/emails/schedule', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(payload),
+      });
+      const data = await res.json();
+      if (!res.ok) throw new Error(data.error || 'Failed to schedule');
+      showToast('Email scheduled successfully');
+      setComposeTo('');
+      setComposeSubject('');
+      setComposeBody('');
+      setSelectedTemplate('');
+      setAttachments([]);
+      setShowMaterialPicker(false);
+      setShowDraftInput(false);
+      setDraftBrief('');
+      setSendMode('now');
+      setScheduleDateTime('');
+      onClearAttachments?.();
+      setShowCompose(false);
+      setEmailSubTab('scheduled');
+    } catch (err: unknown) {
+      showToast(err instanceof Error ? err.message : 'Failed to schedule', 'error');
+    } finally {
+      setComposeSending(false);
+    }
+  }
+
   function handleSendEmail(e: React.FormEvent) {
     e.preventDefault();
+    if (sendMode === 'schedule') {
+      if (!scheduleDateTime) {
+        showToast('Please select a date and time for scheduling', 'error');
+        return;
+      }
+      doScheduleEmail();
+      return;
+    }
     const recipients = composeTo.split(',').map((s) => s.trim()).filter(Boolean);
     if (recipients.length >= 3) {
       setShowSendConfirm(true);
@@ -499,7 +552,7 @@ export default function AdminEmailsTab({ enrollments, initialComposeTo, initialT
         </div>
       )}
 
-      {/* Sub-toggle: Sent / Received */}
+      {/* Sub-toggle: Sent / Received / Scheduled */}
       <div className="admin-email-subtabs">
         <button
           className={`admin-email-subtab ${emailSubTab === 'sent' ? 'admin-email-subtab-active' : ''}`}
@@ -512,6 +565,12 @@ export default function AdminEmailsTab({ enrollments, initialComposeTo, initialT
           onClick={() => setEmailSubTab('received')}
         >
           Received{receivedEmails.length > 0 && ` (${receivedEmails.length})`}
+        </button>
+        <button
+          className={`admin-email-subtab ${emailSubTab === 'scheduled' ? 'admin-email-subtab-active' : ''}`}
+          onClick={() => setEmailSubTab('scheduled')}
+        >
+          Scheduled
         </button>
       </div>
 
@@ -709,9 +768,46 @@ export default function AdminEmailsTab({ enrollments, initialComposeTo, initialT
                   </div>
                 </div>
 
+                {/* Send mode toggle */}
+                <div className="admin-compose-field">
+                  <label>Delivery</label>
+                  <div className="admin-schedule-toggle">
+                    <button
+                      type="button"
+                      className={`admin-schedule-toggle-btn ${sendMode === 'now' ? 'admin-schedule-toggle-active' : ''}`}
+                      onClick={() => setSendMode('now')}
+                    >
+                      Send Now
+                    </button>
+                    <button
+                      type="button"
+                      className={`admin-schedule-toggle-btn ${sendMode === 'schedule' ? 'admin-schedule-toggle-active' : ''}`}
+                      onClick={() => setSendMode('schedule')}
+                    >
+                      Schedule
+                    </button>
+                  </div>
+                  {sendMode === 'schedule' && (
+                    <input
+                      type="datetime-local"
+                      className="admin-compose-input admin-schedule-picker"
+                      value={scheduleDateTime}
+                      onChange={(e) => setScheduleDateTime(e.target.value)}
+                      min={new Date(Date.now() + 60000).toISOString().slice(0, 16)}
+                      style={{ marginTop: 8, maxWidth: 280 }}
+                    />
+                  )}
+                </div>
+
                 <div className="admin-compose-actions">
                   <button type="submit" className="admin-send-btn" disabled={composeSending}>
-                    {composeSending ? 'Sending\u2026' : attachments.length > 0 ? `Send Email (${attachments.length} attachment${attachments.length > 1 ? 's' : ''})` : 'Send Email'}
+                    {composeSending
+                      ? (sendMode === 'schedule' ? 'Scheduling\u2026' : 'Sending\u2026')
+                      : sendMode === 'schedule'
+                        ? 'Schedule Email'
+                        : attachments.length > 0
+                          ? `Send Email (${attachments.length} attachment${attachments.length > 1 ? 's' : ''})`
+                          : 'Send Email'}
                   </button>
                   {composeResult && (
                     <span className={`admin-compose-result ${composeResult.ok ? 'admin-compose-success' : 'admin-compose-error'}`}>
@@ -879,6 +975,11 @@ export default function AdminEmailsTab({ enrollments, initialComposeTo, initialT
             </table>
           </div>
         </>
+      )}
+
+      {/* SCHEDULED sub-tab */}
+      {emailSubTab === 'scheduled' && (
+        <AdminScheduledEmailsPanel onRefreshSent={fetchEmails} />
       )}
 
       {/* Email detail modal */}

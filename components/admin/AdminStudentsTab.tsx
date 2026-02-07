@@ -3,6 +3,8 @@
 import { useState, useMemo, useEffect, useCallback, useRef } from 'react';
 import AdminStudentModal from './AdminStudentModal';
 import AdminConfirmDialog from './AdminConfirmDialog';
+import AdminWaitlistPanel from './AdminWaitlistPanel';
+import AdminAttendanceTab from './AdminAttendanceTab';
 import CopyButton from './CopyButton';
 import type { Section, Enrollment, Lead } from './admin-types';
 import { relativeTime, fullDate, downloadCsv } from './admin-utils';
@@ -18,7 +20,8 @@ interface Props {
 }
 
 export default function AdminStudentsTab({ sections, enrollments, leads: initialLeads, scheduleMap, onSendEmail }: Props) {
-  const [subTab, setSubTab] = useState<'enrolled' | 'prospective'>('enrolled');
+  const [subTab, setSubTab] = useState<'enrolled' | 'prospective' | 'attendance'>('enrolled');
+  const waitlistedCount = enrollments.filter((e) => e.paymentStatus === 'WAITLISTED').length;
 
   // ── Enrolled state ──
   const [search, setSearch] = useState('');
@@ -205,6 +208,15 @@ export default function AdminStudentsTab({ sections, enrollments, leads: initial
 
   return (
     <>
+      {/* Waitlist panel (above sub-tabs when there are waitlisted students) */}
+      {waitlistedCount > 0 && subTab === 'enrolled' && (
+        <AdminWaitlistPanel
+          sections={sections}
+          scheduleMap={scheduleMap}
+          onSendEmail={(email) => onSendEmail(email)}
+        />
+      )}
+
       {/* Sub-tab toggle */}
       <div className="admin-email-subtabs">
         <button
@@ -218,6 +230,12 @@ export default function AdminStudentsTab({ sections, enrollments, leads: initial
           onClick={() => setSubTab('prospective')}
         >
           Prospective ({leadsList.length})
+        </button>
+        <button
+          className={`admin-email-subtab ${subTab === 'attendance' ? 'admin-email-subtab-active' : ''}`}
+          onClick={() => setSubTab('attendance')}
+        >
+          Attendance
         </button>
       </div>
 
@@ -553,6 +571,15 @@ export default function AdminStudentsTab({ sections, enrollments, leads: initial
             />
           )}
         </>
+      )}
+
+      {/* ── ATTENDANCE SUB-TAB ── */}
+      {subTab === 'attendance' && (
+        <AdminAttendanceTab
+          sections={sections}
+          enrollments={enrollments}
+          scheduleMap={scheduleMap}
+        />
       )}
     </>
   );

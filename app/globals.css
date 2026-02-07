@@ -7330,3 +7330,322 @@ body::after {
     flex-direction: column;
   }
 }
+
+/* ============================================================
+   WAITLIST PANEL
+   ============================================================ */
+.admin-waitlist-panel {
+  background: #fffbeb;
+  border: 1px solid #f59e0b30;
+  border-radius: var(--radius-md);
+  margin-bottom: 16px;
+  overflow: hidden;
+}
+.admin-waitlist-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  width: 100%;
+  padding: 12px 16px;
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  font-family: inherit;
+  font-size: 0.9rem;
+  color: var(--text-primary);
+}
+.admin-waitlist-title {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-weight: 600;
+}
+.admin-waitlist-badge {
+  background: #f59e0b;
+  color: white;
+  font-size: 0.72rem;
+  font-weight: 700;
+  padding: 2px 8px;
+  border-radius: var(--radius-full);
+  min-width: 22px;
+  text-align: center;
+}
+.admin-waitlist-chevron {
+  font-size: 0.75rem;
+  color: #9ca3af;
+}
+.admin-waitlist-content {
+  padding: 0 16px 16px;
+}
+.admin-waitlist-section {
+  margin-bottom: 12px;
+}
+.admin-waitlist-section:last-child {
+  margin-bottom: 0;
+}
+.admin-waitlist-section-header {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 8px;
+  font-size: 0.85rem;
+}
+.admin-waitlist-list {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+.admin-waitlist-item {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 8px 12px;
+  background: white;
+  border-radius: var(--radius-sm);
+  border: 1px solid #e5e7eb;
+  font-size: 0.85rem;
+}
+.admin-waitlist-position {
+  font-weight: 700;
+  color: #f59e0b;
+  min-width: 24px;
+  text-align: center;
+  font-size: 0.9rem;
+}
+.admin-waitlist-email {
+  flex: 1;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.admin-waitlist-plan {
+  color: #6b7280;
+  font-size: 0.8rem;
+}
+.admin-waitlist-actions {
+  display: flex;
+  gap: 4px;
+  flex-shrink: 0;
+}
+.admin-waitlist-arrow {
+  background: transparent;
+  border: 1px solid #d1d5db;
+  border-radius: 4px;
+  width: 26px;
+  height: 26px;
+  cursor: pointer;
+  color: #6b7280;
+  font-size: 0.8rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.admin-waitlist-arrow:hover {
+  background: #f3f4f6;
+  color: var(--text-primary);
+}
+
+/* Waitlisted metric card orange variant */
+.admin-overview-card-orange .admin-overview-card-value {
+  color: #d97706;
+}
+
+/* Tab badge orange */
+.admin-tab-badge-orange {
+  background: #f59e0b;
+}
+
+/* ============================================================
+   SCHEDULE EMAIL TOGGLE
+   ============================================================ */
+.admin-schedule-toggle {
+  display: inline-flex;
+  border: 1px solid #d1d5db;
+  border-radius: var(--radius-sm);
+  overflow: hidden;
+}
+.admin-schedule-toggle-btn {
+  padding: 6px 16px;
+  font-size: 0.84rem;
+  font-weight: 500;
+  background: white;
+  border: none;
+  cursor: pointer;
+  color: #6b7280;
+  font-family: inherit;
+  transition: background 0.15s, color 0.15s;
+}
+.admin-schedule-toggle-btn:not(:last-child) {
+  border-right: 1px solid #d1d5db;
+}
+.admin-schedule-toggle-active {
+  background: var(--navy);
+  color: white;
+}
+.admin-schedule-picker {
+  display: block;
+}
+
+/* ============================================================
+   ATTENDANCE CONTROLS & TAB
+   ============================================================ */
+.admin-attendance-controls {
+  display: flex;
+  gap: 10px;
+  align-items: center;
+  flex-wrap: wrap;
+  margin-bottom: 16px;
+}
+.admin-attendance-ratio {
+  font-weight: 600;
+  color: var(--sage-dark);
+  font-size: 0.9rem;
+}
+
+/* ============================================================
+   ATTENDANCE MODAL
+   ============================================================ */
+.admin-attendance-modal {
+  max-width: 640px;
+  max-height: 80vh;
+  overflow-y: auto;
+}
+.admin-attendance-list {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  max-height: 50vh;
+  overflow-y: auto;
+}
+.admin-attendance-row {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 8px 0;
+  border-bottom: 1px solid #f3f4f6;
+}
+.admin-attendance-row:last-child {
+  border-bottom: none;
+}
+.admin-attendance-email {
+  flex: 1;
+  font-size: 0.88rem;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  min-width: 0;
+}
+.admin-attendance-status-group {
+  display: flex;
+  gap: 4px;
+  flex-shrink: 0;
+}
+.admin-attendance-status-btn {
+  width: 32px;
+  height: 32px;
+  border: 1.5px solid #d1d5db;
+  border-radius: 6px;
+  background: white;
+  cursor: pointer;
+  font-weight: 700;
+  font-size: 0.78rem;
+  font-family: inherit;
+  color: #9ca3af;
+  transition: all 0.15s;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.admin-attendance-status-btn:hover {
+  border-color: #9ca3af;
+}
+.admin-attendance-status-active {
+  border-width: 2px;
+}
+.admin-attendance-note {
+  width: 120px;
+  flex-shrink: 0;
+  font-size: 0.82rem;
+  padding: 5px 8px;
+  border: 1px solid #e5e7eb;
+  border-radius: 6px;
+  font-family: inherit;
+  color: var(--text-primary);
+}
+.admin-attendance-note::placeholder {
+  color: #d1d5db;
+}
+.admin-attendance-note:focus {
+  outline: none;
+  border-color: var(--gold);
+}
+
+/* ============================================================
+   ATTENDANCE BADGES (Student Modal)
+   ============================================================ */
+.admin-student-attendance-list {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+.admin-student-attendance-row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 4px 0;
+}
+.admin-attendance-badge {
+  font-size: 0.72rem;
+  font-weight: 700;
+  padding: 2px 8px;
+  border-radius: var(--radius-full);
+  text-transform: uppercase;
+  letter-spacing: 0.02em;
+}
+.admin-attendance-badge-present {
+  background: #dcfce7;
+  color: #166534;
+}
+.admin-attendance-badge-absent {
+  background: #fee2e2;
+  color: #991b1b;
+}
+.admin-attendance-badge-late {
+  background: #fef3c7;
+  color: #92400e;
+}
+.admin-attendance-badge-excused {
+  background: #e0e7ff;
+  color: #3730a3;
+}
+
+/* ============================================================
+   RESPONSIVE: New Features
+   ============================================================ */
+@media (max-width: 600px) {
+  .admin-waitlist-item {
+    flex-wrap: wrap;
+  }
+  .admin-waitlist-actions {
+    width: 100%;
+    justify-content: flex-end;
+    margin-top: 4px;
+  }
+  .admin-attendance-row {
+    flex-wrap: wrap;
+    gap: 6px;
+  }
+  .admin-attendance-note {
+    width: 100%;
+  }
+  .admin-attendance-controls {
+    flex-direction: column;
+    align-items: stretch;
+  }
+  .admin-schedule-toggle {
+    width: 100%;
+  }
+  .admin-schedule-toggle-btn {
+    flex: 1;
+  }
+}

@@ -3,7 +3,7 @@
 import { useState, useEffect } from 'react';
 import CopyButton from './CopyButton';
 import { SkeletonText } from './AdminSkeleton';
-import type { Enrollment, StudentDetail, Note } from './admin-types';
+import type { Enrollment, StudentDetail, Note, StudentAttendanceStats } from './admin-types';
 import { relativeTime, formatDate, fullDate } from './admin-utils';
 
 interface Props {
@@ -22,6 +22,7 @@ export default function AdminStudentModal({ enrollment, scheduleMap, onClose, on
   const [noteLoading, setNoteLoading] = useState(false);
   const [editingNoteId, setEditingNoteId] = useState<string | null>(null);
   const [editingNoteContent, setEditingNoteContent] = useState('');
+  const [attendanceStats, setAttendanceStats] = useState<StudentAttendanceStats | null>(null);
 
   useEffect(() => {
     function handleKey(e: KeyboardEvent) { if (e.key === 'Escape') onClose(); }
@@ -64,6 +65,18 @@ export default function AdminStudentModal({ enrollment, scheduleMap, onClose, on
     }
     fetchNotes();
   }, [enrollment.email]);
+
+  // Fetch attendance stats
+  useEffect(() => {
+    async function fetchAttendance() {
+      try {
+        const res = await fetch(`/api/admin/attendance/student/${enrollment.id}`);
+        const json = await res.json();
+        if (res.ok) setAttendanceStats(json.stats);
+      } catch { /* silent */ }
+    }
+    fetchAttendance();
+  }, [enrollment.id]);
 
   async function addNote() {
     if (!newNote.trim() || !enrollment.email) return;
@@ -281,6 +294,29 @@ export default function AdminStudentModal({ enrollment, scheduleMap, onClose, on
                     <p className="admin-student-empty">No emails sent to this student</p>
                   )}
                 </div>
+
+                {/* Attendance */}
+                {attendanceStats && attendanceStats.total > 0 && (
+                  <div className="admin-student-info-section">
+                    <h4>Attendance</h4>
+                    <p style={{ fontSize: '0.88rem', color: '#4a5568', marginBottom: 8 }}>
+                      <strong>{attendanceStats.attended}/{attendanceStats.total}</strong> sessions &mdash; {attendanceStats.rate}% attendance
+                    </p>
+                    <div className="admin-student-attendance-list">
+                      {attendanceStats.records.map((r) => (
+                        <div key={r.sessionNum} className="admin-student-attendance-row">
+                          <span style={{ fontWeight: 600, width: 32, fontSize: '0.82rem' }}>#{r.sessionNum}</span>
+                          <span style={{ fontSize: '0.82rem', color: '#6b7280', flex: 1 }}>
+                            {new Date(r.date).toLocaleDateString('en-US', { month: 'short', day: 'numeric' })}
+                          </span>
+                          <span className={`admin-attendance-badge admin-attendance-badge-${r.status.toLowerCase()}`}>
+                            {r.status}
+                          </span>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                )}
 
                 {/* Notes */}
                 <div className="admin-student-info-section">

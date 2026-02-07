@@ -24,6 +24,21 @@ enum LeadStatus {
   CONTACTED
 }
 
+enum AttendanceStatus {
+  PRESENT
+  ABSENT
+  LATE
+  EXCUSED
+}
+
+enum ScheduledEmailStatus {
+  PENDING
+  SENDING
+  SENT
+  FAILED
+  CANCELLED
+}
+
 model Section {
   id            String        @id @default(cuid())
   label         String        @unique
@@ -33,6 +48,7 @@ model Section {
   createdAt     DateTime      @default(now())
   updatedAt     DateTime      @updatedAt
   enrollments   Enrollment[]
+  classSessions ClassSession[]
 }
 
 model Enrollment {
@@ -46,6 +62,9 @@ model Enrollment {
   paymentStatus    PaymentStatus @default(PENDING)
   createdAt        DateTime      @default(now())
   updatedAt        DateTime      @updatedAt
+
+  waitlistPosition Int?
+  attendances      Attendance[]
 
   @@index([sectionId])
   @@index([email])
@@ -81,4 +100,51 @@ model Material {
   blobUrl     String
   category    String   @default("Uncategorized")
   createdAt   DateTime @default(now())
+}
+
+model ClassSession {
+  id          String       @id @default(cuid())
+  sectionId   String
+  section     Section      @relation(fields: [sectionId], references: [id])
+  title       String
+  date        DateTime
+  sessionNum  Int
+  createdAt   DateTime     @default(now())
+  attendances Attendance[]
+
+  @@unique([sectionId, sessionNum])
+  @@index([sectionId])
+}
+
+model Attendance {
+  id             String           @id @default(cuid())
+  classSessionId String
+  classSession   ClassSession     @relation(fields: [classSessionId], references: [id], onDelete: Cascade)
+  enrollmentId   String
+  enrollment     Enrollment       @relation(fields: [enrollmentId], references: [id], onDelete: Cascade)
+  status         AttendanceStatus @default(PRESENT)
+  note           String?
+  createdAt      DateTime         @default(now())
+  updatedAt      DateTime         @updatedAt
+
+  @@unique([classSessionId, enrollmentId])
+  @@index([classSessionId])
+  @@index([enrollmentId])
+}
+
+model ScheduledEmail {
+  id            String               @id @default(cuid())
+  to            String[]
+  subject       String
+  body          String
+  scheduledFor  DateTime
+  status        ScheduledEmailStatus @default(PENDING)
+  sentAt        DateTime?
+  resendId      String?
+  error         String?
+  attachmentIds String[]
+  createdAt     DateTime             @default(now())
+  updatedAt     DateTime             @updatedAt
+
+  @@index([status, scheduledFor])
 }

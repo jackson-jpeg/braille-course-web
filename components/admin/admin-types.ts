@@ -17,6 +17,7 @@ export interface Enrollment {
   stripeSessionId: string;
   createdAt: string;
   section: { label: string };
+  waitlistPosition: number | null;
 }
 
 export interface ResendEmail {
@@ -225,6 +226,55 @@ export interface GeneratePreview {
   worksheetSections?: { heading: string; type: string; itemCount: number }[];
   totalItems?: number;
   objectives?: string[];
+}
+
+/* ── Scheduled Emails ── */
+export interface ScheduledEmail {
+  id: string;
+  to: string[];
+  subject: string;
+  body: string;
+  scheduledFor: string;
+  status: string;
+  sentAt: string | null;
+  resendId: string | null;
+  error: string | null;
+  attachmentIds: string[];
+  createdAt: string;
+}
+
+/* ── Attendance ── */
+export interface ClassSession {
+  id: string;
+  sectionId: string;
+  title: string;
+  date: string;
+  sessionNum: number;
+  attendanceCount?: number;
+  totalEnrolled?: number;
+}
+
+export interface AttendanceRecord {
+  id: string;
+  classSessionId: string;
+  enrollmentId: string;
+  status: string;
+  note: string | null;
+  enrollment?: {
+    email: string | null;
+  };
+}
+
+export interface StudentAttendanceStats {
+  attended: number;
+  total: number;
+  rate: number;
+  records: {
+    sessionNum: number;
+    date: string;
+    status: string;
+    note: string | null;
+  }[];
 }
 
 /* ── Props ── */

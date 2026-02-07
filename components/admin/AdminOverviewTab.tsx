@@ -118,6 +118,14 @@ export default function AdminOverviewTab({ sections, enrollments, leads, schedul
           <div className="admin-overview-card-value">{openSpots}</div>
           <div className="admin-overview-card-label">Open Spots</div>
         </div>
+        {enrollments.filter((e) => e.paymentStatus === 'WAITLISTED').length > 0 && (
+          <div className="admin-overview-card admin-overview-card-orange" style={{ cursor: 'pointer' }} onClick={() => onNavigate('students')}>
+            <div className="admin-overview-card-value">
+              {enrollments.filter((e) => e.paymentStatus === 'WAITLISTED').length}
+            </div>
+            <div className="admin-overview-card-label">Waitlisted</div>
+          </div>
+        )}
         <div className="admin-overview-card" style={{ cursor: 'pointer' }} onClick={() => onNavigate('students')}>
           <div className="admin-overview-card-value" style={{ color: '#2563eb' }}>
             {leads.filter((l) => l.status === 'NEW').length}

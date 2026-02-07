@@ -78,6 +78,9 @@ export async function POST(req: NextRequest) {
 
           if (section.enrolledCount >= section.maxCapacity) {
             // Race condition: section filled during payment
+            const waitlistCount = await tx.enrollment.count({
+              where: { sectionId, paymentStatus: 'WAITLISTED' },
+            });
             await tx.enrollment.create({
               data: {
                 email,
@@ -86,10 +89,11 @@ export async function POST(req: NextRequest) {
                 stripeCustomerId,
                 stripeSessionId,
                 paymentStatus: 'WAITLISTED',
+                waitlistPosition: waitlistCount + 1,
               },
             });
             console.log(
-              `WAITLISTED enrollment for session ${stripeSessionId} — section ${sectionId} is full. Manual refund needed.`
+              `WAITLISTED enrollment for session ${stripeSessionId} — section ${sectionId} is full (position ${waitlistCount + 1}). Manual refund needed.`
             );
             return;
           }

@@ -37,6 +37,7 @@ export default async function AdminPage() {
     stripeSessionId: e.stripeSessionId,
     createdAt: e.createdAt.toISOString(),
     section: { label: e.section.label },
+    waitlistPosition: e.waitlistPosition,
   }));
 
   const serializedSections = sections.map((s) => ({
