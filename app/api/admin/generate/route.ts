@@ -3,10 +3,152 @@ import { put } from '@vercel/blob';
 import { prisma } from '@/lib/prisma';
 import { isAuthorized } from '@/lib/admin-auth';
 import { anthropic } from '@/lib/anthropic';
+import { brailleMap, dotDescription } from '@/lib/braille-map';
+import { contractedBrailleEntries } from '@/lib/contracted-braille-map';
 import PptxGenJS from 'pptxgenjs';
 import PDFDocument from 'pdfkit';
 
 export const maxDuration = 60;
+
+type Difficulty = 'beginner' | 'intermediate' | 'advanced';
+
+/* ── Braille reference context builder ── */
+
+function buildBrailleContext(difficulty: Difficulty): string {
+  const lines: string[] = [
+    '=== BRAILLE REFERENCE DATA (use this as ground truth — do NOT guess dot patterns) ===',
+    '',
+    'The braille cell has 6 dots arranged in 2 columns of 3:',
+    '  1 4',
+    '  2 5',
+    '  3 6',
+    '',
+    '--- Letter-to-Dot Mappings (A-Z) ---',
+  ];
+
+  for (const letter of 'ABCDEFGHIJKLMNOPQRSTUVWXYZ') {
+    lines.push(`  ${letter}: ${dotDescription(letter)}`);
+  }
+
+  lines.push('');
+  lines.push('--- Numbers ---');
+  lines.push('  Number indicator (#): dots 3 4 5 6');
+  lines.push('  After the number indicator, letters A-J become digits 1-9 and 0:');
+  for (let i = 1; i <= 9; i++) {
+    const letter = String.fromCharCode(64 + i); // A=1 ... I=9
+    lines.push(`  ${i}: ${dotDescription(letter)} (same as ${letter})`);
+  }
+  lines.push(`  0: ${dotDescription('J')} (same as J)`);
+
+  lines.push('');
+  lines.push('--- Formatting Indicators ---');
+  lines.push('  Capital indicator: dot 6');
+  lines.push('  Double capital (all-caps): dot 6, dot 6');
+  lines.push('  Letter indicator: dots 5 6');
+
+  if (difficulty === 'intermediate' || difficulty === 'advanced') {
+    lines.push('');
+    lines.push('--- Grade 2 Contractions ---');
+
+    const wordsigns = contractedBrailleEntries.filter(e => e.type === 'wordsign');
+    const strong = contractedBrailleEntries.filter(e => e.type === 'strong');
+    const groupsignsStrong = contractedBrailleEntries.filter(e => e.type === 'groupsign-strong');
+    const groupsignsLower = contractedBrailleEntries.filter(e => e.type === 'groupsign-lower');
+    const wordsignsLower = contractedBrailleEntries.filter(e => e.type === 'wordsign-lower');
+
+    const dotNums = [1, 4, 2, 5, 3, 6];
+    const describeDots = (pattern: number[]) => {
+      const raised = pattern
+        .map((v, i) => (v ? dotNums[i] : null))
+        .filter(Boolean)
+        .sort((a, b) => a! - b!);
+      return `dots ${raised.join(' ')}`;
+    };
+
+    lines.push('');
+    lines.push('  Strong contractions (unique patterns):');
+    for (const e of strong) {
+      lines.push(`    "${e.label}": ${describeDots(e.pattern)}`);
+    }
+
+    lines.push('');
+    lines.push('  Alphabetic wordsigns (same pattern as the letter, used as whole word):');
+    for (const e of wordsigns) {
+      lines.push(`    "${e.label}": same pattern as ${e.label.charAt(0).toUpperCase()}`);
+    }
+
+    lines.push('');
+    lines.push('  Strong groupsigns (can appear within words):');
+    for (const e of groupsignsStrong) {
+      lines.push(`    "${e.label}": ${describeDots(e.pattern)}`);
+    }
+
+    if (difficulty === 'advanced') {
+      lines.push('');
+      lines.push('  Lower groupsigns:');
+      for (const e of groupsignsLower) {
+        lines.push(`    "${e.label}": ${describeDots(e.pattern)}`);
+      }
+
+      lines.push('');
+      lines.push('  Lower wordsigns:');
+      for (const e of wordsignsLower) {
+        lines.push(`    "${e.label}": ${describeDots(e.pattern)}`);
+      }
+    }
+  }
+
+  lines.push('');
+  lines.push('=== END BRAILLE REFERENCE DATA ===');
+  return lines.join('\n');
+}
+
+function buildPedagogicalPreamble(difficulty: Difficulty): string {
+  const common = [
+    'CRITICAL ACCURACY RULES (apply to all content you generate):',
+    '- ALWAYS verify dot patterns against the reference data provided above.',
+    '- NEVER guess or invent dot patterns from memory — use ONLY the reference data.',
+    '- ALWAYS include dot numbers alongside braille characters (e.g., "The letter A is dots 1").',
+    '- When describing a braille cell, specify which dots are raised.',
+    '',
+  ].join('\n');
+
+  const levelGuidelines: Record<Difficulty, string> = {
+    beginner: [
+      'PEDAGOGICAL GUIDELINES — BEGINNER LEVEL:',
+      '- Use ONLY Grade 1 (uncontracted) braille. Do NOT introduce any contractions.',
+      '- Always include dot numbers for every letter or symbol introduced.',
+      '- Start with simple, familiar letters (A, B, C, L) before moving to complex ones.',
+      '- Use short, familiar words (cat, bag, bed, all) for practice.',
+      '- Limit to 3-5 new characters or concepts per section.',
+      '- Build from single letters → short words → simple sentences.',
+      '- Include the 6-dot cell diagram explanation early in the material.',
+      '',
+    ].join('\n'),
+    intermediate: [
+      'PEDAGOGICAL GUIDELINES — INTERMEDIATE LEVEL:',
+      '- Mix Grade 1 and common Grade 2 contractions.',
+      '- Introduce alphabetic wordsigns (e.g., b="but", c="can") and strong contractions (e.g., "and", "the", "for").',
+      '- Relate contractions to their letter origins (e.g., "The wordsign for \'but\' uses the same dots as the letter B").',
+      '- Include 5-8 new concepts per section.',
+      '- Provide context for when contractions are used vs. spelled out.',
+      '- Include dot numbers for all new contractions introduced.',
+      '',
+    ].join('\n'),
+    advanced: [
+      'PEDAGOGICAL GUIDELINES — ADVANCED LEVEL:',
+      '- Emphasize Grade 2 (contracted) braille throughout.',
+      '- Include groupsigns (ch, sh, th, wh, ed, er, ou, ow, st, ar, ing) and lower groupsigns.',
+      '- Cover context-dependent rules and exceptions (e.g., when a contraction cannot be used).',
+      '- Use full sentences and longer passages for practice.',
+      '- Include 8-12 concepts per section.',
+      '- Address real-world reading and writing scenarios.',
+      '',
+    ].join('\n'),
+  };
+
+  return levelGuidelines[difficulty] + common;
+}
 
 /* ── Interfaces ── */
 
@@ -45,7 +187,7 @@ interface WorksheetItem {
 
 interface WorksheetSection {
   heading: string;
-  type: 'fill-in-the-blank' | 'matching' | 'practice-drill';
+  type: 'fill-in-the-blank' | 'matching' | 'practice-drill' | 'braille-to-print' | 'print-to-braille' | 'dot-identification';
   instructions: string;
   items: WorksheetItem[];
 }
@@ -129,10 +271,14 @@ function validateStructure(format: string, parsed: unknown): void {
       if (!Array.isArray(data.sections) || data.sections.length === 0) {
         throw new Error('Invalid AI response: expected non-empty "sections" array');
       }
+      const validWorksheetTypes = ['fill-in-the-blank', 'matching', 'practice-drill', 'braille-to-print', 'print-to-braille', 'dot-identification'];
       for (const section of data.sections) {
         const sec = section as Record<string, unknown>;
         if (!Array.isArray(sec.items) || sec.items.length === 0) {
           throw new Error('Invalid worksheet section: each section needs a non-empty "items" array');
+        }
+        if (typeof sec.type === 'string' && !validWorksheetTypes.includes(sec.type)) {
+          throw new Error(`Invalid worksheet section type "${sec.type}". Must be one of: ${validWorksheetTypes.join(', ')}`);
         }
       }
       break;
@@ -205,8 +351,15 @@ Create 3-6 sections with key terms and practice questions where relevant.`,
 
   worksheet: `You are creating a braille course worksheet. Given the user's notes, create an engaging worksheet with varied exercise types. Return ONLY valid JSON (no markdown fences) with this shape:
 { "sections": [{ "heading": "Section Title", "type": "fill-in-the-blank", "instructions": "Instructions for this section.", "items": [{ "prompt": "The braille cell has ___ dots.", "answer": "six" }] }] }
-The "type" must be one of: "fill-in-the-blank", "matching", or "practice-drill".
-Create 3-5 sections with 4-8 items each. For matching sections, prompts are left-column items and answers are right-column items. For fill-in-the-blank, use ___ in the prompt to indicate blanks. For practice-drill, prompts are instructions and answers are the expected results.`,
+The "type" must be one of: "fill-in-the-blank", "matching", "practice-drill", "braille-to-print", "print-to-braille", or "dot-identification".
+Create 3-5 sections with 4-8 items each. Include at least one braille-specific section type. Guidelines for each type:
+- fill-in-the-blank: Use ___ in the prompt to indicate blanks.
+- matching: Prompts are left-column items and answers are right-column items.
+- practice-drill: Prompts are instructions and answers are the expected results.
+- braille-to-print: Prompt gives a dot pattern description (e.g., "dots 1 2"), answer is the print character or word. Example: { "prompt": "What letter is represented by dots 1 2?", "answer": "B" }
+- print-to-braille: Prompt gives a print letter or word, answer is the dot pattern. Example: { "prompt": "Write the dot numbers for the letter F.", "answer": "dots 1 2 4" }
+- dot-identification: Prompt describes a cell configuration, answer lists the dot numbers. Example: { "prompt": "A cell has the top-left and middle-left dots raised. Which dot numbers are these?", "answer": "dots 1 2" }
+Always use the reference data above to ensure dot patterns are correct.`,
 
   quiz: `You are creating a quiz/assessment for a braille course. Given the user's notes, create a mixed-format assessment. Return ONLY valid JSON (no markdown fences) with this shape:
 { "questions": [{ "type": "multiple-choice", "question": "What is...?", "options": ["A) ...", "B) ...", "C) ...", "D) ..."], "answer": "A", "explanation": "Because..." }] }
@@ -221,6 +374,103 @@ const CATEGORY_MAP: Record<string, string> = {
   worksheet: 'Worksheets',
   quiz: 'Assessments',
 };
+
+/* ── Braille cell drawing helpers ── */
+
+interface BrailleCellOptions {
+  size?: 'small' | 'medium';
+  label?: string;
+}
+
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+function drawBrailleCell(doc: any, pattern: number[], x: number, y: number, options: BrailleCellOptions = {}) {
+  const size = options.size || 'small';
+  const dotRadius = size === 'medium' ? 3 : 2;
+  const dotSpacingX = size === 'medium' ? 12 : 8;
+  const dotSpacingY = size === 'medium' ? 12 : 8;
+  const padding = size === 'medium' ? 6 : 4;
+  const cellW = dotSpacingX + padding * 2;
+  const cellH = dotSpacingY * 2 + padding * 2;
+
+  // Rounded rectangle background
+  doc.save();
+  doc.roundedRect(x, y, cellW, cellH, 3).strokeColor('#CCCCCC').lineWidth(0.5).stroke();
+
+  // Dot positions: pattern is [d1, d4, d2, d5, d3, d6]
+  // Grid layout: col 0 = dots 1,2,3  col 1 = dots 4,5,6
+  const dotMap = [
+    { col: 0, row: 0, idx: 0 }, // dot 1
+    { col: 1, row: 0, idx: 1 }, // dot 4
+    { col: 0, row: 1, idx: 2 }, // dot 2
+    { col: 1, row: 1, idx: 3 }, // dot 5
+    { col: 0, row: 2, idx: 4 }, // dot 3
+    { col: 1, row: 2, idx: 5 }, // dot 6
+  ];
+
+  for (const dot of dotMap) {
+    const cx = x + padding + dot.col * dotSpacingX;
+    const cy = y + padding + dot.row * dotSpacingY;
+    if (pattern[dot.idx]) {
+      doc.circle(cx, cy, dotRadius).fillColor('#1B2A4A').fill();
+    } else {
+      doc.circle(cx, cy, dotRadius).strokeColor('#DDDDDD').lineWidth(0.5).stroke();
+    }
+  }
+
+  doc.restore();
+
+  // Optional label below the cell
+  if (options.label) {
+    doc.fontSize(size === 'medium' ? 9 : 7)
+      .fillColor('#1B2A4A')
+      .font('Helvetica-Bold')
+      .text(options.label, x, y + cellH + 2, { width: cellW, align: 'center' });
+  }
+
+  return cellW; // return width for positioning
+}
+
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+function drawBrailleWord(doc: any, word: string, x: number, y: number, options: BrailleCellOptions = {}): number {
+  let curX = x;
+  const gap = options.size === 'medium' ? 4 : 3;
+  for (const char of word.toUpperCase()) {
+    const pattern = brailleMap[char];
+    if (pattern) {
+      const w = drawBrailleCell(doc, pattern, curX, y, { ...options, label: char });
+      curX += w + gap;
+    }
+  }
+  return curX - x; // total width
+}
+
+/* ── PDF page decoration helper ── */
+
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+function setupPdfDecorations(doc: any, title: string) {
+  const NAVY = '#1B2A4A';
+  const GOLD = '#D4A853';
+  let pageNumber = 1;
+
+  doc.on('pageAdded', () => {
+    pageNumber++;
+    // Header on pages 2+
+    doc.save();
+    doc.fontSize(8).fillColor(NAVY).font('Helvetica-Bold');
+    const truncatedTitle = title.length > 60 ? title.slice(0, 57) + '...' : title;
+    doc.text(truncatedTitle, 60, 30, { width: 400, lineBreak: false });
+    doc.fontSize(8).fillColor('#999999').font('Helvetica')
+      .text(`Page ${pageNumber}`, 460, 30, { width: 92, align: 'right' });
+    doc.moveTo(60, 44).lineTo(552, 44).strokeColor(GOLD).lineWidth(0.5).stroke();
+    doc.restore();
+    doc.y = 56;
+  });
+
+  return { getDateLine: () => {
+    const dateStr = new Date().toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' });
+    return `Generated ${dateStr}`;
+  }};
+}
 
 /* ── Document generators ── */
 
@@ -295,8 +545,11 @@ function generatePdfBuffer(
 
     const NAVY = '#1B2A4A';
     const GOLD = '#D4A853';
+    const { getDateLine } = setupPdfDecorations(doc, title);
 
     doc.fontSize(28).fillColor(NAVY).font('Helvetica-Bold').text(title, { align: 'center' });
+    doc.moveDown(0.2);
+    doc.fontSize(9).fillColor('#888888').font('Helvetica').text(getDateLine(), { align: 'center' });
     doc.moveDown(0.3);
     doc.moveTo(60, doc.y).lineTo(552, doc.y).strokeColor(GOLD).lineWidth(2).stroke();
     doc.moveDown(1);
@@ -332,7 +585,25 @@ function generatePdfBuffer(
 
       if (isStudyGuide && section.keyTerms?.length) {
         doc.fontSize(12).fillColor(NAVY).font('Helvetica-Bold').text('Key Terms:');
-        doc.fontSize(11).fillColor('#555555').font('Helvetica').text(section.keyTerms.join(', '));
+        doc.moveDown(0.2);
+        for (const term of section.keyTerms) {
+          if (doc.y > 680) doc.addPage();
+          const trimmed = term.trim();
+          // If the term is a single letter A-Z, draw its braille cell inline
+          if (trimmed.length === 1 && /^[A-Za-z]$/.test(trimmed)) {
+            const pattern = brailleMap[trimmed.toUpperCase()];
+            if (pattern) {
+              const textY = doc.y;
+              doc.fontSize(11).fillColor('#555555').font('Helvetica').text(trimmed.toUpperCase(), 70, textY, { continued: false });
+              drawBrailleCell(doc, pattern, 90, textY - 2, { size: 'small', label: dotDescription(trimmed) });
+              doc.y = textY + 22;
+              doc.moveDown(0.15);
+              continue;
+            }
+          }
+          doc.fontSize(11).fillColor('#555555').font('Helvetica').text(`\u2022  ${trimmed}`, { indent: 10 });
+          doc.moveDown(0.15);
+        }
         doc.moveDown(0.3);
       }
 
@@ -363,9 +634,12 @@ function generateWorksheetPdfBuffer(data: WorksheetResponse, title: string): Pro
 
     const NAVY = '#1B2A4A';
     const GOLD = '#D4A853';
+    const { getDateLine } = setupPdfDecorations(doc, title);
 
     // Title
     doc.fontSize(28).fillColor(NAVY).font('Helvetica-Bold').text(title, { align: 'center' });
+    doc.moveDown(0.15);
+    doc.fontSize(9).fillColor('#888888').font('Helvetica').text(getDateLine(), { align: 'center' });
     doc.moveDown(0.2);
     doc.fontSize(10).fillColor('#666666').font('Helvetica').text('Name: ________________________    Date: ____________', { align: 'center' });
     doc.moveDown(0.3);
@@ -406,13 +680,13 @@ function generateWorksheetPdfBuffer(data: WorksheetResponse, title: string): Pro
         doc.moveDown(0.3);
         doc.text('Answers: ____  ____  ____  ____  ____  ____  ____  ____', 80);
       } else {
-        // fill-in-the-blank or practice-drill
+        // fill-in-the-blank, practice-drill, braille-to-print, print-to-braille, dot-identification
         section.items.forEach((item) => {
           if (doc.y > 680) doc.addPage();
           itemCounter++;
           doc.fontSize(11).fillColor('#333333').font('Helvetica');
           doc.text(`${itemCounter}. ${item.prompt}`);
-          if (section.type === 'practice-drill') {
+          if (section.type === 'practice-drill' || section.type === 'braille-to-print' || section.type === 'print-to-braille' || section.type === 'dot-identification') {
             doc.moveDown(0.15);
             doc.text('Answer: _______________________________________', { indent: 20 });
           }
@@ -436,11 +710,23 @@ function generateWorksheetPdfBuffer(data: WorksheetResponse, title: string): Pro
       doc.fontSize(13).fillColor(NAVY).font('Helvetica-Bold').text(section.heading);
       doc.moveDown(0.3);
 
+      const isBrailleSection = ['braille-to-print', 'print-to-braille', 'dot-identification'].includes(section.type);
+
       section.items.forEach((item, idx) => {
-        if (doc.y > 680) doc.addPage();
+        if (doc.y > 660) doc.addPage();
         answerCounter++;
         const num = section.type === 'matching' ? `${idx + 1}` : `${answerCounter}`;
         doc.fontSize(10).fillColor('#333333').font('Helvetica').text(`${num}. ${item.answer}`);
+
+        // Draw braille cell next to answer for braille-specific sections
+        if (isBrailleSection) {
+          const answerText = item.answer.trim().toUpperCase();
+          // If answer is a single letter, draw its cell
+          if (answerText.length === 1 && brailleMap[answerText]) {
+            drawBrailleCell(doc, brailleMap[answerText], doc.x + 200, doc.y - 12, { size: 'small' });
+          }
+        }
+
         doc.moveDown(0.15);
       });
       doc.moveDown(0.4);
@@ -461,9 +747,12 @@ function generateQuizPdfBuffer(data: QuizResponse, title: string): Promise<Buffe
 
     const NAVY = '#1B2A4A';
     const GOLD = '#D4A853';
+    const { getDateLine } = setupPdfDecorations(doc, title);
 
     // Title page
     doc.fontSize(28).fillColor(NAVY).font('Helvetica-Bold').text(title, { align: 'center' });
+    doc.moveDown(0.15);
+    doc.fontSize(9).fillColor('#888888').font('Helvetica').text(getDateLine(), { align: 'center' });
     doc.moveDown(0.2);
     doc.fontSize(10).fillColor('#666666').font('Helvetica').text('Name: ________________________    Date: ____________', { align: 'center' });
     doc.moveDown(0.2);
@@ -529,7 +818,7 @@ export async function POST(req: NextRequest) {
     });
   }
 
-  let body: { prompt?: string; format?: string; title?: string; instructions?: string };
+  let body: { prompt?: string; format?: string; title?: string; instructions?: string; difficulty?: string };
   try {
     body = await req.json();
   } catch {
@@ -540,6 +829,9 @@ export async function POST(req: NextRequest) {
   }
 
   const { prompt, format, title, instructions } = body;
+  const difficulty: Difficulty = (['beginner', 'intermediate', 'advanced'].includes(body.difficulty || '')
+    ? body.difficulty as Difficulty
+    : 'intermediate');
 
   if (!prompt || !format || !title) {
     return new Response(JSON.stringify({ error: 'Missing required fields: prompt, format, title' }), {
@@ -565,14 +857,16 @@ export async function POST(req: NextRequest) {
         // Stage 1: AI generation
         send({ stage: 'ai' });
 
-        const systemPrompt = FORMAT_PROMPTS[format];
+        const brailleContext = buildBrailleContext(difficulty);
+        const pedagogicalPreamble = buildPedagogicalPreamble(difficulty);
+        const systemPrompt = pedagogicalPreamble + '\n' + brailleContext + '\n\n' + FORMAT_PROMPTS[format];
         const userMessage = instructions
           ? `Notes/Content:\n${prompt}\n\nAdditional Instructions:\n${instructions}`
           : `Notes/Content:\n${prompt}`;
 
         const response = await anthropic.messages.create({
           model: 'claude-sonnet-4-5-20250929',
-          max_tokens: 4096,
+          max_tokens: 8192,
           system: systemPrompt,
           messages: [{ role: 'user', content: userMessage }],
         });

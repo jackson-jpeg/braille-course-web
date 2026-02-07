@@ -107,6 +107,7 @@ export default function AdminCreateTab({ onEmailMaterial }: Props) {
   const [notes, setNotes] = useState('');
   const [format, setFormat] = useState('pptx');
   const [instructions, setInstructions] = useState('');
+  const [difficulty, setDifficulty] = useState<'beginner' | 'intermediate' | 'advanced'>('intermediate');
   const [genStage, setGenStage] = useState<GenStage>('idle');
   const [genError, setGenError] = useState('');
   const [result, setResult] = useState<Material | null>(null);
@@ -128,7 +129,7 @@ export default function AdminCreateTab({ onEmailMaterial }: Props) {
       const res = await fetch('/api/admin/generate', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ prompt: notes, format, title, instructions: instructions || undefined }),
+        body: JSON.stringify({ prompt: notes, format, title, instructions: instructions || undefined, difficulty }),
         signal: controller.signal,
       });
 
@@ -205,6 +206,7 @@ export default function AdminCreateTab({ onEmailMaterial }: Props) {
     setTitle('');
     setNotes('');
     setInstructions('');
+    setDifficulty('intermediate');
   }
 
   function applyPreset(preset: typeof TEMPLATE_PRESETS[number]) {
@@ -381,6 +383,28 @@ export default function AdminCreateTab({ onEmailMaterial }: Props) {
                 </button>
               ))}
             </div>
+          </div>
+
+          <div className="admin-compose-field">
+            <label>Difficulty / Grade Level</label>
+            <div className="admin-difficulty-picker">
+              {(['beginner', 'intermediate', 'advanced'] as const).map((level) => (
+                <button
+                  key={level}
+                  type="button"
+                  className={`admin-difficulty-btn ${difficulty === level ? 'admin-difficulty-btn-active' : ''}`}
+                  onClick={() => setDifficulty(level)}
+                  disabled={isGenerating}
+                >
+                  {level.charAt(0).toUpperCase() + level.slice(1)}
+                </button>
+              ))}
+            </div>
+            <span className="admin-difficulty-hint">
+              {difficulty === 'beginner' && 'Grade 1 only — dot numbers, simple words, 3-5 new characters per section'}
+              {difficulty === 'intermediate' && 'Grade 1 + common Grade 2 contractions, 5-8 concepts per section'}
+              {difficulty === 'advanced' && 'Grade 2 emphasis — context rules, exceptions, full sentences, 8-12 concepts per section'}
+            </span>
           </div>
 
           <div className="admin-compose-field">

@@ -24,7 +24,9 @@ export async function PATCH(
     }
 
     const material = await prisma.material.update({ where: { id }, data });
-    return NextResponse.json({ material });
+    return NextResponse.json({
+      material: { ...material, createdAt: material.createdAt.toISOString() },
+    });
   } catch {
     return NextResponse.json({ error: 'Failed to update material' }, { status: 500 });
   }
