@@ -5000,7 +5000,7 @@ body::after {
 /* ── Overview Tab ── */
 .admin-overview-metrics {
   display: grid;
-  grid-template-columns: repeat(4, 1fr);
+  grid-template-columns: repeat(3, 1fr);
   gap: 14px;
   margin-bottom: 28px;
 }
@@ -7647,5 +7647,212 @@ body::after {
   }
   .admin-schedule-toggle-btn {
     flex: 1;
+  }
+}
+
+/* ============================================================
+   OVERVIEW — NEEDS ATTENTION
+   ============================================================ */
+.admin-attention {
+  margin-bottom: 28px;
+}
+.admin-attention-title {
+  font-size: 0.78rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  color: var(--text-secondary);
+  margin-bottom: 10px;
+}
+.admin-attention-list {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+.admin-attention-item {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 14px 18px;
+  background: white;
+  border: 1px solid rgba(212,168,83,0.12);
+  border-radius: var(--radius-sm);
+  cursor: pointer;
+  transition: border-color 0.15s, background 0.15s;
+  font-family: inherit;
+  font-size: 0.88rem;
+  color: var(--text-primary);
+  text-align: left;
+  width: 100%;
+}
+.admin-attention-item:hover {
+  border-color: var(--gold);
+  background: rgba(212,168,83,0.03);
+}
+.admin-attention-dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  flex-shrink: 0;
+}
+.admin-attention-dot-blue {
+  background: #2563eb;
+}
+.admin-attention-dot-orange {
+  background: #f59e0b;
+}
+.admin-attention-dot-gold {
+  background: var(--gold);
+}
+.admin-attention-text {
+  flex: 1;
+  min-width: 0;
+  line-height: 1.4;
+}
+.admin-attention-text strong {
+  font-weight: 600;
+}
+.admin-attention-action {
+  font-size: 0.82rem;
+  color: var(--gold);
+  font-weight: 500;
+  white-space: nowrap;
+  flex-shrink: 0;
+}
+
+/* ============================================================
+   OVERVIEW — SECTION ROSTER CARDS
+   ============================================================ */
+.admin-roster-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 16px;
+}
+.admin-roster-card {
+  background: white;
+  border: 1px solid rgba(212,168,83,0.15);
+  border-radius: var(--radius-md);
+  padding: 20px;
+}
+.admin-roster-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  margin-bottom: 12px;
+}
+.admin-roster-section-label {
+  font-family: 'DM Serif Display', serif;
+  font-size: 1.1rem;
+  color: var(--navy);
+  line-height: 1.2;
+}
+.admin-roster-schedule {
+  font-size: 0.82rem;
+  color: var(--text-secondary);
+  margin-top: 2px;
+}
+.admin-roster-stats {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+.admin-roster-count {
+  font-size: 0.85rem;
+  font-weight: 500;
+  color: var(--text-secondary);
+}
+.admin-roster-empty {
+  font-size: 0.85rem;
+  color: var(--text-secondary);
+  font-style: italic;
+  padding: 8px 0;
+}
+.admin-roster-list {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+.admin-roster-student {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  padding: 8px 10px;
+  border-radius: 6px;
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  font-family: inherit;
+  font-size: 0.85rem;
+  color: var(--text-primary);
+  text-align: left;
+  width: 100%;
+  transition: background 0.12s;
+}
+.admin-roster-student:hover {
+  background: rgba(212,168,83,0.06);
+}
+.admin-roster-student-email {
+  flex: 1;
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+.admin-roster-student-meta {
+  font-size: 0.78rem;
+  color: var(--text-secondary);
+  white-space: nowrap;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+.admin-roster-student-time {
+  color: #9ca3af;
+}
+.admin-roster-student-waitlisted {
+  opacity: 0.7;
+}
+.admin-roster-wl-num {
+  font-weight: 700;
+  color: #f59e0b;
+  font-size: 0.78rem;
+  min-width: 18px;
+}
+.admin-roster-divider {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 10px 4px;
+  font-size: 0.72rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: #f59e0b;
+}
+.admin-roster-divider::after {
+  content: '';
+  flex: 1;
+  height: 1px;
+  background: rgba(245,158,11,0.2);
+}
+
+/* ── Responsive: Roster + Attention ── */
+@media (max-width: 768px) {
+  .admin-roster-grid {
+    grid-template-columns: 1fr;
+  }
+}
+@media (max-width: 480px) {
+  .admin-attention-item {
+    flex-wrap: wrap;
+    gap: 8px;
+  }
+  .admin-attention-action {
+    width: 100%;
+    text-align: right;
   }
 }
