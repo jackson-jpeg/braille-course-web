@@ -8,6 +8,8 @@ import { SpotsProvider } from '@/lib/spots-context';
 import SpotsBadge from '@/components/SpotsBadge';
 import Footer from '@/components/Footer';
 
+export const dynamic = 'force-dynamic';
+
 export const metadata: Metadata = {
   title: 'Summer Braille Course 2026 — Delaney Costello, TVI',
   description:

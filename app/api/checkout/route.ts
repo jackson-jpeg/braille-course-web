@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from 'next/server';
 import Stripe from 'stripe';
 import { prisma } from '@/lib/prisma';
 import { stripe } from '@/lib/stripe';
+import { getSchedule } from '@/lib/schedule';
 
 export async function POST(req: NextRequest) {
   try {
@@ -58,6 +59,7 @@ export async function POST(req: NextRequest) {
 
     // Create Stripe Checkout Session
     const siteUrl = process.env.SITE_URL || 'https://braille-course-web.vercel.app';
+    const schedule = getSchedule(section.label);
 
     const sessionParams: Stripe.Checkout.SessionCreateParams = {
       mode: 'payment',
@@ -76,6 +78,7 @@ export async function POST(req: NextRequest) {
         sectionId,
         plan,
         course: 'braille-summer-2026',
+        schedule,
       },
       payment_intent_data: {
         metadata: {
@@ -83,6 +86,7 @@ export async function POST(req: NextRequest) {
           type: plan,
           sectionId,
         },
+        description: `Summer Braille Course 2026 — ${schedule}`,
       },
       success_url: `${siteUrl}/summer/success?session_id={CHECKOUT_SESSION_ID}`,
       cancel_url: `${siteUrl}/summer`,
@@ -95,6 +99,16 @@ export async function POST(req: NextRequest) {
         submit: {
           message:
             'Your card will be saved securely. The remaining $350 balance will be charged automatically on May 1st.',
+        },
+      };
+    }
+
+    // Full: reassuring confirmation text
+    if (plan === 'full') {
+      sessionParams.custom_text = {
+        submit: {
+          message:
+            'You will receive a confirmation email with your schedule and course details shortly after payment.',
         },
       };
     }

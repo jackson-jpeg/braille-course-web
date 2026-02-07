@@ -1166,6 +1166,7 @@ body::after {
   align-items: center;
   justify-content: center;
   animation: scaleIn 0.5s var(--ease-out) 0.3s both;
+  box-shadow: 0 4px 24px rgba(168, 191, 160, 0.3);
 }
 .check-icon svg {
   width: 32px;
@@ -1174,8 +1175,8 @@ body::after {
 }
 
 @keyframes scaleIn {
-  from { transform: scale(0); }
-  to { transform: scale(1); }
+  from { opacity: 0; transform: scale(0.5); }
+  to { opacity: 1; transform: scale(1); }
 }
 
 .success-card h1 {
@@ -1187,10 +1188,11 @@ body::after {
 }
 
 .success-amount {
-  font-family: 'Caveat', cursive;
-  font-size: 1.2rem;
+  font-family: 'Outfit', sans-serif;
+  font-size: 1.05rem;
   color: var(--sage-dark);
-  font-weight: 500;
+  font-weight: 300;
+  line-height: 1.6;
   margin-bottom: 28px;
 }
 
@@ -1200,7 +1202,6 @@ body::after {
   border-radius: var(--radius-md);
   padding: 18px 24px;
   margin-bottom: 28px;
-  animation: fadeUp 0.8s var(--ease-out) 0.5s both;
 }
 .balance-banner p {
   font-size: 0.92rem;
@@ -1216,21 +1217,15 @@ body::after {
 
 .course-details {
   text-align: left;
-  border-top: 1px solid rgba(212,168,83,0.15);
+  border-top: 1px solid rgba(212,168,83,0.1);
   padding-top: 24px;
   margin-bottom: 28px;
-}
-.course-details h3 {
-  font-family: 'DM Serif Display', serif;
-  font-size: 1.05rem;
-  color: var(--navy);
-  margin-bottom: 14px;
 }
 .detail-row {
   display: flex;
   align-items: center;
   gap: 12px;
-  padding: 8px 0;
+  padding: 10px 0;
   font-size: 0.92rem;
   color: var(--text-secondary);
   font-weight: 300;
@@ -1392,7 +1387,7 @@ body::after {
 
 .enrollment-option-sub {
   font-size: 0.78rem;
-  color: rgba(255,255,255,0.4);
+  color: rgba(255,255,255,0.55);
   font-weight: 300;
   margin-top: 2px;
 }
