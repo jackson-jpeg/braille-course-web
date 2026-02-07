@@ -2,7 +2,7 @@ import { NextRequest, NextResponse } from 'next/server';
 import { resend } from '@/lib/resend';
 import { isAuthorized } from '@/lib/admin-auth';
 
-/* ── GET /api/admin/emails/[id]?key=...  ── get single email detail ── */
+/* ── GET /api/admin/emails/[id] ── get single email detail ── */
 export async function GET(
   req: NextRequest,
   { params }: { params: Promise<{ id: string }> }

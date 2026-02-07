@@ -8,6 +8,16 @@
  * gracefully degrade to Georgia / sans-serif.
  */
 
+/* ── helpers ── */
+function escapeHtml(str: string): string {
+  return str
+    .replace(/&/g, '&amp;')
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;')
+    .replace(/"/g, '&quot;')
+    .replace(/'/g, '&#39;');
+}
+
 /* ── colour tokens (mirrored from globals.css) ── */
 const C = {
   cream: '#FDF8F0',
@@ -148,8 +158,9 @@ function footer(extraNote?: string) {
 export function customEmail(opts: { subject: string; body: string }) {
   const { subject, body } = opts;
 
-  // Convert plain-text line breaks to HTML paragraphs
-  const htmlBody = body
+  // Escape HTML entities then convert plain-text line breaks to HTML paragraphs
+  const safe = escapeHtml(body);
+  const htmlBody = safe
     .split(/\n{2,}/)
     .map(
       (p) =>

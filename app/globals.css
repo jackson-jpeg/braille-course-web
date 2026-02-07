@@ -4328,6 +4328,10 @@ body::after {
 .admin-login-btn:hover {
   background: var(--navy-light);
 }
+.admin-login-btn:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
 
 /* ── Tabs ── */
 .admin-tabs {
@@ -7453,6 +7457,7 @@ body::after {
 /* Tab badge orange */
 .admin-tab-badge-orange {
   background: #f59e0b;
+  box-shadow: 0 0 0 2px var(--cream);
 }
 
 /* ============================================================

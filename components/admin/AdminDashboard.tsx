@@ -104,7 +104,7 @@ export default function AdminDashboard({ sections, enrollments, leads, scheduleM
           setPendingInvoiceCount(pending);
         }
       })
-      .catch(() => {});
+      .catch((err) => console.error('Failed to load invoice count:', err));
   }, []);
 
   const handleComposeDirty = useCallback((dirty: boolean) => {

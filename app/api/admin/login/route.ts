@@ -1,11 +1,24 @@
 import { NextRequest, NextResponse } from 'next/server';
+import { timingSafeEqual } from 'crypto';
 import { createSessionToken } from '@/lib/admin-auth';
 
 export async function POST(req: NextRequest) {
   try {
     const { password } = await req.json();
+    const expected = process.env.ADMIN_PASSWORD;
 
-    if (!process.env.ADMIN_PASSWORD || password !== process.env.ADMIN_PASSWORD) {
+    if (!expected || !password) {
+      return NextResponse.json({ error: 'Invalid password' }, { status: 401 });
+    }
+
+    let match = false;
+    try {
+      match = timingSafeEqual(Buffer.from(password), Buffer.from(expected));
+    } catch {
+      match = false;
+    }
+
+    if (!match) {
       return NextResponse.json({ error: 'Invalid password' }, { status: 401 });
     }
 

@@ -46,6 +46,7 @@ export default function AdminLogin() {
             onChange={(e) => setPassword(e.target.value)}
             placeholder="Password"
             className="admin-login-input"
+            aria-label="Admin password"
             autoFocus
           />
           {error && <p className="admin-login-error">{error}</p>}

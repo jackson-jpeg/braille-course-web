@@ -4,7 +4,7 @@ import { customEmail } from '@/lib/email-templates';
 import { isAuthorized } from '@/lib/admin-auth';
 import { prisma } from '@/lib/prisma';
 
-/* ── GET /api/admin/emails?key=...  ── list sent emails ── */
+/* ── GET /api/admin/emails ── list sent emails ── */
 export async function GET(req: NextRequest) {
   if (!isAuthorized(req)) {
     return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
@@ -29,7 +29,7 @@ export async function GET(req: NextRequest) {
   }
 }
 
-/* ── POST /api/admin/emails?key=...  ── send an email ── */
+/* ── POST /api/admin/emails ── send an email ── */
 export async function POST(req: NextRequest) {
   if (!isAuthorized(req)) {
     return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
