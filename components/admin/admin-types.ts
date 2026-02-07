@@ -1,18 +1,23 @@
 /* ── Shared types for the admin dashboard ── */
 
+export type SectionStatus = 'OPEN' | 'FULL';
+export type PaymentPlan = 'FULL' | 'DEPOSIT';
+export type PaymentStatus = 'PENDING' | 'COMPLETED' | 'WAITLISTED';
+export type LeadStatus = 'NEW' | 'CONTACTED';
+
 export interface Section {
   id: string;
   label: string;
   maxCapacity: number;
   enrolledCount: number;
-  status: string;
+  status: SectionStatus;
 }
 
 export interface Enrollment {
   id: string;
   email: string | null;
-  plan: string;
-  paymentStatus: string;
+  plan: PaymentPlan;
+  paymentStatus: PaymentStatus;
   stripeCustomerId: string | null;
   stripeSessionId: string;
   createdAt: string;
@@ -144,7 +149,7 @@ export interface Lead {
   email: string;
   name: string | null;
   subject: string | null;
-  status: string;
+  status: LeadStatus;
   notes: string | null;
   createdAt: string;
   updatedAt: string;

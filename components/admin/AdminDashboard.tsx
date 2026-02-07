@@ -330,6 +330,7 @@ export default function AdminDashboard({ sections, enrollments, leads, scheduleM
               leads={leads}
               scheduleMap={scheduleMap}
               onNavigate={handleNavigate}
+              onSendEmail={handleSendEmail}
             />
           )}
 

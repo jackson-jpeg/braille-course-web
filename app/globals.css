@@ -4717,6 +4717,12 @@ body::after {
   cursor: default;
 }
 
+/* ── Small action buttons (table rows) ── */
+.admin-action-btn-sm {
+  font-size: 0.75rem;
+  padding: 4px 10px;
+}
+
 /* Compose Form */
 .admin-compose {
   background: white;
@@ -4863,8 +4869,13 @@ body::after {
 .admin-email-row {
   cursor: pointer;
 }
-.admin-email-row:hover {
+.admin-email-row:hover,
+.admin-email-row:focus-visible {
   background: rgba(212,168,83,0.06) !important;
+}
+.admin-email-row:focus-visible {
+  outline: 2px solid #D4A853;
+  outline-offset: -2px;
 }
 .admin-email-error {
   background: rgba(220,80,80,0.08);
@@ -5131,8 +5142,13 @@ body::after {
 .admin-student-row-clickable {
   cursor: pointer;
 }
-.admin-student-row-clickable:hover {
+.admin-student-row-clickable:hover,
+.admin-student-row-clickable:focus-visible {
   background: rgba(212,168,83,0.06) !important;
+}
+.admin-student-row-clickable:focus-visible {
+  outline: 2px solid #D4A853;
+  outline-offset: -2px;
 }
 
 /* ── Student Detail Modal ── */

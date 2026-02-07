@@ -4,6 +4,7 @@ import { SECTION_SCHEDULES } from '@/lib/schedule';
 import { verifySessionToken } from '@/lib/admin-auth';
 import AdminLogin from '@/components/AdminLogin';
 import AdminDashboard from '@/components/admin/AdminDashboard';
+import type { PaymentPlan, PaymentStatus, SectionStatus, LeadStatus } from '@/components/admin/admin-types';
 
 export const metadata = {
   title: 'Admin Dashboard',
@@ -31,8 +32,8 @@ export default async function AdminPage() {
   const serializedEnrollments = enrollments.map((e) => ({
     id: e.id,
     email: e.email,
-    plan: e.plan,
-    paymentStatus: e.paymentStatus,
+    plan: e.plan as PaymentPlan,
+    paymentStatus: e.paymentStatus as PaymentStatus,
     stripeCustomerId: e.stripeCustomerId,
     stripeSessionId: e.stripeSessionId,
     createdAt: e.createdAt.toISOString(),
@@ -45,7 +46,7 @@ export default async function AdminPage() {
     label: s.label,
     maxCapacity: s.maxCapacity,
     enrolledCount: s.enrolledCount,
-    status: s.status,
+    status: s.status as SectionStatus,
   }));
 
   const serializedLeads = leads.map((l) => ({
@@ -53,7 +54,7 @@ export default async function AdminPage() {
     email: l.email,
     name: l.name,
     subject: l.subject,
-    status: l.status,
+    status: l.status as LeadStatus,
     notes: l.notes,
     createdAt: l.createdAt.toISOString(),
     updatedAt: l.updatedAt.toISOString(),

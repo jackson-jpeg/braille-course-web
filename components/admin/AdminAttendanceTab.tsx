@@ -35,7 +35,9 @@ export default function AdminAttendanceTab({ sections, enrollments, scheduleMap 
       const res = await fetch(`/api/admin/sessions?sectionId=${selectedSectionId}`);
       const data = await res.json();
       if (res.ok) setSessions(data.sessions);
-    } catch { /* silent */ }
+    } catch (err) {
+      console.error('Failed to fetch sessions:', err);
+    }
     setLoading(false);
   }, [selectedSectionId]);
 
@@ -242,15 +244,13 @@ export default function AdminAttendanceTab({ sections, enrollments, scheduleMap 
                     <td>
                       <div style={{ display: 'flex', gap: 6 }}>
                         <button
-                          className="admin-send-btn"
-                          style={{ fontSize: '0.75rem', padding: '3px 10px' }}
+                          className="admin-send-btn admin-action-btn-sm"
                           onClick={() => setAttendanceSessionId(session.id)}
                         >
                           Take Attendance
                         </button>
                         <button
-                          className="admin-refund-confirm"
-                          style={{ fontSize: '0.75rem', padding: '3px 10px' }}
+                          className="admin-refund-confirm admin-action-btn-sm"
                           onClick={() => setDeletingSession(session)}
                         >
                           Delete

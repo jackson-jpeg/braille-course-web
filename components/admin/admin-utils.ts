@@ -37,8 +37,27 @@ export function formatCurrency(cents: number): string {
   return `$${(cents / 100).toFixed(2)}`;
 }
 
+export function formatFileSize(bytes: number): string {
+  if (bytes < 1024) return `${bytes} B`;
+  if (bytes < 1024 * 1024) return `${(bytes / 1024).toFixed(1)} KB`;
+  return `${(bytes / (1024 * 1024)).toFixed(1)} MB`;
+}
+
+export function sortArrow(active: boolean, dir: 'asc' | 'desc'): string {
+  if (!active) return '';
+  return dir === 'asc' ? ' \u2191' : ' \u2193';
+}
+
+export function lastUpdatedText(lastFetched: Date | null): string {
+  if (!lastFetched) return '';
+  const secs = Math.floor((Date.now() - lastFetched.getTime()) / 1000);
+  if (secs < 60) return 'Updated just now';
+  const mins = Math.floor(secs / 60);
+  return `Updated ${mins}m ago`;
+}
+
 export function downloadCsv(
-  enrollments: { email: string | null; section: { label: string }; plan: string; paymentStatus: string; stripeCustomerId: string | null; createdAt: string }[],
+  enrollments: { email: string | null; section: { label: string }; plan: string; paymentStatus: string; stripeCustomerId: string | null; createdAt: string; }[],
   scheduleMap: Record<string, string>,
 ) {
   const headers = ['Email', 'Section', 'Schedule', 'Plan', 'Status', 'Stripe Customer', 'Date'];

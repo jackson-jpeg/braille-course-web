@@ -7,7 +7,7 @@ import AdminScheduledEmailsPanel from './AdminScheduledEmailsPanel';
 import { useToast } from './AdminToast';
 import { SkeletonTable } from './AdminSkeleton';
 import type { ResendEmail, ReceivedEmail, EmailDetail, Enrollment, Material } from './admin-types';
-import { relativeTime, fullDate } from './admin-utils';
+import { relativeTime, fullDate, formatFileSize, sortArrow, lastUpdatedText } from './admin-utils';
 
 const EMAIL_TEMPLATES = [
   {
@@ -36,12 +36,6 @@ const EMAIL_TEMPLATES = [
     body: `Hi there!\n\nThank you for reaching out about 1-on-1 braille sessions! I'd love to help.\n\nHere's what I offer:\n- [Session details]\n- [Pricing]\n- [Availability]\n\nWould you like to schedule a time to chat? Feel free to reply with any questions.\n\nBest,\nDelaney`,
   },
 ];
-
-function formatFileSize(bytes: number): string {
-  if (bytes < 1024) return `${bytes} B`;
-  if (bytes < 1024 * 1024) return `${(bytes / 1024).toFixed(1)} KB`;
-  return `${(bytes / (1024 * 1024)).toFixed(1)} MB`;
-}
 
 type SentSortKey = 'date' | 'to' | 'subject' | 'status';
 type ReceivedSortKey = 'date' | 'from' | 'subject';
@@ -127,15 +121,13 @@ export default function AdminEmailsTab({ enrollments, initialComposeTo, initialT
     if (pendingAttachmentIds && pendingAttachmentIds.length > 0) {
       setShowCompose(true);
       setEmailSubTab('sent');
-      Promise.all(
-        pendingAttachmentIds.map((id) =>
-          fetch('/api/admin/materials')
-            .then((r) => r.json())
-            .then((json) => (json.materials as Material[]).find((m) => m.id === id))
-        )
-      ).then((results) => {
-        setAttachments(results.filter((m): m is Material => !!m));
-      });
+      const ids = new Set(pendingAttachmentIds);
+      fetch('/api/admin/materials')
+        .then((r) => r.json())
+        .then((json) => {
+          setAttachments((json.materials as Material[]).filter((m) => ids.has(m.id)));
+        })
+        .catch(() => {});
     }
   }, [pendingAttachmentIds]);
 
@@ -172,8 +164,9 @@ export default function AdminEmailsTab({ enrollments, initialComposeTo, initialT
       const res = await fetch('/api/admin/materials');
       const json = await res.json();
       if (res.ok) setAllMaterials(json.materials);
-    } catch { /* ignore */ }
-    finally { setMaterialsLoading(false); }
+    } catch (err) {
+      console.error('Failed to fetch materials:', err);
+    } finally { setMaterialsLoading(false); }
   }
 
   function handleTogglePicker() {
@@ -444,11 +437,6 @@ export default function AdminEmailsTab({ enrollments, initialComposeTo, initialT
     }
   }
 
-  function sortArrow(active: boolean, dir: SortDir) {
-    if (!active) return '';
-    return dir === 'asc' ? ' \u2191' : ' \u2193';
-  }
-
   // Unique statuses for filter
   const sentStatuses = useMemo(() => {
     const s = new Set(emails.map((e) => e.last_event || 'queued'));
@@ -588,13 +576,7 @@ export default function AdminEmailsTab({ enrollments, initialComposeTo, initialT
               {emailsLoading ? 'Loading\u2026' : 'Refresh'}
             </button>
             {lastFetched && (
-              <span className="admin-last-updated">
-                {(() => {
-                  const secs = Math.floor((Date.now() - lastFetched.getTime()) / 1000);
-                  if (secs < 60) return 'Updated just now';
-                  return `Updated ${Math.floor(secs / 60)}m ago`;
-                })()}
-              </span>
+              <span className="admin-last-updated">{lastUpdatedText(lastFetched)}</span>
             )}
           </div>
 
@@ -871,7 +853,7 @@ export default function AdminEmailsTab({ enrollments, initialComposeTo, initialT
                   <tr><td colSpan={4} className="admin-empty"><div className="admin-empty-state"><p className="admin-empty-state-title">{sentSearch || sentStatusFilter !== 'all' ? 'No matching emails' : 'No emails sent yet'}</p><p className="admin-empty-state-sub">{sentSearch || sentStatusFilter !== 'all' ? 'Try adjusting your search or filters.' : 'Compose your first email to get started.'}</p>{!sentSearch && sentStatusFilter === 'all' && <button className="admin-empty-state-cta" onClick={() => { setShowCompose(true); setComposeResult(null); }}>Compose Email</button>}</div></td></tr>
                 ) : (
                   filteredSentEmails.map((em) => (
-                    <tr key={em.id} className="admin-email-row" onClick={() => openEmailDetail(em.id)}>
+                    <tr key={em.id} className="admin-email-row" onClick={() => openEmailDetail(em.id)} onKeyDown={(ev) => { if (ev.key === 'Enter' || ev.key === ' ') { ev.preventDefault(); openEmailDetail(em.id); } }} tabIndex={0} role="button" aria-label={`View email: ${em.subject || '(no subject)'}`}>
                       <td>{Array.isArray(em.to) ? em.to.join(', ') : em.to}</td>
                       <td>{em.subject || '(no subject)'}</td>
                       <td>
@@ -897,13 +879,7 @@ export default function AdminEmailsTab({ enrollments, initialComposeTo, initialT
               {receivedLoading ? 'Loading\u2026' : 'Refresh'}
             </button>
             {receivedLastFetched && (
-              <span className="admin-last-updated">
-                {(() => {
-                  const secs = Math.floor((Date.now() - receivedLastFetched.getTime()) / 1000);
-                  if (secs < 60) return 'Updated just now';
-                  return `Updated ${Math.floor(secs / 60)}m ago`;
-                })()}
-              </span>
+              <span className="admin-last-updated">{lastUpdatedText(receivedLastFetched)}</span>
             )}
           </div>
 
@@ -959,7 +935,7 @@ export default function AdminEmailsTab({ enrollments, initialComposeTo, initialT
                   <tr><td colSpan={4} className="admin-empty"><div className="admin-empty-state"><p className="admin-empty-state-title">{receivedSearch ? 'No matching emails' : 'No received emails'}</p><p className="admin-empty-state-sub">{receivedSearch ? 'Try adjusting your search.' : 'Emails sent to your course address will appear here.'}</p></div></td></tr>
                 ) : (
                   filteredReceivedEmails.map((em) => (
-                    <tr key={em.id} className="admin-email-row" onClick={() => openReceivedEmailDetail(em.id)}>
+                    <tr key={em.id} className="admin-email-row" onClick={() => openReceivedEmailDetail(em.id)} onKeyDown={(ev) => { if (ev.key === 'Enter' || ev.key === ' ') { ev.preventDefault(); openReceivedEmailDetail(em.id); } }} tabIndex={0} role="button" aria-label={`View email from ${em.from}: ${em.subject || '(no subject)'}`}>
                       <td>{em.from}</td>
                       <td>{em.subject || '(no subject)'}</td>
                       <td title={fullDate(em.created_at)}>{relativeTime(em.created_at)}</td>

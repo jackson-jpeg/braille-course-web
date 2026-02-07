@@ -11,9 +11,10 @@ interface Props {
   leads: Lead[];
   scheduleMap: Record<string, string>;
   onNavigate: (tab: string) => void;
+  onSendEmail: (email: string) => void;
 }
 
-export default function AdminOverviewTab({ sections, enrollments, leads, scheduleMap, onNavigate }: Props) {
+export default function AdminOverviewTab({ sections, enrollments, leads, scheduleMap, onNavigate, onSendEmail }: Props) {
   const [paymentSummary, setPaymentSummary] = useState<PaymentSummary | null>(null);
   const [selectedStudent, setSelectedStudent] = useState<Enrollment | null>(null);
 
@@ -31,7 +32,9 @@ export default function AdminOverviewTab({ sections, enrollments, leads, schedul
       const res = await fetch('/api/admin/payments');
       const data = await res.json();
       if (res.ok) setPaymentSummary(data.summary);
-    } catch { /* silent */ }
+    } catch (err) {
+      console.error('Failed to fetch payment summary:', err);
+    }
   }, []);
 
   useEffect(() => { fetchPaymentSummary(); }, [fetchPaymentSummary]);
@@ -56,7 +59,7 @@ export default function AdminOverviewTab({ sections, enrollments, leads, schedul
 
   function handleSendEmail(email: string) {
     setSelectedStudent(null);
-    onNavigate('emails');
+    onSendEmail(email);
   }
 
   return (

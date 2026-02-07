@@ -4,15 +4,10 @@ import { useState, useEffect, useRef, useCallback, useMemo } from 'react';
 import AdminConfirmDialog from './AdminConfirmDialog';
 import { useToast } from './AdminToast';
 import { SkeletonTable } from './AdminSkeleton';
+import { formatFileSize, sortArrow as sortArrowUtil, lastUpdatedText } from './admin-utils';
 import type { Material } from './admin-types';
 
 const CATEGORIES = ['All', 'Lesson Plans', 'Handouts', 'Presentations', 'Study Guides', 'Worksheets', 'Assessments', 'Other', 'Uncategorized'] as const;
-
-function formatFileSize(bytes: number): string {
-  if (bytes < 1024) return `${bytes} B`;
-  if (bytes < 1024 * 1024) return `${(bytes / 1024).toFixed(1)} KB`;
-  return `${(bytes / (1024 * 1024)).toFixed(1)} MB`;
-}
 
 type MaterialSortKey = 'filename' | 'category' | 'size' | 'date';
 
@@ -142,15 +137,7 @@ export default function AdminMaterialsTab({ onEmailMaterial }: Props) {
     else { setSortKey(key); setSortDir(key === 'date' ? 'desc' : 'asc'); }
   }
   function sortArrowFn(key: MaterialSortKey) {
-    if (sortKey !== key) return '';
-    return sortDir === 'asc' ? ' \u2191' : ' \u2193';
-  }
-  function lastUpdatedText() {
-    if (!lastFetched) return '';
-    const secs = Math.floor((Date.now() - lastFetched.getTime()) / 1000);
-    if (secs < 60) return 'Updated just now';
-    const mins = Math.floor(secs / 60);
-    return `Updated ${mins}m ago`;
+    return sortArrowUtil(sortKey === key, sortDir);
   }
 
   function startEdit(m: Material) {
@@ -272,7 +259,7 @@ export default function AdminMaterialsTab({ onEmailMaterial }: Props) {
         <button className="admin-refresh-btn" onClick={fetchMaterials} disabled={loading}>
           {loading ? 'Loading\u2026' : 'Refresh'}
         </button>
-        {lastFetched && <span className="admin-last-updated">{lastUpdatedText()}</span>}
+        {lastFetched && <span className="admin-last-updated">{lastUpdatedText(lastFetched)}</span>}
         <span className="admin-result-count" style={{ marginLeft: 'auto' }}>
           {filteredMaterials.length} file{filteredMaterials.length !== 1 ? 's' : ''}
           {selectedCategory !== 'All' && ` in ${selectedCategory}`}
@@ -343,10 +330,10 @@ export default function AdminMaterialsTab({ onEmailMaterial }: Props) {
                     <td>{new Date(m.createdAt).toLocaleDateString()}</td>
                     <td>
                       <div className="admin-payment-actions">
-                        <button className="admin-send-btn" style={{ fontSize: '0.75rem', padding: '4px 10px' }} onClick={() => saveEdit(m.id)} disabled={editSaving}>
+                        <button className="admin-send-btn admin-action-btn-sm" onClick={() => saveEdit(m.id)} disabled={editSaving}>
                           {editSaving ? 'Saving\u2026' : 'Save'}
                         </button>
-                        <button className="admin-refresh-btn" style={{ fontSize: '0.75rem', padding: '4px 10px' }} onClick={() => setEditingId(null)}>
+                        <button className="admin-refresh-btn admin-action-btn-sm" onClick={() => setEditingId(null)}>
                           Cancel
                         </button>
                       </div>
@@ -368,22 +355,20 @@ export default function AdminMaterialsTab({ onEmailMaterial }: Props) {
                     <td>
                       <div className="admin-payment-actions">
                         <button
-                          className="admin-stripe-link"
-                          style={{ fontSize: '0.75rem', padding: '4px 10px', background: 'none', border: 'none', cursor: 'pointer' }}
+                          className="admin-stripe-link admin-action-btn-sm"
+                          style={{ background: 'none', border: 'none', cursor: 'pointer' }}
                           onClick={() => startEdit(m)}
                         >
                           Edit
                         </button>
                         <button
-                          className="admin-compose-btn"
-                          style={{ fontSize: '0.75rem', padding: '4px 10px' }}
+                          className="admin-compose-btn admin-action-btn-sm"
                           onClick={() => onEmailMaterial(m.id)}
                         >
                           Email
                         </button>
                         <button
-                          className="admin-refund-confirm"
-                          style={{ fontSize: '0.75rem', padding: '4px 10px' }}
+                          className="admin-refund-confirm admin-action-btn-sm"
                           onClick={() => setDeletingMaterial(m)}
                         >
                           Delete

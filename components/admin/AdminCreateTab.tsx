@@ -1,14 +1,9 @@
 'use client';
 
-import { useState, useRef } from 'react';
+import { useState, useRef, useEffect } from 'react';
 import { useToast } from './AdminToast';
+import { formatFileSize } from './admin-utils';
 import type { Material, GeneratePreview } from './admin-types';
-
-function formatFileSize(bytes: number): string {
-  if (bytes < 1024) return `${bytes} B`;
-  if (bytes < 1024 * 1024) return `${(bytes / 1024).toFixed(1)} KB`;
-  return `${(bytes / (1024 * 1024)).toFixed(1)} MB`;
-}
 
 const FORMAT_OPTIONS = [
   {
@@ -114,6 +109,11 @@ export default function AdminCreateTab({ onEmailMaterial }: Props) {
   const [preview, setPreview] = useState<GeneratePreview | null>(null);
   const [recentMaterials, setRecentMaterials] = useState<Material[]>([]);
   const abortRef = useRef<AbortController | null>(null);
+
+  // Abort in-flight generation on unmount
+  useEffect(() => {
+    return () => { abortRef.current?.abort(); };
+  }, []);
 
   async function handleGenerate(e: React.FormEvent) {
     e.preventDefault();

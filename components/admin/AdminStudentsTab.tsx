@@ -6,8 +6,9 @@ import AdminConfirmDialog from './AdminConfirmDialog';
 import AdminWaitlistPanel from './AdminWaitlistPanel';
 import AdminAttendanceTab from './AdminAttendanceTab';
 import CopyButton from './CopyButton';
+import { useToast } from './AdminToast';
 import type { Section, Enrollment, Lead } from './admin-types';
-import { relativeTime, fullDate, downloadCsv } from './admin-utils';
+import { relativeTime, fullDate, downloadCsv, sortArrow as sortArrowUtil } from './admin-utils';
 
 type StudentSortKey = 'email' | 'schedule' | 'plan' | 'status' | 'date';
 
@@ -20,6 +21,7 @@ interface Props {
 }
 
 export default function AdminStudentsTab({ sections, enrollments, leads: initialLeads, scheduleMap, onSendEmail }: Props) {
+  const { showToast } = useToast();
   const [subTab, setSubTab] = useState<'enrolled' | 'prospective' | 'attendance'>('enrolled');
   const waitlistedCount = enrollments.filter((e) => e.paymentStatus === 'WAITLISTED').length;
 
@@ -43,9 +45,8 @@ export default function AdminStudentsTab({ sections, enrollments, leads: initial
     }
   }
 
-  function sortArrow(key: StudentSortKey) {
-    if (sortKey !== key) return '';
-    return sortDir === 'asc' ? ' \u2191' : ' \u2193';
+  function sortArrowFor(key: StudentSortKey) {
+    return sortArrowUtil(sortKey === key, sortDir);
   }
 
   // ── Prospective state ──
@@ -73,7 +74,9 @@ export default function AdminStudentsTab({ sections, enrollments, leads: initial
       const res = await fetch('/api/admin/leads');
       const data = await res.json();
       if (res.ok) setLeadsList(data.leads);
-    } catch { /* silent */ }
+    } catch (err) {
+      console.error('Failed to fetch leads:', err);
+    }
   }, []);
 
   // Auto-sync on first Prospective open
@@ -84,7 +87,9 @@ export default function AdminStudentsTab({ sections, enrollments, leads: initial
         try {
           await fetch('/api/admin/leads/sync', { method: 'POST' });
           await fetchLeads();
-        } catch { /* silent */ }
+        } catch (err) {
+          console.error('Failed to sync leads:', err);
+        }
       })();
     }
   }, [subTab, fetchLeads]);
@@ -177,7 +182,9 @@ export default function AdminStudentsTab({ sections, enrollments, leads: initial
       });
       setEditingLead(null);
       await fetchLeads();
-    } catch { /* silent */ }
+    } catch (err) {
+      showToast(err instanceof Error ? err.message : 'Failed to save changes', 'error');
+    }
   }
 
   async function handleDelete() {
@@ -189,7 +196,9 @@ export default function AdminStudentsTab({ sections, enrollments, leads: initial
       });
       setDeletingLead(null);
       await fetchLeads();
-    } catch { /* silent */ }
+    } catch (err) {
+      showToast(err instanceof Error ? err.message : 'Failed to delete lead', 'error');
+    }
     setDeleteLoading(false);
   }
 
@@ -202,7 +211,9 @@ export default function AdminStudentsTab({ sections, enrollments, leads: initial
         body: JSON.stringify({ status: 'CONTACTED' }),
       });
       await fetchLeads();
-    } catch { /* silent */ }
+    } catch (err) {
+      console.error('Failed to update lead status:', err);
+    }
     onSendEmail(lead.email, 'Inquiry Response');
   }
 
@@ -288,11 +299,11 @@ export default function AdminStudentsTab({ sections, enrollments, leads: initial
             <table className="admin-table">
               <thead>
                 <tr>
-                  <th className="admin-sortable-th" onClick={() => handleSort('email')}>Email{sortArrow('email')}</th>
-                  <th className="admin-sortable-th" onClick={() => handleSort('schedule')}>Schedule{sortArrow('schedule')}</th>
-                  <th className="admin-sortable-th" onClick={() => handleSort('plan')}>Plan{sortArrow('plan')}</th>
-                  <th className="admin-sortable-th" onClick={() => handleSort('status')}>Status{sortArrow('status')}</th>
-                  <th className="admin-sortable-th" onClick={() => handleSort('date')}>Date{sortArrow('date')}</th>
+                  <th className="admin-sortable-th" onClick={() => handleSort('email')}>Email{sortArrowFor('email')}</th>
+                  <th className="admin-sortable-th" onClick={() => handleSort('schedule')}>Schedule{sortArrowFor('schedule')}</th>
+                  <th className="admin-sortable-th" onClick={() => handleSort('plan')}>Plan{sortArrowFor('plan')}</th>
+                  <th className="admin-sortable-th" onClick={() => handleSort('status')}>Status{sortArrowFor('status')}</th>
+                  <th className="admin-sortable-th" onClick={() => handleSort('date')}>Date{sortArrowFor('date')}</th>
                 </tr>
               </thead>
               <tbody>
@@ -313,6 +324,10 @@ export default function AdminStudentsTab({ sections, enrollments, leads: initial
                       key={e.id}
                       className={`admin-student-row-clickable ${e.paymentStatus === 'WAITLISTED' ? 'admin-row-warning' : ''}`}
                       onClick={() => setSelectedStudent(e)}
+                      onKeyDown={(ev) => { if (ev.key === 'Enter' || ev.key === ' ') { ev.preventDefault(); setSelectedStudent(e); } }}
+                      tabIndex={0}
+                      role="button"
+                      aria-label={`View details for ${e.email || 'student'}`}
                     >
                       <td>
                         <span className="admin-email-cell">
@@ -491,10 +506,10 @@ export default function AdminStudentsTab({ sections, enrollments, leads: initial
                         <td title={fullDate(l.createdAt)}>{relativeTime(l.createdAt)}</td>
                         <td>
                           <div style={{ display: 'flex', gap: 6 }}>
-                            <button className="admin-send-btn" style={{ fontSize: '0.75rem', padding: '4px 10px' }} onClick={() => saveEdit(l.id)}>
+                            <button className="admin-send-btn admin-action-btn-sm" onClick={() => saveEdit(l.id)}>
                               Save
                             </button>
-                            <button className="admin-refresh-btn" style={{ fontSize: '0.75rem', padding: '4px 10px' }} onClick={() => setEditingLead(null)}>
+                            <button className="admin-refresh-btn admin-action-btn-sm" onClick={() => setEditingLead(null)}>
                               Cancel
                             </button>
                           </div>
@@ -528,22 +543,19 @@ export default function AdminStudentsTab({ sections, enrollments, leads: initial
                         <td>
                           <div style={{ display: 'flex', gap: 6 }}>
                             <button
-                              className="admin-send-btn"
-                              style={{ fontSize: '0.75rem', padding: '4px 10px' }}
+                              className="admin-send-btn admin-action-btn-sm"
                               onClick={() => handleSendToLead(l)}
                             >
                               Send Email
                             </button>
                             <button
-                              className="admin-refresh-btn"
-                              style={{ fontSize: '0.75rem', padding: '4px 10px' }}
+                              className="admin-refresh-btn admin-action-btn-sm"
                               onClick={() => startEdit(l)}
                             >
                               Edit
                             </button>
                             <button
-                              className="admin-refund-confirm"
-                              style={{ fontSize: '0.75rem', padding: '4px 10px' }}
+                              className="admin-refund-confirm admin-action-btn-sm"
                               onClick={() => setDeletingLead(l)}
                             >
                               Delete

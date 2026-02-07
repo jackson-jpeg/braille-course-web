@@ -11,7 +11,7 @@ import type {
   PaymentsData, StripeCharge, StripeInvoice, Enrollment,
   PayoutsData, StripeCoupon, StripePaymentLink,
 } from './admin-types';
-import { formatDate, formatCurrency } from './admin-utils';
+import { formatDate, formatCurrency, sortArrow, lastUpdatedText } from './admin-utils';
 
 type PaymentSubTab = 'overview' | 'payouts' | 'coupons' | 'links';
 
@@ -119,7 +119,7 @@ export default function AdminPaymentsTab({ enrollments }: Props) {
       fetch('/api/admin/payments/payouts')
         .then((r) => r.json())
         .then((json) => setPayoutsData(json))
-        .catch(() => {})
+        .catch((err) => console.error('Failed to fetch payouts:', err))
         .finally(() => setPayoutsLoading(false));
     }
   }, [paymentSubTab, payoutsData, payoutsLoading]);
@@ -131,7 +131,7 @@ export default function AdminPaymentsTab({ enrollments }: Props) {
       fetch('/api/admin/payments/coupons')
         .then((r) => r.json())
         .then((json) => setCoupons(json.coupons || []))
-        .catch(() => {})
+        .catch((err) => console.error('Failed to fetch coupons:', err))
         .finally(() => setCouponsLoading(false));
     }
   }, [paymentSubTab, coupons.length, couponsLoading]);
@@ -143,7 +143,7 @@ export default function AdminPaymentsTab({ enrollments }: Props) {
       fetch('/api/admin/payments/links')
         .then((r) => r.json())
         .then((json) => setPaymentLinks(json.links || []))
-        .catch(() => {})
+        .catch((err) => console.error('Failed to fetch payment links:', err))
         .finally(() => setLinksLoading(false));
     }
   }, [paymentSubTab, paymentLinks.length, linksLoading]);
@@ -397,11 +397,6 @@ export default function AdminPaymentsTab({ enrollments }: Props) {
     if (linkSortKey === key) setLinkSortDir(linkSortDir === 'asc' ? 'desc' : 'asc');
     else { setLinkSortKey(key); setLinkSortDir('asc'); }
   }
-  function sortArrow(active: boolean, dir: 'asc' | 'desc') {
-    if (!active) return '';
-    return dir === 'asc' ? ' \u2191' : ' \u2193';
-  }
-
   // ── Filtered + sorted charges ──
   const filteredCharges = useMemo(() => {
     if (!data) return [];
@@ -490,15 +485,6 @@ export default function AdminPaymentsTab({ enrollments }: Props) {
     return list;
   }, [paymentLinks, linkSortKey, linkSortDir]);
 
-  // ── Last updated helper ──
-  function lastUpdatedText() {
-    if (!lastFetched) return '';
-    const secs = Math.floor((Date.now() - lastFetched.getTime()) / 1000);
-    if (secs < 60) return 'Updated just now';
-    const mins = Math.floor(secs / 60);
-    return `Updated ${mins}m ago`;
-  }
-
   if (loading && !data) {
     return (
       <>
@@ -567,7 +553,7 @@ export default function AdminPaymentsTab({ enrollments }: Props) {
             <button className="admin-refresh-btn" onClick={fetchPayments} disabled={loading}>
               {loading ? 'Refreshing\u2026' : 'Refresh'}
             </button>
-            {lastFetched && <span className="admin-last-updated">{lastUpdatedText()}</span>}
+            {lastFetched && <span className="admin-last-updated">{lastUpdatedText(lastFetched)}</span>}
           </div>
 
           {/* Search */}
