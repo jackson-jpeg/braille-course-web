@@ -115,9 +115,7 @@ export default function AdminScheduledEmailsPanel({ onRefreshSent }: Props) {
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({}),
       });
-      // Since we can't PATCH a non-PENDING email, update status via a different mechanism
-      // Actually the email is still PENDING at this point since we just changed the date
-      // Let's cancel it and note it was sent manually
+      // Cancel the scheduled entry since we sent it manually
       await fetch(`/api/admin/emails/schedule/${email.id}`, { method: 'DELETE' });
 
       showToast('Email sent now');
@@ -132,14 +130,6 @@ export default function AdminScheduledEmailsPanel({ onRefreshSent }: Props) {
   const filtered = filterStatus === 'all'
     ? emails
     : emails.filter((e) => e.status === filterStatus);
-
-  const statusColor: Record<string, string> = {
-    PENDING: '#d97706',
-    SENDING: '#2563eb',
-    SENT: '#16a34a',
-    FAILED: '#dc2626',
-    CANCELLED: '#6b7280',
-  };
 
   if (loading) {
     return <p style={{ padding: '12px 0', color: '#6b7280', fontSize: '0.9rem' }}>Loading scheduled emails&hellip;</p>;
@@ -166,88 +156,78 @@ export default function AdminScheduledEmailsPanel({ onRefreshSent }: Props) {
       </div>
 
       {filtered.length === 0 ? (
-        <div className="admin-empty-state" style={{ padding: '24px 0' }}>
-          <p className="admin-empty-state-title">No scheduled emails</p>
-          <p className="admin-empty-state-sub">
+        <div className="admin-empty-state-calm">
+          <div className="admin-empty-state-calm-icon">
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none">
+              <circle cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="1.5"/>
+              <polyline points="12,6 12,12 16,14" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
+            </svg>
+          </div>
+          <p className="admin-empty-state-calm-title">No scheduled emails</p>
+          <p className="admin-empty-state-calm-sub">
             {filterStatus !== 'all' ? 'Try adjusting your filter.' : 'Schedule an email from the compose form above.'}
           </p>
         </div>
       ) : (
-        <div className="admin-table-wrap">
-          <table className="admin-table">
-            <thead>
-              <tr>
-                <th>To</th>
-                <th>Subject</th>
-                <th>Scheduled For</th>
-                <th>Status</th>
-                <th>Actions</th>
-              </tr>
-            </thead>
-            <tbody>
-              {filtered.map((email) => (
-                <tr key={email.id}>
-                  <td style={{ maxWidth: 200, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
-                    {email.to.length > 1 ? `${email.to[0]} +${email.to.length - 1}` : email.to[0]}
-                  </td>
-                  <td>{email.subject}</td>
-                  <td title={fullDate(email.scheduledFor)}>
-                    {new Date(email.scheduledFor).toLocaleString()}
-                  </td>
-                  <td>
-                    <span style={{
-                      color: statusColor[email.status] || '#6b7280',
-                      fontWeight: 600,
-                      fontSize: '0.82rem',
-                    }}>
-                      {email.status}
-                    </span>
-                    {email.error && (
-                      <span
-                        style={{ fontSize: '0.75rem', color: '#dc2626', display: 'block', marginTop: 2 }}
-                        title={email.error}
-                      >
-                        {email.error.length > 40 ? email.error.slice(0, 40) + '\u2026' : email.error}
-                      </span>
-                    )}
-                  </td>
-                  <td>
-                    {email.status === 'PENDING' && (
-                      <div style={{ display: 'flex', gap: 6 }}>
-                        <button
-                          className="admin-send-btn"
-                          style={{ fontSize: '0.75rem', padding: '3px 10px' }}
-                          onClick={() => handleSendNow(email)}
-                          disabled={sendingNowId === email.id}
-                        >
-                          {sendingNowId === email.id ? 'Sending\u2026' : 'Send Now'}
-                        </button>
-                        <button
-                          className="admin-refresh-btn"
-                          style={{ fontSize: '0.75rem', padding: '3px 10px' }}
-                          onClick={() => startEdit(email)}
-                        >
-                          Edit
-                        </button>
-                        <button
-                          className="admin-refund-confirm"
-                          style={{ fontSize: '0.75rem', padding: '3px 10px' }}
-                          onClick={() => setCancellingId(email.id)}
-                        >
-                          Cancel
-                        </button>
-                      </div>
-                    )}
-                    {email.status === 'SENT' && email.sentAt && (
-                      <span style={{ fontSize: '0.8rem', color: '#6b7280' }}>
-                        Sent {relativeTime(email.sentAt)}
-                      </span>
-                    )}
-                  </td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
+        <div className="admin-scheduled-card">
+          {filtered.map((email) => (
+            <div key={email.id} className="admin-scheduled-item">
+              <div className="admin-scheduled-line1">
+                <span className="admin-scheduled-recipient">
+                  {email.to.length > 1 ? `${email.to[0]} +${email.to.length - 1}` : email.to[0]}
+                </span>
+                <span className="admin-scheduled-time" title={fullDate(email.scheduledFor)}>
+                  <svg width="12" height="12" viewBox="0 0 24 24" fill="none">
+                    <circle cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="1.5"/>
+                    <polyline points="12,6 12,12 16,14" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
+                  </svg>
+                  {new Date(email.scheduledFor).toLocaleString()}
+                </span>
+              </div>
+              <div className="admin-scheduled-line2">
+                <span className="admin-scheduled-subject">{email.subject}</span>
+                <span className={`admin-scheduled-status-${email.status}`}>
+                  {email.status}
+                </span>
+                {email.status === 'PENDING' && (
+                  <div className="admin-scheduled-actions">
+                    <button
+                      className="admin-send-btn"
+                      style={{ fontSize: '0.75rem', padding: '3px 10px' }}
+                      onClick={() => handleSendNow(email)}
+                      disabled={sendingNowId === email.id}
+                    >
+                      {sendingNowId === email.id ? 'Sending\u2026' : 'Send Now'}
+                    </button>
+                    <button
+                      className="admin-refresh-btn"
+                      style={{ fontSize: '0.75rem', padding: '3px 10px' }}
+                      onClick={() => startEdit(email)}
+                    >
+                      Edit
+                    </button>
+                    <button
+                      className="admin-refund-confirm"
+                      style={{ fontSize: '0.75rem', padding: '3px 10px' }}
+                      onClick={() => setCancellingId(email.id)}
+                    >
+                      Cancel
+                    </button>
+                  </div>
+                )}
+                {email.status === 'SENT' && email.sentAt && (
+                  <span style={{ fontSize: '0.8rem', color: '#6b7280', flexShrink: 0 }}>
+                    Sent {relativeTime(email.sentAt)}
+                  </span>
+                )}
+              </div>
+              {email.error && (
+                <div className="admin-scheduled-error" title={email.error}>
+                  {email.error.length > 60 ? email.error.slice(0, 60) + '\u2026' : email.error}
+                </div>
+              )}
+            </div>
+          ))}
         </div>
       )}
 

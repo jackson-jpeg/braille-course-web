@@ -27,6 +27,12 @@
   --color-error: #ff9b9b;
   --color-error-bg: rgba(220, 80, 80, 0.15);
   --color-error-border: rgba(220, 80, 80, 0.3);
+  --space-xs: 4px;
+  --space-sm: 8px;
+  --space-md: 16px;
+  --space-lg: 24px;
+  --space-xl: 32px;
+  --space-2xl: 48px;
 }
 
 /* ===== RESET ===== */
@@ -5103,15 +5109,15 @@ details.faq-item.reveal:nth-child(6) { transition-delay: 0.4s; }
 /* ── Email Sub-tabs (Sent / Received pills) ── */
 .admin-email-subtabs {
   display: flex;
-  gap: 4px;
-  margin-bottom: 20px;
+  gap: var(--space-xs);
+  margin-bottom: var(--space-lg);
   background: rgba(212,168,83,0.08);
   border-radius: var(--radius-full);
   padding: 3px;
   width: fit-content;
 }
 .admin-email-subtab {
-  padding: 7px 20px;
+  padding: var(--space-sm) var(--space-lg);
   background: none;
   border: none;
   border-radius: var(--radius-full);
@@ -5135,8 +5141,9 @@ details.faq-item.reveal:nth-child(6) { transition-delay: 0.4s; }
 /* ── Email Tab ── */
 .admin-email-actions {
   display: flex;
-  gap: 10px;
-  margin-bottom: 20px;
+  align-items: center;
+  gap: var(--space-sm);
+  margin-bottom: var(--space-lg);
 }
 .admin-compose-btn {
   padding: 10px 24px;
@@ -5183,9 +5190,13 @@ details.faq-item.reveal:nth-child(6) { transition-delay: 0.4s; }
 .admin-compose {
   background: white;
   border: 1px solid rgba(212,168,83,0.15);
-  border-radius: var(--radius-md);
-  padding: 24px;
-  margin-bottom: 20px;
+  border-radius: var(--radius-lg);
+  padding: var(--space-lg);
+  margin-bottom: var(--space-lg);
+  position: relative;
+  z-index: 6;
+  box-shadow: 0 8px 32px rgba(20,31,53,0.10);
+  animation: adminSlideOpen 0.3s var(--ease-out);
 }
 .admin-compose-field {
   margin-bottom: 16px;
@@ -5197,7 +5208,7 @@ details.faq-item.reveal:nth-child(6) { transition-delay: 0.4s; }
   letter-spacing: 0.5px;
   text-transform: uppercase;
   color: var(--text-secondary);
-  margin-bottom: 6px;
+  margin-bottom: var(--space-sm);
 }
 .admin-compose-to-row {
   display: flex;
@@ -5205,7 +5216,7 @@ details.faq-item.reveal:nth-child(6) { transition-delay: 0.4s; }
 }
 .admin-compose-input {
   width: 100%;
-  padding: 10px 14px;
+  padding: var(--space-sm) var(--space-md);
   border: 1px solid rgba(212,168,83,0.25);
   border-radius: var(--radius-sm);
   font-family: var(--font-body), 'Outfit', sans-serif;
@@ -5242,7 +5253,7 @@ details.faq-item.reveal:nth-child(6) { transition-delay: 0.4s; }
 }
 .admin-compose-textarea {
   width: 100%;
-  padding: 12px 14px;
+  padding: var(--space-md);
   border: 1px solid rgba(212,168,83,0.25);
   border-radius: var(--radius-sm);
   font-family: var(--font-body), 'Outfit', sans-serif;
@@ -5440,7 +5451,7 @@ details.faq-item.reveal:nth-child(6) { transition-delay: 0.4s; }
 .admin-modal-meta {
   font-size: 0.85rem;
   color: var(--text-secondary);
-  margin-bottom: 6px;
+  margin-bottom: var(--space-sm);
   line-height: 1.5;
   font-weight: 300;
 }
@@ -5954,7 +5965,7 @@ details.faq-item.reveal:nth-child(6) { transition-delay: 0.4s; }
 }
 .admin-delivery-pill {
   display: inline-block;
-  padding: 5px 14px;
+  padding: var(--space-xs) var(--space-md);
   border-radius: var(--radius-full);
   font-size: 0.78rem;
   font-weight: 600;
@@ -6411,6 +6422,28 @@ details.faq-item.reveal:nth-child(6) { transition-delay: 0.4s; }
   from { opacity: 0; max-height: 0; transform: translateY(-8px); }
   to { opacity: 1; max-height: 600px; transform: translateY(0); }
 }
+@keyframes adminTabSlideLeft {
+  from { opacity: 0; transform: translateX(12px); }
+  to { opacity: 1; transform: translateX(0); }
+}
+@keyframes adminSendPulse {
+  0% { transform: scale(1); }
+  30% { transform: scale(1.06); }
+  60% { transform: scale(0.97); }
+  100% { transform: scale(1); }
+}
+@keyframes adminAiShimmer {
+  0% { transform: translateX(-100%); }
+  100% { transform: translateX(200%); }
+}
+@keyframes adminStatusIconIn {
+  from { opacity: 0; transform: scale(0.6); }
+  to { opacity: 1; transform: scale(1); }
+}
+@keyframes adminEmptyFadeIn {
+  from { opacity: 0; transform: translateY(8px); }
+  to { opacity: 1; transform: translateY(0); }
+}
 
 /* ── Card Hover + Button Active ── */
 .admin-overview-card,
@@ -6426,7 +6459,8 @@ details.faq-item.reveal:nth-child(6) { transition-delay: 0.4s; }
 .admin-compose-btn:active,
 .admin-refresh-btn:active,
 .admin-export-btn:active,
-.admin-quick-action:active {
+.admin-quick-action:active,
+.admin-empty-state-calm-cta:active {
   transform: scale(0.96);
 }
 .admin-send-btn:focus-visible,
@@ -6442,7 +6476,10 @@ details.faq-item.reveal:nth-child(6) { transition-delay: 0.4s; }
 .admin-toast-close:focus-visible,
 .admin-signout-link:focus-visible,
 .admin-todo-add-btn:focus-visible,
-.admin-danger-btn:focus-visible {
+.admin-danger-btn:focus-visible,
+.admin-empty-state-calm-cta:focus-visible,
+.admin-thread-sort-btn:focus-visible,
+.admin-material-card:focus-visible {
   outline: 2px solid var(--gold);
   outline-offset: 2px;
 }
@@ -7879,9 +7916,9 @@ details.faq-item.reveal:nth-child(6) { transition-delay: 0.4s; }
 .admin-email-filter-bar {
   display: flex;
   align-items: center;
-  gap: 10px;
-  margin-top: 12px;
-  margin-bottom: 4px;
+  gap: var(--space-sm);
+  margin-top: var(--space-md);
+  margin-bottom: var(--space-xs);
 }
 .admin-email-search {
   flex: 1;
@@ -8176,6 +8213,19 @@ details.faq-item.reveal:nth-child(6) { transition-delay: 0.4s; }
   }
   .admin-ai-draft-row {
     flex-direction: column;
+  }
+  .admin-material-tray-scroll {
+    gap: var(--space-sm);
+  }
+  .admin-material-card {
+    width: 120px;
+  }
+  .admin-scheduled-actions {
+    width: 100%;
+    margin-top: var(--space-xs);
+  }
+  .admin-compose-preview {
+    min-height: 200px;
   }
   .admin-gen-stepper {
     flex-direction: column;
@@ -9910,6 +9960,600 @@ details.faq-item.reveal:nth-child(6) { transition-delay: 0.4s; }
 }
 
 /* ============================================================
+   COMMUNICATIONS SUITE: Compose Backdrop + Focus Mode
+   ============================================================ */
+.admin-compose-backdrop {
+  position: fixed;
+  inset: 0;
+  background: rgba(20,31,53,0.08);
+  backdrop-filter: blur(2px);
+  -webkit-backdrop-filter: blur(2px);
+  z-index: 5;
+  animation: adminOverlayIn 0.2s ease-out;
+}
+.admin-compose-heading {
+  font-family: var(--font-heading), 'DM Serif Display', serif;
+  font-size: 1.2rem;
+  font-weight: 400;
+  color: var(--navy);
+  margin-bottom: var(--space-md);
+}
+.admin-compose-split {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: var(--space-lg);
+}
+@media (min-width: 1024px) {
+  .admin-compose-split {
+    grid-template-columns: 1fr 1fr;
+  }
+}
+.admin-compose-preview {
+  position: relative;
+  background: var(--cream);
+  border: 1px solid rgba(212,168,83,0.15);
+  border-radius: var(--radius-md);
+  overflow: hidden;
+  min-height: 300px;
+}
+.admin-compose-preview-label {
+  position: absolute;
+  top: var(--space-sm);
+  left: var(--space-sm);
+  padding: 2px var(--space-sm);
+  background: rgba(27,42,74,0.08);
+  border-radius: var(--radius-sm);
+  font-size: 0.7rem;
+  font-weight: 600;
+  letter-spacing: 0.5px;
+  text-transform: uppercase;
+  color: var(--text-secondary);
+  z-index: 1;
+}
+.admin-compose-preview-iframe {
+  width: 133.33%;
+  min-height: 400px;
+  height: auto;
+  border: none;
+  transform: scale(0.75);
+  transform-origin: top left;
+  pointer-events: none;
+  margin-top: var(--space-lg);
+}
+.admin-compose-preview-placeholder {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 100%;
+  min-height: 300px;
+  padding: var(--space-lg);
+  color: var(--text-secondary);
+  font-size: 0.88rem;
+  font-weight: 300;
+  text-align: center;
+}
+
+/* ============================================================
+   COMMUNICATIONS SUITE: Material Tray (horizontal scroll cards)
+   ============================================================ */
+.admin-material-tray-scroll {
+  display: flex;
+  gap: var(--space-sm);
+  overflow-x: auto;
+  padding: var(--space-sm) 0;
+  scrollbar-width: thin;
+  scrollbar-color: var(--gold-light) transparent;
+}
+.admin-material-tray-scroll::-webkit-scrollbar {
+  height: 4px;
+}
+.admin-material-tray-scroll::-webkit-scrollbar-thumb {
+  background: var(--gold-light);
+  border-radius: 2px;
+}
+.admin-material-card {
+  flex-shrink: 0;
+  width: 140px;
+  padding: var(--space-sm) var(--space-sm);
+  background: white;
+  border: 1px solid rgba(212,168,83,0.15);
+  border-radius: var(--radius-md);
+  cursor: pointer;
+  transition: transform 0.2s var(--ease-out), box-shadow 0.2s var(--ease-out), border-color 0.2s;
+  text-align: left;
+  font-family: inherit;
+}
+.admin-material-card:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 16px rgba(20,31,53,0.08);
+  border-color: var(--gold);
+}
+.admin-material-card-icon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 32px;
+  height: 32px;
+  background: rgba(212,168,83,0.1);
+  border-radius: var(--radius-sm);
+  margin-bottom: var(--space-xs);
+  color: var(--gold);
+}
+.admin-material-card-name {
+  font-size: 0.78rem;
+  font-weight: 500;
+  color: var(--navy);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  margin-bottom: 2px;
+}
+.admin-material-card-meta {
+  font-size: 0.68rem;
+  color: var(--text-secondary);
+  font-weight: 300;
+}
+.admin-material-tray-scroll .admin-material-picker-empty {
+  flex-shrink: 0;
+  white-space: nowrap;
+  padding: var(--space-md);
+}
+
+/* ============================================================
+   COMMUNICATIONS SUITE: Thread List + Status Pills + Hover Icons
+   ============================================================ */
+.admin-thread-list {
+  background: white;
+  border: 1px solid rgba(212,168,83,0.15);
+  border-radius: var(--radius-md);
+  overflow: hidden;
+}
+.admin-thread-sort-bar {
+  display: flex;
+  gap: var(--space-md);
+  padding: var(--space-sm) var(--space-md);
+  border-bottom: 1px solid rgba(212,168,83,0.12);
+}
+.admin-thread-sort-btn {
+  background: none;
+  border: none;
+  font-family: inherit;
+  font-size: 0.7rem;
+  font-weight: 600;
+  letter-spacing: 1px;
+  text-transform: uppercase;
+  color: var(--text-secondary);
+  cursor: pointer;
+  padding: var(--space-xs) 0;
+  transition: color 0.15s;
+  white-space: nowrap;
+}
+.admin-thread-sort-btn:hover {
+  color: var(--gold);
+}
+.admin-thread-sort-btn:focus-visible {
+  outline: 2px solid var(--gold);
+  outline-offset: 2px;
+}
+.admin-thread-item {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  padding: 12px var(--space-md);
+  border-bottom: 1px solid rgba(212,168,83,0.06);
+  cursor: pointer;
+  transition: background 0.15s ease, border-left 0.15s ease;
+  border-left: 3px solid transparent;
+}
+.admin-thread-item:last-child {
+  border-bottom: none;
+}
+.admin-thread-item:hover {
+  background: rgba(212,168,83,0.04);
+}
+.admin-thread-item:focus-visible {
+  outline: 2px solid var(--gold);
+  outline-offset: -2px;
+  background: rgba(212,168,83,0.06);
+}
+.admin-thread-item-selected {
+  background: rgba(212,168,83,0.08);
+  border-left-color: var(--gold);
+}
+.admin-thread-item-selected:hover {
+  background: rgba(212,168,83,0.10);
+}
+.admin-thread-line1 {
+  display: flex;
+  align-items: center;
+  width: 100%;
+  gap: var(--space-sm);
+  min-height: 24px;
+}
+.admin-thread-recipient {
+  font-weight: 600;
+  color: var(--navy);
+  font-size: 0.88rem;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  flex: 1;
+  min-width: 0;
+}
+.admin-thread-date {
+  font-size: 0.78rem;
+  color: var(--text-secondary);
+  font-weight: 300;
+  flex-shrink: 0;
+  white-space: nowrap;
+}
+.admin-thread-line2 {
+  display: flex;
+  align-items: center;
+  width: 100%;
+  gap: var(--space-sm);
+  margin-top: 2px;
+}
+.admin-thread-subject {
+  font-size: 0.85rem;
+  color: var(--slate);
+  font-weight: 300;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  flex: 1;
+  min-width: 0;
+}
+.admin-status-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-xs);
+  padding: 2px var(--space-sm);
+  border-radius: var(--radius-full);
+  font-size: 0.7rem;
+  font-weight: 600;
+  letter-spacing: 0.3px;
+  text-transform: capitalize;
+  flex-shrink: 0;
+}
+.admin-status-pill-delivered {
+  background: rgba(168,191,160,0.12);
+  color: var(--sage-dark);
+}
+.admin-status-pill-opened,
+.admin-status-pill-clicked {
+  background: rgba(100,160,220,0.10);
+  color: #3b7cc0;
+}
+.admin-status-pill-bounced,
+.admin-status-pill-complained {
+  background: rgba(220,80,80,0.08);
+  color: #c44;
+}
+.admin-status-pill-queued,
+.admin-status-pill-sent {
+  background: rgba(212,168,83,0.10);
+  color: #b8930e;
+}
+.admin-status-icon {
+  display: inline-flex;
+  opacity: 0;
+  transition: opacity 0.2s ease, transform 0.2s ease;
+}
+.admin-thread-item:hover .admin-status-icon {
+  opacity: 1;
+  animation: adminStatusIconIn 0.25s var(--ease-out);
+}
+
+/* ============================================================
+   COMMUNICATIONS SUITE: Tab Content Animation
+   ============================================================ */
+.admin-email-tab-content {
+  animation: adminTabSlideLeft 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+/* ============================================================
+   COMMUNICATIONS SUITE: Empty State ("Moment of Calm")
+   ============================================================ */
+.admin-empty-state-calm {
+  padding: var(--space-2xl) var(--space-lg);
+  text-align: center;
+  animation: adminEmptyFadeIn 0.4s var(--ease-out);
+}
+.admin-empty-state-calm-icon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 56px;
+  height: 56px;
+  border-radius: var(--radius-md);
+  background: rgba(212,168,83,0.10);
+  color: var(--gold);
+  margin-bottom: var(--space-md);
+}
+.admin-empty-state-calm-title {
+  font-family: var(--font-heading), 'DM Serif Display', serif;
+  font-size: 1.15rem;
+  color: var(--navy);
+  margin-bottom: var(--space-sm);
+}
+.admin-empty-state-calm-sub {
+  font-size: 0.88rem;
+  color: var(--text-secondary);
+  font-weight: 300;
+  max-width: 320px;
+  margin: 0 auto var(--space-md);
+  line-height: 1.6;
+}
+.admin-empty-state-calm-cta {
+  display: inline-block;
+  padding: var(--space-sm) var(--space-lg);
+  background: var(--gold);
+  color: white;
+  border: none;
+  border-radius: var(--radius-full);
+  font-family: var(--font-body), 'Outfit', sans-serif;
+  font-size: 0.85rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background 0.2s;
+}
+.admin-empty-state-calm-cta:hover {
+  background: #c49940;
+}
+
+/* ============================================================
+   COMMUNICATIONS SUITE: Send Button Feedback
+   ============================================================ */
+.admin-send-btn-sending {
+  animation: adminSendPulse 0.6s var(--ease-out);
+}
+.admin-send-btn-success {
+  background: var(--sage-dark) !important;
+  transition: background 0.3s ease;
+}
+
+/* ============================================================
+   COMMUNICATIONS SUITE: AI Draft Shimmer
+   ============================================================ */
+.admin-ai-draft-btn {
+  position: relative;
+  overflow: hidden;
+}
+.admin-ai-draft-btn::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 50%;
+  height: 100%;
+  background: linear-gradient(
+    90deg,
+    transparent,
+    rgba(240,222,180,0.15),
+    rgba(240,222,180,0.3),
+    transparent
+  );
+  animation: adminAiShimmer 3s infinite;
+  pointer-events: none;
+}
+
+/* ============================================================
+   COMMUNICATIONS SUITE: Scheduled Panel Redesign
+   ============================================================ */
+.admin-scheduled-card {
+  position: relative;
+  border: 2px dashed rgba(212,168,83,0.25);
+  border-radius: var(--radius-md);
+  padding: var(--space-md);
+  background: white;
+  overflow: hidden;
+}
+.admin-scheduled-card::before {
+  content: '';
+  position: absolute;
+  bottom: -8px;
+  right: -8px;
+  width: 80px;
+  height: 80px;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='80' height='80' viewBox='0 0 24 24' fill='none' stroke='%23D4A853' stroke-width='1'%3E%3Ccircle cx='12' cy='12' r='10'/%3E%3Cpolyline points='12 6 12 12 16 14'/%3E%3C/svg%3E");
+  background-size: contain;
+  background-repeat: no-repeat;
+  opacity: 0.08;
+  pointer-events: none;
+}
+.admin-scheduled-item {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  padding: var(--space-sm) var(--space-sm);
+  border-bottom: 1px dashed rgba(212,168,83,0.15);
+  transition: background 0.15s ease;
+}
+.admin-scheduled-item:last-child {
+  border-bottom: none;
+}
+.admin-scheduled-item:hover {
+  background: rgba(212,168,83,0.04);
+}
+.admin-scheduled-line1 {
+  display: flex;
+  align-items: center;
+  width: 100%;
+  gap: var(--space-sm);
+}
+.admin-scheduled-recipient {
+  font-weight: 600;
+  color: var(--navy);
+  font-size: 0.88rem;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  flex: 1;
+  min-width: 0;
+}
+.admin-scheduled-time {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-xs);
+  font-size: 0.78rem;
+  color: var(--text-secondary);
+  font-weight: 400;
+  flex-shrink: 0;
+  white-space: nowrap;
+}
+.admin-scheduled-time svg {
+  flex-shrink: 0;
+}
+.admin-scheduled-line2 {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  width: 100%;
+  gap: var(--space-sm);
+  margin-top: 2px;
+}
+.admin-scheduled-subject {
+  font-size: 0.85rem;
+  color: var(--slate);
+  font-weight: 300;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  flex: 1;
+  min-width: 0;
+}
+.admin-scheduled-status-PENDING {
+  color: #d97706;
+  font-weight: 600;
+  font-size: 0.78rem;
+}
+.admin-scheduled-status-SENDING {
+  color: #2563eb;
+  font-weight: 600;
+  font-size: 0.78rem;
+}
+.admin-scheduled-status-SENT {
+  color: #16a34a;
+  font-weight: 600;
+  font-size: 0.78rem;
+}
+.admin-scheduled-status-FAILED {
+  color: #dc2626;
+  font-weight: 600;
+  font-size: 0.78rem;
+}
+.admin-scheduled-status-CANCELLED {
+  color: #6b7280;
+  font-weight: 600;
+  font-size: 0.78rem;
+}
+.admin-scheduled-actions {
+  display: flex;
+  gap: 6px;
+  flex-shrink: 0;
+  margin-left: auto;
+  align-items: center;
+}
+.admin-scheduled-error {
+  font-size: 0.72rem;
+  color: #dc2626;
+  margin-top: 2px;
+  width: 100%;
+}
+
+/* ============================================================
+   COMMUNICATIONS SUITE: Desktop Two-Column Inbox
+   ============================================================ */
+.admin-email-desktop-split {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: var(--space-md);
+}
+.admin-email-detail-pane {
+  display: none;
+}
+@media (min-width: 1200px) {
+  .admin-email-desktop-split {
+    grid-template-columns: 1fr 1fr;
+  }
+  .admin-email-detail-pane {
+    display: block;
+    position: sticky;
+    top: var(--space-lg);
+    max-height: calc(100vh - 200px);
+    overflow-y: auto;
+  }
+  .admin-email-detail-placeholder {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    height: 300px;
+    background: white;
+    border: 1px dashed rgba(212,168,83,0.2);
+    border-radius: var(--radius-md);
+    color: var(--text-secondary);
+    font-size: 0.88rem;
+    font-weight: 300;
+    font-style: italic;
+  }
+  /* Hide modal overlay on desktop when inline detail is showing */
+  .admin-modal-overlay-desktop-hide {
+    display: none;
+  }
+}
+
+/* Inline modal (no overlay, no backdrop) */
+.admin-modal-inline {
+  position: relative;
+  background: white;
+  border: 1px solid rgba(212,168,83,0.15);
+  border-radius: var(--radius-md);
+  overflow: hidden;
+  animation: adminModalIn 0.25s var(--ease-out);
+}
+.admin-modal-inline .admin-modal-header {
+  padding: var(--space-md) var(--space-md) var(--space-sm);
+}
+.admin-modal-inline .admin-modal-body {
+  max-height: calc(100vh - 360px);
+}
+.admin-modal-inline .admin-modal-close {
+  position: absolute;
+  top: var(--space-sm);
+  right: var(--space-sm);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  background: none;
+  border: none;
+  font-size: 1.2rem;
+  color: var(--text-secondary);
+  cursor: pointer;
+  z-index: 1;
+  transition: background 0.15s;
+}
+.admin-modal-inline .admin-modal-close:hover {
+  background: rgba(212,168,83,0.08);
+  color: var(--navy);
+}
+
+/* ============================================================
+   COMMUNICATIONS SUITE: Attachment Badge (thread inline)
+   ============================================================ */
+.admin-thread-attachment-count {
+  display: inline-flex;
+  align-items: center;
+  gap: 3px;
+  font-size: 0.72rem;
+  color: var(--text-secondary);
+  flex-shrink: 0;
+}
+
+/* ============================================================
    PRINT STYLES
    ============================================================ */
 @media print {
@@ -9937,6 +10581,9 @@ details.faq-item.reveal:nth-child(6) { transition-delay: 0.4s; }
   .admin-todo-widget,
   .admin-modal-overlay,
   .admin-modal-close,
+  .admin-compose-backdrop,
+  .admin-compose-preview,
+  .admin-email-detail-pane,
   .admin-grade-header-delete,
   .admin-grade-input,
   .admin-waitlist-panel,

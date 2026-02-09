@@ -8,6 +8,7 @@ import { useToast } from './AdminToast';
 import { SkeletonTable } from './AdminSkeleton';
 import type { ResendEmail, ReceivedEmail, EmailDetail, Enrollment, Material } from './admin-types';
 import { relativeTime, fullDate, formatFileSize, sortArrow, lastUpdatedText } from './admin-utils';
+import { customEmail } from '@/lib/email-templates';
 
 const EMAIL_TEMPLATES = [
   {
@@ -50,6 +51,32 @@ interface Props {
   onComposeDirty?: (dirty: boolean) => void;
 }
 
+function StatusIcon({ status }: { status: string }) {
+  const s = (status || 'queued').toLowerCase();
+  if (s === 'delivered') {
+    return (
+      <span className="admin-status-icon">
+        <svg width="10" height="10" viewBox="0 0 16 16" fill="none"><path d="M3 8l3.5 3.5L13 5" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/></svg>
+      </span>
+    );
+  }
+  if (s === 'opened' || s === 'clicked') {
+    return (
+      <span className="admin-status-icon">
+        <svg width="10" height="10" viewBox="0 0 16 16" fill="none"><ellipse cx="8" cy="8" rx="3" ry="2.5" stroke="currentColor" strokeWidth="1.5"/><circle cx="8" cy="8" r="1" fill="currentColor"/><path d="M1 8s3-5 7-5 7 5 7 5-3 5-7 5-7-5-7-5z" stroke="currentColor" strokeWidth="1.2" fill="none"/></svg>
+      </span>
+    );
+  }
+  if (s === 'bounced' || s === 'complained') {
+    return (
+      <span className="admin-status-icon">
+        <svg width="10" height="10" viewBox="0 0 16 16" fill="none"><path d="M4 4l8 8M12 4l-8 8" stroke="currentColor" strokeWidth="2" strokeLinecap="round"/></svg>
+      </span>
+    );
+  }
+  return null;
+}
+
 export default function AdminEmailsTab({ enrollments, initialComposeTo, initialTemplate, pendingAttachmentIds, onClearAttachments, onComposeDirty }: Props) {
   const { showToast } = useToast();
   const [emailSubTab, setEmailSubTab] = useState<'sent' | 'received' | 'scheduled'>('sent');
@@ -68,6 +95,7 @@ export default function AdminEmailsTab({ enrollments, initialComposeTo, initialT
   const [composeResult, setComposeResult] = useState<{ ok: boolean; msg: string } | null>(null);
   const [selectedTemplate, setSelectedTemplate] = useState('');
   const [showSendConfirm, setShowSendConfirm] = useState(false);
+  const [sendSuccess, setSendSuccess] = useState(false);
 
   const [receivedEmails, setReceivedEmails] = useState<ReceivedEmail[]>([]);
   const [receivedLoading, setReceivedLoading] = useState(false);
@@ -101,6 +129,12 @@ export default function AdminEmailsTab({ enrollments, initialComposeTo, initialT
   const [receivedSearch, setReceivedSearch] = useState('');
   const [receivedSortKey, setReceivedSortKey] = useState<ReceivedSortKey>('date');
   const [receivedSortDir, setReceivedSortDir] = useState<SortDir>('desc');
+
+  // Live preview HTML
+  const previewHtml = useMemo(() => {
+    if (!composeSubject.trim() && !composeBody.trim()) return '';
+    return customEmail({ subject: composeSubject || 'Subject', body: composeBody || '' });
+  }, [composeSubject, composeBody]);
 
   // Track compose dirty state
   useEffect(() => {
@@ -295,6 +329,8 @@ export default function AdminEmailsTab({ enrollments, initialComposeTo, initialT
       });
       const data = await res.json();
       if (!res.ok) throw new Error(data.error || 'Failed to send');
+      setSendSuccess(true);
+      setTimeout(() => setSendSuccess(false), 1200);
       showToast('Email sent successfully');
       setComposeResult(null);
       setComposeTo('');
@@ -564,7 +600,7 @@ export default function AdminEmailsTab({ enrollments, initialComposeTo, initialT
 
       {/* SENT sub-tab */}
       {emailSubTab === 'sent' && (
-        <>
+        <div className="admin-email-tab-content" key="sent">
           <div className="admin-email-actions">
             <button
               onClick={() => { setShowCompose(!showCompose); setComposeResult(null); }}
@@ -580,224 +616,260 @@ export default function AdminEmailsTab({ enrollments, initialComposeTo, initialT
             )}
           </div>
 
+          {/* Compose backdrop */}
+          {showCompose && <div className="admin-compose-backdrop" onClick={() => { setShowCompose(false); setComposeResult(null); }} />}
+
           {showCompose && (
             <div className="admin-compose">
-              <form onSubmit={handleSendEmail}>
-                {/* Template + AI Draft row */}
-                <div className="admin-compose-field">
-                  <label>Template</label>
-                  <div className="admin-compose-template-row">
-                    <select
-                      value={selectedTemplate}
-                      onChange={(e) => handleTemplateChange(e.target.value)}
-                      className="admin-select"
-                      style={{ flex: 1 }}
-                    >
-                      <option value="">Start from scratch</option>
-                      {EMAIL_TEMPLATES.map((t) => (
-                        <option key={t.label} value={t.label}>{t.label}</option>
-                      ))}
-                    </select>
-                    <button
-                      type="button"
-                      className="admin-ai-draft-btn"
-                      onClick={() => setShowDraftInput(!showDraftInput)}
-                    >
-                      <svg width="14" height="14" viewBox="0 0 16 16" fill="none">
-                        <path d="M8 1L6 6l-5 .7 3.6 3.5-.9 5L8 13l4.3 2.2-.9-5L15 6.7 10 6 8 1z" stroke="currentColor" strokeWidth="1.2" strokeLinejoin="round"/>
-                      </svg>
-                      Draft with AI
-                    </button>
-                  </div>
-                </div>
-
-                {/* AI Draft input */}
-                {showDraftInput && (
-                  <div className="admin-compose-field admin-ai-draft-field">
-                    <label>Describe what this email should say&hellip;</label>
-                    <div className="admin-ai-draft-row">
-                      <input
-                        type="text"
-                        value={draftBrief}
-                        onChange={(e) => setDraftBrief(e.target.value)}
-                        placeholder="e.g. Remind students about next week's class and what to bring"
-                        className="admin-compose-input"
-                        onKeyDown={(e) => { if (e.key === 'Enter') { e.preventDefault(); handleDraftWithAI(); } }}
-                      />
-                      <button
-                        type="button"
-                        className="admin-send-btn"
-                        style={{ whiteSpace: 'nowrap' }}
-                        onClick={handleDraftWithAI}
-                        disabled={draftLoading || !draftBrief.trim()}
-                      >
-                        {draftLoading ? 'Drafting\u2026' : 'Generate'}
-                      </button>
+              <h3 className="admin-compose-heading">Compose Message</h3>
+              <div className="admin-compose-split">
+                {/* Left pane: form */}
+                <div>
+                  <form onSubmit={handleSendEmail}>
+                    {/* Template + AI Draft row */}
+                    <div className="admin-compose-field">
+                      <label>Template</label>
+                      <div className="admin-compose-template-row">
+                        <select
+                          value={selectedTemplate}
+                          onChange={(e) => handleTemplateChange(e.target.value)}
+                          className="admin-select"
+                          style={{ flex: 1 }}
+                        >
+                          <option value="">Start from scratch</option>
+                          {EMAIL_TEMPLATES.map((t) => (
+                            <option key={t.label} value={t.label}>{t.label}</option>
+                          ))}
+                        </select>
+                        <button
+                          type="button"
+                          className="admin-ai-draft-btn"
+                          onClick={() => setShowDraftInput(!showDraftInput)}
+                        >
+                          <svg width="14" height="14" viewBox="0 0 16 16" fill="none">
+                            <path d="M8 1L6 6l-5 .7 3.6 3.5-.9 5L8 13l4.3 2.2-.9-5L15 6.7 10 6 8 1z" stroke="currentColor" strokeWidth="1.2" strokeLinejoin="round"/>
+                          </svg>
+                          Draft with AI
+                        </button>
+                      </div>
                     </div>
-                  </div>
-                )}
 
-                <div className="admin-compose-field">
-                  <label>To</label>
-                  <div className="admin-compose-to-row">
-                    <input
-                      type="text"
-                      value={composeTo}
-                      onChange={(e) => setComposeTo(e.target.value)}
-                      placeholder="email@example.com, email2@example.com"
-                      className="admin-compose-input"
-                      required
-                    />
-                    <button
-                      type="button"
-                      onClick={() => setComposeTo(uniqueEmails.join(', '))}
-                      className="admin-fill-all-btn"
-                    >
-                      All Course Students ({uniqueEmails.length})
-                    </button>
-                  </div>
-                </div>
-                <div className="admin-compose-field">
-                  <label>Subject</label>
-                  <input
-                    type="text"
-                    value={composeSubject}
-                    onChange={(e) => setComposeSubject(e.target.value)}
-                    placeholder="Subject line"
-                    className="admin-compose-input"
-                    required
-                  />
-                </div>
-                <div className="admin-compose-field">
-                  <label>Body (plain text &mdash; wrapped in branded template)</label>
-                  <textarea
-                    value={composeBody}
-                    onChange={(e) => setComposeBody(e.target.value)}
-                    placeholder="Write your email here\u2026"
-                    className="admin-compose-textarea"
-                    rows={8}
-                    required
-                  />
-                </div>
-
-                {/* Attachments section — always visible */}
-                <div className="admin-compose-field">
-                  <label>Attachments</label>
-                  <div className="admin-material-picker" ref={pickerRef}>
-                    {/* Existing attachment tags */}
-                    {attachments.length > 0 && (
-                      <div className="admin-material-picker-tags">
-                        {attachments.map((a) => (
-                          <span key={a.id} className="admin-material-picker-tag">
-                            {a.filename}
-                            <button
-                              type="button"
-                              onClick={() => setAttachments((prev) => prev.filter((m) => m.id !== a.id))}
-                              className="admin-material-picker-tag-remove"
-                            >
-                              &times;
-                            </button>
-                          </span>
-                        ))}
+                    {/* AI Draft input */}
+                    {showDraftInput && (
+                      <div className="admin-compose-field admin-ai-draft-field">
+                        <label>Describe what this email should say&hellip;</label>
+                        <div className="admin-ai-draft-row">
+                          <input
+                            type="text"
+                            value={draftBrief}
+                            onChange={(e) => setDraftBrief(e.target.value)}
+                            placeholder="e.g. Remind students about next week's class and what to bring"
+                            className="admin-compose-input"
+                            onKeyDown={(e) => { if (e.key === 'Enter') { e.preventDefault(); handleDraftWithAI(); } }}
+                          />
+                          <button
+                            type="button"
+                            className="admin-send-btn"
+                            style={{ whiteSpace: 'nowrap' }}
+                            onClick={handleDraftWithAI}
+                            disabled={draftLoading || !draftBrief.trim()}
+                          >
+                            {draftLoading ? 'Drafting\u2026' : 'Generate'}
+                          </button>
+                        </div>
                       </div>
                     )}
-                    <button
-                      type="button"
-                      className="admin-compose-btn"
-                      style={{ fontSize: '0.8rem', padding: '5px 12px' }}
-                      onClick={handleTogglePicker}
-                    >
-                      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" style={{ marginRight: 4 }}>
-                        <path d="M21.44 11.05l-9.19 9.19a6 6 0 01-8.49-8.49l9.19-9.19a4 4 0 015.66 5.66l-9.2 9.19a2 2 0 01-2.83-2.83l8.49-8.48" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
-                      </svg>
-                      Attach Material
-                    </button>
 
-                    {/* Dropdown */}
-                    {showMaterialPicker && (
-                      <div className="admin-material-picker-dropdown">
-                        {materialsLoading ? (
-                          <div className="admin-material-picker-empty">Loading materials&hellip;</div>
-                        ) : unattachedMaterials.length === 0 ? (
-                          <div className="admin-material-picker-empty">
-                            {allMaterials.length === 0 ? 'No materials uploaded yet' : 'All materials attached'}
-                          </div>
-                        ) : (
-                          unattachedMaterials.map((m) => (
-                            <button
-                              key={m.id}
-                              type="button"
-                              className="admin-material-picker-item"
-                              onClick={() => handleAttachMaterial(m)}
-                            >
-                              <span className="admin-material-picker-item-name">{m.filename}</span>
-                              <span className="admin-material-picker-item-meta">
-                                <span className="admin-category-badge" style={{ fontSize: '0.7rem', padding: '1px 6px' }}>{m.category}</span>
-                                {formatFileSize(m.size)}
+                    <div className="admin-compose-field">
+                      <label>To</label>
+                      <div className="admin-compose-to-row">
+                        <input
+                          type="text"
+                          value={composeTo}
+                          onChange={(e) => setComposeTo(e.target.value)}
+                          placeholder="email@example.com, email2@example.com"
+                          className="admin-compose-input"
+                          required
+                        />
+                        <button
+                          type="button"
+                          onClick={() => setComposeTo(uniqueEmails.join(', '))}
+                          className="admin-fill-all-btn"
+                        >
+                          All Course Students ({uniqueEmails.length})
+                        </button>
+                      </div>
+                    </div>
+                    <div className="admin-compose-field">
+                      <label>Subject</label>
+                      <input
+                        type="text"
+                        value={composeSubject}
+                        onChange={(e) => setComposeSubject(e.target.value)}
+                        placeholder="Subject line"
+                        className="admin-compose-input"
+                        required
+                      />
+                    </div>
+                    <div className="admin-compose-field">
+                      <label>Body (plain text &mdash; wrapped in branded template)</label>
+                      <textarea
+                        value={composeBody}
+                        onChange={(e) => setComposeBody(e.target.value)}
+                        placeholder="Write your email here\u2026"
+                        className="admin-compose-textarea"
+                        rows={8}
+                        required
+                      />
+                    </div>
+
+                    {/* Attachments section */}
+                    <div className="admin-compose-field">
+                      <label>Attachments</label>
+                      <div className="admin-material-picker" ref={pickerRef}>
+                        {/* Existing attachment tags */}
+                        {attachments.length > 0 && (
+                          <div className="admin-material-picker-tags">
+                            {attachments.map((a) => (
+                              <span key={a.id} className="admin-material-picker-tag">
+                                {a.filename}
+                                <button
+                                  type="button"
+                                  onClick={() => setAttachments((prev) => prev.filter((m) => m.id !== a.id))}
+                                  className="admin-material-picker-tag-remove"
+                                >
+                                  &times;
+                                </button>
                               </span>
-                            </button>
-                          ))
+                            ))}
+                          </div>
                         )}
                         <button
                           type="button"
-                          className="admin-material-picker-refresh"
-                          onClick={fetchMaterials}
+                          className="admin-compose-btn"
+                          style={{ fontSize: '0.8rem', padding: '5px 12px' }}
+                          onClick={handleTogglePicker}
                         >
-                          Refresh list
+                          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" style={{ marginRight: 4 }}>
+                            <path d="M21.44 11.05l-9.19 9.19a6 6 0 01-8.49-8.49l9.19-9.19a4 4 0 015.66 5.66l-9.2 9.19a2 2 0 01-2.83-2.83l8.49-8.48" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
+                          </svg>
+                          {showMaterialPicker ? 'Hide Materials' : 'Attach Material'}
+                        </button>
+
+                        {/* Material tray (horizontal scroll cards) */}
+                        {showMaterialPicker && (
+                          <div className="admin-material-tray-scroll">
+                            {materialsLoading ? (
+                              <div className="admin-material-picker-empty">Loading materials&hellip;</div>
+                            ) : unattachedMaterials.length === 0 ? (
+                              <div className="admin-material-picker-empty">
+                                {allMaterials.length === 0 ? 'No materials uploaded yet' : 'All materials attached'}
+                              </div>
+                            ) : (
+                              unattachedMaterials.map((m) => (
+                                <button
+                                  key={m.id}
+                                  type="button"
+                                  className="admin-material-card"
+                                  onClick={() => handleAttachMaterial(m)}
+                                >
+                                  <div className="admin-material-card-icon">
+                                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none">
+                                      <path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
+                                      <polyline points="14,2 14,8 20,8" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
+                                    </svg>
+                                  </div>
+                                  <div className="admin-material-card-name">{m.filename}</div>
+                                  <div className="admin-material-card-meta">
+                                    {m.category} &middot; {formatFileSize(m.size)}
+                                  </div>
+                                </button>
+                              ))
+                            )}
+                            <button
+                              type="button"
+                              className="admin-material-card"
+                              onClick={fetchMaterials}
+                              style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', color: 'var(--text-secondary)', fontSize: '0.78rem' }}
+                            >
+                              Refresh list
+                            </button>
+                          </div>
+                        )}
+                      </div>
+                    </div>
+
+                    {/* Send mode toggle */}
+                    <div className="admin-compose-field">
+                      <label>Delivery</label>
+                      <div className="admin-schedule-toggle">
+                        <button
+                          type="button"
+                          className={`admin-schedule-toggle-btn ${sendMode === 'now' ? 'admin-schedule-toggle-active' : ''}`}
+                          onClick={() => setSendMode('now')}
+                        >
+                          Send Now
+                        </button>
+                        <button
+                          type="button"
+                          className={`admin-schedule-toggle-btn ${sendMode === 'schedule' ? 'admin-schedule-toggle-active' : ''}`}
+                          onClick={() => setSendMode('schedule')}
+                        >
+                          Schedule
                         </button>
                       </div>
-                    )}
-                  </div>
+                      {sendMode === 'schedule' && (
+                        <input
+                          type="datetime-local"
+                          className="admin-compose-input admin-schedule-picker"
+                          value={scheduleDateTime}
+                          onChange={(e) => setScheduleDateTime(e.target.value)}
+                          min={new Date(Date.now() + 60000).toISOString().slice(0, 16)}
+                          style={{ marginTop: 8, maxWidth: 280 }}
+                        />
+                      )}
+                    </div>
+
+                    <div className="admin-compose-actions">
+                      <button
+                        type="submit"
+                        className={`admin-send-btn${composeSending ? ' admin-send-btn-sending' : ''}${sendSuccess ? ' admin-send-btn-success' : ''}`}
+                        disabled={composeSending}
+                      >
+                        {composeSending
+                          ? (sendMode === 'schedule' ? 'Scheduling\u2026' : 'Sending\u2026')
+                          : sendMode === 'schedule'
+                            ? 'Schedule Email'
+                            : attachments.length > 0
+                              ? `Send Email (${attachments.length} attachment${attachments.length > 1 ? 's' : ''})`
+                              : 'Send Email'}
+                      </button>
+                      {composeResult && (
+                        <span className={`admin-compose-result ${composeResult.ok ? 'admin-compose-success' : 'admin-compose-error'}`}>
+                          {composeResult.msg}
+                        </span>
+                      )}
+                    </div>
+                  </form>
                 </div>
 
-                {/* Send mode toggle */}
-                <div className="admin-compose-field">
-                  <label>Delivery</label>
-                  <div className="admin-schedule-toggle">
-                    <button
-                      type="button"
-                      className={`admin-schedule-toggle-btn ${sendMode === 'now' ? 'admin-schedule-toggle-active' : ''}`}
-                      onClick={() => setSendMode('now')}
-                    >
-                      Send Now
-                    </button>
-                    <button
-                      type="button"
-                      className={`admin-schedule-toggle-btn ${sendMode === 'schedule' ? 'admin-schedule-toggle-active' : ''}`}
-                      onClick={() => setSendMode('schedule')}
-                    >
-                      Schedule
-                    </button>
-                  </div>
-                  {sendMode === 'schedule' && (
-                    <input
-                      type="datetime-local"
-                      className="admin-compose-input admin-schedule-picker"
-                      value={scheduleDateTime}
-                      onChange={(e) => setScheduleDateTime(e.target.value)}
-                      min={new Date(Date.now() + 60000).toISOString().slice(0, 16)}
-                      style={{ marginTop: 8, maxWidth: 280 }}
+                {/* Right pane: live preview */}
+                <div className="admin-compose-preview">
+                  <span className="admin-compose-preview-label">Live Preview</span>
+                  {previewHtml ? (
+                    <iframe
+                      srcDoc={previewHtml}
+                      title="Email preview"
+                      className="admin-compose-preview-iframe"
+                      sandbox="allow-same-origin"
                     />
+                  ) : (
+                    <div className="admin-compose-preview-placeholder">
+                      Start typing to see a live preview&hellip;
+                    </div>
                   )}
                 </div>
-
-                <div className="admin-compose-actions">
-                  <button type="submit" className="admin-send-btn" disabled={composeSending}>
-                    {composeSending
-                      ? (sendMode === 'schedule' ? 'Scheduling\u2026' : 'Sending\u2026')
-                      : sendMode === 'schedule'
-                        ? 'Schedule Email'
-                        : attachments.length > 0
-                          ? `Send Email (${attachments.length} attachment${attachments.length > 1 ? 's' : ''})`
-                          : 'Send Email'}
-                  </button>
-                  {composeResult && (
-                    <span className={`admin-compose-result ${composeResult.ok ? 'admin-compose-success' : 'admin-compose-error'}`}>
-                      {composeResult.msg}
-                    </span>
-                  )}
-                </div>
-              </form>
+              </div>
             </div>
           )}
 
@@ -828,52 +900,104 @@ export default function AdminEmailsTab({ enrollments, initialComposeTo, initialT
             </div>
           )}
 
-          <div className="admin-table-wrap">
-            <table className="admin-table">
-              <thead>
-                <tr>
-                  <th className="admin-sortable-th" onClick={() => handleSentSort('to')}>
-                    To{sortArrow(sentSortKey === 'to', sentSortDir)}
-                  </th>
-                  <th className="admin-sortable-th" onClick={() => handleSentSort('subject')}>
-                    Subject{sortArrow(sentSortKey === 'subject', sentSortDir)}
-                  </th>
-                  <th className="admin-sortable-th" onClick={() => handleSentSort('status')}>
-                    Status{sortArrow(sentSortKey === 'status', sentSortDir)}
-                  </th>
-                  <th className="admin-sortable-th" onClick={() => handleSentSort('date')}>
-                    Date{sortArrow(sentSortKey === 'date', sentSortDir)}
-                  </th>
-                </tr>
-              </thead>
-              <tbody>
-                {emailsLoading && emails.length === 0 ? (
-                  <tr><td colSpan={4} className="admin-empty"><SkeletonTable rows={4} cols={4} /></td></tr>
-                ) : filteredSentEmails.length === 0 ? (
-                  <tr><td colSpan={4} className="admin-empty"><div className="admin-empty-state"><p className="admin-empty-state-title">{sentSearch || sentStatusFilter !== 'all' ? 'No matching emails' : 'No emails sent yet'}</p><p className="admin-empty-state-sub">{sentSearch || sentStatusFilter !== 'all' ? 'Try adjusting your search or filters.' : 'Compose your first email to get started.'}</p>{!sentSearch && sentStatusFilter === 'all' && <button className="admin-empty-state-cta" onClick={() => { setShowCompose(true); setComposeResult(null); }}>Compose Email</button>}</div></td></tr>
-                ) : (
-                  filteredSentEmails.map((em) => (
-                    <tr key={em.id} className="admin-email-row" onClick={() => openEmailDetail(em.id)} onKeyDown={(ev) => { if (ev.key === 'Enter' || ev.key === ' ') { ev.preventDefault(); openEmailDetail(em.id); } }} tabIndex={0} role="button" aria-label={`View email: ${em.subject || '(no subject)'}`}>
-                      <td>{Array.isArray(em.to) ? em.to.join(', ') : em.to}</td>
-                      <td>{em.subject || '(no subject)'}</td>
-                      <td>
-                        <span className={`admin-email-status admin-email-status-${(em.last_event || 'queued').toLowerCase()}`}>
-                          {em.last_event || 'queued'}
-                        </span>
-                      </td>
-                      <td title={fullDate(em.created_at)}>{relativeTime(em.created_at)}</td>
-                    </tr>
-                  ))
-                )}
-              </tbody>
-            </table>
+          {/* Desktop split: thread list + detail pane */}
+          <div className="admin-email-desktop-split">
+            {/* Thread list (replaces table) */}
+            <div className="admin-thread-list">
+              {/* Sort bar */}
+              <div className="admin-thread-sort-bar">
+                <button className="admin-thread-sort-btn" onClick={() => handleSentSort('to')}>
+                  To{sortArrow(sentSortKey === 'to', sentSortDir)}
+                </button>
+                <button className="admin-thread-sort-btn" onClick={() => handleSentSort('subject')}>
+                  Subject{sortArrow(sentSortKey === 'subject', sentSortDir)}
+                </button>
+                <button className="admin-thread-sort-btn" onClick={() => handleSentSort('status')}>
+                  Status{sortArrow(sentSortKey === 'status', sentSortDir)}
+                </button>
+                <button className="admin-thread-sort-btn" style={{ marginLeft: 'auto' }} onClick={() => handleSentSort('date')}>
+                  Date{sortArrow(sentSortKey === 'date', sentSortDir)}
+                </button>
+              </div>
+
+              {/* Thread items */}
+              {emailsLoading && emails.length === 0 ? (
+                <div className="admin-empty"><SkeletonTable rows={4} cols={4} /></div>
+              ) : filteredSentEmails.length === 0 ? (
+                <div className="admin-empty-state-calm">
+                  <div className="admin-empty-state-calm-icon">
+                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none">
+                      <path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
+                      <polyline points="22,6 12,13 2,6" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
+                    </svg>
+                  </div>
+                  <p className="admin-empty-state-calm-title">
+                    {sentSearch || sentStatusFilter !== 'all' ? 'No matching emails' : 'Your outbox is clear'}
+                  </p>
+                  <p className="admin-empty-state-calm-sub">
+                    {sentSearch || sentStatusFilter !== 'all' ? 'Try adjusting your search or filters.' : 'Compose your first email to get started.'}
+                  </p>
+                  {!sentSearch && sentStatusFilter === 'all' && (
+                    <button className="admin-empty-state-calm-cta" onClick={() => { setShowCompose(true); setComposeResult(null); }}>
+                      Compose Email
+                    </button>
+                  )}
+                </div>
+              ) : (
+                filteredSentEmails.map((em) => (
+                  <div
+                    key={em.id}
+                    className={`admin-thread-item${selectedEmail?.id === em.id ? ' admin-thread-item-selected' : ''}`}
+                    onClick={() => openEmailDetail(em.id)}
+                    onKeyDown={(ev) => { if (ev.key === 'Enter' || ev.key === ' ') { ev.preventDefault(); openEmailDetail(em.id); } }}
+                    tabIndex={0}
+                    role="button"
+                    aria-label={`View email: ${em.subject || '(no subject)'}`}
+                  >
+                    <div className="admin-thread-line1">
+                      <span className="admin-thread-recipient">
+                        {Array.isArray(em.to) ? em.to.join(', ') : em.to}
+                      </span>
+                      <span className="admin-thread-date" title={fullDate(em.created_at)}>
+                        {relativeTime(em.created_at)}
+                      </span>
+                    </div>
+                    <div className="admin-thread-line2">
+                      <span className="admin-thread-subject">{em.subject || '(no subject)'}</span>
+                      <span className={`admin-status-pill admin-status-pill-${(em.last_event || 'queued').toLowerCase()}`}>
+                        {em.last_event || 'queued'}
+                        <StatusIcon status={em.last_event || 'queued'} />
+                      </span>
+                    </div>
+                  </div>
+                ))
+              )}
+            </div>
+
+            {/* Desktop detail pane (>=1200px) */}
+            <div className="admin-email-detail-pane">
+              {selectedEmail ? (
+                <AdminEmailModal
+                  email={selectedEmail}
+                  loading={emailDetailLoading}
+                  onClose={() => { setSelectedEmail(null); setEmailDetailLoading(false); }}
+                  onReply={handleReply}
+                  onForward={handleForward}
+                  inline
+                />
+              ) : emailDetailLoading ? (
+                <div className="admin-email-detail-placeholder">Loading email&hellip;</div>
+              ) : (
+                <div className="admin-email-detail-placeholder">Select an email to preview</div>
+              )}
+            </div>
           </div>
-        </>
+        </div>
       )}
 
       {/* RECEIVED sub-tab */}
       {emailSubTab === 'received' && (
-        <>
+        <div className="admin-email-tab-content" key="received">
           <div className="admin-email-actions">
             <button onClick={fetchReceivedEmails} className="admin-refresh-btn" disabled={receivedLoading}>
               {receivedLoading ? 'Loading\u2026' : 'Refresh'}
@@ -912,59 +1036,109 @@ export default function AdminEmailsTab({ enrollments, initialComposeTo, initialT
             </div>
           )}
 
-          <div className="admin-table-wrap">
-            <table className="admin-table">
-              <thead>
-                <tr>
-                  <th className="admin-sortable-th" onClick={() => handleReceivedSort('from')}>
-                    From{sortArrow(receivedSortKey === 'from', receivedSortDir)}
-                  </th>
-                  <th className="admin-sortable-th" onClick={() => handleReceivedSort('subject')}>
-                    Subject{sortArrow(receivedSortKey === 'subject', receivedSortDir)}
-                  </th>
-                  <th className="admin-sortable-th" onClick={() => handleReceivedSort('date')}>
-                    Date{sortArrow(receivedSortKey === 'date', receivedSortDir)}
-                  </th>
-                  <th>Attachments</th>
-                </tr>
-              </thead>
-              <tbody>
-                {receivedLoading && receivedEmails.length === 0 ? (
-                  <tr><td colSpan={4} className="admin-empty"><SkeletonTable rows={4} cols={4} /></td></tr>
-                ) : filteredReceivedEmails.length === 0 ? (
-                  <tr><td colSpan={4} className="admin-empty"><div className="admin-empty-state"><p className="admin-empty-state-title">{receivedSearch ? 'No matching emails' : 'No received emails'}</p><p className="admin-empty-state-sub">{receivedSearch ? 'Try adjusting your search.' : 'Emails sent to your course address will appear here.'}</p></div></td></tr>
-                ) : (
-                  filteredReceivedEmails.map((em) => (
-                    <tr key={em.id} className="admin-email-row" onClick={() => openReceivedEmailDetail(em.id)} onKeyDown={(ev) => { if (ev.key === 'Enter' || ev.key === ' ') { ev.preventDefault(); openReceivedEmailDetail(em.id); } }} tabIndex={0} role="button" aria-label={`View email from ${em.from}: ${em.subject || '(no subject)'}`}>
-                      <td>{em.from}</td>
-                      <td>{em.subject || '(no subject)'}</td>
-                      <td title={fullDate(em.created_at)}>{relativeTime(em.created_at)}</td>
-                      <td>
-                        {em.attachments && em.attachments.length > 0 ? (
-                          <span className="admin-attachment-badge">{em.attachments.length}</span>
-                        ) : '\u2014'}
-                      </td>
-                    </tr>
-                  ))
-                )}
-              </tbody>
-            </table>
+          {/* Desktop split: thread list + detail pane */}
+          <div className="admin-email-desktop-split">
+            <div className="admin-thread-list">
+              {/* Sort bar */}
+              <div className="admin-thread-sort-bar">
+                <button className="admin-thread-sort-btn" onClick={() => handleReceivedSort('from')}>
+                  From{sortArrow(receivedSortKey === 'from', receivedSortDir)}
+                </button>
+                <button className="admin-thread-sort-btn" onClick={() => handleReceivedSort('subject')}>
+                  Subject{sortArrow(receivedSortKey === 'subject', receivedSortDir)}
+                </button>
+                <button className="admin-thread-sort-btn" style={{ marginLeft: 'auto' }} onClick={() => handleReceivedSort('date')}>
+                  Date{sortArrow(receivedSortKey === 'date', receivedSortDir)}
+                </button>
+              </div>
+
+              {/* Thread items */}
+              {receivedLoading && receivedEmails.length === 0 ? (
+                <div className="admin-empty"><SkeletonTable rows={4} cols={4} /></div>
+              ) : filteredReceivedEmails.length === 0 ? (
+                <div className="admin-empty-state-calm">
+                  <div className="admin-empty-state-calm-icon">
+                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none">
+                      <path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
+                      <polyline points="22,6 12,13 2,6" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
+                    </svg>
+                  </div>
+                  <p className="admin-empty-state-calm-title">
+                    {receivedSearch ? 'No matching emails' : 'No received emails'}
+                  </p>
+                  <p className="admin-empty-state-calm-sub">
+                    {receivedSearch ? 'Try adjusting your search.' : 'Emails sent to your course address will appear here.'}
+                  </p>
+                </div>
+              ) : (
+                filteredReceivedEmails.map((em) => (
+                  <div
+                    key={em.id}
+                    className={`admin-thread-item${selectedEmail?.id === em.id ? ' admin-thread-item-selected' : ''}`}
+                    onClick={() => openReceivedEmailDetail(em.id)}
+                    onKeyDown={(ev) => { if (ev.key === 'Enter' || ev.key === ' ') { ev.preventDefault(); openReceivedEmailDetail(em.id); } }}
+                    tabIndex={0}
+                    role="button"
+                    aria-label={`View email from ${em.from}: ${em.subject || '(no subject)'}`}
+                  >
+                    <div className="admin-thread-line1">
+                      <span className="admin-thread-recipient">{em.from}</span>
+                      <span className="admin-thread-date" title={fullDate(em.created_at)}>
+                        {relativeTime(em.created_at)}
+                      </span>
+                    </div>
+                    <div className="admin-thread-line2">
+                      <span className="admin-thread-subject">{em.subject || '(no subject)'}</span>
+                      {em.attachments && em.attachments.length > 0 && (
+                        <span className="admin-thread-attachment-count">
+                          <svg width="12" height="12" viewBox="0 0 24 24" fill="none">
+                            <path d="M21.44 11.05l-9.19 9.19a6 6 0 01-8.49-8.49l9.19-9.19a4 4 0 015.66 5.66l-9.2 9.19a2 2 0 01-2.83-2.83l8.49-8.48" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
+                          </svg>
+                          {em.attachments.length}
+                        </span>
+                      )}
+                    </div>
+                  </div>
+                ))
+              )}
+            </div>
+
+            {/* Desktop detail pane for received (>=1200px) */}
+            <div className="admin-email-detail-pane">
+              {selectedEmail ? (
+                <AdminEmailModal
+                  email={selectedEmail}
+                  loading={emailDetailLoading}
+                  onClose={() => { setSelectedEmail(null); setEmailDetailLoading(false); }}
+                  onReply={handleReply}
+                  onForward={handleForward}
+                  inline
+                />
+              ) : emailDetailLoading ? (
+                <div className="admin-email-detail-placeholder">Loading email&hellip;</div>
+              ) : (
+                <div className="admin-email-detail-placeholder">Select an email to preview</div>
+              )}
+            </div>
           </div>
-        </>
+        </div>
       )}
 
       {/* SCHEDULED sub-tab */}
       {emailSubTab === 'scheduled' && (
-        <AdminScheduledEmailsPanel onRefreshSent={fetchEmails} />
+        <div className="admin-email-tab-content" key="scheduled">
+          <AdminScheduledEmailsPanel onRefreshSent={fetchEmails} />
+        </div>
       )}
 
-      {/* Email detail modal */}
+      {/* Email detail modal (mobile / <1200px) */}
       <AdminEmailModal
         email={selectedEmail}
         loading={emailDetailLoading}
         onClose={() => { setSelectedEmail(null); setEmailDetailLoading(false); }}
         onReply={handleReply}
         onForward={handleForward}
+        desktopHide
       />
 
       {/* Mass send confirmation dialog */}
