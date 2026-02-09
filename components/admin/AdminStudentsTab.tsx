@@ -54,6 +54,7 @@ export default function AdminStudentsTab({ sections, enrollments, leads: initial
   const [leadsList, setLeadsList] = useState<Lead[]>(initialLeads);
   const [leadSearch, setLeadSearch] = useState('');
   const [leadFilterStatus, setLeadFilterStatus] = useState('all');
+  const [leadFilterSubject, setLeadFilterSubject] = useState('all');
   const [showAddLead, setShowAddLead] = useState(false);
   const [addEmail, setAddEmail] = useState('');
   const [addName, setAddName] = useState('');
@@ -64,6 +65,9 @@ export default function AdminStudentsTab({ sections, enrollments, leads: initial
   const [editEmail, setEditEmail] = useState('');
   const [editStatus, setEditStatus] = useState('');
   const [editNotes, setEditNotes] = useState('');
+  const [editSubject, setEditSubject] = useState('');
+  const [editPhone, setEditPhone] = useState('');
+  const [editCallbackTime, setEditCallbackTime] = useState('');
   const [deletingLead, setDeletingLead] = useState<Lead | null>(null);
   const [deleteLoading, setDeleteLoading] = useState(false);
   const [expandedNoteId, setExpandedNoteId] = useState<string | null>(null);
@@ -138,9 +142,10 @@ export default function AdminStudentsTab({ sections, enrollments, leads: initial
         if (!l.email.toLowerCase().includes(q) && !(l.name || '').toLowerCase().includes(q)) return false;
       }
       if (leadFilterStatus !== 'all' && l.status !== leadFilterStatus) return false;
+      if (leadFilterSubject !== 'all' && l.subject !== leadFilterSubject) return false;
       return true;
     });
-  }, [leadsList, leadSearch, leadFilterStatus]);
+  }, [leadsList, leadSearch, leadFilterStatus, leadFilterSubject]);
 
   // ── Lead CRUD handlers ──
   async function handleAddLead(e: React.FormEvent) {
@@ -172,6 +177,9 @@ export default function AdminStudentsTab({ sections, enrollments, leads: initial
     setEditEmail(lead.email);
     setEditStatus(lead.status);
     setEditNotes(lead.notes || '');
+    setEditSubject(lead.subject || '');
+    setEditPhone(lead.phone || '');
+    setEditCallbackTime(lead.preferredCallbackTime || '');
   }
 
   async function saveEdit(id: string) {
@@ -179,7 +187,15 @@ export default function AdminStudentsTab({ sections, enrollments, leads: initial
       await fetch(`/api/admin/leads/${id}`, {
         method: 'PATCH',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ name: editName, email: editEmail, status: editStatus, notes: editNotes }),
+        body: JSON.stringify({
+          name: editName,
+          email: editEmail,
+          status: editStatus,
+          notes: editNotes,
+          subject: editSubject,
+          phone: editPhone,
+          preferredCallbackTime: editCallbackTime,
+        }),
       });
       setEditingLead(null);
       await fetchLeads();
@@ -395,6 +411,11 @@ export default function AdminStudentsTab({ sections, enrollments, leads: initial
               <option value="NEW">New</option>
               <option value="CONTACTED">Contacted</option>
             </select>
+            <select value={leadFilterSubject} onChange={(e) => setLeadFilterSubject(e.target.value)} className="admin-select">
+              <option value="all">All Types</option>
+              <option value="Appointment Request">Appointments</option>
+              <option value="Waitlist Request">Waitlist</option>
+            </select>
             <button
               onClick={() => { setShowAddLead(!showAddLead); setAddError(''); }}
               className="admin-compose-btn"
@@ -451,6 +472,9 @@ export default function AdminStudentsTab({ sections, enrollments, leads: initial
                 <tr>
                   <th>Email</th>
                   <th>Name</th>
+                  <th>Type</th>
+                  <th>Phone</th>
+                  <th>Callback Time</th>
                   <th>Status</th>
                   <th>Notes</th>
                   <th>Date</th>
@@ -460,7 +484,7 @@ export default function AdminStudentsTab({ sections, enrollments, leads: initial
               <tbody>
                 {filteredLeads.length === 0 ? (
                   <tr>
-                    <td colSpan={6} className="admin-empty">
+                    <td colSpan={9} className="admin-empty">
                       {leadsList.length === 0 ? (
                         <div className="admin-empty-state">
                           <p className="admin-empty-state-title">No prospective students</p>
@@ -489,6 +513,36 @@ export default function AdminStudentsTab({ sections, enrollments, leads: initial
                             value={editName}
                             onChange={(e) => setEditName(e.target.value)}
                             className="admin-compose-input"
+                            style={{ fontSize: '0.85rem', padding: '4px 8px' }}
+                          />
+                        </td>
+                        <td>
+                          <input
+                            type="text"
+                            value={editSubject}
+                            onChange={(e) => setEditSubject(e.target.value)}
+                            className="admin-compose-input"
+                            placeholder="Type..."
+                            style={{ fontSize: '0.85rem', padding: '4px 8px' }}
+                          />
+                        </td>
+                        <td>
+                          <input
+                            type="tel"
+                            value={editPhone}
+                            onChange={(e) => setEditPhone(e.target.value)}
+                            className="admin-compose-input"
+                            placeholder="Phone..."
+                            style={{ fontSize: '0.85rem', padding: '4px 8px' }}
+                          />
+                        </td>
+                        <td>
+                          <input
+                            type="text"
+                            value={editCallbackTime}
+                            onChange={(e) => setEditCallbackTime(e.target.value)}
+                            className="admin-compose-input"
+                            placeholder="Callback time..."
                             style={{ fontSize: '0.85rem', padding: '4px 8px' }}
                           />
                         </td>
@@ -534,6 +588,23 @@ export default function AdminStudentsTab({ sections, enrollments, leads: initial
                           </span>
                         </td>
                         <td>{l.name || '\u2014'}</td>
+                        <td>
+                          {l.subject ? (
+                            <span className={`admin-status ${l.subject === 'Appointment Request' ? 'admin-status-new' : 'admin-status-contacted'}`}>
+                              {l.subject === 'Appointment Request' ? 'Appointment' : l.subject === 'Waitlist Request' ? 'Waitlist' : l.subject}
+                            </span>
+                          ) : '\u2014'}
+                        </td>
+                        <td>
+                          {l.phone ? (
+                            <a href={`tel:${l.phone}`} style={{ color: 'var(--gold)', textDecoration: 'none' }}>
+                              {l.phone}
+                            </a>
+                          ) : '\u2014'}
+                        </td>
+                        <td style={{ maxWidth: '150px', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }} title={l.preferredCallbackTime || ''}>
+                          {l.preferredCallbackTime || '\u2014'}
+                        </td>
                         <td>
                           <span className={`admin-status admin-status-${l.status.toLowerCase()}`}>
                             {l.status}

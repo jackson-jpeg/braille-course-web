@@ -73,14 +73,16 @@ model Enrollment {
 }
 
 model Lead {
-  id        String     @id @default(cuid())
-  email     String     @unique
-  name      String?
-  subject   String?
-  notes     String?
-  status    LeadStatus @default(NEW)
-  createdAt DateTime   @default(now())
-  updatedAt DateTime   @updatedAt
+  id                    String     @id @default(cuid())
+  email                 String     @unique
+  name                  String?
+  subject               String?
+  notes                 String?
+  phone                 String?
+  preferredCallbackTime String?
+  status                LeadStatus @default(NEW)
+  createdAt             DateTime   @default(now())
+  updatedAt             DateTime   @updatedAt
 
   @@index([status])
 }

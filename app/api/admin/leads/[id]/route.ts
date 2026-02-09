@@ -14,11 +14,14 @@ export async function PATCH(
   try {
     const { id } = await params;
     const body = await req.json();
-    const { status, name, email, notes } = body as {
+    const { status, name, email, notes, subject, phone, preferredCallbackTime } = body as {
       status?: string;
       name?: string;
       email?: string;
       notes?: string;
+      subject?: string;
+      phone?: string;
+      preferredCallbackTime?: string;
     };
 
     if (status && status !== 'NEW' && status !== 'CONTACTED') {
@@ -33,6 +36,9 @@ export async function PATCH(
     if (name !== undefined) data.name = name;
     if (email !== undefined) data.email = email;
     if (notes !== undefined) data.notes = notes;
+    if (subject !== undefined) data.subject = subject;
+    if (phone !== undefined) data.phone = phone;
+    if (preferredCallbackTime !== undefined) data.preferredCallbackTime = preferredCallbackTime;
 
     const lead = await prisma.lead.update({
       where: { id },

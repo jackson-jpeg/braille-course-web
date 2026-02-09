@@ -151,6 +151,8 @@ export interface Lead {
   subject: string | null;
   status: LeadStatus;
   notes: string | null;
+  phone: string | null;
+  preferredCallbackTime: string | null;
   createdAt: string;
   updatedAt: string;
 }

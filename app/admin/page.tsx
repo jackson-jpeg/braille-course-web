@@ -57,6 +57,8 @@ export default async function AdminPage() {
     subject: l.subject,
     status: l.status as LeadStatus,
     notes: l.notes,
+    phone: l.phone,
+    preferredCallbackTime: l.preferredCallbackTime,
     createdAt: l.createdAt.toISOString(),
     updatedAt: l.updatedAt.toISOString(),
   }));

@@ -2,6 +2,7 @@ import { Metadata } from 'next';
 import Link from 'next/link';
 import Footer from '@/components/Footer';
 import BrailleHero from '@/components/BrailleHero';
+import AppointmentRequestForm from '@/components/AppointmentRequestForm';
 
 export const metadata: Metadata = {
   title: 'Book an Appointment — TeachBraille.org',
@@ -233,24 +234,7 @@ export default function AppointmentsPage() {
               />
             </div>
           ) : (
-            <div className="appointments-cta-block">
-              <a
-                href="mailto:Delaney@TeachBraille.org?subject=Braille%20Session%20Inquiry"
-                className="appointments-email-cta"
-              >
-                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" aria-hidden="true">
-                  <rect x="2" y="4" width="20" height="16" rx="2" />
-                  <path d="M22 4L12 13 2 4" />
-                </svg>
-                Email Delaney to Get Started
-              </a>
-              <p className="appointments-email-sub">
-                Include your name, experience level, and preferred schedule
-              </p>
-              <p className="appointments-response-note">
-                Delaney typically responds within 24 hours
-              </p>
-            </div>
+            <AppointmentRequestForm />
           )}
         </div>
       </section>

@@ -240,3 +240,94 @@ export function enrollmentConfirmation(opts: {
 
   return shell(body);
 }
+
+export function appointmentRequestAdminEmail(opts: {
+  name: string;
+  email: string;
+  phone: string;
+  questions?: string;
+  preferredCallbackTime?: string;
+}) {
+  const { name, email, phone, questions, preferredCallbackTime } = opts;
+  const now = new Date().toLocaleString('en-US', {
+    timeZone: 'America/New_York',
+    dateStyle: 'full',
+    timeStyle: 'short',
+  });
+
+  const body = `
+  ${header('New Appointment Request', 'Someone wants to schedule a 1-on-1 session')}
+
+  <!-- main copy -->
+  <tr>
+    <td style="padding:32px 40px 0;font-family:${FONT_BODY};font-size:15px;color:${C.slate};line-height:1.7;">
+      A new appointment request has been submitted. Here are the details:
+    </td>
+  </tr>
+
+  <!-- details table -->
+  <tr>
+    <td style="padding:24px 40px 0;">
+      <table role="presentation" width="100%" cellpadding="0" cellspacing="0">
+        ${detailRow('Name', escapeHtml(name))}
+        ${detailRow('Email', `<a href="mailto:${escapeHtml(email)}" style="color:${C.gold};text-decoration:none;border-bottom:1px solid ${C.goldLight};">${escapeHtml(email)}</a>`)}
+        ${detailRow('Phone', `<a href="tel:${escapeHtml(phone)}" style="color:${C.gold};text-decoration:none;border-bottom:1px solid ${C.goldLight};">${escapeHtml(phone)}</a>`)}
+        ${detailRow('Preferred Times', preferredCallbackTime ? escapeHtml(preferredCallbackTime) : '<em style="color:#999;">Not specified</em>')}
+        ${questions ? detailRow('Questions/Notes', escapeHtml(questions).replace(/\n/g, '<br />')) : detailRow('Questions/Notes', '<em style="color:#999;">None provided</em>')}
+        ${detailRow('Submitted', now)}
+      </table>
+    </td>
+  </tr>
+
+  ${ctaButton('View in Admin Dashboard', 'https://teachbraille.org/admin')}
+
+  ${footer('This lead has been added to your Prospective Students list with status NEW.')}`;
+
+  return shell(body);
+}
+
+export function appointmentRequestConfirmationEmail(opts: { name: string }) {
+  const { name } = opts;
+
+  const body = `
+  ${header('Request Received!', "I'll be in touch soon to schedule your session")}
+
+  <!-- checkmark -->
+  <tr>
+    <td align="center" style="padding:32px 40px 0;">
+      <div style="width:64px;height:64px;border-radius:50%;background:${C.sageDark};display:inline-block;line-height:64px;text-align:center;">
+        <!--[if mso]><v:roundrect xmlns:v="urn:schemas-microsoft-com:vml" style="width:64px;height:64px;" arcsize="50%" fillcolor="${C.sageDark}" stroke="f"><v:textbox><![endif]-->
+        <span style="font-size:28px;color:${C.white};">&#10003;</span>
+        <!--[if mso]></v:textbox></v:roundrect><![endif]-->
+      </div>
+    </td>
+  </tr>
+
+  <!-- main copy -->
+  <tr>
+    <td style="padding:24px 40px 0;font-family:${FONT_BODY};font-size:15px;color:${C.slate};line-height:1.7;">
+      Hi ${escapeHtml(name)},
+    </td>
+  </tr>
+  <tr>
+    <td style="padding:16px 40px 0;font-family:${FONT_BODY};font-size:15px;color:${C.slate};line-height:1.7;">
+      Thank you for your interest in personalized braille instruction! I've received your appointment request and will reach out within <strong style="color:${C.navy};">24 hours</strong> to discuss your goals and schedule a time that works for you.
+    </td>
+  </tr>
+
+  <!-- what to expect -->
+  <tr>
+    <td style="padding:24px 40px 0;">
+      <h2 style="margin:0 0 12px;font-family:${FONT_HEADING};font-size:18px;font-weight:400;color:${C.navy};">What to Expect</h2>
+      <ul style="margin:0;padding:0 0 0 20px;font-family:${FONT_BODY};font-size:14px;color:${C.slate};line-height:1.8;">
+        <li style="margin-bottom:8px;">I'll contact you via email or phone to introduce myself and learn about your experience level and goals</li>
+        <li style="margin-bottom:8px;">We'll discuss scheduling options that work for your availability</li>
+        <li style="margin-bottom:8px;">Sessions are conducted remotely via video call, tailored to your pace and learning objectives</li>
+      </ul>
+    </td>
+  </tr>
+
+  ${footer('If you have any questions in the meantime, feel free to reply to this email.')}`;
+
+  return shell(body);
+}
