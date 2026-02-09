@@ -136,6 +136,7 @@ const FIELD_GROUPS: FieldGroup[] = [
     label: 'Enrollment',
     description: 'Control enrollment availability and waitlist limits.',
     icon: 'users',
+    layout: 'stack',
     fields: [
       { key: 'enrollment.enabled', label: 'Enrollment Open', type: 'boolean', hint: 'Whether new students can enroll' },
       { key: 'enrollment.waitlistEnabled', label: 'Waitlist Enabled', type: 'boolean', hint: 'Allow waitlist when sections are full' },
@@ -213,7 +214,7 @@ function ToggleSwitch({ checked, onChange }: { checked: boolean; onChange: (v: b
       >
         <span className="admin-settings-toggle-thumb" />
       </button>
-      <span className="admin-settings-toggle-label">{checked ? 'Yes' : 'No'}</span>
+      <span className="admin-settings-toggle-label">{checked ? 'Enabled' : 'Disabled'}</span>
     </div>
   );
 }
@@ -263,8 +264,8 @@ function SettingsSkeleton() {
   return (
     <div className="admin-settings" style={{ animation: 'adminFadeIn 0.3s var(--ease-out) both' }}>
       {/* Header skeleton */}
-      <div style={{ marginBottom: 32 }}>
-        <div className="admin-skeleton-line" style={{ width: 200, height: 22, marginBottom: 8 }} />
+      <div style={{ marginBottom: 36 }}>
+        <div className="admin-skeleton-line" style={{ width: 220, height: 26, marginBottom: 8 }} />
         <div className="admin-skeleton-line" style={{ width: 380, height: 14 }} />
       </div>
       {/* Card skeletons */}
@@ -273,20 +274,21 @@ function SettingsSkeleton() {
           key={i}
           style={{
             background: 'white',
-            border: '1px solid rgba(212,168,83,0.12)',
+            border: '1px solid rgba(212,168,83,0.15)',
             borderRadius: 'var(--radius-md)',
-            padding: '24px 28px',
-            marginBottom: 20,
+            padding: '28px 32px',
+            marginBottom: 24,
+            boxShadow: '0 1px 3px rgba(27,42,74,0.04)',
           }}
         >
-          <div style={{ display: 'flex', alignItems: 'center', gap: 12, marginBottom: 16 }}>
-            <div className="admin-skeleton-line" style={{ width: 34, height: 34, borderRadius: 10 }} />
+          <div style={{ display: 'flex', alignItems: 'center', gap: 16, marginBottom: 20 }}>
+            <div className="admin-skeleton-line" style={{ width: 38, height: 38, borderRadius: 11 }} />
             <div>
               <div className="admin-skeleton-line" style={{ width: 120, height: 16, marginBottom: 6 }} />
               <div className="admin-skeleton-line" style={{ width: 240, height: 12 }} />
             </div>
           </div>
-          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(200px, 1fr))', gap: 16 }}>
+          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(200px, 1fr))', gap: 20 }}>
             {Array.from({ length: i === 3 ? 4 : i === 5 ? 3 : 2 }).map((_, j) => (
               <div key={j}>
                 <div className="admin-skeleton-line" style={{ width: 80, height: 12, marginBottom: 6 }} />
@@ -313,6 +315,7 @@ export default function AdminSettingsTab() {
   const [showResetConfirm, setShowResetConfirm] = useState(false);
   const [resetting, setResetting] = useState(false);
   const [dangerOpen, setDangerOpen] = useState(false);
+  const [justSaved, setJustSaved] = useState(false);
   const containerRef = useRef<HTMLDivElement>(null);
 
   // Tick for lastUpdatedText
@@ -389,6 +392,8 @@ export default function AdminSettingsTab() {
       setSettings(merged);
       setOriginal(merged);
       setLastSaved(new Date());
+      setJustSaved(true);
+      setTimeout(() => setJustSaved(false), 1500);
       showToast('Settings saved');
     } catch (err) {
       showToast(err instanceof Error ? err.message : 'Failed to save settings', 'error');
@@ -466,13 +471,21 @@ export default function AdminSettingsTab() {
       field.width === 'short' ? 'admin-settings-field-short' :
       field.width === 'full' ? 'admin-settings-field-full' :
       '';
+    const fieldDirty = settings[field.key] !== original[field.key];
+    const isDefault = !fieldDirty && field.type !== 'boolean' && field.type !== 'days' && settings[field.key] === DEFAULT_SETTINGS[field.key];
 
     return (
-      <div key={field.key} className={`admin-settings-field ${widthClass}`}>
-        <label className="admin-settings-label">{field.label}</label>
+      <div key={field.key} className={`admin-settings-field ${widthClass}${fieldDirty ? ' admin-settings-field-dirty' : ''}`}>
+        <label className="admin-settings-label">
+          {field.label}
+          {fieldDirty && <span className="admin-settings-dirty-dot" aria-label="Modified" />}
+        </label>
         {renderInput(field)}
         {field.hint && field.type !== 'days' && (
           <span className="admin-settings-hint">{field.hint}</span>
+        )}
+        {isDefault && (
+          <span className="admin-settings-default-hint">Using default</span>
         )}
         {errors[field.key] && (
           <span className="admin-settings-error">{errors[field.key]}</span>
@@ -488,12 +501,12 @@ export default function AdminSettingsTab() {
     return (
       <div className="admin-settings-sections-grid">
         {[
-          { label: 'Section A', fields: sectionAFields },
-          { label: 'Section B', fields: sectionBFields },
+          { label: 'Section A', variant: 'A' as const, fields: sectionAFields },
+          { label: 'Section B', variant: 'B' as const, fields: sectionBFields },
         ].map((section) => (
-          <div key={section.label} className="admin-settings-section-panel">
+          <div key={section.label} className={`admin-settings-section-panel admin-settings-section-panel-${section.variant}`}>
             <div className="admin-settings-section-badge">
-              <span className="admin-settings-section-dot" />
+              <span className={`admin-settings-section-dot admin-settings-section-dot-${section.variant}`} />
               {section.label}
             </div>
             <div className="admin-settings-fields-stack">
@@ -535,6 +548,10 @@ export default function AdminSettingsTab() {
         </div>
         {lastSaved && (
           <div className="admin-settings-lastsaved">
+            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" style={{ opacity: 0.6 }}>
+              <circle cx="12" cy="12" r="10" />
+              <polyline points="12 6 12 12 16 14" />
+            </svg>
             {lastUpdatedText(lastSaved)}
           </div>
         )}
@@ -560,7 +577,7 @@ export default function AdminSettingsTab() {
       {/* Danger zone toggle */}
       <button
         type="button"
-        className="admin-settings-danger-trigger"
+        className={`admin-settings-danger-trigger${dangerOpen ? ' admin-settings-danger-trigger-open' : ''}`}
         onClick={() => setDangerOpen((o) => !o)}
       >
         <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
@@ -586,7 +603,6 @@ export default function AdminSettingsTab() {
 
       {dangerOpen && (
         <div className="admin-danger-zone" style={{ animation: 'adminSlideOpen 0.25s var(--ease-out)' }}>
-          <h4>Danger Zone</h4>
           <p>Resetting will delete all saved settings and restore defaults. This cannot be undone.</p>
           <button
             className="admin-danger-btn"
@@ -598,33 +614,39 @@ export default function AdminSettingsTab() {
       )}
 
       {/* Sticky save bar */}
-      <div className={`admin-settings-savebar ${isDirty ? 'admin-settings-savebar-visible' : ''}`}>
+      <div className={`admin-settings-savebar ${isDirty || justSaved ? 'admin-settings-savebar-visible' : ''}${justSaved ? ' admin-settings-savebar-success' : ''}`}>
         <div className="admin-settings-savebar-inner">
           <div>
             <span className={`admin-settings-savebar-text ${hasErrors ? 'admin-settings-savebar-error' : ''}`}>
-              {hasErrors ? 'Fix validation errors before saving' : 'You have unsaved changes'}
+              {justSaved
+                ? 'Changes saved successfully'
+                : hasErrors
+                  ? 'Fix validation errors before saving'
+                  : 'You have unsaved changes'}
             </span>
-            {!hasErrors && (
+            {!hasErrors && !justSaved && (
               <div className="admin-settings-savebar-kbd">
                 <kbd>{typeof navigator !== 'undefined' && /Mac/.test(navigator.userAgent) ? '\u2318' : 'Ctrl+'}S</kbd> to save
               </div>
             )}
           </div>
-          <div className="admin-settings-savebar-actions">
-            <button
-              className="admin-refresh-btn"
-              onClick={() => setSettings({ ...original })}
-            >
-              Discard
-            </button>
-            <button
-              className="admin-send-btn"
-              onClick={handleSave}
-              disabled={saving || hasErrors}
-            >
-              {saving ? 'Saving\u2026' : 'Save Changes'}
-            </button>
-          </div>
+          {!justSaved && (
+            <div className="admin-settings-savebar-actions">
+              <button
+                className="admin-settings-discard-btn"
+                onClick={() => setSettings({ ...original })}
+              >
+                Discard
+              </button>
+              <button
+                className="admin-send-btn"
+                onClick={handleSave}
+                disabled={saving || hasErrors}
+              >
+                {saving ? 'Saving\u2026' : 'Save Changes'}
+              </button>
+            </div>
+          )}
         </div>
       </div>
 
