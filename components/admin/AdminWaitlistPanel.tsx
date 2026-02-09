@@ -170,8 +170,7 @@ export default function AdminWaitlistPanel({ sections, scheduleMap, onSendEmail,
                           </button>
                         )}
                         <button
-                          className="admin-send-btn"
-                          style={{ fontSize: '0.75rem', padding: '3px 10px' }}
+                          className="admin-send-btn admin-waitlist-action-btn"
                           onClick={() => handlePromote(entry.id)}
                           disabled={promotingId === entry.id || isFull}
                           title={isFull ? 'Section is full' : 'Promote to enrolled'}
@@ -180,16 +179,14 @@ export default function AdminWaitlistPanel({ sections, scheduleMap, onSendEmail,
                         </button>
                         {entry.email && (
                           <button
-                            className="admin-refresh-btn"
-                            style={{ fontSize: '0.75rem', padding: '3px 10px' }}
+                            className="admin-refresh-btn admin-waitlist-action-btn"
                             onClick={() => onSendEmail(entry.email!)}
                           >
                             Email
                           </button>
                         )}
                         <button
-                          className="admin-refund-confirm"
-                          style={{ fontSize: '0.75rem', padding: '3px 10px' }}
+                          className="admin-refund-confirm admin-waitlist-action-btn"
                           onClick={() => setRemovingEntry(entry)}
                         >
                           Remove

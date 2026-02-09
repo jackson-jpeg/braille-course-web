@@ -1,16 +1,22 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import Link from 'next/link';
 import { useSpots } from '@/lib/spots-context';
 import { SECTION_SCHEDULES } from '@/lib/schedule';
+
+type LoadingStage = null | 'processing' | 'redirecting' | 'slow';
 
 export default function EnrollmentForm() {
   const { sections, totalRemaining, refreshSections } = useSpots();
   const [selectedSection, setSelectedSection] = useState<string>('');
   const [selectedPlan, setSelectedPlan] = useState<string>('');
-  const [loading, setLoading] = useState(false);
+  const [loadingStage, setLoadingStage] = useState<LoadingStage>(null);
   const [error, setError] = useState<string | null>(null);
+  const [justFilledId, setJustFilledId] = useState<string | null>(null);
+  const slowTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+
+  const loading = loadingStage !== null;
 
   // Auto-select first available section on mount
   useEffect(() => {
@@ -30,10 +36,17 @@ export default function EnrollmentForm() {
     }
   }, [sections, selectedSection]);
 
+  // Cleanup slow timer
+  useEffect(() => {
+    return () => {
+      if (slowTimerRef.current) clearTimeout(slowTimerRef.current);
+    };
+  }, []);
+
   const handleSubmit = async () => {
     if (!selectedSection || !selectedPlan) return;
 
-    setLoading(true);
+    setLoadingStage('processing');
     setError(null);
 
     try {
@@ -47,64 +60,141 @@ export default function EnrollmentForm() {
       });
 
       if (res.status === 409) {
-        setError(
-          'This section just filled up! Please choose another section.'
-        );
-        setSelectedSection('');
+        // Mark the section that just filled
+        setJustFilledId(selectedSection);
         await refreshSections();
-        setLoading(false);
+
+        // Find the next available section
+        const updated = sections.find(
+          (s) =>
+            s.id !== selectedSection &&
+            s.status !== 'FULL' &&
+            s.maxCapacity - s.enrolledCount > 0
+        );
+
+        if (updated) {
+          const schedule = SECTION_SCHEDULES[updated.label] || updated.label;
+          const spotsLeft = updated.maxCapacity - updated.enrolledCount;
+          setSelectedSection(updated.id);
+          setError(
+            `That section just filled up. We've selected ${schedule} for you — ${spotsLeft} spot${spotsLeft !== 1 ? 's' : ''} remain.`
+          );
+        } else {
+          setSelectedSection('');
+          setError(
+            'This section just filled up and no other sections are available.'
+          );
+        }
+
+        setLoadingStage(null);
         return;
       }
 
       if (!res.ok) {
         const data = await res.json();
         setError(data.error || 'Something went wrong. Please try again.');
-        setLoading(false);
+        setLoadingStage(null);
         return;
       }
 
       const data = await res.json();
+      setLoadingStage('redirecting');
+
+      // Start slow-connection timer
+      slowTimerRef.current = setTimeout(() => {
+        setLoadingStage('slow');
+      }, 4000);
+
       window.location.href = data.url;
     } catch {
       setError('Network error. Please check your connection and try again.');
-      setLoading(false);
+      setLoadingStage(null);
     }
   };
 
   if (totalRemaining <= 0) {
     return (
       <div className="enrollment-sold-out">
-        <p>All spots have been filled for this session.</p>
+        <svg
+          className="enrollment-sold-out-icon"
+          viewBox="0 0 36 48"
+          fill="none"
+          stroke="currentColor"
+          strokeWidth="1.5"
+          aria-hidden="true"
+        >
+          {/* Braille cell outline */}
+          <rect x="2" y="2" width="32" height="44" rx="6" />
+          {/* 6 dots — all filled to represent completeness */}
+          <circle cx="13" cy="12" r="3.5" fill="currentColor" stroke="none" />
+          <circle cx="23" cy="12" r="3.5" fill="currentColor" stroke="none" />
+          <circle cx="13" cy="24" r="3.5" fill="currentColor" stroke="none" />
+          <circle cx="23" cy="24" r="3.5" fill="currentColor" stroke="none" />
+          <circle cx="13" cy="36" r="3.5" fill="currentColor" stroke="none" />
+          <circle cx="23" cy="36" r="3.5" fill="currentColor" stroke="none" />
+        </svg>
+        <div className="enrollment-sold-out-title">
+          This session is fully enrolled
+        </div>
         <p>
-          Reach out to{' '}
-          <a href="mailto:Delaney@TeachBraille.org">
-            Delaney@TeachBraille.org
-          </a>{' '}
-          to join the waitlist.
+          Join the waitlist and we&rsquo;ll notify you if a spot opens.
         </p>
+        <a
+          href="mailto:Delaney@TeachBraille.org?subject=Waitlist%20Request%20%E2%80%94%20Summer%20Braille%20Course"
+          className="enrollment-sold-out-cta"
+        >
+          Join the Waitlist
+          <svg
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            strokeWidth="2.5"
+            aria-hidden="true"
+            style={{ width: 16, height: 16 }}
+          >
+            <line x1="5" y1="12" x2="19" y2="12" />
+            <polyline points="12 5 19 12 12 19" />
+          </svg>
+        </a>
+        <div className="enrollment-sold-out-note">
+          Questions? Reach out to Delaney directly.
+        </div>
       </div>
     );
   }
 
   const canSubmit = selectedSection && selectedPlan && !loading;
 
+  const buttonText = (() => {
+    switch (loadingStage) {
+      case 'processing':
+        return 'Processing...';
+      case 'redirecting':
+      case 'slow':
+        return 'Opening Stripe...';
+      default:
+        return 'Continue to Checkout';
+    }
+  })();
+
   return (
     <div className="enrollment-form">
       {/* Step 1: Choose Section */}
-      <div className="enrollment-step">
+      <div className={`enrollment-step${selectedSection ? ' completed' : ''}`}>
         <div className="enrollment-step-label">1. Choose Your Schedule</div>
         <div className="enrollment-options">
           {sections.map((section) => {
             const spotsLeft = section.maxCapacity - section.enrolledCount;
             const isFull = section.status === 'FULL' || spotsLeft <= 0;
             const isSelected = selectedSection === section.id;
+            const isJustFilled = justFilledId === section.id;
 
             return (
               <label
                 key={section.id}
                 className={`enrollment-option${isSelected ? ' selected' : ''}${
                   isFull ? ' disabled' : ''
-                }`}
+                }${isJustFilled ? ' just-filled' : ''}`}
               >
                 <input
                   type="radio"
@@ -112,16 +202,21 @@ export default function EnrollmentForm() {
                   value={section.id}
                   checked={isSelected}
                   disabled={isFull || loading}
-                  onChange={() => setSelectedSection(section.id)}
+                  onChange={() => {
+                    setSelectedSection(section.id);
+                    setJustFilledId(null);
+                  }}
                 />
                 <div className="enrollment-option-text">
                   <div className="enrollment-option-title">
                     {SECTION_SCHEDULES[section.label] || section.label}
                   </div>
                   <div className="enrollment-option-sub">
-                    {isFull
-                      ? 'Full'
-                      : `${spotsLeft} spot${spotsLeft !== 1 ? 's' : ''} left`}
+                    {isJustFilled
+                      ? 'Just filled'
+                      : isFull
+                        ? 'Full'
+                        : `${spotsLeft} spot${spotsLeft !== 1 ? 's' : ''} left`}
                   </div>
                 </div>
               </label>
@@ -131,7 +226,7 @@ export default function EnrollmentForm() {
       </div>
 
       {/* Step 2: Choose Plan */}
-      <div className="enrollment-step">
+      <div className={`enrollment-step${selectedPlan ? ' completed' : ''}`}>
         <div className="enrollment-step-label">2. Choose Your Plan</div>
         <div className="enrollment-options">
           <label
@@ -179,22 +274,45 @@ export default function EnrollmentForm() {
 
       {/* Step 3: Submit */}
       <button
-        className="enrollment-submit"
+        className={`enrollment-submit${loadingStage === 'redirecting' || loadingStage === 'slow' ? ' enrollment-submit--redirecting' : ''}`}
         disabled={!canSubmit}
         onClick={handleSubmit}
       >
-        {loading ? 'Redirecting to Checkout...' : 'Continue to Checkout'}
-        <svg
-          viewBox="0 0 24 24"
-          fill="none"
-          stroke="currentColor"
-          strokeWidth="2.5"
-          aria-hidden="true"
-        >
-          <line x1="5" y1="12" x2="19" y2="12" />
-          <polyline points="12 5 19 12 12 19" />
-        </svg>
+        {loadingStage === 'processing' && (
+          <span className="enrollment-spinner" aria-hidden="true" />
+        )}
+        {buttonText}
+        {!loading && (
+          <svg
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            strokeWidth="2.5"
+            aria-hidden="true"
+          >
+            <line x1="5" y1="12" x2="19" y2="12" />
+            <polyline points="12 5 19 12 12 19" />
+          </svg>
+        )}
+        {(loadingStage === 'redirecting' || loadingStage === 'slow') && (
+          <svg
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            strokeWidth="2.5"
+            aria-hidden="true"
+          >
+            <line x1="5" y1="12" x2="19" y2="12" />
+            <polyline points="12 5 19 12 12 19" />
+          </svg>
+        )}
       </button>
+
+      {loadingStage === 'slow' && (
+        <div className="enrollment-slow-note">
+          Taking longer than expected. Please wait&hellip;
+        </div>
+      )}
 
       {error && <div className="enrollment-error">{error}</div>}
 

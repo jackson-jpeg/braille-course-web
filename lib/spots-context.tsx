@@ -1,6 +1,6 @@
 'use client';
 
-import { createContext, useContext, useState, useEffect, useCallback, type ReactNode } from 'react';
+import { createContext, useContext, useState, useEffect, useCallback, useRef, type ReactNode } from 'react';
 
 interface Section {
   id: string;
@@ -14,6 +14,8 @@ interface SpotsContextValue {
   sections: Section[];
   totalRemaining: number;
   totalSpots: number;
+  stale: boolean;
+  lastUpdated: Date | null;
   refreshSections: () => Promise<void>;
 }
 
@@ -27,6 +29,9 @@ export function SpotsProvider({
   children: ReactNode;
 }) {
   const [sections, setSections] = useState<Section[]>(initialSections);
+  const [stale, setStale] = useState(false);
+  const [lastUpdated, setLastUpdated] = useState<Date | null>(null);
+  const mountedRef = useRef(true);
 
   const totalSpots = sections.reduce((sum, s) => sum + s.maxCapacity, 0);
   const totalRemaining = sections.reduce(
@@ -39,20 +44,32 @@ export function SpotsProvider({
       const res = await fetch('/api/sections');
       if (res.ok) {
         const data = await res.json();
-        setSections(data);
+        if (mountedRef.current) {
+          setSections(data);
+          setStale(false);
+          setLastUpdated(new Date());
+        }
+      } else if (mountedRef.current) {
+        setStale(true);
       }
     } catch {
-      // Silently fail — keep existing data
+      if (mountedRef.current) {
+        setStale(true);
+      }
     }
   }, []);
 
   useEffect(() => {
+    mountedRef.current = true;
     const interval = setInterval(refreshSections, 30_000);
-    return () => clearInterval(interval);
+    return () => {
+      mountedRef.current = false;
+      clearInterval(interval);
+    };
   }, [refreshSections]);
 
   return (
-    <SpotsContext.Provider value={{ sections, totalRemaining, totalSpots, refreshSections }}>
+    <SpotsContext.Provider value={{ sections, totalRemaining, totalSpots, stale, lastUpdated, refreshSections }}>
       {children}
     </SpotsContext.Provider>
   );
