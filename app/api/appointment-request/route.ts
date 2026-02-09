@@ -8,7 +8,12 @@ const resend = new Resend(process.env.RESEND_API_KEY);
 export async function POST(req: NextRequest) {
   try {
     const body = await req.json();
-    const { name, email, phone, questions, preferredCallbackTime } = body;
+    const { name, email, phone, questions, preferredCallbackTime, website } = body;
+
+    // Honeypot check - reject if bot filled the hidden field
+    if (website) {
+      return NextResponse.json({ error: 'Invalid submission' }, { status: 400 });
+    }
 
     // Validate required fields
     if (!email || typeof email !== 'string' || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
@@ -32,8 +37,8 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ error: 'Preferred callback time must be less than 200 characters' }, { status: 400 });
     }
 
-    // Upsert lead record
-    await prisma.lead.upsert({
+    // Save to database first (critical operation)
+    const lead = await prisma.lead.upsert({
       where: { email: email.toLowerCase().trim() },
       update: {
         name: name.trim(),
@@ -54,8 +59,8 @@ export async function POST(req: NextRequest) {
       },
     });
 
-    // Send emails in parallel
-    await Promise.all([
+    // Send emails with graceful failure handling
+    const [adminEmailResult, confirmationEmailResult] = await Promise.allSettled([
       // Admin notification
       resend.emails.send({
         from: 'TeachBraille.org <noreply@teachbraille.org>',
@@ -78,9 +83,32 @@ export async function POST(req: NextRequest) {
       }),
     ]);
 
+    // Log any email failures but don't fail the request
+    if (adminEmailResult.status === 'rejected') {
+      console.error('Admin email failed:', {
+        leadId: lead.id,
+        email: lead.email,
+        error: adminEmailResult.reason,
+      });
+    }
+    if (confirmationEmailResult.status === 'rejected') {
+      console.error('User confirmation email failed:', {
+        leadId: lead.id,
+        email: lead.email,
+        error: confirmationEmailResult.reason,
+      });
+    }
+
     return NextResponse.json({ success: true });
   } catch (err) {
-    console.error('Appointment request failed:', (err as Error).message);
+    console.error('Appointment request failed:', {
+      message: (err as Error).message,
+      stack: (err as Error).stack,
+      name: (err as Error).name,
+      // For Prisma errors
+      code: (err as any).code,
+      meta: (err as any).meta,
+    });
     return NextResponse.json(
       { error: 'Unable to process your request. Please try again or email Delaney@TeachBraille.org directly.' },
       { status: 500 }

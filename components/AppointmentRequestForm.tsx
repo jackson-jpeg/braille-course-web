@@ -8,6 +8,7 @@ export default function AppointmentRequestForm() {
   const [phone, setPhone] = useState('');
   const [questions, setQuestions] = useState('');
   const [preferredCallbackTime, setPreferredCallbackTime] = useState('');
+  const [honeypot, setHoneypot] = useState('');
   const [loading, setLoading] = useState(false);
   const [success, setSuccess] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -16,6 +17,13 @@ export default function AppointmentRequestForm() {
     e.preventDefault();
     setError(null);
     setLoading(true);
+
+    // Honeypot check - reject if bot filled the hidden field
+    if (honeypot) {
+      setError('Invalid submission');
+      setLoading(false);
+      return;
+    }
 
     try {
       const res = await fetch('/api/appointment-request', {
@@ -27,6 +35,7 @@ export default function AppointmentRequestForm() {
           phone: phone.trim(),
           questions: questions.trim() || undefined,
           preferredCallbackTime: preferredCallbackTime.trim() || undefined,
+          website: honeypot,
         }),
       });
 
@@ -94,6 +103,7 @@ export default function AppointmentRequestForm() {
             minLength={2}
             maxLength={100}
             disabled={loading}
+            autoFocus
           />
         </div>
 
@@ -110,6 +120,7 @@ export default function AppointmentRequestForm() {
             placeholder="your@email.com"
             required
             disabled={loading}
+            inputMode="email"
           />
         </div>
 
@@ -127,6 +138,7 @@ export default function AppointmentRequestForm() {
             required
             minLength={10}
             disabled={loading}
+            inputMode="tel"
           />
         </div>
 
@@ -164,9 +176,21 @@ export default function AppointmentRequestForm() {
             disabled={loading}
           />
           <p className="appointment-form-hint">
-            Optional — helps us prepare for our conversation
+            Optional — helps us prepare for our conversation {questions.length > 0 && `(${questions.length}/1000)`}
           </p>
         </div>
+
+        {/* Honeypot field for spam protection - hidden from real users */}
+        <input
+          type="text"
+          name="website"
+          value={honeypot}
+          onChange={(e) => setHoneypot(e.target.value)}
+          style={{ display: 'none' }}
+          tabIndex={-1}
+          autoComplete="off"
+          aria-hidden="true"
+        />
       </div>
 
       <button
