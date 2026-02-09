@@ -154,41 +154,41 @@ export default async function SummerPage() {
           </div>
 
           <div className="faq-grid">
-            <div className="faq-item reveal">
-              <div className="faq-question">
+            <details className="faq-item reveal" open>
+              <summary className="faq-question">
                 <span className="faq-q-mark" aria-hidden="true">
                   Q
                 </span>
                 Do I need this course to learn Braille?
-              </div>
+              </summary>
               <p className="faq-answer">
                 Absolutely not! There are several free, self-paced Braille programs
                 available. This course offers the benefit of live instruction,
                 personalized feedback, and structured pacing to keep you on track.
               </p>
-            </div>
+            </details>
 
-            <div className="faq-item reveal">
-              <div className="faq-question">
+            <details className="faq-item reveal">
+              <summary className="faq-question">
                 <span className="faq-q-mark" aria-hidden="true">
                   Q
                 </span>
                 How long is this course?
-              </div>
+              </summary>
               <p className="faq-answer">
                 The course runs for <strong>8 weeks</strong>, beginning the week of{' '}
                 <strong>June 8th</strong> and ending the week of{' '}
                 <strong>July 27th</strong>.
               </p>
-            </div>
+            </details>
 
-            <div className="faq-item reveal">
-              <div className="faq-question">
+            <details className="faq-item reveal">
+              <summary className="faq-question">
                 <span className="faq-q-mark" aria-hidden="true">
                   Q
                 </span>
                 How often will we meet?
-              </div>
+              </summary>
               <p className="faq-answer">
                 You&apos;ll meet{' '}
                 <strong>twice per week for one hour each session</strong>. Over the
@@ -199,44 +199,44 @@ export default async function SummerPage() {
                 <li>Monday &amp; Wednesday, 1–2 PM ET</li>
                 <li>Tuesday &amp; Thursday, 4–5 PM ET</li>
               </ul>
-            </div>
+            </details>
 
-            <div className="faq-item reveal">
-              <div className="faq-question">
+            <details className="faq-item reveal">
+              <summary className="faq-question">
                 <span className="faq-q-mark" aria-hidden="true">
                   Q
                 </span>
                 How many spots are available?
-              </div>
+              </summary>
               <p className="faq-answer">
                 To ensure personalized attention for every learner, enrollment is
                 limited to <strong>10 total spots</strong> — 5 per class.
                 Participants will be chosen on a first-come, first-served basis.
               </p>
-            </div>
+            </details>
 
-            <div className="faq-item reveal">
-              <div className="faq-question">
+            <details className="faq-item reveal">
+              <summary className="faq-question">
                 <span className="faq-q-mark" aria-hidden="true">
                   Q
                 </span>
                 What will I learn?
-              </div>
+              </summary>
               <p className="faq-answer">
                 This course is an introduction to the{' '}
                 <strong>Unified English Braille Code (UEB)</strong>. You&apos;ll
                 learn the full alphabet, numbers 0–9, and some commonly used
                 contractions.
               </p>
-            </div>
+            </details>
 
-            <div className="faq-item reveal">
-              <div className="faq-question">
+            <details className="faq-item reveal">
+              <summary className="faq-question">
                 <span className="faq-q-mark" aria-hidden="true">
                   Q
                 </span>
                 What does this course cost?
-              </div>
+              </summary>
               <p className="faq-answer">
                 The total cost for 8 weeks of instruction (16 sessions) is{' '}
                 <strong>$500 per learner</strong>. You can pay in full upfront, or
@@ -244,7 +244,7 @@ export default async function SummerPage() {
                 remaining <strong>$350</strong> will be charged automatically on{' '}
                 <strong>May 1st</strong>.
               </p>
-            </div>
+            </details>
           </div>
         </div>
       </section>

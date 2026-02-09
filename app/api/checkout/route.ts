@@ -113,7 +113,13 @@ export async function POST(req: NextRequest) {
       };
     }
 
-    const session = await stripe.checkout.sessions.create(sessionParams);
+    // Idempotency: 10-second bucket prevents duplicate sessions from double-clicks
+    const timeBucket = Math.floor(Date.now() / 10000);
+    const idempotencyKey = `checkout_${sectionId}_${plan}_${timeBucket}`;
+
+    const session = await stripe.checkout.sessions.create(sessionParams, {
+      idempotencyKey,
+    });
 
     return NextResponse.json({ url: session.url });
   } catch (err) {

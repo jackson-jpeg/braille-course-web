@@ -4,6 +4,7 @@ import BrailleDotExplorer from '@/components/BrailleDotExplorer';
 import BrailleHangman from '@/components/BrailleHangman';
 import BrailleSpeedMatch from '@/components/BrailleSpeedMatch';
 import BrailleMemoryMatch from '@/components/BrailleMemoryMatch';
+import GamesNav from '@/components/GamesNav';
 import Footer from '@/components/Footer';
 
 export const metadata: Metadata = {
@@ -34,13 +35,7 @@ export default function GamesPage() {
       </section>
 
       {/* ========== IN-PAGE NAV ========== */}
-      <nav className="games-nav" aria-label="Game navigation">
-        <a href="#wordgame" className="games-nav-link">Word Game</a>
-        <a href="#explorer" className="games-nav-link">Dot Explorer</a>
-        <a href="#hangman" className="games-nav-link">Hangman</a>
-        <a href="#speedmatch" className="games-nav-link">Speed Match</a>
-        <a href="#memorymatch" className="games-nav-link">Memory Match</a>
-      </nav>
+      <GamesNav />
 
       {/* ========== WORD GAME ========== */}
       <div id="wordgame">

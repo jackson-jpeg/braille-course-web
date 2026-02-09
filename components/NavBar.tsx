@@ -22,6 +22,28 @@ export default function NavBar() {
     setMenuOpen(false);
   }, [pathname]);
 
+  // Close on Escape key
+  useEffect(() => {
+    if (!menuOpen) return;
+    function handleKey(e: KeyboardEvent) {
+      if (e.key === 'Escape') setMenuOpen(false);
+    }
+    document.addEventListener('keydown', handleKey);
+    return () => document.removeEventListener('keydown', handleKey);
+  }, [menuOpen]);
+
+  // Lock body scroll when menu is open
+  useEffect(() => {
+    if (menuOpen) {
+      document.body.style.overflow = 'hidden';
+    } else {
+      document.body.style.overflow = '';
+    }
+    return () => {
+      document.body.style.overflow = '';
+    };
+  }, [menuOpen]);
+
   return (
     <nav className="site-nav" role="navigation" aria-label="Main navigation">
       <div className="site-nav-inner">
@@ -40,7 +62,10 @@ export default function NavBar() {
           <span />
         </button>
 
-        <div className={`site-nav-links${menuOpen ? ' open' : ''}`}>
+        <div
+          className={`site-nav-links${menuOpen ? ' open' : ''}`}
+          aria-hidden={!menuOpen ? undefined : undefined}
+        >
           {NAV_LINKS.map(({ href, label }) => {
             const isActive =
               href === '/'

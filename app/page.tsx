@@ -95,8 +95,8 @@ export default function HubPage() {
             <h2 id="hub-cards-heading">How Can Delaney Help?</h2>
           </div>
 
-          <div className="hub-cards-grid reveal">
-            <Link href="/intro" className="hub-card">
+          <div className="hub-cards-grid reveal-stagger">
+            <Link href="/intro" className="hub-card reveal">
               <div className="hub-card-icon" aria-hidden="true">
                 <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
                   <circle cx="12" cy="12" r="10" />
@@ -115,7 +115,7 @@ export default function HubPage() {
               </span>
             </Link>
 
-            <Link href="/summer" className="hub-card">
+            <Link href="/summer" className="hub-card reveal">
               <div className="hub-card-icon" aria-hidden="true">
                 <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
                   <rect x="3" y="4" width="18" height="18" rx="2" />
@@ -135,7 +135,7 @@ export default function HubPage() {
               </span>
             </Link>
 
-            <Link href="/appointments" className="hub-card">
+            <Link href="/appointments" className="hub-card reveal">
               <div className="hub-card-icon" aria-hidden="true">
                 <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
                   <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2" />
@@ -155,7 +155,7 @@ export default function HubPage() {
               </span>
             </Link>
 
-            <Link href="/games" className="hub-card">
+            <Link href="/games" className="hub-card reveal">
               <div className="hub-card-icon" aria-hidden="true">
                 <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
                   <circle cx="12" cy="12" r="10" />

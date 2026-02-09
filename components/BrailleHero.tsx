@@ -16,6 +16,13 @@ export default function BrailleHero({ word = '^DELANEY ^COSTELLO' }: { word?: st
 
   const [activeGroup, setActiveGroup] = useState<string | null>(null);
   const [hintVisible, setHintVisible] = useState(false);
+  const [isTouchDevice, setIsTouchDevice] = useState(false);
+
+  useEffect(() => {
+    setIsTouchDevice(
+      'ontouchstart' in window || navigator.maxTouchPoints > 0
+    );
+  }, []);
 
   useEffect(() => {
     const timer = setTimeout(() => setHintVisible(true), 2200);
@@ -87,7 +94,7 @@ export default function BrailleHero({ word = '^DELANEY ^COSTELLO' }: { word?: st
         })}
       </div>
       <div className={`braille-hint${hintVisible ? ' visible' : ''}`}>
-        hover or tap each letter
+        {isTouchDevice ? 'tap each letter' : 'hover over each letter'}
       </div>
     </div>
   );

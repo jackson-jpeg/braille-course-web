@@ -1,8 +1,31 @@
 import type { Metadata } from 'next';
+import { Outfit, DM_Serif_Display, Caveat } from 'next/font/google';
 import { Analytics } from '@vercel/analytics/next';
 import NavBar from '@/components/NavBar';
 import ScrollRevealInit from '@/components/ScrollRevealInit';
 import './globals.css';
+
+const outfit = Outfit({
+  subsets: ['latin'],
+  weight: ['300', '400', '500', '600', '700'],
+  variable: '--font-body',
+  display: 'swap',
+});
+
+const dmSerif = DM_Serif_Display({
+  subsets: ['latin'],
+  weight: '400',
+  style: ['normal', 'italic'],
+  variable: '--font-heading',
+  display: 'swap',
+});
+
+const caveat = Caveat({
+  subsets: ['latin'],
+  weight: ['500', '600'],
+  variable: '--font-accent',
+  display: 'swap',
+});
 
 export const metadata: Metadata = {
   title: 'TeachBraille.org — Delaney Costello, TVI',
@@ -27,13 +50,7 @@ export default function RootLayout({
   children: React.ReactNode;
 }) {
   return (
-    <html lang="en">
-      <head>
-        <link
-          href="https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=Outfit:wght@300;400;500;600;700&family=Caveat:wght@500;600&display=swap"
-          rel="stylesheet"
-        />
-      </head>
+    <html lang="en" className={`${outfit.variable} ${dmSerif.variable} ${caveat.variable}`}>
       <body>
         <a className="skip-link" href="#main-content">
           Skip to content

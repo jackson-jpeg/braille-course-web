@@ -3,7 +3,7 @@
 import { useState, useEffect } from 'react';
 import CopyButton from './CopyButton';
 import { SkeletonText } from './AdminSkeleton';
-import type { Enrollment, StudentDetail, Note, StudentAttendanceStats } from './admin-types';
+import type { Enrollment, StudentDetail, Note, StudentAttendanceStats, Assignment, Grade } from './admin-types';
 import { relativeTime, formatDate, fullDate } from './admin-utils';
 
 interface Props {
@@ -23,6 +23,8 @@ export default function AdminStudentModal({ enrollment, scheduleMap, onClose, on
   const [editingNoteId, setEditingNoteId] = useState<string | null>(null);
   const [editingNoteContent, setEditingNoteContent] = useState('');
   const [attendanceStats, setAttendanceStats] = useState<StudentAttendanceStats | null>(null);
+  const [studentAssignments, setStudentAssignments] = useState<Assignment[]>([]);
+  const [studentGrades, setStudentGrades] = useState<Grade[]>([]);
 
   useEffect(() => {
     function handleKey(e: KeyboardEvent) { if (e.key === 'Escape') onClose(); }
@@ -61,7 +63,7 @@ export default function AdminStudentModal({ enrollment, scheduleMap, onClose, on
         const res = await fetch(`/api/admin/notes?email=${encodeURIComponent(enrollment.email!)}`);
         const json = await res.json();
         if (res.ok) setNotes(json.notes);
-      } catch { /* silent */ }
+      } catch (err) { console.error('Failed to fetch notes:', err); }
     }
     fetchNotes();
   }, [enrollment.email]);
@@ -73,9 +75,23 @@ export default function AdminStudentModal({ enrollment, scheduleMap, onClose, on
         const res = await fetch(`/api/admin/attendance/student/${enrollment.id}`);
         const json = await res.json();
         if (res.ok) setAttendanceStats(json.stats);
-      } catch { /* silent */ }
+      } catch (err) { console.error('Failed to fetch attendance:', err); }
     }
     fetchAttendance();
+  }, [enrollment.id]);
+
+  // Fetch grades for this student
+  useEffect(() => {
+    async function fetchGrades() {
+      try {
+        const res = await fetch(`/api/admin/grades?enrollmentId=${enrollment.id}`);
+        if (!res.ok) return;
+        const data = await res.json();
+        setStudentAssignments(data.assignments || []);
+        setStudentGrades(data.grades || []);
+      } catch (err) { console.error('Failed to fetch grades:', err); }
+    }
+    fetchGrades();
   }, [enrollment.id]);
 
   async function addNote() {
@@ -92,7 +108,7 @@ export default function AdminStudentModal({ enrollment, scheduleMap, onClose, on
         setNotes((prev) => [json.note, ...prev]);
         setNewNote('');
       }
-    } catch { /* silent */ }
+    } catch (err) { console.error('Failed to add note:', err); }
     setNoteLoading(false);
   }
 
@@ -100,7 +116,7 @@ export default function AdminStudentModal({ enrollment, scheduleMap, onClose, on
     try {
       const res = await fetch(`/api/admin/notes/${id}`, { method: 'DELETE' });
       if (res.ok) setNotes((prev) => prev.filter((n) => n.id !== id));
-    } catch { /* silent */ }
+    } catch (err) { console.error('Failed to delete note:', err); }
   }
 
   async function saveNoteEdit(id: string) {
@@ -116,7 +132,7 @@ export default function AdminStudentModal({ enrollment, scheduleMap, onClose, on
         setNotes((prev) => prev.map((n) => n.id === id ? { ...n, content: json.note.content } : n));
         setEditingNoteId(null);
       }
-    } catch { /* silent */ }
+    } catch (err) { console.error('Failed to save note edit:', err); }
   }
 
   return (
@@ -315,6 +331,44 @@ export default function AdminStudentModal({ enrollment, scheduleMap, onClose, on
                         </div>
                       ))}
                     </div>
+                  </div>
+                )}
+
+                {/* Grades */}
+                {studentAssignments.length > 0 && (
+                  <div className="admin-student-info-section">
+                    <h4>Grades</h4>
+                    {(() => {
+                      let totalPct = 0;
+                      let gradedCount = 0;
+                      return (
+                        <>
+                          <div className="admin-student-attendance-list">
+                            {studentAssignments.map((a) => {
+                              const grade = studentGrades.find((g) => g.assignmentId === a.id);
+                              const score = grade?.score ?? null;
+                              if (score !== null) {
+                                totalPct += (score / a.maxScore) * 100;
+                                gradedCount++;
+                              }
+                              return (
+                                <div key={a.id} className="admin-student-attendance-row">
+                                  <span style={{ fontSize: '0.82rem', flex: 1 }}>{a.title}</span>
+                                  <span style={{ fontSize: '0.82rem', fontWeight: 600 }}>
+                                    {score !== null ? `${score}/${a.maxScore}` : '—'}
+                                  </span>
+                                </div>
+                              );
+                            })}
+                          </div>
+                          {gradedCount > 0 && (
+                            <p style={{ fontSize: '0.88rem', color: '#4a5568', marginTop: 8 }}>
+                              <strong>Average: {Math.round(totalPct / gradedCount)}%</strong>
+                            </p>
+                          )}
+                        </>
+                      );
+                    })()}
                   </div>
                 )}
 

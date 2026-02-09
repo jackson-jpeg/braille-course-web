@@ -10,9 +10,10 @@ import AdminPaymentsTab from './AdminPaymentsTab';
 import AdminEmailsTab from './AdminEmailsTab';
 import AdminCreateTab from './AdminCreateTab';
 import AdminMaterialsTab from './AdminMaterialsTab';
+import AdminSettingsTab from './AdminSettingsTab';
 import type { AdminProps } from './admin-types';
 
-type Tab = 'overview' | 'students' | 'payments' | 'emails' | 'create' | 'materials';
+type Tab = 'overview' | 'students' | 'payments' | 'emails' | 'create' | 'materials' | 'settings';
 
 function getGreeting(): string {
   const h = new Date().getHours();
@@ -76,6 +77,15 @@ const TAB_META: Record<Tab, { label: string; icon: JSX.Element }> = {
         <path d="M14 8.87l-3.5 2.13L8 9.5 5.5 11 2 8.87" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
         <path d="M14 5.87l-3.5 2.13L8 6.5 5.5 8 2 5.87" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
         <path d="M14 2.87l-3.5 2.13L8 3.5 5.5 5 2 2.87" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
+      </svg>
+    ),
+  },
+  settings: {
+    label: 'Settings',
+    icon: (
+      <svg width="15" height="15" viewBox="0 0 16 16" fill="none">
+        <circle cx="8" cy="8" r="2.5" stroke="currentColor" strokeWidth="1.5"/>
+        <path d="M8 1v2M8 13v2M1 8h2M13 8h2M2.93 2.93l1.41 1.41M11.66 11.66l1.41 1.41M13.07 2.93l-1.41 1.41M4.34 11.66l-1.41 1.41" stroke="currentColor" strokeWidth="1.3" strokeLinecap="round"/>
       </svg>
     ),
   },
@@ -163,6 +173,7 @@ export default function AdminDashboard({ sections, enrollments, leads, scheduleM
       { id: 'tab-emails', label: 'Go to Emails', action: () => { setTab('emails'); setShowPalette(false); } },
       { id: 'tab-create', label: 'Go to Create', action: () => { setTab('create'); setShowPalette(false); } },
       { id: 'tab-materials', label: 'Go to Materials', action: () => { setTab('materials'); setShowPalette(false); } },
+      { id: 'tab-settings', label: 'Go to Settings', action: () => { setTab('settings'); setShowPalette(false); } },
     ];
 
     if (!q) {
@@ -302,7 +313,7 @@ export default function AdminDashboard({ sections, enrollments, leads, scheduleM
 
         {/* Tabs */}
         <div className="admin-tabs">
-          {(['overview', 'students', 'payments', 'emails', 'create', 'materials'] as Tab[]).map((t) => (
+          {(['overview', 'students', 'payments', 'emails', 'create', 'materials', 'settings'] as Tab[]).map((t) => (
             <button
               key={t}
               className={`admin-tab ${tab === t ? 'admin-tab-active' : ''}`}
@@ -374,6 +385,10 @@ export default function AdminDashboard({ sections, enrollments, leads, scheduleM
 
           {tab === 'materials' && (
             <AdminMaterialsTab onEmailMaterial={handleEmailMaterial} />
+          )}
+
+          {tab === 'settings' && (
+            <AdminSettingsTab />
           )}
         </div>
       </div>

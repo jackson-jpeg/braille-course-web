@@ -257,8 +257,8 @@ export default function AdminEmailsTab({ enrollments, initialComposeTo, initialT
       const data = await res.json();
       if (!res.ok) throw new Error(data.error || 'Failed to fetch');
       setSelectedEmail(data.email);
-    } catch {
-      /* modal won't open */
+    } catch (err) {
+      console.error('Failed to fetch email detail:', err);
     } finally {
       setEmailDetailLoading(false);
     }
@@ -272,8 +272,8 @@ export default function AdminEmailsTab({ enrollments, initialComposeTo, initialT
       const data = await res.json();
       if (!res.ok) throw new Error(data.error || 'Failed to fetch');
       setSelectedEmail(data.email);
-    } catch {
-      /* modal won't open */
+    } catch (err) {
+      console.error('Failed to fetch received email detail:', err);
     } finally {
       setEmailDetailLoading(false);
     }

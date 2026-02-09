@@ -2,11 +2,47 @@ import Link from 'next/link';
 import { stripe } from '@/lib/stripe';
 import { prisma } from '@/lib/prisma';
 import { getSchedule } from '@/lib/schedule';
+import SuccessPoller from '@/components/SuccessPoller';
 
 export const metadata = {
   title: 'Registration Confirmed — Summer Braille Course',
   robots: { index: false, follow: false },
 };
+
+function ErrorCard({ title, message }: { title: string; message: string }) {
+  return (
+    <div className="success-page">
+      <div className="success-card" role="main">
+        <div className="check-icon check-icon-error" aria-hidden="true">
+          <svg
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            strokeWidth="2.5"
+          >
+            <line x1="18" y1="6" x2="6" y2="18" />
+            <line x1="6" y1="6" x2="18" y2="18" />
+          </svg>
+        </div>
+        <h1>{title}</h1>
+        <p className="success-amount">{message}</p>
+        <Link href="/summer" className="home-button">
+          <svg
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            strokeWidth="2"
+            aria-hidden="true"
+          >
+            <line x1="19" y1="12" x2="5" y2="12" />
+            <polyline points="12 19 5 12 12 5" />
+          </svg>
+          Back to Course
+        </Link>
+      </div>
+    </div>
+  );
+}
 
 export default async function SuccessPage({
   searchParams,
@@ -15,122 +51,33 @@ export default async function SuccessPage({
 }) {
   const { session_id } = await searchParams;
 
-  // No session_id — show "no payment found"
   if (!session_id) {
     return (
-      <div className="success-page">
-        <div className="success-card" role="main">
-          <div className="check-icon check-icon-error" aria-hidden="true">
-            <svg
-              viewBox="0 0 24 24"
-              fill="none"
-              stroke="currentColor"
-              strokeWidth="2.5"
-            >
-              <line x1="18" y1="6" x2="6" y2="18" />
-              <line x1="6" y1="6" x2="18" y2="18" />
-            </svg>
-          </div>
-          <h1>No Payment Found</h1>
-          <p className="success-amount">
-            We couldn&apos;t find a payment associated with this page.
-          </p>
-          <Link href="/summer" className="home-button">
-            <svg
-              viewBox="0 0 24 24"
-              fill="none"
-              stroke="currentColor"
-              strokeWidth="2"
-              aria-hidden="true"
-            >
-              <line x1="19" y1="12" x2="5" y2="12" />
-              <polyline points="12 19 5 12 12 5" />
-            </svg>
-            Back to Course
-          </Link>
-        </div>
-      </div>
+      <ErrorCard
+        title="No Payment Found"
+        message="We couldn&rsquo;t find a payment associated with this page."
+      />
     );
   }
 
-  // Verify payment with Stripe
   let session;
   try {
     session = await stripe.checkout.sessions.retrieve(session_id);
   } catch {
     return (
-      <div className="success-page">
-        <div className="success-card" role="main">
-          <div className="check-icon check-icon-error" aria-hidden="true">
-            <svg
-              viewBox="0 0 24 24"
-              fill="none"
-              stroke="currentColor"
-              strokeWidth="2.5"
-            >
-              <line x1="18" y1="6" x2="6" y2="18" />
-              <line x1="6" y1="6" x2="18" y2="18" />
-            </svg>
-          </div>
-          <h1>No Payment Found</h1>
-          <p className="success-amount">
-            We couldn&apos;t verify your payment. Please contact us if you
-            believe this is an error.
-          </p>
-          <Link href="/summer" className="home-button">
-            <svg
-              viewBox="0 0 24 24"
-              fill="none"
-              stroke="currentColor"
-              strokeWidth="2"
-              aria-hidden="true"
-            >
-              <line x1="19" y1="12" x2="5" y2="12" />
-              <polyline points="12 19 5 12 12 5" />
-            </svg>
-            Back to Course
-          </Link>
-        </div>
-      </div>
+      <ErrorCard
+        title="No Payment Found"
+        message="We couldn&rsquo;t verify your payment. Please contact us if you believe this is an error."
+      />
     );
   }
 
-  // Payment not completed
   if (session.payment_status !== 'paid') {
     return (
-      <div className="success-page">
-        <div className="success-card" role="main">
-          <div className="check-icon check-icon-error" aria-hidden="true">
-            <svg
-              viewBox="0 0 24 24"
-              fill="none"
-              stroke="currentColor"
-              strokeWidth="2.5"
-            >
-              <line x1="18" y1="6" x2="6" y2="18" />
-              <line x1="6" y1="6" x2="18" y2="18" />
-            </svg>
-          </div>
-          <h1>Payment Not Completed</h1>
-          <p className="success-amount">
-            Your payment hasn&apos;t been processed yet. Please try again or
-            contact us for help.
-          </p>
-          <Link href="/summer" className="home-button">
-            <svg
-              viewBox="0 0 24 24"
-              fill="none"
-              stroke="currentColor"
-              strokeWidth="2"
-              aria-hidden="true"
-            >
-              <line x1="19" y1="12" x2="5" y2="12" />
-              <polyline points="12 19 5 12 12 5" />
-            </svg>
-            Back to Course
-          </Link>
-        </div>
-      </div>
+      <ErrorCard
+        title="Payment Not Completed"
+        message="Your payment hasn&rsquo;t been processed yet. Please try again or contact us for help."
+      />
     );
   }
 
@@ -160,7 +107,7 @@ export default async function SuccessPage({
             stroke="currentColor"
             strokeWidth="2.5"
           >
-            <polyline points="20 6 9 17 4 12" />
+            <polyline points="20 6 9 17 4 12" pathLength="1" className="check-draw" />
           </svg>
         </div>
 
@@ -217,40 +164,7 @@ export default async function SuccessPage({
               Course runs <strong>June 8 – July 27, 2026</strong>
             </span>
           </div>
-          {schedule ? (
-            <div className="detail-row">
-              <svg
-                viewBox="0 0 24 24"
-                fill="none"
-                stroke="currentColor"
-                strokeWidth="2"
-                aria-hidden="true"
-              >
-                <circle cx="12" cy="12" r="10" />
-                <polyline points="12,6 12,12 16,14" />
-              </svg>
-              <span>
-                <strong>Your schedule:</strong> {schedule}
-              </span>
-            </div>
-          ) : (
-            <div className="detail-row">
-              <svg
-                viewBox="0 0 24 24"
-                fill="none"
-                stroke="currentColor"
-                strokeWidth="2"
-                aria-hidden="true"
-              >
-                <circle cx="12" cy="12" r="10" />
-                <polyline points="12,6 12,12 16,14" />
-              </svg>
-              <span>
-                <strong>16 sessions</strong> — your schedule details are
-                processing
-              </span>
-            </div>
-          )}
+          <SuccessPoller sessionId={session_id} initialSchedule={schedule} />
           <div className="detail-row">
             <svg
               viewBox="0 0 24 24"

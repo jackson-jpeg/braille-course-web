@@ -3,6 +3,37 @@ import Link from 'next/link';
 export default function Footer() {
   return (
     <footer className="footer">
+      <div className="footer-grid">
+        <div className="footer-col">
+          <div className="footer-heading">TeachBraille.org</div>
+          <p className="footer-description">
+            Specialized TVI services and braille instruction by Delaney Costello.
+          </p>
+          <a href="mailto:Delaney@TeachBraille.org" className="footer-email">
+            Delaney@TeachBraille.org
+          </a>
+        </div>
+        <div className="footer-col footer-col-nav">
+          <div className="footer-link-group">
+            <div className="footer-heading">Pages</div>
+            <nav aria-label="Footer pages">
+              <Link href="/">Home</Link>
+              <Link href="/intro">Braille Intro</Link>
+              <Link href="/summer">Summer Course</Link>
+              <Link href="/games">Interactive</Link>
+            </nav>
+          </div>
+          <div className="footer-link-group">
+            <div className="footer-heading">Info</div>
+            <nav aria-label="Footer info">
+              <Link href="/services">TVI Services</Link>
+              <Link href="/appointments">Appointments</Link>
+              <Link href="/policies">Policies</Link>
+            </nav>
+          </div>
+        </div>
+      </div>
+
       <a className="back-to-top" href="#top" aria-label="Back to top">
         <svg
           viewBox="0 0 24 24"
@@ -16,11 +47,6 @@ export default function Footer() {
         </svg>
         Back to top
       </a>
-      <nav className="footer-links" aria-label="Legal">
-        <Link href="/policies#refunds">Refund Policy</Link>
-        <Link href="/policies#privacy">Privacy</Link>
-        <Link href="/policies#terms">Terms</Link>
-      </nav>
       <p>
         &copy; 2026 Delaney Costello, Teacher of the Visually Impaired &middot;
         TVI Services &amp; Braille Instruction

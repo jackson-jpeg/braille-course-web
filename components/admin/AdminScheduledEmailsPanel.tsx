@@ -29,7 +29,7 @@ export default function AdminScheduledEmailsPanel({ onRefreshSent }: Props) {
       const res = await fetch('/api/admin/emails/schedule');
       const data = await res.json();
       if (res.ok) setEmails(data.emails);
-    } catch { /* silent */ }
+    } catch (err) { console.error('Failed to fetch scheduled emails:', err); }
     setLoading(false);
   }, []);
 

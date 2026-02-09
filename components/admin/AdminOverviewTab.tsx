@@ -2,6 +2,8 @@
 
 import { useState, useEffect, useCallback, useMemo } from 'react';
 import AdminStudentModal from './AdminStudentModal';
+import AdminTodoWidget from './AdminTodoWidget';
+import AdminCalendarView from './AdminCalendarView';
 import type { Section, Enrollment, Lead, PaymentSummary } from './admin-types';
 import { relativeTime } from './admin-utils';
 
@@ -17,6 +19,7 @@ interface Props {
 export default function AdminOverviewTab({ sections, enrollments, leads, scheduleMap, onNavigate, onSendEmail }: Props) {
   const [paymentSummary, setPaymentSummary] = useState<PaymentSummary | null>(null);
   const [selectedStudent, setSelectedStudent] = useState<Enrollment | null>(null);
+  const [viewMode, setViewMode] = useState<'dashboard' | 'calendar'>('dashboard');
 
   // Fallback estimates while real data loads
   const fullCount = enrollments.filter((e) => e.plan === 'FULL' && e.paymentStatus === 'COMPLETED').length;
@@ -64,6 +67,26 @@ export default function AdminOverviewTab({ sections, enrollments, leads, schedul
 
   return (
     <>
+      {/* ── View toggle ── */}
+      <div className="admin-overview-toggle">
+        <button
+          className={`admin-overview-toggle-btn ${viewMode === 'dashboard' ? 'admin-overview-toggle-active' : ''}`}
+          onClick={() => setViewMode('dashboard')}
+        >
+          Dashboard
+        </button>
+        <button
+          className={`admin-overview-toggle-btn ${viewMode === 'calendar' ? 'admin-overview-toggle-active' : ''}`}
+          onClick={() => setViewMode('calendar')}
+        >
+          Calendar
+        </button>
+      </div>
+
+      {viewMode === 'calendar' ? (
+        <AdminCalendarView onNavigate={onNavigate} />
+      ) : (
+      <>
       {/* ── Top metrics: 3 numbers, clean ── */}
       <div className="admin-overview-metrics">
         <div className="admin-overview-card" style={{ cursor: 'pointer' }} onClick={() => onNavigate('students')}>
@@ -131,6 +154,9 @@ export default function AdminOverviewTab({ sections, enrollments, leads, schedul
           </div>
         </div>
       )}
+
+      {/* ── Todo checklist ── */}
+      <AdminTodoWidget />
 
       {/* ── Section roster cards ── */}
       <div className="admin-roster-grid">
@@ -202,6 +228,9 @@ export default function AdminOverviewTab({ sections, enrollments, leads, schedul
           );
         })}
       </div>
+
+      </>
+      )}
 
       {/* Student detail modal */}
       {selectedStudent && (

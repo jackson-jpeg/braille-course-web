@@ -1,6 +1,6 @@
 import { cookies } from 'next/headers';
 import { prisma } from '@/lib/prisma';
-import { SECTION_SCHEDULES } from '@/lib/schedule';
+import { loadScheduleMap } from '@/lib/schedule';
 import { verifySessionToken } from '@/lib/admin-auth';
 import AdminLogin from '@/components/AdminLogin';
 import AdminDashboard from '@/components/admin/AdminDashboard';
@@ -19,13 +19,14 @@ export default async function AdminPage() {
     return <AdminLogin />;
   }
 
-  const [sections, enrollments, leads] = await Promise.all([
+  const [sections, enrollments, leads, scheduleMap] = await Promise.all([
     prisma.section.findMany({ orderBy: { label: 'asc' } }),
     prisma.enrollment.findMany({
       include: { section: true },
       orderBy: { createdAt: 'desc' },
     }),
     prisma.lead.findMany({ orderBy: { createdAt: 'desc' } }),
+    loadScheduleMap(),
   ]);
 
   // Serialize for the client component (dates → strings)
@@ -66,7 +67,7 @@ export default async function AdminPage() {
         sections={serializedSections}
         enrollments={serializedEnrollments}
         leads={serializedLeads}
-        scheduleMap={SECTION_SCHEDULES}
+        scheduleMap={scheduleMap}
       />
     </div>
   );

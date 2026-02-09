@@ -5,6 +5,7 @@ import AdminStudentModal from './AdminStudentModal';
 import AdminConfirmDialog from './AdminConfirmDialog';
 import AdminWaitlistPanel from './AdminWaitlistPanel';
 import AdminAttendanceTab from './AdminAttendanceTab';
+import AdminProgressTab from './AdminProgressTab';
 import CopyButton from './CopyButton';
 import { useToast } from './AdminToast';
 import type { Section, Enrollment, Lead } from './admin-types';
@@ -22,7 +23,7 @@ interface Props {
 
 export default function AdminStudentsTab({ sections, enrollments, leads: initialLeads, scheduleMap, onSendEmail }: Props) {
   const { showToast } = useToast();
-  const [subTab, setSubTab] = useState<'enrolled' | 'prospective' | 'attendance'>('enrolled');
+  const [subTab, setSubTab] = useState<'enrolled' | 'prospective' | 'attendance' | 'progress'>('enrolled');
   const waitlistedCount = enrollments.filter((e) => e.paymentStatus === 'WAITLISTED').length;
 
   // ── Enrolled state ──
@@ -248,6 +249,12 @@ export default function AdminStudentsTab({ sections, enrollments, leads: initial
         >
           Attendance
         </button>
+        <button
+          className={`admin-email-subtab ${subTab === 'progress' ? 'admin-email-subtab-active' : ''}`}
+          onClick={() => setSubTab('progress')}
+        >
+          Progress
+        </button>
       </div>
 
       {/* ── ENROLLED SUB-TAB ── */}
@@ -285,6 +292,9 @@ export default function AdminStudentsTab({ sections, enrollments, leads: initial
             </select>
             <button onClick={() => downloadCsv(filtered, scheduleMap)} className="admin-export-btn">
               Export CSV
+            </button>
+            <button onClick={() => window.print()} className="admin-refresh-btn admin-print-btn">
+              Print Roster
             </button>
           </div>
 
@@ -588,6 +598,15 @@ export default function AdminStudentsTab({ sections, enrollments, leads: initial
       {/* ── ATTENDANCE SUB-TAB ── */}
       {subTab === 'attendance' && (
         <AdminAttendanceTab
+          sections={sections}
+          enrollments={enrollments}
+          scheduleMap={scheduleMap}
+        />
+      )}
+
+      {/* ── PROGRESS SUB-TAB ── */}
+      {subTab === 'progress' && (
+        <AdminProgressTab
           sections={sections}
           enrollments={enrollments}
           scheduleMap={scheduleMap}

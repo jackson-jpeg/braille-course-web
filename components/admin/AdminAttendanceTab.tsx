@@ -149,6 +149,11 @@ export default function AdminAttendanceTab({ sections, enrollments, scheduleMap 
         >
           {showAddSession ? 'Cancel' : '+ Add Session'}
         </button>
+        {sessions.length > 0 && (
+          <button className="admin-refresh-btn admin-print-btn" onClick={() => window.print()}>
+            Print Attendance
+          </button>
+        )}
       </div>
 
       {showAddSession && (

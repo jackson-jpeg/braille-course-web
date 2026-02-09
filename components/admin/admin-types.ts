@@ -282,6 +282,38 @@ export interface StudentAttendanceStats {
   }[];
 }
 
+/* ── Todo ── */
+export interface TodoItem {
+  id: string;
+  text: string;
+  done: boolean;
+  dueDate: string | null;
+  sortOrder: number;
+  createdAt: string;
+}
+
+/* ── Assignments & Grades ── */
+export interface Assignment {
+  id: string;
+  sectionId: string;
+  title: string;
+  maxScore: number;
+  dueDate: string | null;
+  sortOrder: number;
+  createdAt: string;
+}
+
+export interface Grade {
+  id: string;
+  assignmentId: string;
+  enrollmentId: string;
+  score: number | null;
+  notes: string | null;
+}
+
+/* ── Course Settings ── */
+export type CourseSettingsMap = Record<string, string>;
+
 /* ── Props ── */
 export interface AdminProps {
   sections: Section[];

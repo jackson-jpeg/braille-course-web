@@ -30,7 +30,7 @@ export default function AdminWaitlistPanel({ sections, scheduleMap, onSendEmail,
       const res = await fetch('/api/admin/waitlist');
       const data = await res.json();
       if (res.ok) setWaitlisted(data.waitlisted);
-    } catch { /* silent */ }
+    } catch (err) { console.error('Failed to fetch waitlist:', err); }
     setLoading(false);
   }, []);
 
@@ -88,7 +88,7 @@ export default function AdminWaitlistPanel({ sections, scheduleMap, onSendEmail,
         body: JSON.stringify({ orderedIds: newOrder.map((e) => e.id) }),
       });
       await fetchWaitlist();
-    } catch { /* silent */ }
+    } catch (err) { console.error('Failed to reorder waitlist:', err); }
   }
 
   async function handleMoveDown(entry: WaitlistEntry, sectionEntries: WaitlistEntry[]) {
@@ -103,7 +103,7 @@ export default function AdminWaitlistPanel({ sections, scheduleMap, onSendEmail,
         body: JSON.stringify({ orderedIds: newOrder.map((e) => e.id) }),
       });
       await fetchWaitlist();
-    } catch { /* silent */ }
+    } catch (err) { console.error('Failed to reorder waitlist:', err); }
   }
 
   if (loading) return null;
