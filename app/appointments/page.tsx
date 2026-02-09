@@ -22,7 +22,7 @@ export default function AppointmentsPage() {
       {/* ========== HERO ========== */}
       <section className="appointments-hero" id="top">
         <div className="appointments-hero-content" id="main-content">
-          <BrailleHero />
+          <BrailleHero word="BOOK AN APPOINTMENT" />
           <div className="section-label">1-on-1 Instruction</div>
           <h1>
             Book an <em>Appointment</em>

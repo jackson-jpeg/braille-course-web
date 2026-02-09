@@ -20,7 +20,7 @@ export default function ServicesPage() {
       {/* ========== HERO ========== */}
       <section className="services-hero" id="top">
         <div className="services-hero-content" id="main-content">
-          <BrailleHero />
+          <BrailleHero word="TVI SERVICES" />
           <div className="section-label">For Schools &amp; Districts</div>
           <h1>
             TVI <em>Services</em>

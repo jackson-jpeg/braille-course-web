@@ -4,6 +4,7 @@ import BrailleDotExplorer from '@/components/BrailleDotExplorer';
 import BrailleHangman from '@/components/BrailleHangman';
 import BrailleSpeedMatch from '@/components/BrailleSpeedMatch';
 import BrailleMemoryMatch from '@/components/BrailleMemoryMatch';
+import BrailleHero from '@/components/BrailleHero';
 import GamesNav from '@/components/GamesNav';
 import Footer from '@/components/Footer';
 
@@ -24,6 +25,7 @@ export default function GamesPage() {
       {/* ========== HERO ========== */}
       <section className="games-hero" id="top">
         <div className="games-hero-content" id="main-content">
+          <BrailleHero word="INTERACTIVE" easterEggs />
           <div className="section-label">Interactive Learning</div>
           <h1>
             Braille <em>Interactive</em>

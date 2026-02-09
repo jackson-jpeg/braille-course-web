@@ -289,6 +289,35 @@ body::after {
   100% { transform: scale(1); opacity: 1; }
 }
 
+/* Easter egg animations */
+.braille-decoration.celebration ~ .braille-hint { opacity: 0.5; }
+
+.braille-letter-group.active .braille-letter-label.dot-desc {
+  font-size: 0.55rem;
+  white-space: nowrap;
+  letter-spacing: 0.5px;
+}
+
+.braille-letter-group.pop .braille-cell {
+  animation: dotPop 0.4s var(--ease-out);
+}
+
+@keyframes dotPop {
+  0% { transform: scale(1); }
+  40% { transform: scale(1.2); }
+  100% { transform: scale(1); }
+}
+
+.braille-decoration.celebration .braille-dot.filled {
+  animation: celebratePulse 0.6s ease-out;
+}
+
+@keyframes celebratePulse {
+  0% { box-shadow: 0 0 0 0 var(--gold); }
+  50% { box-shadow: 0 0 8px 3px var(--gold); }
+  100% { box-shadow: none; }
+}
+
 /* ===== HERO TEXT ===== */
 .hero-badge {
   display: inline-block;
