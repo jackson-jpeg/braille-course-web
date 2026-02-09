@@ -112,6 +112,34 @@ export default function EnrollmentForm() {
     }
   };
 
+  const [waitlistEmail, setWaitlistEmail] = useState('');
+  const [waitlistSubmitting, setWaitlistSubmitting] = useState(false);
+  const [waitlistSuccess, setWaitlistSuccess] = useState(false);
+  const [waitlistError, setWaitlistError] = useState('');
+
+  const handleWaitlistSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!waitlistEmail.trim()) return;
+    setWaitlistSubmitting(true);
+    setWaitlistError('');
+    try {
+      const res = await fetch('/api/waitlist-signup', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ email: waitlistEmail.trim() }),
+      });
+      if (!res.ok) {
+        const data = await res.json();
+        setWaitlistError(data.error || 'Something went wrong. Please try again.');
+      } else {
+        setWaitlistSuccess(true);
+      }
+    } catch {
+      setWaitlistError('Network error. Please try again.');
+    }
+    setWaitlistSubmitting(false);
+  };
+
   if (totalRemaining <= 0) {
     return (
       <div className="enrollment-sold-out">
@@ -139,25 +167,54 @@ export default function EnrollmentForm() {
         <p>
           Join the waitlist and we&rsquo;ll notify you if a spot opens.
         </p>
-        <a
-          href="mailto:Delaney@TeachBraille.org?subject=Waitlist%20Request%20%E2%80%94%20Summer%20Braille%20Course"
-          className="enrollment-sold-out-cta"
-        >
-          Join the Waitlist
-          <svg
-            viewBox="0 0 24 24"
-            fill="none"
-            stroke="currentColor"
-            strokeWidth="2.5"
-            aria-hidden="true"
-            style={{ width: 16, height: 16 }}
-          >
-            <line x1="5" y1="12" x2="19" y2="12" />
-            <polyline points="12 5 19 12 12 19" />
-          </svg>
-        </a>
+
+        {waitlistSuccess ? (
+          <div className="enrollment-waitlist-success">
+            You&rsquo;re on the list! We&rsquo;ll reach out if a spot opens.
+          </div>
+        ) : (
+          <form className="enrollment-waitlist-form" onSubmit={handleWaitlistSubmit}>
+            <input
+              type="email"
+              placeholder="Your email address"
+              value={waitlistEmail}
+              onChange={(e) => setWaitlistEmail(e.target.value)}
+              required
+              className="enrollment-waitlist-input"
+              disabled={waitlistSubmitting}
+            />
+            <button
+              type="submit"
+              className="enrollment-sold-out-cta"
+              disabled={waitlistSubmitting}
+            >
+              {waitlistSubmitting ? 'Joining...' : 'Join the Waitlist'}
+              {!waitlistSubmitting && (
+                <svg
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="currentColor"
+                  strokeWidth="2.5"
+                  aria-hidden="true"
+                  style={{ width: 16, height: 16 }}
+                >
+                  <line x1="5" y1="12" x2="19" y2="12" />
+                  <polyline points="12 5 19 12 12 19" />
+                </svg>
+              )}
+            </button>
+            {waitlistError && (
+              <div className="enrollment-error">{waitlistError}</div>
+            )}
+          </form>
+        )}
+
         <div className="enrollment-sold-out-note">
-          Questions? Reach out to Delaney directly.
+          Or email{' '}
+          <a href="mailto:Delaney@TeachBraille.org?subject=Waitlist%20Request%20%E2%80%94%20Summer%20Braille%20Course">
+            Delaney@TeachBraille.org
+          </a>{' '}
+          directly.
         </div>
       </div>
     );
@@ -172,8 +229,10 @@ export default function EnrollmentForm() {
       case 'redirecting':
       case 'slow':
         return 'Opening Stripe...';
-      default:
-        return 'Continue to Checkout';
+      default: {
+        const price = selectedPlan === 'full' ? '$500' : selectedPlan === 'deposit' ? '$150' : '';
+        return price ? `Continue to Checkout — ${price}` : 'Continue to Checkout';
+      }
     }
   })();
 
@@ -226,7 +285,7 @@ export default function EnrollmentForm() {
       </div>
 
       {/* Step 2: Choose Plan */}
-      <div className={`enrollment-step${selectedPlan ? ' completed' : ''}`}>
+      <div className={`enrollment-step enrollment-step-2${selectedSection ? ' enrollment-step-active' : ''}${selectedPlan ? ' completed' : ''}`}>
         <div className="enrollment-step-label">2. Choose Your Plan</div>
         <div className="enrollment-options">
           <label
@@ -272,6 +331,25 @@ export default function EnrollmentForm() {
         </div>
       </div>
 
+      {/* Order Summary */}
+      {canSubmit && (() => {
+        const section = sections.find((s) => s.id === selectedSection);
+        const scheduleText = section ? (SECTION_SCHEDULES[section.label] || section.label) : '';
+        const planText = selectedPlan === 'full' ? 'Pay in Full — $500' : '$150 deposit today, $350 on May 1';
+        return (
+          <div className="enrollment-summary">
+            <div className="enrollment-summary-row">
+              <span className="enrollment-summary-label">Schedule</span>
+              <span className="enrollment-summary-value">{scheduleText}</span>
+            </div>
+            <div className="enrollment-summary-row">
+              <span className="enrollment-summary-label">Plan</span>
+              <span className="enrollment-summary-value">{planText}</span>
+            </div>
+          </div>
+        );
+      })()}
+
       {/* Step 3: Submit */}
       <button
         className={`enrollment-submit${loadingStage === 'redirecting' || loadingStage === 'slow' ? ' enrollment-submit--redirecting' : ''}`}
@@ -315,6 +393,20 @@ export default function EnrollmentForm() {
       )}
 
       {error && <div className="enrollment-error">{error}</div>}
+
+      <div className="enrollment-trust-row">
+        <span className="enrollment-trust-item">
+          <svg className="enrollment-trust-lock" viewBox="0 0 16 16" fill="none" aria-hidden="true">
+            <rect x="3" y="7" width="10" height="7" rx="1.5" stroke="currentColor" strokeWidth="1.3"/>
+            <path d="M5.5 7V5a2.5 2.5 0 015 0v2" stroke="currentColor" strokeWidth="1.3" strokeLinecap="round"/>
+          </svg>
+          Secure payment
+        </span>
+        <span className="enrollment-trust-sep">&middot;</span>
+        <span className="enrollment-trust-item">100% refundable before May 1</span>
+        <span className="enrollment-trust-sep">&middot;</span>
+        <span className="enrollment-trust-item">Powered by Stripe</span>
+      </div>
 
       <p className="enrollment-legal">
         By enrolling, you agree to our{' '}

@@ -290,7 +290,12 @@ export default function AdminDashboard({ sections, enrollments, leads, scheduleM
         <div className="admin-header-row">
           <div>
             <h1 className="admin-title">{getGreeting()}</h1>
-            <p className="admin-subtitle">Here&apos;s what&apos;s happening with your braille courses</p>
+            <p className="admin-subtitle">
+              Here&apos;s what&apos;s happening with your braille courses
+              <button className="admin-cmdk-hint" onClick={() => setShowPalette(true)} aria-label="Open search palette">
+                <kbd>⌘</kbd><kbd>K</kbd>
+              </button>
+            </p>
           </div>
           <button className="admin-signout-link" onClick={handleLogout}>Sign out</button>
         </div>
@@ -312,10 +317,14 @@ export default function AdminDashboard({ sections, enrollments, leads, scheduleM
               <span className="admin-tab-icon">{TAB_META[t].icon}</span>
               {TAB_META[t].label}
               {t === 'students' && (newInquiryCount > 0 || waitlistedCount > 0) && (
-                <span className={`admin-tab-badge ${waitlistedCount > 0 ? 'admin-tab-badge-orange' : 'admin-tab-badge-red'}`} />
+                <span className={`admin-tab-badge admin-tab-badge-count ${waitlistedCount > 0 ? 'admin-tab-badge-orange' : 'admin-tab-badge-red'}`}>
+                  {newInquiryCount + waitlistedCount}
+                </span>
               )}
               {t === 'payments' && pendingInvoiceCount > 0 && (
-                <span className="admin-tab-badge admin-tab-badge-gold" />
+                <span className="admin-tab-badge admin-tab-badge-count admin-tab-badge-gold">
+                  {pendingInvoiceCount}
+                </span>
               )}
             </button>
           ))}

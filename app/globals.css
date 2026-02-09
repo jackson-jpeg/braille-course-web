@@ -34,7 +34,7 @@
 html { scroll-behavior: smooth; }
 
 body {
-  font-family: 'Outfit', sans-serif;
+  font-family: var(--font-body), 'Outfit', sans-serif;
   background: var(--cream);
   color: var(--text-primary);
   overflow-x: hidden;
@@ -79,7 +79,7 @@ a { color: inherit; }
     transition-duration: 0.01ms !important;
   }
   html { scroll-behavior: auto; }
-  .reveal { opacity: 1; transform: none; }
+  .reveal { opacity: 1; transform: none; transition-delay: 0s !important; }
 }
 
 /* ===== SUBTLE GRAIN TEXTURE ===== */
@@ -132,7 +132,7 @@ body::after {
   gap: 8px;
   background: var(--navy);
   color: var(--gold-light);
-  font-family: 'Outfit', sans-serif;
+  font-family: var(--font-body), 'Outfit', sans-serif;
   font-size: 0.85rem;
   font-weight: 600;
   padding: 14px 24px;
@@ -225,7 +225,7 @@ body::after {
   background: rgba(212,168,83,0.08);
 }
 .braille-letter-label {
-  font-family: 'Outfit', sans-serif;
+  font-family: var(--font-body), 'Outfit', sans-serif;
   font-size: 0;
   font-weight: 600;
   color: var(--gold);
@@ -305,7 +305,7 @@ body::after {
 }
 
 .hero h1 {
-  font-family: 'DM Serif Display', serif;
+  font-family: var(--font-heading), 'DM Serif Display', serif;
   font-size: clamp(2.8rem, 6vw, 4.5rem);
   line-height: 1.1;
   color: var(--navy);
@@ -328,7 +328,7 @@ body::after {
 }
 
 .hero-subtitle {
-  font-family: 'Caveat', cursive;
+  font-family: var(--font-accent), 'Caveat', cursive;
   font-size: clamp(1.3rem, 3vw, 1.7rem);
   color: var(--sage-dark);
   font-weight: 500;
@@ -464,7 +464,7 @@ body::after {
   text-align: center;
 }
 .about-section h2 {
-  font-family: 'DM Serif Display', serif;
+  font-family: var(--font-heading), 'DM Serif Display', serif;
   font-size: clamp(1.8rem, 4vw, 2.6rem);
   color: var(--navy);
   line-height: 1.25;
@@ -484,7 +484,7 @@ body::after {
 }
 
 .pullquote {
-  font-family: 'DM Serif Display', serif;
+  font-family: var(--font-heading), 'DM Serif Display', serif;
   font-size: clamp(1.15rem, 2.5vw, 1.45rem);
   color: var(--navy);
   line-height: 1.55;
@@ -501,7 +501,7 @@ body::after {
 }
 .pullquote::before {
   content: '\201C';
-  font-family: 'DM Serif Display', serif;
+  font-family: var(--font-heading), 'DM Serif Display', serif;
   font-size: 4rem;
   color: var(--gold);
   opacity: 0.25;
@@ -511,7 +511,7 @@ body::after {
 }
 .pullquote::after {
   content: '\201D';
-  font-family: 'DM Serif Display', serif;
+  font-family: var(--font-heading), 'DM Serif Display', serif;
   font-size: 4rem;
   color: var(--gold);
   opacity: 0.25;
@@ -567,7 +567,7 @@ body::after {
 }
 .benefit-icon svg { width: 28px; height: 28px; color: var(--gold); }
 .benefit-callout h2 {
-  font-family: 'DM Serif Display', serif;
+  font-family: var(--font-heading), 'DM Serif Display', serif;
   font-size: clamp(1.6rem, 3.5vw, 2.2rem);
   color: white;
   margin-bottom: 20px;
@@ -596,7 +596,7 @@ body::after {
   margin-bottom: 60px;
 }
 .details-header h2 {
-  font-family: 'DM Serif Display', serif;
+  font-family: var(--font-heading), 'DM Serif Display', serif;
   font-size: clamp(1.8rem, 4vw, 2.6rem);
   color: var(--navy);
 }
@@ -605,28 +605,51 @@ body::after {
   grid-template-columns: 1fr;
 }
 .faq-item {
-  padding: 36px 0;
-  padding-left: 0;
+  padding: 0;
   border-bottom: 1px solid rgba(212,168,83,0.2);
   border-left: 3px solid transparent;
-  display: grid;
-  gap: 12px;
-  transition: all 0.35s ease;
+  transition: border-left-color 0.35s ease;
 }
 .faq-item:hover {
-  padding-left: 16px;
   border-left-color: var(--gold);
 }
-.faq-item:first-child { padding-top: 0; }
+.faq-item:first-child .faq-question { padding-top: 0; }
 .faq-item:last-child { border-bottom: none; }
 .faq-question {
-  font-family: 'DM Serif Display', serif;
+  font-family: var(--font-heading), 'DM Serif Display', serif;
   font-size: 1.2rem;
   color: var(--navy);
   line-height: 1.35;
   display: flex;
   align-items: flex-start;
   gap: 14px;
+  list-style: none;
+  cursor: pointer;
+  padding: 36px 0 36px 0;
+  transition: padding-left 0.35s ease;
+}
+.faq-item:hover .faq-question {
+  padding-left: 16px;
+}
+.faq-question::-webkit-details-marker { display: none; }
+.faq-question::marker { display: none; content: ''; }
+.faq-question::after {
+  content: '';
+  flex-shrink: 0;
+  width: 12px;
+  height: 12px;
+  margin-left: auto;
+  margin-top: 6px;
+  border-right: 2px solid var(--gold);
+  border-bottom: 2px solid var(--gold);
+  transform: rotate(45deg);
+  transition: transform var(--transition-micro);
+}
+.faq-item[open] > .faq-question::after {
+  transform: rotate(-135deg);
+}
+.faq-item[open] > .faq-question {
+  padding-bottom: 12px;
 }
 .faq-q-mark {
   flex-shrink: 0;
@@ -637,7 +660,7 @@ body::after {
   display: flex;
   align-items: center;
   justify-content: center;
-  font-family: 'DM Serif Display', serif;
+  font-family: var(--font-heading), 'DM Serif Display', serif;
   font-size: 0.85rem;
   margin-top: 1px;
 }
@@ -647,6 +670,12 @@ body::after {
   color: var(--text-secondary);
   font-weight: 300;
   padding-left: 42px;
+  padding-bottom: 36px;
+  animation: faq-reveal 0.3s var(--ease-out);
+}
+@keyframes faq-reveal {
+  from { opacity: 0; transform: translateY(-8px); }
+  to { opacity: 1; transform: translateY(0); }
 }
 .faq-answer strong {
   color: var(--navy);
@@ -666,7 +695,7 @@ body::after {
   margin-bottom: 50px;
 }
 .glance-header h2 {
-  font-family: 'DM Serif Display', serif;
+  font-family: var(--font-heading), 'DM Serif Display', serif;
   font-size: clamp(1.8rem, 4vw, 2.4rem);
   color: var(--navy);
 }
@@ -715,7 +744,7 @@ body::after {
   margin-bottom: 6px;
 }
 .glance-card .value {
-  font-family: 'DM Serif Display', serif;
+  font-family: var(--font-heading), 'DM Serif Display', serif;
   font-size: 1.35rem;
   color: var(--navy);
   line-height: 1.3;
@@ -740,7 +769,7 @@ body::after {
   margin-bottom: 44px;
 }
 .includes-header h2 {
-  font-family: 'DM Serif Display', serif;
+  font-family: var(--font-heading), 'DM Serif Display', serif;
   font-size: clamp(1.6rem, 3.5vw, 2.2rem);
   color: var(--navy);
 }
@@ -795,7 +824,7 @@ body::after {
   text-align: center;
 }
 .materials-inner h3 {
-  font-family: 'DM Serif Display', serif;
+  font-family: var(--font-heading), 'DM Serif Display', serif;
   font-size: 1.4rem;
   color: var(--navy);
   margin-bottom: 20px;
@@ -865,7 +894,7 @@ body::after {
   margin: 0 auto;
 }
 .cta-section h2 {
-  font-family: 'DM Serif Display', serif;
+  font-family: var(--font-heading), 'DM Serif Display', serif;
   font-size: clamp(2rem, 4.5vw, 3rem);
   color: white;
   margin-bottom: 16px;
@@ -948,7 +977,7 @@ body::after {
   gap: 10px;
   background: linear-gradient(135deg, var(--gold), #E0B563);
   color: var(--navy);
-  font-family: 'Outfit', sans-serif;
+  font-family: var(--font-body), 'Outfit', sans-serif;
   font-size: 1rem;
   font-weight: 600;
   padding: 18px 44px;
@@ -1015,7 +1044,7 @@ body::after {
   gap: 10px;
   background: transparent;
   color: var(--gold-light);
-  font-family: 'Outfit', sans-serif;
+  font-family: var(--font-body), 'Outfit', sans-serif;
   font-size: 0.95rem;
   font-weight: 600;
   padding: 16px 36px;
@@ -1109,6 +1138,73 @@ body::after {
 .back-to-top:hover { color: var(--gold); }
 .back-to-top svg { width: 12px; height: 12px; }
 
+.footer-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 40px;
+  width: 100%;
+  max-width: 700px;
+  text-align: left;
+  padding-bottom: 24px;
+  margin-bottom: 8px;
+  border-bottom: 1px solid rgba(255,255,255,0.06);
+}
+.footer-col-nav {
+  display: flex;
+  gap: 40px;
+  justify-content: flex-end;
+}
+.footer-heading {
+  font-size: 0.7rem;
+  font-weight: 600;
+  letter-spacing: 1.5px;
+  text-transform: uppercase;
+  color: rgba(255,255,255,0.35);
+  margin-bottom: 12px;
+}
+.footer-description {
+  font-size: 0.78rem;
+  color: rgba(255,255,255,0.3);
+  font-weight: 300;
+  line-height: 1.6;
+  margin-bottom: 10px;
+}
+.footer-email {
+  font-size: 0.78rem;
+  color: var(--gold);
+  text-decoration: none;
+  opacity: 0.7;
+  transition: opacity 0.2s ease;
+}
+.footer-email:hover {
+  opacity: 1;
+}
+.footer-link-group nav {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+.footer-link-group nav a {
+  font-size: 0.78rem;
+  color: rgba(255,255,255,0.3);
+  text-decoration: none;
+  transition: color 0.2s ease;
+}
+.footer-link-group nav a:hover {
+  color: var(--gold);
+}
+
+@media (max-width: 520px) {
+  .footer-grid {
+    grid-template-columns: 1fr;
+    gap: 28px;
+    text-align: center;
+  }
+  .footer-col-nav {
+    justify-content: center;
+  }
+}
+
 /* ===== ANIMATIONS ===== */
 @keyframes fadeDown {
   from { opacity: 0; transform: translateY(20px); }
@@ -1123,11 +1219,16 @@ body::after {
   opacity: 1;
   transform: translateY(0);
 }
-.faq-item.reveal:nth-child(2) { transition-delay: 0.08s; }
-.faq-item.reveal:nth-child(3) { transition-delay: 0.16s; }
-.faq-item.reveal:nth-child(4) { transition-delay: 0.24s; }
-.faq-item.reveal:nth-child(5) { transition-delay: 0.32s; }
-.faq-item.reveal:nth-child(6) { transition-delay: 0.4s; }
+details.faq-item.reveal:nth-child(2) { transition-delay: 0.08s; }
+details.faq-item.reveal:nth-child(3) { transition-delay: 0.16s; }
+details.faq-item.reveal:nth-child(4) { transition-delay: 0.24s; }
+details.faq-item.reveal:nth-child(5) { transition-delay: 0.32s; }
+details.faq-item.reveal:nth-child(6) { transition-delay: 0.4s; }
+
+/* Stagger reveal for grid children */
+.reveal-stagger > .reveal:nth-child(2) { transition-delay: 0.1s; }
+.reveal-stagger > .reveal:nth-child(3) { transition-delay: 0.2s; }
+.reveal-stagger > .reveal:nth-child(4) { transition-delay: 0.3s; }
 
 /* ===== RESPONSIVE ===== */
 @media (max-width: 768px) {
@@ -1189,6 +1290,7 @@ body::after {
 }
 
 .check-icon {
+  position: relative;
   width: 72px;
   height: 72px;
   margin: 0 auto 28px;
@@ -1199,6 +1301,29 @@ body::after {
   justify-content: center;
   animation: scaleIn 0.5s var(--ease-out) 0.3s both;
   box-shadow: 0 4px 24px rgba(168, 191, 160, 0.3);
+}
+.check-icon::before {
+  content: '';
+  position: absolute;
+  inset: -12px;
+  border-radius: 50%;
+  background: radial-gradient(circle, rgba(168,191,160,0.35) 0%, transparent 70%);
+  transform: scale(0.5);
+  opacity: 0;
+  animation: checkBurst 1s var(--ease-out) 0.8s both;
+  pointer-events: none;
+}
+@keyframes checkBurst {
+  0%   { transform: scale(0.5); opacity: 0.8; }
+  100% { transform: scale(1.8); opacity: 0; }
+}
+.check-draw {
+  stroke-dasharray: 1;
+  stroke-dashoffset: 1;
+  animation: checkDraw 0.6s var(--ease-out) 0.8s forwards;
+}
+@keyframes checkDraw {
+  to { stroke-dashoffset: 0; }
 }
 .check-icon svg {
   width: 32px;
@@ -1212,7 +1337,7 @@ body::after {
 }
 
 .success-card h1 {
-  font-family: 'DM Serif Display', serif;
+  font-family: var(--font-heading), 'DM Serif Display', serif;
   font-size: clamp(1.6rem, 4vw, 2rem);
   color: var(--navy);
   line-height: 1.25;
@@ -1220,7 +1345,7 @@ body::after {
 }
 
 .success-amount {
-  font-family: 'Outfit', sans-serif;
+  font-family: var(--font-body), 'Outfit', sans-serif;
   font-size: 1.05rem;
   color: var(--sage-dark);
   font-weight: 300;
@@ -1242,7 +1367,7 @@ body::after {
   line-height: 1.6;
 }
 .balance-banner .balance-amount {
-  font-family: 'DM Serif Display', serif;
+  font-family: var(--font-heading), 'DM Serif Display', serif;
   font-size: 1.1rem;
   color: var(--gold);
 }
@@ -1297,7 +1422,7 @@ body::after {
   gap: 8px;
   background: var(--navy);
   color: var(--gold-light);
-  font-family: 'Outfit', sans-serif;
+  font-family: var(--font-body), 'Outfit', sans-serif;
   font-size: 0.9rem;
   font-weight: 600;
   padding: 14px 32px;
@@ -1316,6 +1441,31 @@ body::after {
   height: 16px;
 }
 
+.schedule-shimmer span {
+  position: relative;
+  overflow: hidden;
+}
+.schedule-shimmer span::after {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(90deg, transparent, rgba(212,168,83,0.08), transparent);
+  animation: shimmer 1.5s ease-in-out infinite;
+}
+@keyframes shimmer {
+  to { left: 100%; }
+}
+.schedule-resolved {
+  animation: fadeIn 0.4s var(--ease-out) both;
+}
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
 @media (max-width: 520px) {
   .success-card { padding: 40px 28px; }
 }
@@ -1328,6 +1478,17 @@ body::after {
 
 .enrollment-step {
   margin-bottom: 28px;
+}
+.enrollment-step-2 {
+  opacity: 0.35;
+  transform: translateY(6px);
+  pointer-events: none;
+  transition: opacity 0.4s var(--ease-out), transform 0.4s var(--ease-out);
+}
+.enrollment-step-2.enrollment-step-active {
+  opacity: 1;
+  transform: translateY(0);
+  pointer-events: auto;
 }
 
 .enrollment-step-label {
@@ -1445,6 +1606,40 @@ body::after {
   margin-top: 2px;
 }
 
+/* ── Order Summary Card ── */
+.enrollment-summary {
+  border: 1px solid rgba(212,168,83,0.2);
+  background: rgba(255,255,255,0.04);
+  border-radius: var(--radius-md);
+  padding: 16px 20px;
+  margin-bottom: 20px;
+  animation: enrollSummaryIn 0.35s var(--ease-out) both;
+}
+@keyframes enrollSummaryIn {
+  from { opacity: 0; transform: translateY(6px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+.enrollment-summary-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 6px 0;
+}
+.enrollment-summary-row + .enrollment-summary-row {
+  border-top: 1px solid rgba(255,255,255,0.06);
+}
+.enrollment-summary-label {
+  font-size: 0.78rem;
+  color: rgba(255,255,255,0.45);
+  font-weight: 400;
+}
+.enrollment-summary-value {
+  font-size: 0.82rem;
+  color: var(--gold-light);
+  font-weight: 500;
+  text-align: right;
+}
+
 .enrollment-submit {
   display: inline-flex;
   align-items: center;
@@ -1453,7 +1648,7 @@ body::after {
   width: 100%;
   background: linear-gradient(135deg, var(--gold), #E0B563);
   color: var(--navy);
-  font-family: 'Outfit', sans-serif;
+  font-family: var(--font-body), 'Outfit', sans-serif;
   font-size: 1rem;
   font-weight: 600;
   padding: 18px 44px;
@@ -1570,7 +1765,7 @@ body::after {
   padding: 12px 28px;
   background: transparent;
   color: var(--gold-light);
-  font-family: 'Outfit', sans-serif;
+  font-family: var(--font-body), 'Outfit', sans-serif;
   font-size: 0.88rem;
   font-weight: 500;
   border-radius: var(--radius-full);
@@ -1604,6 +1799,52 @@ body::after {
   color: white;
 }
 
+.enrollment-waitlist-form {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 10px;
+  margin-top: 20px;
+}
+.enrollment-waitlist-input {
+  width: 100%;
+  max-width: 300px;
+  padding: 12px 16px;
+  background: rgba(255,255,255,0.06);
+  border: 1px solid rgba(212,168,83,0.3);
+  border-radius: var(--radius-full);
+  color: var(--gold-light);
+  font-family: var(--font-body), 'Outfit', sans-serif;
+  font-size: 0.9rem;
+  text-align: center;
+  outline: none;
+  transition: border-color var(--transition-micro);
+}
+.enrollment-waitlist-input::placeholder {
+  color: rgba(255,255,255,0.35);
+}
+.enrollment-waitlist-input:focus {
+  border-color: var(--gold);
+}
+.enrollment-waitlist-form .enrollment-sold-out-cta {
+  margin-top: 0;
+  cursor: pointer;
+}
+.enrollment-waitlist-form .enrollment-sold-out-cta:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+.enrollment-waitlist-success {
+  margin-top: 20px;
+  padding: 16px 24px;
+  background: rgba(168,191,160,0.12);
+  border: 1px solid rgba(168,191,160,0.3);
+  border-radius: var(--radius-sm);
+  color: var(--sage);
+  font-size: 0.9rem;
+  font-weight: 500;
+}
+
 @media (max-width: 768px) {
   .enrollment-submit { padding: 16px 32px; font-size: 0.95rem; }
 }
@@ -1627,7 +1868,7 @@ body::after {
 }
 
 .wordgame-header h2 {
-  font-family: 'DM Serif Display', serif;
+  font-family: var(--font-heading), 'DM Serif Display', serif;
   font-size: clamp(1.6rem, 3.5vw, 2.2rem);
   color: var(--navy);
   margin-bottom: 8px;
@@ -1746,7 +1987,7 @@ body::after {
 }
 
 .wordgame-tile .tile-letter {
-  font-family: 'Outfit', sans-serif;
+  font-family: var(--font-body), 'Outfit', sans-serif;
   font-size: 0.7rem;
   font-weight: 600;
   color: var(--navy);
@@ -1892,7 +2133,7 @@ body::after {
   border-radius: 6px;
   cursor: pointer;
   transition: all 0.2s ease;
-  font-family: 'Outfit', sans-serif;
+  font-family: var(--font-body), 'Outfit', sans-serif;
 }
 
 .wordgame-key:hover {
@@ -1979,7 +2220,7 @@ body::after {
 
 .wordgame-message {
   margin-top: 20px;
-  font-family: 'DM Serif Display', serif;
+  font-family: var(--font-heading), 'DM Serif Display', serif;
   font-size: 1.1rem;
   color: var(--navy);
 }
@@ -1992,7 +2233,7 @@ body::after {
   padding: 12px 28px;
   background: var(--navy);
   color: var(--gold-light);
-  font-family: 'Outfit', sans-serif;
+  font-family: var(--font-body), 'Outfit', sans-serif;
   font-size: 0.85rem;
   font-weight: 600;
   border: none;
@@ -2046,7 +2287,7 @@ body::after {
 }
 
 .site-nav-logo {
-  font-family: 'DM Serif Display', serif;
+  font-family: var(--font-heading), 'DM Serif Display', serif;
   font-size: 1.35rem;
   color: var(--navy);
   text-decoration: none;
@@ -2196,7 +2437,7 @@ body::after {
 }
 
 .hub-hero h1 {
-  font-family: 'DM Serif Display', serif;
+  font-family: var(--font-heading), 'DM Serif Display', serif;
   font-size: clamp(2.4rem, 5.5vw, 4rem);
   line-height: 1.15;
   color: var(--navy);
@@ -2214,7 +2455,7 @@ body::after {
 }
 
 .hub-hero-subtitle {
-  font-family: 'Caveat', cursive;
+  font-family: var(--font-accent), 'Caveat', cursive;
   font-size: clamp(1.3rem, 3vw, 1.7rem);
   color: var(--sage-dark);
   font-weight: 500;
@@ -2245,7 +2486,7 @@ body::after {
   text-align: center;
 }
 .hub-about h2 {
-  font-family: 'DM Serif Display', serif;
+  font-family: var(--font-heading), 'DM Serif Display', serif;
   font-size: clamp(1.6rem, 3.5vw, 2.4rem);
   color: var(--navy);
   margin-bottom: 24px;
@@ -2289,7 +2530,7 @@ body::after {
   margin-bottom: 50px;
 }
 .hub-cards-header h2 {
-  font-family: 'DM Serif Display', serif;
+  font-family: var(--font-heading), 'DM Serif Display', serif;
   font-size: clamp(1.6rem, 3.5vw, 2.4rem);
   color: var(--navy);
 }
@@ -2341,7 +2582,7 @@ body::after {
 }
 
 .hub-card h3 {
-  font-family: 'DM Serif Display', serif;
+  font-family: var(--font-heading), 'DM Serif Display', serif;
   font-size: 1.3rem;
   color: var(--navy);
   margin-bottom: 10px;
@@ -2400,7 +2641,7 @@ body::after {
   text-align: center;
 }
 .games-link-inner h3 {
-  font-family: 'DM Serif Display', serif;
+  font-family: var(--font-heading), 'DM Serif Display', serif;
   font-size: 1.4rem;
   color: var(--navy);
   margin-bottom: 10px;
@@ -2417,7 +2658,7 @@ body::after {
   gap: 8px;
   background: var(--navy);
   color: var(--gold-light);
-  font-family: 'Outfit', sans-serif;
+  font-family: var(--font-body), 'Outfit', sans-serif;
   font-size: 0.9rem;
   font-weight: 600;
   padding: 14px 28px;
@@ -2468,7 +2709,7 @@ body::after {
 }
 
 .appointments-hero h1 {
-  font-family: 'DM Serif Display', serif;
+  font-family: var(--font-heading), 'DM Serif Display', serif;
   font-size: clamp(2.2rem, 5vw, 3.5rem);
   color: var(--navy);
   line-height: 1.15;
@@ -2505,7 +2746,7 @@ body::after {
   margin: 0 auto;
 }
 .appointments-info h2 {
-  font-family: 'DM Serif Display', serif;
+  font-family: var(--font-heading), 'DM Serif Display', serif;
   font-size: clamp(1.6rem, 3.5vw, 2.2rem);
   color: var(--navy);
   text-align: center;
@@ -2539,7 +2780,7 @@ body::after {
   color: var(--gold);
 }
 .appointments-feature h3 {
-  font-family: 'DM Serif Display', serif;
+  font-family: var(--font-heading), 'DM Serif Display', serif;
   font-size: 1.15rem;
   color: var(--navy);
   margin-bottom: 10px;
@@ -2561,7 +2802,7 @@ body::after {
   border: 1px solid rgba(212,168,83,0.12);
 }
 .appointments-who h3 {
-  font-family: 'DM Serif Display', serif;
+  font-family: var(--font-heading), 'DM Serif Display', serif;
   font-size: 1.15rem;
   color: var(--navy);
   margin-bottom: 10px;
@@ -2586,7 +2827,7 @@ body::after {
   text-align: center;
 }
 .appointments-booking h2 {
-  font-family: 'DM Serif Display', serif;
+  font-family: var(--font-heading), 'DM Serif Display', serif;
   font-size: clamp(1.6rem, 3.5vw, 2.2rem);
   color: var(--navy);
   margin-bottom: 32px;
@@ -2655,7 +2896,7 @@ body::after {
   text-align: center;
 }
 .appointments-how h2 {
-  font-family: 'DM Serif Display', serif;
+  font-family: var(--font-heading), 'DM Serif Display', serif;
   font-size: clamp(1.6rem, 3.5vw, 2.2rem);
   color: var(--navy);
   margin-bottom: 48px;
@@ -2675,7 +2916,7 @@ body::after {
   border-radius: 50%;
   background: var(--gold-soft);
   color: var(--gold);
-  font-family: 'DM Serif Display', serif;
+  font-family: var(--font-heading), 'DM Serif Display', serif;
   font-size: 1.3rem;
   font-weight: 700;
   display: flex;
@@ -2685,7 +2926,7 @@ body::after {
   border: 2px solid rgba(212,168,83,0.25);
 }
 .appointments-step h3 {
-  font-family: 'DM Serif Display', serif;
+  font-family: var(--font-heading), 'DM Serif Display', serif;
   font-size: 1.15rem;
   color: var(--navy);
   margin-bottom: 10px;
@@ -2707,7 +2948,7 @@ body::after {
   gap: 10px;
   background: var(--navy);
   color: var(--gold-light);
-  font-family: 'Outfit', sans-serif;
+  font-family: var(--font-body), 'Outfit', sans-serif;
   font-size: 1.05rem;
   font-weight: 600;
   padding: 18px 40px;
@@ -2785,7 +3026,7 @@ body::after {
   text-align: center;
 }
 .appointments-about h2 {
-  font-family: 'DM Serif Display', serif;
+  font-family: var(--font-heading), 'DM Serif Display', serif;
   font-size: clamp(1.8rem, 4vw, 2.6rem);
   color: var(--navy);
   line-height: 1.25;
@@ -2820,7 +3061,7 @@ body::after {
   text-align: center;
 }
 .appointments-why h2 {
-  font-family: 'DM Serif Display', serif;
+  font-family: var(--font-heading), 'DM Serif Display', serif;
   font-size: clamp(1.6rem, 3.5vw, 2.4rem);
   color: var(--navy);
   margin-bottom: 48px;
@@ -2844,7 +3085,7 @@ body::after {
   box-shadow: 0 12px 40px rgba(27,42,74,0.08);
 }
 .appointments-why-item h3 {
-  font-family: 'DM Serif Display', serif;
+  font-family: var(--font-heading), 'DM Serif Display', serif;
   font-size: 1.2rem;
   color: var(--navy);
   margin-bottom: 12px;
@@ -2925,7 +3166,7 @@ body::after {
   max-width: 700px;
 }
 .services-hero h1 {
-  font-family: 'DM Serif Display', serif;
+  font-family: var(--font-heading), 'DM Serif Display', serif;
   font-size: clamp(2.2rem, 5vw, 3.5rem);
   color: var(--navy);
   line-height: 1.15;
@@ -2962,7 +3203,7 @@ body::after {
   text-align: center;
 }
 .services-about h2 {
-  font-family: 'DM Serif Display', serif;
+  font-family: var(--font-heading), 'DM Serif Display', serif;
   font-size: clamp(1.8rem, 4vw, 2.6rem);
   color: var(--navy);
   line-height: 1.25;
@@ -2997,7 +3238,7 @@ body::after {
   text-align: center;
 }
 .services-timeline h2 {
-  font-family: 'DM Serif Display', serif;
+  font-family: var(--font-heading), 'DM Serif Display', serif;
   font-size: clamp(1.6rem, 3.5vw, 2.2rem);
   color: var(--navy);
   margin-bottom: 48px;
@@ -3041,7 +3282,7 @@ body::after {
 }
 .services-timeline-year {
   flex-shrink: 0;
-  font-family: 'DM Serif Display', serif;
+  font-family: var(--font-heading), 'DM Serif Display', serif;
   font-size: 0.95rem;
   color: var(--gold);
   background: white;
@@ -3053,7 +3294,7 @@ body::after {
   text-align: center;
 }
 .services-timeline-content h3 {
-  font-family: 'DM Serif Display', serif;
+  font-family: var(--font-heading), 'DM Serif Display', serif;
   font-size: 1.1rem;
   color: var(--navy);
   margin-bottom: 4px;
@@ -3079,7 +3320,7 @@ body::after {
   text-align: center;
 }
 .services-offered h2 {
-  font-family: 'DM Serif Display', serif;
+  font-family: var(--font-heading), 'DM Serif Display', serif;
   font-size: clamp(1.6rem, 3.5vw, 2.4rem);
   color: var(--navy);
   margin-bottom: 48px;
@@ -3128,7 +3369,7 @@ body::after {
   color: white;
 }
 .services-card h3 {
-  font-family: 'DM Serif Display', serif;
+  font-family: var(--font-heading), 'DM Serif Display', serif;
   font-size: 1.3rem;
   color: var(--navy);
   margin-bottom: 10px;
@@ -3166,7 +3407,7 @@ body::after {
   text-align: center;
 }
 .services-ecc h2 {
-  font-family: 'DM Serif Display', serif;
+  font-family: var(--font-heading), 'DM Serif Display', serif;
   font-size: clamp(1.6rem, 3.5vw, 2.2rem);
   color: var(--navy);
   margin-bottom: 16px;
@@ -3212,7 +3453,7 @@ body::after {
   color: var(--gold);
 }
 .services-ecc-item h3 {
-  font-family: 'DM Serif Display', serif;
+  font-family: var(--font-heading), 'DM Serif Display', serif;
   font-size: 1.15rem;
   color: var(--navy);
   margin-bottom: 10px;
@@ -3237,7 +3478,7 @@ body::after {
   text-align: center;
 }
 .services-start h2 {
-  font-family: 'DM Serif Display', serif;
+  font-family: var(--font-heading), 'DM Serif Display', serif;
   font-size: clamp(1.6rem, 3.5vw, 2.2rem);
   color: var(--navy);
   margin-bottom: 48px;
@@ -3257,7 +3498,7 @@ body::after {
   border-radius: 50%;
   background: var(--gold-soft);
   color: var(--gold);
-  font-family: 'DM Serif Display', serif;
+  font-family: var(--font-heading), 'DM Serif Display', serif;
   font-size: 1.3rem;
   font-weight: 700;
   display: flex;
@@ -3267,7 +3508,7 @@ body::after {
   border: 2px solid rgba(212,168,83,0.25);
 }
 .services-step h3 {
-  font-family: 'DM Serif Display', serif;
+  font-family: var(--font-heading), 'DM Serif Display', serif;
   font-size: 1.15rem;
   color: var(--navy);
   margin-bottom: 10px;
@@ -3292,7 +3533,7 @@ body::after {
   text-align: center;
 }
 .services-cta h2 {
-  font-family: 'DM Serif Display', serif;
+  font-family: var(--font-heading), 'DM Serif Display', serif;
   font-size: clamp(1.6rem, 3.5vw, 2.2rem);
   color: var(--navy);
   margin-bottom: 32px;
@@ -3303,7 +3544,7 @@ body::after {
   gap: 10px;
   background: var(--navy);
   color: var(--gold-light);
-  font-family: 'Outfit', sans-serif;
+  font-family: var(--font-body), 'Outfit', sans-serif;
   font-size: 1.05rem;
   font-weight: 600;
   padding: 18px 40px;
@@ -3439,7 +3680,7 @@ body::after {
 }
 
 .games-hero h1 {
-  font-family: 'DM Serif Display', serif;
+  font-family: var(--font-heading), 'DM Serif Display', serif;
   font-size: clamp(2.2rem, 5vw, 3.5rem);
   color: var(--navy);
   line-height: 1.15;
@@ -3496,7 +3737,8 @@ body::after {
   border: 1px solid rgba(212, 168, 83, 0.2);
   transition: all 0.25s ease;
 }
-.games-nav-link:hover {
+.games-nav-link:hover,
+.games-nav-link.active {
   color: var(--navy);
   border-color: var(--gold);
   background: var(--gold-soft);
@@ -3522,7 +3764,7 @@ body::after {
   margin-bottom: 36px;
 }
 .explorer-header h2 {
-  font-family: 'DM Serif Display', serif;
+  font-family: var(--font-heading), 'DM Serif Display', serif;
   font-size: clamp(1.6rem, 3.5vw, 2.2rem);
   color: var(--navy);
   margin-bottom: 8px;
@@ -3575,7 +3817,7 @@ body::after {
 }
 
 .explorer-dot-number {
-  font-family: 'Outfit', sans-serif;
+  font-family: var(--font-body), 'Outfit', sans-serif;
   font-size: 0.75rem;
   font-weight: 600;
   color: var(--text-secondary);
@@ -3595,7 +3837,7 @@ body::after {
   justify-content: center;
 }
 .explorer-letter {
-  font-family: 'DM Serif Display', serif;
+  font-family: var(--font-heading), 'DM Serif Display', serif;
   font-size: 3rem;
   color: var(--navy);
   line-height: 1;
@@ -3621,7 +3863,7 @@ body::after {
   padding: 10px 28px;
   background: var(--navy);
   color: var(--gold-light);
-  font-family: 'Outfit', sans-serif;
+  font-family: var(--font-body), 'Outfit', sans-serif;
   font-size: 0.85rem;
   font-weight: 600;
   border: none;
@@ -3651,7 +3893,7 @@ body::after {
 .explorer-mode-pill {
   flex: 1;
   padding: 10px 16px;
-  font-family: 'Outfit', sans-serif;
+  font-family: var(--font-body), 'Outfit', sans-serif;
   font-size: 0.85rem;
   font-weight: 600;
   border: none;
@@ -3669,7 +3911,7 @@ body::after {
 
 /* Contraction result display */
 .explorer-contraction {
-  font-family: 'DM Serif Display', serif;
+  font-family: var(--font-heading), 'DM Serif Display', serif;
   font-size: 2.2rem;
   color: var(--navy);
   line-height: 1.2;
@@ -3679,7 +3921,7 @@ body::after {
   display: inline-block;
   margin-top: 6px;
   padding: 4px 12px;
-  font-family: 'Outfit', sans-serif;
+  font-family: var(--font-body), 'Outfit', sans-serif;
   font-size: 0.65rem;
   font-weight: 700;
   text-transform: uppercase;
@@ -3709,7 +3951,7 @@ body::after {
   margin-bottom: 32px;
 }
 .hangman-header h2 {
-  font-family: 'DM Serif Display', serif;
+  font-family: var(--font-heading), 'DM Serif Display', serif;
   font-size: clamp(1.6rem, 3.5vw, 2.2rem);
   color: var(--navy);
   margin-bottom: 8px;
@@ -3780,14 +4022,14 @@ body::after {
 }
 
 .hangman-slot-letter {
-  font-family: 'Outfit', sans-serif;
+  font-family: var(--font-body), 'Outfit', sans-serif;
   font-size: 0.7rem;
   font-weight: 600;
   color: var(--navy);
 }
 
 .hangman-slot-blank {
-  font-family: 'DM Serif Display', serif;
+  font-family: var(--font-heading), 'DM Serif Display', serif;
   font-size: 1.4rem;
   color: var(--gold-light);
 }
@@ -3825,7 +4067,7 @@ body::after {
   border-radius: 6px;
   cursor: pointer;
   transition: all 0.2s ease;
-  font-family: 'Outfit', sans-serif;
+  font-family: var(--font-body), 'Outfit', sans-serif;
 }
 .hangman-key:hover:not(:disabled) {
   background: var(--gold-soft);
@@ -3893,7 +4135,7 @@ body::after {
 
 .hangman-message {
   margin-top: 8px;
-  font-family: 'DM Serif Display', serif;
+  font-family: var(--font-heading), 'DM Serif Display', serif;
   font-size: 1.1rem;
   color: var(--navy);
 }
@@ -3906,7 +4148,7 @@ body::after {
   padding: 12px 28px;
   background: var(--navy);
   color: var(--gold-light);
-  font-family: 'Outfit', sans-serif;
+  font-family: var(--font-body), 'Outfit', sans-serif;
   font-size: 0.85rem;
   font-weight: 600;
   border: none;
@@ -3954,7 +4196,7 @@ body::after {
   margin-bottom: 32px;
 }
 .speedmatch-header h2 {
-  font-family: 'DM Serif Display', serif;
+  font-family: var(--font-heading), 'DM Serif Display', serif;
   font-size: 2rem;
   color: var(--navy);
   margin-top: 8px;
@@ -3986,7 +4228,7 @@ body::after {
 .speedmatch-mode-pill {
   flex: 1;
   padding: 10px 16px;
-  font-family: 'Outfit', sans-serif;
+  font-family: var(--font-body), 'Outfit', sans-serif;
   font-size: 0.85rem;
   font-weight: 600;
   border: none;
@@ -4011,7 +4253,7 @@ body::after {
   margin-bottom: 24px;
 }
 .speedmatch-prompt-letter {
-  font-family: 'DM Serif Display', serif;
+  font-family: var(--font-heading), 'DM Serif Display', serif;
   font-size: 4rem;
   color: var(--navy);
   line-height: 1;
@@ -4062,7 +4304,7 @@ body::after {
   border: 2px solid rgba(212, 168, 83, 0.15);
   border-radius: var(--radius-md);
   cursor: pointer;
-  font-family: 'Outfit', sans-serif;
+  font-family: var(--font-body), 'Outfit', sans-serif;
   transition: all 0.2s ease;
 }
 .speedmatch-choice:hover:not(:disabled) {
@@ -4083,7 +4325,7 @@ body::after {
   opacity: 0.5;
 }
 .speedmatch-choice-letter {
-  font-family: 'DM Serif Display', serif;
+  font-family: var(--font-heading), 'DM Serif Display', serif;
   font-size: 1.5rem;
   color: var(--navy);
 }
@@ -4124,7 +4366,7 @@ body::after {
   gap: 2px;
 }
 .speedmatch-streak-value {
-  font-family: 'DM Serif Display', serif;
+  font-family: var(--font-heading), 'DM Serif Display', serif;
   font-size: 1.8rem;
   color: var(--navy);
   line-height: 1;
@@ -4156,7 +4398,7 @@ body::after {
   margin-bottom: 32px;
 }
 .memorymatch-header h2 {
-  font-family: 'DM Serif Display', serif;
+  font-family: var(--font-heading), 'DM Serif Display', serif;
   font-size: 2rem;
   color: var(--navy);
   margin-top: 8px;
@@ -4240,7 +4482,7 @@ body::after {
   border: 2px solid var(--navy-light);
 }
 .memorymatch-card-back-icon {
-  font-family: 'DM Serif Display', serif;
+  font-family: var(--font-heading), 'DM Serif Display', serif;
   font-size: 1.4rem;
   color: var(--gold-light);
   opacity: 0.4;
@@ -4271,14 +4513,14 @@ body::after {
 }
 
 .memorymatch-card-letter {
-  font-family: 'DM Serif Display', serif;
+  font-family: var(--font-heading), 'DM Serif Display', serif;
   font-size: 1.5rem;
   color: var(--navy);
 }
 
 /* Win message */
 .memorymatch-win {
-  font-family: 'DM Serif Display', serif;
+  font-family: var(--font-heading), 'DM Serif Display', serif;
   font-size: 1.1rem;
   color: var(--navy);
   margin-bottom: 12px;
@@ -4292,7 +4534,7 @@ body::after {
   padding: 12px 28px;
   background: var(--navy);
   color: var(--gold-light);
-  font-family: 'Outfit', sans-serif;
+  font-family: var(--font-body), 'Outfit', sans-serif;
   font-size: 0.85rem;
   font-weight: 600;
   border: none;
@@ -4370,7 +4612,7 @@ body::after {
   margin-bottom: 28px;
 }
 .admin-title {
-  font-family: 'DM Serif Display', serif;
+  font-family: var(--font-heading), 'DM Serif Display', serif;
   font-size: clamp(1.6rem, 3.5vw, 2.2rem);
   color: var(--navy);
   margin-bottom: 4px;
@@ -4380,11 +4622,36 @@ body::after {
   color: var(--text-secondary);
   font-weight: 300;
 }
+.admin-cmdk-hint {
+  display: inline-flex;
+  align-items: center;
+  gap: 3px;
+  margin-left: 10px;
+  padding: 3px 8px;
+  background: rgba(212,168,83,0.08);
+  border: 1px solid rgba(212,168,83,0.15);
+  border-radius: 6px;
+  cursor: pointer;
+  vertical-align: middle;
+  transition: background 0.2s, border-color 0.2s;
+  font-family: inherit;
+}
+.admin-cmdk-hint:hover {
+  background: rgba(212,168,83,0.15);
+  border-color: rgba(212,168,83,0.3);
+}
+.admin-cmdk-hint kbd {
+  font-family: inherit;
+  font-size: 0.72rem;
+  font-weight: 600;
+  color: var(--gold);
+  line-height: 1;
+}
 .admin-signout-link {
   background: none;
   border: none;
   color: var(--text-secondary);
-  font-family: 'Outfit', sans-serif;
+  font-family: var(--font-body), 'Outfit', sans-serif;
   font-size: 0.85rem;
   font-weight: 400;
   cursor: pointer;
@@ -4405,14 +4672,29 @@ body::after {
   border-radius: var(--radius-lg);
   padding: 48px 40px;
   box-shadow: 0 16px 64px rgba(27,42,74,0.06);
+  animation: adminFadeIn 0.5s var(--ease-out) both;
 }
 .admin-login-icon {
-  font-size: 2.5rem;
+  font-size: 3.2rem;
   color: var(--gold);
-  margin-bottom: 16px;
+  margin-bottom: 8px;
+  text-shadow: 0 2px 12px rgba(212,168,83,0.25);
+}
+.admin-login-brand {
+  font-size: 0.72rem;
+  letter-spacing: 2px;
+  text-transform: uppercase;
+  color: var(--gold);
+  font-weight: 600;
+  margin-bottom: 20px;
+}
+.admin-login-error {
+  color: #e53e3e;
+  font-size: 0.82rem;
+  text-align: center;
 }
 .admin-login-title {
-  font-family: 'DM Serif Display', serif;
+  font-family: var(--font-heading), 'DM Serif Display', serif;
   font-size: 1.6rem;
   color: var(--navy);
   margin-bottom: 6px;
@@ -4432,7 +4714,7 @@ body::after {
   padding: 12px 16px;
   border: 1px solid rgba(212,168,83,0.25);
   border-radius: var(--radius-sm);
-  font-family: 'Outfit', sans-serif;
+  font-family: var(--font-body), 'Outfit', sans-serif;
   font-size: 0.95rem;
   color: var(--navy);
   background: var(--cream);
@@ -4448,7 +4730,7 @@ body::after {
   color: white;
   border: none;
   border-radius: var(--radius-full);
-  font-family: 'Outfit', sans-serif;
+  font-family: var(--font-body), 'Outfit', sans-serif;
   font-size: 0.9rem;
   font-weight: 600;
   cursor: pointer;
@@ -4483,7 +4765,7 @@ body::after {
   background: none;
   border: none;
   border-bottom: 2px solid transparent;
-  font-family: 'Outfit', sans-serif;
+  font-family: var(--font-body), 'Outfit', sans-serif;
   font-size: 0.9rem;
   font-weight: 500;
   color: var(--text-secondary);
@@ -4557,7 +4839,7 @@ body::after {
   background: rgba(168,191,160,0.08);
 }
 .admin-card-value {
-  font-family: 'DM Serif Display', serif;
+  font-family: var(--font-heading), 'DM Serif Display', serif;
   font-size: 1.8rem;
   color: var(--navy);
   line-height: 1.1;
@@ -4643,7 +4925,7 @@ body::after {
   padding: 10px 14px;
   border: 1px solid rgba(212,168,83,0.25);
   border-radius: var(--radius-sm);
-  font-family: 'Outfit', sans-serif;
+  font-family: var(--font-body), 'Outfit', sans-serif;
   font-size: 0.88rem;
   color: var(--navy);
   background: white;
@@ -4656,7 +4938,7 @@ body::after {
   padding: 10px 12px;
   border: 1px solid rgba(212,168,83,0.25);
   border-radius: var(--radius-sm);
-  font-family: 'Outfit', sans-serif;
+  font-family: var(--font-body), 'Outfit', sans-serif;
   font-size: 0.85rem;
   color: var(--navy);
   background: white;
@@ -4672,7 +4954,7 @@ body::after {
   color: white;
   border: none;
   border-radius: var(--radius-sm);
-  font-family: 'Outfit', sans-serif;
+  font-family: var(--font-body), 'Outfit', sans-serif;
   font-size: 0.85rem;
   font-weight: 600;
   cursor: pointer;
@@ -4788,7 +5070,7 @@ body::after {
   background: none;
   border: none;
   border-radius: var(--radius-full);
-  font-family: 'Outfit', sans-serif;
+  font-family: var(--font-body), 'Outfit', sans-serif;
   font-size: 0.82rem;
   font-weight: 500;
   color: var(--text-secondary);
@@ -4817,7 +5099,7 @@ body::after {
   color: white;
   border: none;
   border-radius: var(--radius-sm);
-  font-family: 'Outfit', sans-serif;
+  font-family: var(--font-body), 'Outfit', sans-serif;
   font-size: 0.88rem;
   font-weight: 600;
   cursor: pointer;
@@ -4832,7 +5114,7 @@ body::after {
   color: var(--navy);
   border: 1px solid rgba(212,168,83,0.25);
   border-radius: var(--radius-sm);
-  font-family: 'Outfit', sans-serif;
+  font-family: var(--font-body), 'Outfit', sans-serif;
   font-size: 0.85rem;
   font-weight: 500;
   cursor: pointer;
@@ -4881,7 +5163,7 @@ body::after {
   padding: 10px 14px;
   border: 1px solid rgba(212,168,83,0.25);
   border-radius: var(--radius-sm);
-  font-family: 'Outfit', sans-serif;
+  font-family: var(--font-body), 'Outfit', sans-serif;
   font-size: 0.88rem;
   color: var(--navy);
   background: var(--cream);
@@ -4900,7 +5182,7 @@ body::after {
   color: var(--navy);
   border: 1px solid rgba(212,168,83,0.25);
   border-radius: var(--radius-sm);
-  font-family: 'Outfit', sans-serif;
+  font-family: var(--font-body), 'Outfit', sans-serif;
   font-size: 0.82rem;
   font-weight: 500;
   cursor: pointer;
@@ -4914,7 +5196,7 @@ body::after {
   padding: 12px 14px;
   border: 1px solid rgba(212,168,83,0.25);
   border-radius: var(--radius-sm);
-  font-family: 'Outfit', sans-serif;
+  font-family: var(--font-body), 'Outfit', sans-serif;
   font-size: 0.88rem;
   color: var(--navy);
   background: var(--cream);
@@ -4936,7 +5218,7 @@ body::after {
   color: white;
   border: none;
   border-radius: var(--radius-sm);
-  font-family: 'Outfit', sans-serif;
+  font-family: var(--font-body), 'Outfit', sans-serif;
   font-size: 0.88rem;
   font-weight: 600;
   cursor: pointer;
@@ -5131,7 +5413,7 @@ body::after {
 }
 .admin-modal-text {
   padding: 24px;
-  font-family: 'Outfit', sans-serif;
+  font-family: var(--font-body), 'Outfit', sans-serif;
   font-size: 0.88rem;
   color: var(--text-primary);
   white-space: pre-wrap;
@@ -5166,7 +5448,7 @@ body::after {
   background: rgba(212,168,83,0.06);
 }
 .admin-overview-card-value {
-  font-family: 'DM Serif Display', serif;
+  font-family: var(--font-heading), 'DM Serif Display', serif;
   font-size: 1.8rem;
   color: var(--navy);
   line-height: 1.1;
@@ -5182,7 +5464,7 @@ body::after {
   margin-bottom: 28px;
 }
 .admin-overview-section-title {
-  font-family: 'DM Serif Display', serif;
+  font-family: var(--font-heading), 'DM Serif Display', serif;
   font-size: 1.15rem;
   color: var(--navy);
   margin-bottom: 14px;
@@ -5258,7 +5540,7 @@ body::after {
   color: var(--navy);
   border: 1px solid rgba(212,168,83,0.25);
   border-radius: var(--radius-sm);
-  font-family: 'Outfit', sans-serif;
+  font-family: var(--font-body), 'Outfit', sans-serif;
   font-size: 0.88rem;
   font-weight: 500;
   cursor: pointer;
@@ -5304,7 +5586,7 @@ body::after {
   border-bottom: 1px solid rgba(212,168,83,0.12);
 }
 .admin-student-header h3 {
-  font-family: 'DM Serif Display', serif;
+  font-family: var(--font-heading), 'DM Serif Display', serif;
   font-size: 1.3rem;
   color: var(--navy);
   margin: 0;
@@ -5488,7 +5770,7 @@ body::after {
   background: rgba(27,42,74,0.04);
 }
 .admin-payments-card-value {
-  font-family: 'DM Serif Display', serif;
+  font-family: var(--font-heading), 'DM Serif Display', serif;
   font-size: 1.6rem;
   color: var(--navy);
   line-height: 1.1;
@@ -5515,7 +5797,7 @@ body::after {
   color: #c44;
   border: 1px solid rgba(220,80,80,0.25);
   border-radius: var(--radius-sm);
-  font-family: 'Outfit', sans-serif;
+  font-family: var(--font-body), 'Outfit', sans-serif;
   font-size: 0.78rem;
   font-weight: 500;
   cursor: pointer;
@@ -5537,7 +5819,7 @@ body::after {
   box-shadow: 0 24px 80px rgba(20,31,53,0.2);
 }
 .admin-refund-title {
-  font-family: 'DM Serif Display', serif;
+  font-family: var(--font-heading), 'DM Serif Display', serif;
   font-size: 1.3rem;
   color: var(--navy);
   margin-bottom: 16px;
@@ -5594,7 +5876,7 @@ body::after {
   color: white;
   border: none;
   border-radius: var(--radius-sm);
-  font-family: 'Outfit', sans-serif;
+  font-family: var(--font-body), 'Outfit', sans-serif;
   font-size: 0.88rem;
   font-weight: 600;
   cursor: pointer;
@@ -5650,7 +5932,7 @@ body::after {
   overflow-y: auto;
 }
 .admin-invoice-title {
-  font-family: 'DM Serif Display', serif;
+  font-family: var(--font-heading), 'DM Serif Display', serif;
   font-size: 1.3rem;
   color: var(--navy);
   margin-bottom: 20px;
@@ -5697,7 +5979,7 @@ body::after {
   color: white;
   border: none;
   border-radius: var(--radius-sm);
-  font-family: 'Outfit', sans-serif;
+  font-family: var(--font-body), 'Outfit', sans-serif;
   font-size: 0.88rem;
   font-weight: 600;
   cursor: pointer;
@@ -5716,7 +5998,7 @@ body::after {
   color: var(--sage-dark);
   border: 1px solid rgba(122,155,109,0.3);
   border-radius: var(--radius-sm);
-  font-family: 'Outfit', sans-serif;
+  font-family: var(--font-body), 'Outfit', sans-serif;
   font-size: 0.78rem;
   font-weight: 500;
   cursor: pointer;
@@ -5732,7 +6014,7 @@ body::after {
   color: var(--text-secondary);
   border: 1px solid rgba(74,85,104,0.2);
   border-radius: var(--radius-sm);
-  font-family: 'Outfit', sans-serif;
+  font-family: var(--font-body), 'Outfit', sans-serif;
   font-size: 0.78rem;
   font-weight: 500;
   cursor: pointer;
@@ -6034,7 +6316,7 @@ body::after {
   text-align: center;
 }
 .admin-empty-state-title {
-  font-family: 'DM Serif Display', serif;
+  font-family: var(--font-heading), 'DM Serif Display', serif;
   font-size: 1.1rem;
   color: var(--navy);
   margin-bottom: 6px;
@@ -6054,7 +6336,7 @@ body::after {
   color: white;
   border: none;
   border-radius: var(--radius-sm);
-  font-family: 'Outfit', sans-serif;
+  font-family: var(--font-body), 'Outfit', sans-serif;
   font-size: 0.85rem;
   font-weight: 600;
   cursor: pointer;
@@ -6265,7 +6547,7 @@ body::after {
 }
 
 .not-found-card h1 {
-  font-family: 'DM Serif Display', serif;
+  font-family: var(--font-heading), 'DM Serif Display', serif;
   font-size: clamp(1.6rem, 4vw, 2rem);
   color: var(--navy);
   line-height: 1.25;
@@ -6297,7 +6579,7 @@ body::after {
 }
 
 .policies-hero h1 {
-  font-family: 'DM Serif Display', serif;
+  font-family: var(--font-heading), 'DM Serif Display', serif;
   font-size: clamp(2rem, 5vw, 2.8rem);
   color: var(--navy);
   margin-bottom: 12px;
@@ -6329,7 +6611,7 @@ body::after {
 }
 
 .policy-section h2 {
-  font-family: 'DM Serif Display', serif;
+  font-family: var(--font-heading), 'DM Serif Display', serif;
   font-size: clamp(1.4rem, 3vw, 1.75rem);
   color: var(--navy);
   margin-bottom: 24px;
@@ -6443,6 +6725,31 @@ body::after {
   border-bottom-color: rgba(240,222,180,0.4);
 }
 
+/* ── Trust Row ── */
+.enrollment-trust-row {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  margin-top: 14px;
+  font-size: 0.72rem;
+  color: rgba(255,255,255,0.35);
+  font-weight: 300;
+}
+.enrollment-trust-item {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+}
+.enrollment-trust-lock {
+  width: 12px;
+  height: 12px;
+  color: rgba(255,255,255,0.35);
+}
+.enrollment-trust-sep {
+  opacity: 0.5;
+}
+
 /* ============================================================
    INTRO TO BRAILLE PAGE
    ============================================================ */
@@ -6475,7 +6782,7 @@ body::after {
   max-width: 700px;
 }
 .intro-hero h1 {
-  font-family: 'DM Serif Display', serif;
+  font-family: var(--font-heading), 'DM Serif Display', serif;
   font-size: clamp(2.2rem, 5vw, 3.5rem);
   color: var(--navy);
   line-height: 1.15;
@@ -6512,7 +6819,7 @@ body::after {
   text-align: center;
 }
 .intro-history-inner h2 {
-  font-family: 'DM Serif Display', serif;
+  font-family: var(--font-heading), 'DM Serif Display', serif;
   font-size: clamp(1.6rem, 3.5vw, 2.2rem);
   color: var(--navy);
   margin-bottom: 28px;
@@ -6542,7 +6849,7 @@ body::after {
   text-align: center;
 }
 .intro-cell-inner h2 {
-  font-family: 'DM Serif Display', serif;
+  font-family: var(--font-heading), 'DM Serif Display', serif;
   font-size: clamp(1.6rem, 3.5vw, 2.2rem);
   color: var(--navy);
   margin-bottom: 20px;
@@ -6567,7 +6874,7 @@ body::after {
   display: flex;
   align-items: center;
   justify-content: center;
-  font-family: 'DM Serif Display', serif;
+  font-family: var(--font-heading), 'DM Serif Display', serif;
   font-size: 1.2rem;
   font-weight: 600;
 }
@@ -6585,7 +6892,7 @@ body::after {
   text-align: center;
 }
 .intro-alphabet-inner h2 {
-  font-family: 'DM Serif Display', serif;
+  font-family: var(--font-heading), 'DM Serif Display', serif;
   font-size: clamp(1.6rem, 3.5vw, 2.2rem);
   color: var(--navy);
   margin-bottom: 12px;
@@ -6644,7 +6951,7 @@ body::after {
   background: var(--gold);
 }
 .alpha-card-letter {
-  font-family: 'DM Serif Display', serif;
+  font-family: var(--font-heading), 'DM Serif Display', serif;
   font-size: 1rem;
   color: var(--navy);
   font-weight: 600;
@@ -6692,7 +6999,7 @@ body::after {
   text-align: left;
 }
 .alpha-detail-letter {
-  font-family: 'DM Serif Display', serif;
+  font-family: var(--font-heading), 'DM Serif Display', serif;
   font-size: 3rem;
   color: var(--navy);
   line-height: 1;
@@ -7651,6 +7958,24 @@ body::after {
   box-shadow: 0 0 0 2px var(--cream);
 }
 
+/* Tab badge with count number */
+.admin-tab-badge-count {
+  min-width: 18px;
+  height: 18px;
+  width: auto;
+  font-size: 0.65rem;
+  font-weight: 700;
+  color: white;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0 5px;
+  top: 2px;
+  right: 2px;
+  font-family: var(--font-body), 'Outfit', sans-serif;
+  line-height: 1;
+}
+
 /* ============================================================
    SCHEDULE EMAIL TOGGLE
    ============================================================ */
@@ -7937,7 +8262,7 @@ body::after {
   margin-bottom: 12px;
 }
 .admin-roster-section-label {
-  font-family: 'DM Serif Display', serif;
+  font-family: var(--font-heading), 'DM Serif Display', serif;
   font-size: 1.1rem;
   color: var(--navy);
   line-height: 1.2;

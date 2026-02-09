@@ -37,6 +37,7 @@ export default function AdminLogin() {
     <div className="admin-page">
       <div className="admin-login">
         <div className="admin-login-icon">⠃</div>
+        <div className="admin-login-brand">TeachBraille.org</div>
         <h1 className="admin-login-title">Admin Dashboard</h1>
         <p className="admin-login-subtitle">Enter your password to continue</p>
         <form onSubmit={handleSubmit} className="admin-login-form">
