@@ -248,6 +248,13 @@ export default function AdminCalendarView({ onNavigate }: Props) {
           ))}
         </div>
       )}
+
+      {!loading && sessions.length === 0 && emails.length === 0 && assignments.length === 0 && (
+        <div className="admin-empty-state" style={{ padding: '24px 0' }}>
+          <p className="admin-empty-state-title">No events scheduled</p>
+          <p className="admin-empty-state-sub">Sessions, emails, and assignments will appear here.</p>
+        </div>
+      )}
     </div>
   );
 }

@@ -4750,8 +4750,12 @@ details.faq-item.reveal:nth-child(6) { transition-delay: 0.4s; }
   transition: border-color 0.2s;
 }
 .admin-login-input:focus {
-  outline: none;
   border-color: var(--gold);
+  box-shadow: 0 0 0 3px rgba(212,168,83,0.12);
+}
+.admin-login-input:focus:not(:focus-visible) {
+  outline: none;
+  box-shadow: none;
 }
 .admin-login-btn {
   padding: 12px 24px;
@@ -4805,6 +4809,7 @@ details.faq-item.reveal:nth-child(6) { transition-delay: 0.4s; }
 }
 .admin-tab:hover {
   color: var(--navy);
+  background: rgba(212,168,83,0.04);
 }
 .admin-tab-active {
   color: var(--navy);
@@ -4960,8 +4965,12 @@ details.faq-item.reveal:nth-child(6) { transition-delay: 0.4s; }
   background: white;
 }
 .admin-search:focus {
-  outline: none;
   border-color: var(--gold);
+  box-shadow: 0 0 0 3px rgba(212,168,83,0.12);
+}
+.admin-search:focus:not(:focus-visible) {
+  outline: none;
+  box-shadow: none;
 }
 .admin-select {
   padding: 10px 12px;
@@ -4974,8 +4983,12 @@ details.faq-item.reveal:nth-child(6) { transition-delay: 0.4s; }
   cursor: pointer;
 }
 .admin-select:focus {
-  outline: none;
   border-color: var(--gold);
+  box-shadow: 0 0 0 3px rgba(212,168,83,0.12);
+}
+.admin-select:focus:not(:focus-visible) {
+  outline: none;
+  box-shadow: none;
 }
 .admin-export-btn {
   padding: 10px 20px;
@@ -5024,6 +5037,9 @@ details.faq-item.reveal:nth-child(6) { transition-delay: 0.4s; }
 }
 .admin-table tbody tr:last-child td {
   border-bottom: none;
+}
+.admin-table tbody tr {
+  transition: background 0.15s ease;
 }
 .admin-table tbody tr:hover {
   background: rgba(212,168,83,0.04);
@@ -5198,8 +5214,12 @@ details.faq-item.reveal:nth-child(6) { transition-delay: 0.4s; }
   background: var(--cream);
 }
 .admin-compose-input:focus {
-  outline: none;
   border-color: var(--gold);
+  box-shadow: 0 0 0 3px rgba(212,168,83,0.12);
+}
+.admin-compose-input:focus:not(:focus-visible) {
+  outline: none;
+  box-shadow: none;
 }
 .admin-compose-to-row .admin-compose-input {
   flex: 1;
@@ -5233,8 +5253,12 @@ details.faq-item.reveal:nth-child(6) { transition-delay: 0.4s; }
   line-height: 1.6;
 }
 .admin-compose-textarea:focus {
-  outline: none;
   border-color: var(--gold);
+  box-shadow: 0 0 0 3px rgba(212,168,83,0.12);
+}
+.admin-compose-textarea:focus:not(:focus-visible) {
+  outline: none;
+  box-shadow: none;
 }
 .admin-compose-actions {
   display: flex;
@@ -5400,6 +5424,8 @@ details.faq-item.reveal:nth-child(6) { transition-delay: 0.4s; }
 }
 .admin-modal-close:hover {
   color: var(--navy);
+  background: rgba(212,168,83,0.08);
+  border-radius: 50%;
 }
 .admin-modal-loading {
   padding: 60px 40px;
@@ -6231,6 +6257,8 @@ details.faq-item.reveal:nth-child(6) { transition-delay: 0.4s; }
 }
 .admin-toast-close:hover {
   color: var(--navy);
+  background: rgba(27,42,74,0.06);
+  border-radius: 50%;
 }
 @keyframes adminToastIn {
   from { opacity: 0; transform: translateX(40px); }
@@ -6399,7 +6427,24 @@ details.faq-item.reveal:nth-child(6) { transition-delay: 0.4s; }
 .admin-refresh-btn:active,
 .admin-export-btn:active,
 .admin-quick-action:active {
-  transform: scale(0.97);
+  transform: scale(0.96);
+}
+.admin-send-btn:focus-visible,
+.admin-compose-btn:focus-visible,
+.admin-refresh-btn:focus-visible,
+.admin-export-btn:focus-visible,
+.admin-quick-action:focus-visible,
+.admin-refund-btn:focus-visible,
+.admin-void-btn:focus-visible,
+.admin-tab:focus-visible,
+.admin-email-subtab:focus-visible,
+.admin-modal-close:focus-visible,
+.admin-toast-close:focus-visible,
+.admin-signout-link:focus-visible,
+.admin-todo-add-btn:focus-visible,
+.admin-danger-btn:focus-visible {
+  outline: 2px solid var(--gold);
+  outline-offset: 2px;
 }
 
 /* ── Modal Entrance ── */
@@ -6432,6 +6477,28 @@ details.faq-item.reveal:nth-child(6) { transition-delay: 0.4s; }
   }
   .admin-tabs::-webkit-scrollbar {
     display: none;
+  }
+  .admin-tabs {
+    position: relative;
+  }
+  .admin-tabs::before,
+  .admin-tabs::after {
+    content: '';
+    position: sticky;
+    top: 0;
+    bottom: 0;
+    min-width: 24px;
+    flex-shrink: 0;
+    z-index: 1;
+    pointer-events: none;
+  }
+  .admin-tabs::before {
+    left: 0;
+    background: linear-gradient(to right, var(--cream), transparent);
+  }
+  .admin-tabs::after {
+    right: 0;
+    background: linear-gradient(to left, var(--cream), transparent);
   }
   .admin-tab {
     padding: 10px 16px;
@@ -6569,8 +6636,8 @@ details.faq-item.reveal:nth-child(6) { transition-delay: 0.4s; }
     grid-template-columns: 1fr;
   }
   .admin-settings-day {
-    width: 32px;
-    height: 32px;
+    width: 40px;
+    height: 40px;
     font-size: 0.72rem;
   }
 }
@@ -8365,8 +8432,12 @@ details.faq-item.reveal:nth-child(6) { transition-delay: 0.4s; }
   color: #d1d5db;
 }
 .admin-attendance-note:focus {
-  outline: none;
   border-color: var(--gold);
+  box-shadow: 0 0 0 3px rgba(212,168,83,0.12);
+}
+.admin-attendance-note:focus:not(:focus-visible) {
+  outline: none;
+  box-shadow: none;
 }
 
 /* ============================================================
@@ -8831,8 +8902,12 @@ details.faq-item.reveal:nth-child(6) { transition-delay: 0.4s; }
   transition: border-color 0.2s;
 }
 .admin-todo-input:focus {
-  outline: none;
   border-color: var(--gold);
+  box-shadow: 0 0 0 3px rgba(212,168,83,0.12);
+}
+.admin-todo-input:focus:not(:focus-visible) {
+  outline: none;
+  box-shadow: none;
 }
 .admin-todo-date {
   padding: 7px 10px;
@@ -8845,8 +8920,12 @@ details.faq-item.reveal:nth-child(6) { transition-delay: 0.4s; }
   width: 140px;
 }
 .admin-todo-date:focus {
-  outline: none;
   border-color: var(--gold);
+  box-shadow: 0 0 0 3px rgba(212,168,83,0.12);
+}
+.admin-todo-date:focus:not(:focus-visible) {
+  outline: none;
+  box-shadow: none;
 }
 .admin-todo-add-btn {
   padding: 7px 16px;
@@ -9149,9 +9228,13 @@ details.faq-item.reveal:nth-child(6) { transition-delay: 0.4s; }
   transition: border-color 0.2s, background 0.2s;
 }
 .admin-grade-input:focus {
-  outline: none;
   border-color: var(--gold);
   background: white;
+  box-shadow: 0 0 0 3px rgba(212,168,83,0.12);
+}
+.admin-grade-input:focus:not(:focus-visible) {
+  outline: none;
+  box-shadow: none;
 }
 .admin-grade-input::placeholder {
   color: #d1d5db;
@@ -9696,6 +9779,29 @@ details.faq-item.reveal:nth-child(6) { transition-delay: 0.4s; }
    ============================================================ */
 .admin-print-btn {
   position: relative;
+}
+
+/* ── Button Loading Spinner ── */
+.admin-btn-loading {
+  position: relative;
+  color: transparent !important;
+  pointer-events: none;
+}
+.admin-btn-loading::after {
+  content: '';
+  position: absolute;
+  width: 16px;
+  height: 16px;
+  top: 50%;
+  left: 50%;
+  margin: -8px 0 0 -8px;
+  border: 2px solid rgba(255,255,255,0.3);
+  border-top-color: white;
+  border-radius: 50%;
+  animation: adminSpin 0.6s linear infinite;
+}
+@keyframes adminSpin {
+  to { transform: rotate(360deg); }
 }
 
 /* ============================================================
