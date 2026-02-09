@@ -4,6 +4,7 @@ import { stripe } from '@/lib/stripe';
 import { resend } from '@/lib/resend';
 import { getSchedule } from '@/lib/schedule';
 import { enrollmentConfirmation } from '@/lib/email-templates';
+import { getSettings, getSetting } from '@/lib/settings';
 
 export async function POST(req: NextRequest) {
   // Env var validation
@@ -130,12 +131,14 @@ export async function POST(req: NextRequest) {
           const schedule = section ? getSchedule(section.label) : 'Check your inbox for schedule details';
           const isDeposit = plan === 'deposit';
 
+          const settings = await getSettings();
+          const depositSubject = getSetting(settings, 'email.depositSubject', 'Your $150 Deposit Is Confirmed — Summer Braille Course');
+          const fullSubject = getSetting(settings, 'email.fullPaymentSubject', "You're Enrolled — Summer Braille Course");
+
           await resend.emails.send({
             from: 'Delaney Costello <delaney@teachbraille.org>',
             to: email,
-            subject: isDeposit
-              ? 'Your $150 Deposit Is Confirmed — Summer Braille Course'
-              : "You're Enrolled — Summer Braille Course",
+            subject: isDeposit ? depositSubject : fullSubject,
             html: enrollmentConfirmation({ isDeposit, schedule }),
           });
         } catch (emailErr) {
@@ -175,14 +178,19 @@ export async function POST(req: NextRequest) {
         price: process.env.STRIPE_PRICE_BALANCE,
       });
 
+      // Re-use settings loaded above (or load if not in email branch)
+      const invoiceSettings = await getSettings();
+      const invoiceCourseName = getSetting(invoiceSettings, 'course.name', 'Summer Braille Course');
+      const invoiceBalanceDueDate = getSetting(invoiceSettings, 'course.balanceDueDate', '2026-05-01');
+
       const invoice = await stripe.invoices.create({
         customer: stripeCustomerId,
         collection_method: 'charge_automatically',
         auto_advance: false,
         metadata: {
-          course: 'braille-summer-2026',
+          course: invoiceCourseName,
           type: 'balance',
-          scheduled_date: '2026-05-01',
+          scheduled_date: invoiceBalanceDueDate,
         },
       });
 

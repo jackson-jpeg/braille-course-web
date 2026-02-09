@@ -1,9 +1,10 @@
 'use client';
 
-import { useState, useRef, useEffect } from 'react';
+import { useState, useRef, useEffect, useCallback } from 'react';
 import { useToast } from './AdminToast';
 import { formatFileSize } from './admin-utils';
-import type { Material, GeneratePreview } from './admin-types';
+import AdminConfirmDialog from './AdminConfirmDialog';
+import type { Material, GeneratePreview, ContentTemplate } from './admin-types';
 
 const FORMAT_OPTIONS = [
   {
@@ -67,7 +68,7 @@ const FORMAT_OPTIONS = [
   },
 ];
 
-const TEMPLATE_PRESETS = [
+const BUILTIN_PRESETS = [
   {
     label: 'Grade 1 Introduction',
     title: 'Introduction to Grade 1 Braille',
@@ -109,14 +110,117 @@ export default function AdminCreateTab({ onEmailMaterial }: Props) {
   const [preview, setPreview] = useState<GeneratePreview | null>(null);
   const [recentMaterials, setRecentMaterials] = useState<Material[]>([]);
   const abortRef = useRef<AbortController | null>(null);
+  const formRef = useRef<HTMLFormElement | null>(null);
+
+  // DB-backed templates
+  const [templates, setTemplates] = useState<ContentTemplate[]>([]);
+  const [savingTemplate, setSavingTemplate] = useState(false);
+
+  // Duplicate detection
+  const [duplicateWarning, setDuplicateWarning] = useState<string | null>(null);
+  const [showDuplicateConfirm, setShowDuplicateConfirm] = useState(false);
+  const skipDupeCheckRef = useRef(false);
+
+  // Quick-generate
+  const [nextSession, setNextSession] = useState<{ title: string; date: string } | null>(null);
+
+  // Fetch persistent recent materials
+  const fetchRecentMaterials = useCallback(async () => {
+    try {
+      const res = await fetch('/api/admin/materials');
+      if (res.ok) {
+        const data = await res.json();
+        setRecentMaterials((data.materials || []).slice(0, 10));
+      }
+    } catch { /* ignore */ }
+  }, []);
+
+  // Fetch saved templates
+  const fetchTemplates = useCallback(async () => {
+    try {
+      const res = await fetch('/api/admin/templates');
+      if (res.ok) {
+        const data = await res.json();
+        setTemplates(data.templates || []);
+      }
+    } catch { /* ignore */ }
+  }, []);
+
+  // Fetch next upcoming session for quick-generate
+  const fetchNextSession = useCallback(async () => {
+    try {
+      // Get sections from public endpoint
+      const secRes = await fetch('/api/sections');
+      if (!secRes.ok) return;
+      const sections = await secRes.json();
+      if (!Array.isArray(sections) || sections.length === 0) return;
+
+      // Get sessions for first section
+      const sessRes = await fetch(`/api/admin/sessions?sectionId=${sections[0].id}`);
+      if (!sessRes.ok) return;
+      const sessData = await sessRes.json();
+      const sessions = sessData.sessions || [];
+
+      // Find next upcoming session
+      const now = new Date();
+      const upcoming = sessions
+        .filter((s: { date: string }) => new Date(s.date) > now)
+        .sort((a: { date: string }, b: { date: string }) => new Date(a.date).getTime() - new Date(b.date).getTime());
+
+      if (upcoming.length > 0) {
+        setNextSession({
+          title: upcoming[0].title,
+          date: new Date(upcoming[0].date).toLocaleDateString('en-US', { weekday: 'short', month: 'short', day: 'numeric' }),
+        });
+      }
+    } catch { /* ignore */ }
+  }, []);
+
+  useEffect(() => {
+    fetchRecentMaterials();
+    fetchTemplates();
+    fetchNextSession();
+  }, [fetchRecentMaterials, fetchTemplates, fetchNextSession]);
 
   // Abort in-flight generation on unmount
   useEffect(() => {
     return () => { abortRef.current?.abort(); };
   }, []);
 
+  async function checkDuplicate(): Promise<boolean> {
+    if (!title.trim()) return false;
+    try {
+      const res = await fetch('/api/admin/materials');
+      if (!res.ok) return false;
+      const data = await res.json();
+      const materials = data.materials || [];
+      const safeTitle = title.replace(/[^a-zA-Z0-9-_ ]/g, '').replace(/\s+/g, '-').toLowerCase();
+      const match = materials.find((m: Material) =>
+        m.filename.toLowerCase().includes(safeTitle)
+      );
+      if (match) {
+        setDuplicateWarning(match.filename);
+        return true;
+      }
+    } catch { /* ignore */ }
+    return false;
+  }
+
   async function handleGenerate(e: React.FormEvent) {
     e.preventDefault();
+
+    // Check for duplicates first (skipped if user already confirmed)
+    if (!skipDupeCheckRef.current) {
+      const hasDupe = await checkDuplicate();
+      if (hasDupe) {
+        setShowDuplicateConfirm(true);
+        return;
+      }
+    }
+    skipDupeCheckRef.current = false;
+
+    setShowDuplicateConfirm(false);
+    setDuplicateWarning(null);
     setGenStage('ai');
     setGenError('');
     setResult(null);
@@ -134,7 +238,6 @@ export default function AdminCreateTab({ onEmailMaterial }: Props) {
       });
 
       if (!res.ok) {
-        // Non-SSE error (400, 401, etc.)
         const json = await res.json();
         throw new Error(json.error || 'Failed to generate');
       }
@@ -171,7 +274,7 @@ export default function AdminCreateTab({ onEmailMaterial }: Props) {
               setGenStage('done');
               setResult(event.material);
               setPreview(event.preview || null);
-              setRecentMaterials((prev) => [event.material, ...prev]);
+              setRecentMaterials((prev) => [event.material, ...prev.slice(0, 9)]);
               showToast(`Generated "${event.material.filename}"`);
             }
           } catch (parseErr) {
@@ -195,7 +298,6 @@ export default function AdminCreateTab({ onEmailMaterial }: Props) {
     setPreview(null);
     setGenStage('idle');
     setGenError('');
-    // Keep title, notes, format, instructions for tweaking
   }
 
   function handleStartFresh() {
@@ -209,9 +311,87 @@ export default function AdminCreateTab({ onEmailMaterial }: Props) {
     setDifficulty('intermediate');
   }
 
-  function applyPreset(preset: typeof TEMPLATE_PRESETS[number]) {
+  function applyPreset(preset: { title: string; notes: string }) {
     setTitle(preset.title);
     setNotes(preset.notes);
+  }
+
+  function applyTemplate(tmpl: ContentTemplate) {
+    setTitle(tmpl.title);
+    setNotes(tmpl.notes);
+    setFormat(tmpl.format);
+    setDifficulty(tmpl.difficulty as 'beginner' | 'intermediate' | 'advanced');
+    if (tmpl.instructions) setInstructions(tmpl.instructions);
+  }
+
+  async function handleSaveTemplate() {
+    if (!title.trim() || !notes.trim()) {
+      showToast('Fill in title and notes before saving a template', 'error');
+      return;
+    }
+    setSavingTemplate(true);
+    try {
+      const label = title.length > 30 ? title.slice(0, 27) + '...' : title;
+      const res = await fetch('/api/admin/templates', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ label, title, notes, format, difficulty, instructions: instructions || undefined }),
+      });
+      if (!res.ok) throw new Error('Failed to save template');
+      const data = await res.json();
+      setTemplates((prev) => [data.template, ...prev]);
+      showToast('Template saved');
+    } catch (err) {
+      showToast(err instanceof Error ? err.message : 'Failed to save template', 'error');
+    }
+    setSavingTemplate(false);
+  }
+
+  async function handleDeleteTemplate(id: string) {
+    try {
+      const res = await fetch(`/api/admin/templates/${id}`, { method: 'DELETE' });
+      if (!res.ok) throw new Error('Failed to delete');
+      setTemplates((prev) => prev.filter((t) => t.id !== id));
+      showToast('Template deleted');
+    } catch {
+      showToast('Failed to delete template', 'error');
+    }
+  }
+
+  async function handleDeleteMaterial(id: string) {
+    try {
+      const res = await fetch(`/api/admin/materials/${id}`, { method: 'DELETE' });
+      if (!res.ok) throw new Error('Failed to delete');
+      setRecentMaterials((prev) => prev.filter((m) => m.id !== id));
+      showToast('Material deleted');
+    } catch {
+      showToast('Failed to delete material', 'error');
+    }
+  }
+
+  function handleQuickGenerate(type: 'worksheet' | 'quiz' | 'study-guide') {
+    const sessionCtx = nextSession ? ` (${nextSession.title}, ${nextSession.date})` : '';
+    const labels: Record<string, { title: string; notes: string }> = {
+      worksheet: {
+        title: `Worksheet${sessionCtx}`,
+        notes: `Create a practice worksheet for the next class session${sessionCtx}. Include fill-in-the-blank, matching, and braille-to-print exercises covering recently taught material.`,
+      },
+      quiz: {
+        title: `Quiz${sessionCtx}`,
+        notes: `Create a quiz for the next class session${sessionCtx}. Include a mix of multiple-choice, true/false, and short-answer questions to assess understanding of recent lessons.`,
+      },
+      'study-guide': {
+        title: `Study Guide${sessionCtx}`,
+        notes: `Create a study guide for this week's material${sessionCtx}. Include learning objectives, key terms with dot patterns, and practice questions.`,
+      },
+    };
+
+    const preset = labels[type];
+    setTitle(preset.title);
+    setNotes(preset.notes);
+    setFormat(type);
+    setDifficulty('intermediate');
+    setInstructions('');
   }
 
   const isGenerating = genStage !== 'idle' && genStage !== 'done';
@@ -315,7 +495,7 @@ export default function AdminCreateTab({ onEmailMaterial }: Props) {
   return (
     <div className="admin-create-tab">
       {showForm && (
-        <form onSubmit={handleGenerate} className="admin-create-form">
+        <form ref={formRef} onSubmit={handleGenerate} className="admin-create-form">
           <div className="admin-create-header">
             <svg width="24" height="24" viewBox="0 0 24 24" fill="none">
               <path d="M12 2L9 9l-7 1 5 5-1.5 7L12 18l6.5 4L17 15l5-5-7-1-3-7z" stroke="currentColor" strokeWidth="1.5" strokeLinejoin="round"/>
@@ -342,13 +522,36 @@ export default function AdminCreateTab({ onEmailMaterial }: Props) {
           <div className="admin-compose-field">
             <label>Notes / Lesson Plan</label>
             <div className="admin-gen-presets">
-              {TEMPLATE_PRESETS.map((preset) => (
+              {/* Saved templates */}
+              {templates.map((tmpl) => (
+                <div
+                  key={tmpl.id}
+                  className="admin-template-chip"
+                  role="button"
+                  tabIndex={0}
+                  onClick={() => { if (!isGenerating) applyTemplate(tmpl); }}
+                  onKeyDown={(e) => { if (e.key === 'Enter' && !isGenerating) applyTemplate(tmpl); }}
+                >
+                  {tmpl.label}
+                  <button
+                    type="button"
+                    className="admin-template-delete"
+                    onClick={(e) => { e.stopPropagation(); handleDeleteTemplate(tmpl.id); }}
+                    title="Delete template"
+                  >
+                    &times;
+                  </button>
+                </div>
+              ))}
+              {/* Built-in presets */}
+              {BUILTIN_PRESETS.map((preset) => (
                 <button
                   key={preset.label}
                   type="button"
                   className="admin-gen-preset-btn"
                   onClick={() => applyPreset(preset)}
                   disabled={isGenerating}
+                  style={{ borderStyle: 'dashed' }}
                 >
                   {preset.label}
                 </button>
@@ -363,7 +566,20 @@ export default function AdminCreateTab({ onEmailMaterial }: Props) {
               required
               disabled={isGenerating}
             />
-            <div className="admin-gen-charcount">{notes.length} characters</div>
+            <div className="admin-gen-charcount">
+              {notes.length} characters
+              {title.trim() && notes.trim() && !isGenerating && (
+                <button
+                  type="button"
+                  className="admin-compose-btn"
+                  style={{ fontSize: '0.72rem', padding: '2px 8px', marginLeft: 8 }}
+                  onClick={handleSaveTemplate}
+                  disabled={savingTemplate}
+                >
+                  {savingTemplate ? 'Saving\u2026' : 'Save as Template'}
+                </button>
+              )}
+            </div>
           </div>
 
           <div className="admin-compose-field">
@@ -440,6 +656,27 @@ export default function AdminCreateTab({ onEmailMaterial }: Props) {
         </form>
       )}
 
+      {/* Duplicate warning dialog */}
+      {showDuplicateConfirm && duplicateWarning && (
+        <AdminConfirmDialog
+          title="Duplicate Material"
+          message={`A material named "${duplicateWarning}" already exists. Generate anyway?`}
+          confirmLabel="Generate Anyway"
+          confirmVariant="primary"
+          onConfirm={() => {
+            skipDupeCheckRef.current = true;
+            setShowDuplicateConfirm(false);
+            setDuplicateWarning(null);
+            // Programmatically re-submit the form
+            formRef.current?.requestSubmit();
+          }}
+          onCancel={() => {
+            setShowDuplicateConfirm(false);
+            setDuplicateWarning(null);
+          }}
+        />
+      )}
+
       {showResult && (
         <div className="admin-create-result">
           <div className="admin-create-result-header">
@@ -490,7 +727,50 @@ export default function AdminCreateTab({ onEmailMaterial }: Props) {
         </div>
       )}
 
-      {/* Recently generated materials */}
+      {/* Quick Generate panel */}
+      {genStage === 'idle' && (
+        <div className="admin-quickgen-panel">
+          <h4>Quick Generate</h4>
+          <p>One-click generation for common tasks{nextSession ? ` — next class: ${nextSession.title} (${nextSession.date})` : ''}.</p>
+          <div className="admin-quickgen-btns">
+            <button
+              type="button"
+              className="admin-quickgen-btn"
+              onClick={() => handleQuickGenerate('worksheet')}
+            >
+              <svg viewBox="0 0 24 24" fill="none">
+                <rect x="3" y="3" width="18" height="18" rx="2" stroke="currentColor" strokeWidth="1.5"/>
+                <path d="M7 8h3M7 12h5M7 16h4" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round"/>
+              </svg>
+              Worksheet for next class
+            </button>
+            <button
+              type="button"
+              className="admin-quickgen-btn"
+              onClick={() => handleQuickGenerate('quiz')}
+            >
+              <svg viewBox="0 0 24 24" fill="none">
+                <circle cx="12" cy="12" r="9" stroke="currentColor" strokeWidth="1.5"/>
+                <path d="M9 9.5a3 3 0 015.12 1.5c0 1.5-2.12 2-2.12 2" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round"/>
+              </svg>
+              Quiz for next class
+            </button>
+            <button
+              type="button"
+              className="admin-quickgen-btn"
+              onClick={() => handleQuickGenerate('study-guide')}
+            >
+              <svg viewBox="0 0 24 24" fill="none">
+                <path d="M4 19.5A2.5 2.5 0 016.5 17H20" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round"/>
+                <path d="M6.5 2H20v20H6.5A2.5 2.5 0 014 19.5v-15A2.5 2.5 0 016.5 2z" stroke="currentColor" strokeWidth="1.5"/>
+              </svg>
+              Study guide for this week
+            </button>
+          </div>
+        </div>
+      )}
+
+      {/* Recently generated materials (persistent) */}
       {recentMaterials.length > 0 && (
         <div className="admin-create-recent">
           <h4>Recently Generated</h4>
@@ -515,13 +795,22 @@ export default function AdminCreateTab({ onEmailMaterial }: Props) {
                     <td><span className="admin-category-badge">{m.category}</span></td>
                     <td>{formatFileSize(m.size)}</td>
                     <td>
-                      <button
-                        className="admin-compose-btn"
-                        style={{ fontSize: '0.75rem', padding: '4px 10px' }}
-                        onClick={() => onEmailMaterial(m.id)}
-                      >
-                        Email
-                      </button>
+                      <div style={{ display: 'flex', gap: 6 }}>
+                        <button
+                          className="admin-compose-btn"
+                          style={{ fontSize: '0.75rem', padding: '4px 10px' }}
+                          onClick={() => onEmailMaterial(m.id)}
+                        >
+                          Email
+                        </button>
+                        <button
+                          className="admin-compose-btn"
+                          style={{ fontSize: '0.75rem', padding: '4px 10px', color: '#dc2626' }}
+                          onClick={() => handleDeleteMaterial(m.id)}
+                        >
+                          Delete
+                        </button>
+                      </div>
                     </td>
                   </tr>
                 ))}

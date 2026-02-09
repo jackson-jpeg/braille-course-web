@@ -195,3 +195,15 @@ model CourseSettings {
   value     String
   updatedAt DateTime @updatedAt
 }
+
+model ContentTemplate {
+  id           String   @id @default(cuid())
+  label        String
+  title        String
+  notes        String
+  format       String   @default("pptx")
+  difficulty   String   @default("intermediate")
+  instructions String?
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+}

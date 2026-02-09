@@ -3,6 +3,7 @@ import Stripe from 'stripe';
 import { prisma } from '@/lib/prisma';
 import { stripe } from '@/lib/stripe';
 import { getSchedule } from '@/lib/schedule';
+import { getSettings, getSetting } from '@/lib/settings';
 
 export async function POST(req: NextRequest) {
   try {
@@ -57,6 +58,13 @@ export async function POST(req: NextRequest) {
       );
     }
 
+    // Load settings from DB for dynamic values
+    const settings = await getSettings();
+    const courseName = getSetting(settings, 'course.name', 'Summer Braille Course');
+    const balanceAmount = getSetting(settings, 'pricing.balance', '350');
+    const balanceDueDate = getSetting(settings, 'course.balanceDueDate', '2026-05-01');
+    const dueDateFormatted = new Date(balanceDueDate + 'T00:00:00').toLocaleDateString('en-US', { month: 'long', day: 'numeric' });
+
     // Create Stripe Checkout Session
     const siteUrl = process.env.SITE_URL || 'https://braille-course-web.vercel.app';
     const schedule = getSchedule(section.label);
@@ -77,28 +85,28 @@ export async function POST(req: NextRequest) {
       metadata: {
         sectionId,
         plan,
-        course: 'braille-summer-2026',
+        course: courseName,
         schedule,
       },
       payment_intent_data: {
         metadata: {
-          course: 'braille-summer-2026',
+          course: courseName,
           type: plan,
           sectionId,
         },
-        description: `Summer Braille Course 2026 — ${schedule}`,
+        description: `${courseName} — ${schedule}`,
       },
       success_url: `${siteUrl}/summer/success?session_id={CHECKOUT_SESSION_ID}`,
       cancel_url: `${siteUrl}/summer`,
     };
 
-    // Deposit: save card for future $350 charge, show balance reminder
+    // Deposit: save card for future balance charge, show balance reminder
     if (plan === 'deposit') {
       sessionParams.payment_intent_data!.setup_future_usage = 'off_session';
       sessionParams.custom_text = {
         submit: {
           message:
-            'Your card will be saved securely. The remaining $350 balance will be charged automatically on May 1st.',
+            `Your card will be saved securely. The remaining $${balanceAmount} balance will be charged automatically on ${dueDateFormatted}.`,
         },
       };
     }

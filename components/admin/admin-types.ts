@@ -314,6 +314,18 @@ export interface Grade {
 /* ── Course Settings ── */
 export type CourseSettingsMap = Record<string, string>;
 
+/* ── Content Templates ── */
+export interface ContentTemplate {
+  id: string;
+  label: string;
+  title: string;
+  notes: string;
+  format: string;
+  difficulty: string;
+  instructions: string | null;
+  createdAt: string;
+}
+
 /* ── Props ── */
 export interface AdminProps {
   sections: Section[];

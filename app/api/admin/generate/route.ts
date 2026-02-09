@@ -3,6 +3,7 @@ import { put } from '@vercel/blob';
 import { prisma } from '@/lib/prisma';
 import { isAuthorized } from '@/lib/admin-auth';
 import { anthropic } from '@/lib/anthropic';
+import { getSettings, getSetting } from '@/lib/settings';
 import { brailleMap, dotDescription } from '@/lib/braille-map';
 import { contractedBrailleEntries } from '@/lib/contracted-braille-map';
 import PptxGenJS from 'pptxgenjs';
@@ -859,7 +860,15 @@ export async function POST(req: NextRequest) {
 
         const brailleContext = buildBrailleContext(difficulty);
         const pedagogicalPreamble = buildPedagogicalPreamble(difficulty);
-        const systemPrompt = pedagogicalPreamble + '\n' + brailleContext + '\n\n' + FORMAT_PROMPTS[format];
+
+        // Inject course context from settings
+        const settings = await getSettings();
+        const courseName = getSetting(settings, 'course.name', 'Summer Braille Course');
+        const courseStart = getSetting(settings, 'course.startDate', '2026-06-08');
+        const courseEnd = getSetting(settings, 'course.endDate', '2026-07-31');
+        const courseContext = `\nCOURSE CONTEXT: This material is for "${courseName}", running ${courseStart} to ${courseEnd}. Reference these dates where appropriate rather than using generic placeholders.\n`;
+
+        const systemPrompt = pedagogicalPreamble + '\n' + brailleContext + courseContext + '\n' + FORMAT_PROMPTS[format];
         const userMessage = instructions
           ? `Notes/Content:\n${prompt}\n\nAdditional Instructions:\n${instructions}`
           : `Notes/Content:\n${prompt}`;

@@ -1,8 +1,9 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { prisma } from '@/lib/prisma';
 import { isAuthorized } from '@/lib/admin-auth';
+import { getSettings, getSetting } from '@/lib/settings';
 
-/* ── POST /api/admin/sessions/generate ── auto-generate 16 sessions for a section ── */
+/* ── POST /api/admin/sessions/generate ── auto-generate sessions for a section ── */
 export async function POST(req: NextRequest) {
   if (!isAuthorized(req)) {
     return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
@@ -29,22 +30,38 @@ export async function POST(req: NextRequest) {
       });
     }
 
-    // Determine schedule based on section label
-    // Section A = Mon & Wed starting June 8, 2026
-    // Section B = Tue & Thu starting June 9, 2026
+    // Read schedule settings from DB
+    const settings = await getSettings();
     const isA = section.label.includes('A');
-    const startDate = isA ? new Date('2026-06-08') : new Date('2026-06-09');
-    const days = isA ? [1, 3] : [2, 4]; // Mon=1, Wed=3, Tue=2, Thu=4
-    const totalSessions = 16;
+    const sectionKey = isA ? 'A' : 'B';
+
+    const startDateStr = getSetting(settings, 'course.startDate', '2026-06-08');
+    const daysStr = getSetting(settings, `section.${sectionKey}.days`, isA ? '1,3' : '2,4');
+    const timeStr = getSetting(settings, `section.${sectionKey}.time`, isA ? '13:00' : '16:00');
+    const totalSessions = parseInt(getSetting(settings, 'course.sessionCount', '16'), 10);
+
+    const days = daysStr.split(',').map((d) => parseInt(d.trim(), 10));
+    const [hours, minutes] = timeStr.split(':').map(Number);
+
+    // For Section B, if start date is a day not in schedule, advance to the first matching day
+    const startDate = new Date(startDateStr);
+    if (!days.includes(startDate.getDay())) {
+      // Advance to the first day that matches
+      while (!days.includes(startDate.getDay())) {
+        startDate.setDate(startDate.getDate() + 1);
+      }
+    }
+
+    // Convert local ET time to UTC (ET = UTC-4 in summer)
+    const utcHours = hours + 4;
 
     // Generate session dates by iterating from start
     const dates: Date[] = [];
     const current = new Date(startDate);
     while (dates.length < totalSessions) {
       if (days.includes(current.getDay())) {
-        // Set time: Section A = 1 PM ET, Section B = 4 PM ET
         const sessionDate = new Date(current);
-        sessionDate.setUTCHours(isA ? 17 : 20, 0, 0, 0); // ET = UTC-4 in summer
+        sessionDate.setUTCHours(utcHours, minutes, 0, 0);
         dates.push(sessionDate);
       }
       current.setDate(current.getDate() + 1);
