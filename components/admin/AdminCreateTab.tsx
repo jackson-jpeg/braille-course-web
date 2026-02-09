@@ -4,7 +4,8 @@ import { useState, useRef, useEffect, useCallback } from 'react';
 import { useToast } from './AdminToast';
 import { formatFileSize } from './admin-utils';
 import AdminConfirmDialog from './AdminConfirmDialog';
-import type { Material, GeneratePreview, ContentTemplate } from './admin-types';
+import ContentReviewEditor from './ContentReviewEditor';
+import type { Material, GeneratePreview, ContentTemplate, CorrectionEntry } from './admin-types';
 
 const FORMAT_OPTIONS = [
   {
@@ -66,6 +67,18 @@ const FORMAT_OPTIONS = [
       </svg>
     ),
   },
+  {
+    value: 'session-bundle',
+    label: 'Session Bundle',
+    description: 'Slides + handout + worksheet — complete session package',
+    icon: (
+      <svg width="20" height="20" viewBox="0 0 24 24" fill="none">
+        <rect x="2" y="4" width="8" height="7" rx="1" stroke="currentColor" strokeWidth="1.5"/>
+        <rect x="14" y="4" width="8" height="7" rx="1" stroke="currentColor" strokeWidth="1.5"/>
+        <rect x="8" y="13" width="8" height="7" rx="1" stroke="currentColor" strokeWidth="1.5"/>
+      </svg>
+    ),
+  },
 ];
 
 const BUILTIN_PRESETS = [
@@ -91,7 +104,7 @@ const BUILTIN_PRESETS = [
   },
 ];
 
-type GenStage = 'idle' | 'ai' | 'building' | 'uploading' | 'done';
+type GenStage = 'idle' | 'ai' | 'review' | 'building' | 'uploading' | 'done';
 
 interface Props {
   onEmailMaterial: (materialId: string) => void;
@@ -112,6 +125,17 @@ export default function AdminCreateTab({ onEmailMaterial }: Props) {
   const abortRef = useRef<AbortController | null>(null);
   const formRef = useRef<HTMLFormElement | null>(null);
 
+  // Review stage state
+  const [contentJson, setContentJson] = useState<unknown>(null);
+  const [corrections, setCorrections] = useState<CorrectionEntry[]>([]);
+  const [wasCorrected, setWasCorrected] = useState(false);
+  const [draftId, setDraftId] = useState<string | null>(null);
+  const [bundleResults, setBundleResults] = useState<Material[]>([]);
+  const [draftSaveStatus, setDraftSaveStatus] = useState<'idle' | 'saving' | 'saved'>('idle');
+
+  // Polish notes
+  const [polishing, setPolishing] = useState(false);
+
   // DB-backed templates
   const [templates, setTemplates] = useState<ContentTemplate[]>([]);
   const [savingTemplate, setSavingTemplate] = useState(false);
@@ -123,6 +147,9 @@ export default function AdminCreateTab({ onEmailMaterial }: Props) {
 
   // Quick-generate
   const [nextSession, setNextSession] = useState<{ title: string; date: string } | null>(null);
+
+  // Autosave draft debounce ref
+  const autosaveTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
   // Fetch persistent recent materials
   const fetchRecentMaterials = useCallback(async () => {
@@ -149,19 +176,16 @@ export default function AdminCreateTab({ onEmailMaterial }: Props) {
   // Fetch next upcoming session for quick-generate
   const fetchNextSession = useCallback(async () => {
     try {
-      // Get sections from public endpoint
       const secRes = await fetch('/api/sections');
       if (!secRes.ok) return;
       const sections = await secRes.json();
       if (!Array.isArray(sections) || sections.length === 0) return;
 
-      // Get sessions for first section
       const sessRes = await fetch(`/api/admin/sessions?sectionId=${sections[0].id}`);
       if (!sessRes.ok) return;
       const sessData = await sessRes.json();
       const sessions = sessData.sessions || [];
 
-      // Find next upcoming session
       const now = new Date();
       const upcoming = sessions
         .filter((s: { date: string }) => new Date(s.date) > now)
@@ -184,8 +208,40 @@ export default function AdminCreateTab({ onEmailMaterial }: Props) {
 
   // Abort in-flight generation on unmount
   useEffect(() => {
-    return () => { abortRef.current?.abort(); };
+    return () => {
+      abortRef.current?.abort();
+      if (autosaveTimerRef.current) clearTimeout(autosaveTimerRef.current);
+    };
   }, []);
+
+  // Autosave draft when in review stage
+  const saveDraft = useCallback(async (json: unknown) => {
+    if (autosaveTimerRef.current) clearTimeout(autosaveTimerRef.current);
+    autosaveTimerRef.current = setTimeout(async () => {
+      setDraftSaveStatus('saving');
+      try {
+        const res = await fetch('/api/admin/drafts', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            id: draftId || undefined,
+            title,
+            notes,
+            format,
+            difficulty,
+            instructions: instructions || undefined,
+            contentJson: json,
+            wasCorrected,
+          }),
+        });
+        if (res.ok) {
+          const data = await res.json();
+          if (!draftId) setDraftId(data.draft.id);
+          setDraftSaveStatus('saved');
+        }
+      } catch { /* ignore */ }
+    }, 3000);
+  }, [draftId, title, notes, format, difficulty, instructions, wasCorrected]);
 
   async function checkDuplicate(): Promise<boolean> {
     if (!title.trim()) return false;
@@ -204,6 +260,25 @@ export default function AdminCreateTab({ onEmailMaterial }: Props) {
       }
     } catch { /* ignore */ }
     return false;
+  }
+
+  async function handlePolishNotes() {
+    if (notes.length < 20) return;
+    setPolishing(true);
+    try {
+      const res = await fetch('/api/admin/polish-notes', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ notes, format, difficulty }),
+      });
+      if (!res.ok) throw new Error('Failed to polish notes');
+      const data = await res.json();
+      setNotes(data.polished);
+      showToast('Notes polished');
+    } catch (err) {
+      showToast(err instanceof Error ? err.message : 'Failed to polish notes', 'error');
+    }
+    setPolishing(false);
   }
 
   async function handleGenerate(e: React.FormEvent) {
@@ -225,6 +300,11 @@ export default function AdminCreateTab({ onEmailMaterial }: Props) {
     setGenError('');
     setResult(null);
     setPreview(null);
+    setContentJson(null);
+    setCorrections([]);
+    setWasCorrected(false);
+    setDraftId(null);
+    setBundleResults([]);
 
     const controller = new AbortController();
     abortRef.current = controller;
@@ -267,15 +347,16 @@ export default function AdminCreateTab({ onEmailMaterial }: Props) {
               throw new Error(event.error);
             }
 
-            if (event.stage === 'ai') setGenStage('ai');
-            else if (event.stage === 'building') setGenStage('building');
-            else if (event.stage === 'uploading') setGenStage('uploading');
-            else if (event.stage === 'done') {
-              setGenStage('done');
-              setResult(event.material);
+            if (event.stage === 'ai') {
+              setGenStage('ai');
+            } else if (event.stage === 'review') {
+              // Two-stage flow: stop at review
+              setGenStage('review');
+              setContentJson(event.content);
               setPreview(event.preview || null);
-              setRecentMaterials((prev) => [event.material, ...prev.slice(0, 9)]);
-              showToast(`Generated "${event.material.filename}"`);
+              setCorrections(event.corrections || []);
+              setWasCorrected(event.wasCorrected || false);
+              showToast('Content ready for review');
             }
           } catch (parseErr) {
             if (parseErr instanceof Error && parseErr.message !== jsonStr) {
@@ -293,9 +374,93 @@ export default function AdminCreateTab({ onEmailMaterial }: Props) {
     }
   }
 
+  async function handleBuildFromReview(editedJson: unknown) {
+    setGenStage('building');
+    setGenError('');
+
+    const controller = new AbortController();
+    abortRef.current = controller;
+
+    try {
+      const res = await fetch('/api/admin/build-from-draft', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          contentJson: typeof editedJson === 'string' ? editedJson : JSON.stringify(editedJson),
+          format,
+          title,
+        }),
+        signal: controller.signal,
+      });
+
+      if (!res.ok) {
+        const json = await res.json();
+        throw new Error(json.error || 'Failed to build');
+      }
+
+      const reader = res.body?.getReader();
+      if (!reader) throw new Error('No response stream');
+
+      const decoder = new TextDecoder();
+      let buffer = '';
+
+      while (true) {
+        const { done, value } = await reader.read();
+        if (done) break;
+
+        buffer += decoder.decode(value, { stream: true });
+        const lines = buffer.split('\n\n');
+        buffer = lines.pop() || '';
+
+        for (const line of lines) {
+          const trimmed = line.trim();
+          if (!trimmed.startsWith('data: ')) continue;
+          const jsonStr = trimmed.slice(6);
+          try {
+            const event = JSON.parse(jsonStr);
+
+            if (event.error) {
+              throw new Error(event.error);
+            }
+
+            if (event.stage === 'building') setGenStage('building');
+            else if (event.stage === 'uploading') setGenStage('uploading');
+            else if (event.stage === 'done') {
+              setGenStage('done');
+              if (event.materials) {
+                // Session bundle — multiple materials
+                setBundleResults(event.materials);
+                setRecentMaterials((prev) => [...event.materials, ...prev.slice(0, 7)]);
+                showToast(`Built ${event.materials.length} documents`);
+              } else if (event.material) {
+                setResult(event.material);
+                setRecentMaterials((prev) => [event.material, ...prev.slice(0, 9)]);
+                showToast(`Generated "${event.material.filename}"`);
+              }
+            }
+          } catch (parseErr) {
+            if (parseErr instanceof Error && parseErr.message !== jsonStr) {
+              throw parseErr;
+            }
+          }
+        }
+      }
+    } catch (err) {
+      if ((err as Error).name === 'AbortError') return;
+      const message = err instanceof Error ? err.message : 'Failed to build document';
+      setGenError(message);
+      setGenStage('review');
+      showToast(message, 'error');
+    }
+  }
+
   function handleRegenerate() {
     setResult(null);
     setPreview(null);
+    setContentJson(null);
+    setCorrections([]);
+    setWasCorrected(false);
+    setBundleResults([]);
     setGenStage('idle');
     setGenError('');
   }
@@ -303,12 +468,25 @@ export default function AdminCreateTab({ onEmailMaterial }: Props) {
   function handleStartFresh() {
     setResult(null);
     setPreview(null);
+    setContentJson(null);
+    setCorrections([]);
+    setWasCorrected(false);
+    setBundleResults([]);
+    setDraftId(null);
     setGenStage('idle');
     setGenError('');
     setTitle('');
     setNotes('');
     setInstructions('');
     setDifficulty('intermediate');
+  }
+
+  function handleBackToForm() {
+    setContentJson(null);
+    setCorrections([]);
+    setWasCorrected(false);
+    setGenStage('idle');
+    setGenError('');
   }
 
   function applyPreset(preset: { title: string; notes: string }) {
@@ -394,21 +572,24 @@ export default function AdminCreateTab({ onEmailMaterial }: Props) {
     setInstructions('');
   }
 
-  const isGenerating = genStage !== 'idle' && genStage !== 'done';
-  const showForm = genStage === 'idle' || isGenerating;
-  const showResult = genStage === 'done' && result;
+  const isGenerating = genStage === 'ai';
+  const isBuilding = genStage === 'building' || genStage === 'uploading';
+  const showForm = genStage === 'idle' || genStage === 'ai';
+  const showReview = genStage === 'review';
+  const showResult = genStage === 'done' && (result || bundleResults.length > 0);
 
   const STEPS: { key: GenStage; label: string }[] = [
     { key: 'ai', label: 'Generating content' },
+    { key: 'review', label: 'Review & Edit' },
     { key: 'building', label: 'Building document' },
     { key: 'uploading', label: 'Uploading file' },
   ];
 
-  const stageOrder: GenStage[] = ['ai', 'building', 'uploading', 'done'];
+  const stageOrder: GenStage[] = ['ai', 'review', 'building', 'uploading', 'done'];
   const currentIndex = stageOrder.indexOf(genStage);
 
   function renderProgressStepper() {
-    if (!isGenerating) return null;
+    if (genStage === 'idle' || genStage === 'done') return null;
     return (
       <div className="admin-gen-stepper">
         {STEPS.map((step, i) => {
@@ -426,7 +607,7 @@ export default function AdminCreateTab({ onEmailMaterial }: Props) {
                     <path d="M5 13l4 4L19 7" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round"/>
                   </svg>
                 ) : isActive ? (
-                  <span className="admin-gen-step-spinner" />
+                  step.key === 'review' ? null : <span className="admin-gen-step-spinner" />
                 ) : null}
               </div>
               <span className={`admin-gen-step-label ${isActive ? 'admin-gen-step-label-active' : ''} ${isComplete ? 'admin-gen-step-label-done' : ''}`}>
@@ -488,6 +669,34 @@ export default function AdminCreateTab({ onEmailMaterial }: Props) {
             </ul>
           </div>
         )}
+      </div>
+    );
+  }
+
+  function renderResultCard(m: Material) {
+    return (
+      <div key={m.id} className="admin-create-result-card">
+        <div className="admin-create-result-info">
+          <span className="admin-create-result-filename">{m.filename}</span>
+          <span className="admin-category-badge">{m.category}</span>
+          <span className="admin-create-result-size">{formatFileSize(m.size)}</span>
+        </div>
+        <div className="admin-create-result-actions">
+          <a
+            href={m.blobUrl}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="admin-compose-btn"
+          >
+            Download
+          </a>
+          <button
+            className="admin-send-btn"
+            onClick={() => onEmailMaterial(m.id)}
+          >
+            Email to Students
+          </button>
+        </div>
       </div>
     );
   }
@@ -568,6 +777,19 @@ export default function AdminCreateTab({ onEmailMaterial }: Props) {
             />
             <div className="admin-gen-charcount">
               {notes.length} characters
+              {notes.length > 20 && !isGenerating && (
+                <button
+                  type="button"
+                  className="admin-compose-btn"
+                  style={{ fontSize: '0.72rem', padding: '2px 8px', marginLeft: 8 }}
+                  onClick={handlePolishNotes}
+                  disabled={polishing}
+                >
+                  {polishing ? (
+                    <><span className="admin-create-spinner" style={{ width: 10, height: 10, marginRight: 4 }} />Polishing&hellip;</>
+                  ) : 'Polish Notes'}
+                </button>
+              )}
               {title.trim() && notes.trim() && !isGenerating && (
                 <button
                   type="button"
@@ -667,7 +889,6 @@ export default function AdminCreateTab({ onEmailMaterial }: Props) {
             skipDupeCheckRef.current = true;
             setShowDuplicateConfirm(false);
             setDuplicateWarning(null);
-            // Programmatically re-submit the form
             formRef.current?.requestSubmit();
           }}
           onCancel={() => {
@@ -677,6 +898,37 @@ export default function AdminCreateTab({ onEmailMaterial }: Props) {
         />
       )}
 
+      {/* Review & Edit stage */}
+      {showReview && contentJson !== null && (
+        <>
+          {renderProgressStepper()}
+          <div className="admin-review-draft-status">
+            {draftSaveStatus === 'saving' && <span className="admin-review-save-indicator">Saving draft&hellip;</span>}
+            {draftSaveStatus === 'saved' && <span className="admin-review-save-indicator admin-review-save-done">Draft saved</span>}
+          </div>
+          <ContentReviewEditor
+            format={format}
+            contentJson={contentJson}
+            wasCorrected={wasCorrected}
+            corrections={corrections}
+            onBuild={handleBuildFromReview}
+            onBack={handleBackToForm}
+            onSaveDraft={saveDraft}
+          />
+        </>
+      )}
+
+      {/* Building stage progress */}
+      {isBuilding && (
+        <div style={{ padding: '2rem 0' }}>
+          {renderProgressStepper()}
+          <div style={{ textAlign: 'center', marginTop: '1rem' }}>
+            <span className="admin-create-spinner" /> Building document&hellip;
+          </div>
+        </div>
+      )}
+
+      {/* Results */}
       {showResult && (
         <div className="admin-create-result">
           <div className="admin-create-result-header">
@@ -684,43 +936,28 @@ export default function AdminCreateTab({ onEmailMaterial }: Props) {
               <circle cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="1.5"/>
               <path d="M8 12l3 3 5-5" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
             </svg>
-            <h3>Material Generated</h3>
+            <h3>{bundleResults.length > 0 ? 'Session Bundle Generated' : 'Material Generated'}</h3>
           </div>
 
-          <div className="admin-create-result-card">
-            <div className="admin-create-result-info">
-              <span className="admin-create-result-filename">{result.filename}</span>
-              <span className="admin-category-badge">{result.category}</span>
-              <span className="admin-create-result-size">{formatFileSize(result.size)}</span>
-            </div>
-            <div className="admin-create-result-actions">
-              <a
-                href={result.blobUrl}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="admin-compose-btn"
-              >
-                Download
-              </a>
-              <button
-                className="admin-send-btn"
-                onClick={() => onEmailMaterial(result.id)}
-              >
-                Email to Students
-              </button>
-              <button
-                className="admin-refresh-btn"
-                onClick={handleRegenerate}
-              >
-                Regenerate
-              </button>
-              <button
-                className="admin-compose-btn"
-                onClick={handleStartFresh}
-              >
-                Start Fresh
-              </button>
-            </div>
+          {bundleResults.length > 0 ? (
+            bundleResults.map((m) => renderResultCard(m))
+          ) : result ? (
+            renderResultCard(result)
+          ) : null}
+
+          <div className="admin-create-result-actions" style={{ marginTop: 12 }}>
+            <button
+              className="admin-refresh-btn"
+              onClick={handleRegenerate}
+            >
+              Regenerate
+            </button>
+            <button
+              className="admin-compose-btn"
+              onClick={handleStartFresh}
+            >
+              Start Fresh
+            </button>
           </div>
 
           {renderPreview()}

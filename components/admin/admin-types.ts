@@ -326,6 +326,27 @@ export interface ContentTemplate {
   createdAt: string;
 }
 
+/* ── Material Drafts ── */
+export interface MaterialDraft {
+  id: string;
+  title: string;
+  notes: string;
+  format: string;
+  difficulty: string;
+  instructions: string | null;
+  contentJson: string;
+  wasCorrected: boolean;
+  createdAt: string;
+  updatedAt: string;
+}
+
+export interface CorrectionEntry {
+  original: string;
+  corrected: string;
+  context: string;
+  letterOrContraction: string;
+}
+
 /* ── Props ── */
 export interface AdminProps {
   sections: Section[];
