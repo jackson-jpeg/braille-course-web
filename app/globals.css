@@ -13428,7 +13428,23 @@ details.faq-item.reveal:nth-child(6) { transition-delay: 0.4s; }
 .reflex-dot-btn:focus-visible,
 .csprint-tile:focus-visible,
 .decoder-submit:focus-visible,
-.wordgame-key:focus-visible {
+.decoder-input:focus-visible,
+.wordgame-key:focus-visible,
+.explorer-clear:focus-visible,
+.games-nav-link:focus-visible,
+.hangman-play-again:focus-visible,
+.memorymatch-play-again:focus-visible,
+.wordgame-play-again:focus-visible,
+.csprint-start-btn:focus-visible,
+.csprint-undo:focus-visible,
+.numsense-play-again:focus-visible,
+.reflex-start-btn:focus-visible,
+.reflex-submit-btn:focus-visible,
+.seq-check-btn:focus-visible,
+.seq-start-btn:focus-visible,
+.decoder-play-again:focus-visible,
+.decoder-submit-btn:focus-visible,
+.quickstart-fab-btn:focus-visible {
   outline: 2px solid var(--gold);
   outline-offset: 2px;
 }
