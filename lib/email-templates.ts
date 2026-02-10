@@ -340,6 +340,7 @@ export function appointmentRequestConfirmationEmail(opts: { name: string }) {
 export function schoolContactAdminEmail(opts: {
   schoolName: string;
   districtName?: string | null;
+  state?: string | null;
   contactName: string;
   contactEmail: string;
   contactPhone?: string | null;
@@ -352,6 +353,7 @@ export function schoolContactAdminEmail(opts: {
   const {
     schoolName,
     districtName,
+    state,
     contactName,
     contactEmail,
     contactPhone,
@@ -372,6 +374,7 @@ export function schoolContactAdminEmail(opts: {
       <table role="presentation" width="100%" cellpadding="0" cellspacing="0">
         ${detailRow('School Name', escapeHtml(schoolName))}
         ${districtName ? detailRow('District', escapeHtml(districtName)) : ''}
+        ${state ? detailRow('State', escapeHtml(state)) : ''}
       </table>
     </td>
   </tr>

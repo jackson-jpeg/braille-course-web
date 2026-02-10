@@ -21,6 +21,8 @@ export async function GET(req: NextRequest, { params }: { params: Promise<{ id: 
     return NextResponse.json({
       inquiry: {
         ...inquiry,
+        contractStartDate: inquiry.contractStartDate?.toISOString() ?? null,
+        contractEndDate: inquiry.contractEndDate?.toISOString() ?? null,
         createdAt: inquiry.createdAt.toISOString(),
         updatedAt: inquiry.updatedAt.toISOString(),
       },
@@ -47,10 +49,15 @@ export async function PATCH(req: NextRequest, { params }: { params: Promise<{ id
       contactTitle,
       schoolName,
       districtName,
+      state,
       servicesNeeded,
       studentCount,
       timeline,
       deliveryPreference,
+      contractStartDate,
+      contractEndDate,
+      serviceHours,
+      hourlyRate,
       adminNotes,
       sortOrder,
     } = body as {
@@ -61,10 +68,15 @@ export async function PATCH(req: NextRequest, { params }: { params: Promise<{ id
       contactTitle?: string | null;
       schoolName?: string;
       districtName?: string | null;
+      state?: string | null;
       servicesNeeded?: string;
       studentCount?: string | null;
       timeline?: string | null;
       deliveryPreference?: string | null;
+      contractStartDate?: string | null;
+      contractEndDate?: string | null;
+      serviceHours?: string | null;
+      hourlyRate?: string | null;
       adminNotes?: string | null;
       sortOrder?: number;
     };
@@ -84,7 +96,7 @@ export async function PATCH(req: NextRequest, { params }: { params: Promise<{ id
       return NextResponse.json({ error: 'Invalid status value' }, { status: 400 });
     }
 
-    const data: Record<string, string | number | null | undefined> = {};
+    const data: Record<string, string | number | Date | null | undefined> = {};
     if (status !== undefined) data.status = status;
     if (contactEmail !== undefined) data.contactEmail = contactEmail;
     if (contactName !== undefined) data.contactName = contactName;
@@ -92,10 +104,16 @@ export async function PATCH(req: NextRequest, { params }: { params: Promise<{ id
     if (contactTitle !== undefined) data.contactTitle = contactTitle;
     if (schoolName !== undefined) data.schoolName = schoolName;
     if (districtName !== undefined) data.districtName = districtName;
+    if (state !== undefined) data.state = state;
     if (servicesNeeded !== undefined) data.servicesNeeded = servicesNeeded;
     if (studentCount !== undefined) data.studentCount = studentCount;
     if (timeline !== undefined) data.timeline = timeline;
     if (deliveryPreference !== undefined) data.deliveryPreference = deliveryPreference;
+    if (contractStartDate !== undefined)
+      data.contractStartDate = contractStartDate ? new Date(contractStartDate) : null;
+    if (contractEndDate !== undefined) data.contractEndDate = contractEndDate ? new Date(contractEndDate) : null;
+    if (serviceHours !== undefined) data.serviceHours = serviceHours;
+    if (hourlyRate !== undefined) data.hourlyRate = hourlyRate;
     if (adminNotes !== undefined) data.adminNotes = adminNotes;
     if (sortOrder !== undefined) data.sortOrder = sortOrder;
 
@@ -107,6 +125,8 @@ export async function PATCH(req: NextRequest, { params }: { params: Promise<{ id
     return NextResponse.json({
       inquiry: {
         ...inquiry,
+        contractStartDate: inquiry.contractStartDate?.toISOString() ?? null,
+        contractEndDate: inquiry.contractEndDate?.toISOString() ?? null,
         createdAt: inquiry.createdAt.toISOString(),
         updatedAt: inquiry.updatedAt.toISOString(),
       },

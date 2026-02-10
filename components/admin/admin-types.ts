@@ -175,15 +175,29 @@ export interface SchoolInquiry {
   contactTitle: string | null;
   schoolName: string;
   districtName: string | null;
+  state: string | null;
   servicesNeeded: string;
   studentCount: string | null;
   timeline: string | null;
   deliveryPreference: string | null;
+  contractStartDate: string | null;
+  contractEndDate: string | null;
+  serviceHours: string | null;
+  hourlyRate: string | null;
   status: SchoolInquiryStatus;
   sortOrder: number;
   adminNotes: string | null;
   createdAt: string;
   updatedAt: string;
+}
+
+export interface SchoolActivity {
+  id: string;
+  schoolInquiryId: string;
+  date: string;
+  type: string;
+  content: string;
+  createdAt: string;
 }
 
 /* ── Stripe Payouts ── */

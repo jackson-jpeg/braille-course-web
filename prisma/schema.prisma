@@ -246,12 +246,19 @@ model SchoolInquiry {
   // School/District Information
   schoolName         String
   districtName       String?
+  state              String?
 
   // Opportunity Details
   servicesNeeded     String
   studentCount       String?
   timeline           String?
   deliveryPreference String?
+
+  // Contract Details
+  contractStartDate  DateTime?
+  contractEndDate    DateTime?
+  serviceHours       String?
+  hourlyRate         String?
 
   // Pipeline Management
   status             SchoolInquiryStatus @default(NEW_INQUIRY)
@@ -262,7 +269,21 @@ model SchoolInquiry {
   createdAt          DateTime            @default(now())
   updatedAt          DateTime            @updatedAt
 
+  activities         SchoolActivity[]
+
   @@index([status, sortOrder])
   @@index([contactEmail])
   @@index([schoolName])
+}
+
+model SchoolActivity {
+  id              String        @id @default(cuid())
+  schoolInquiryId String
+  schoolInquiry   SchoolInquiry @relation(fields: [schoolInquiryId], references: [id], onDelete: Cascade)
+  date            DateTime      @default(now())
+  type            String        // SESSION_NOTE, PHONE_CALL, EMAIL, MEETING, OTHER
+  content         String
+  createdAt       DateTime      @default(now())
+
+  @@index([schoolInquiryId, date])
 }

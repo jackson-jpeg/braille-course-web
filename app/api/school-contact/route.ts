@@ -11,6 +11,7 @@ export async function POST(req: NextRequest) {
     const {
       schoolName,
       districtName,
+      state,
       contactName,
       email,
       phone,
@@ -53,10 +54,10 @@ export async function POST(req: NextRequest) {
     if (
       !servicesNeeded ||
       typeof servicesNeeded !== 'string' ||
-      servicesNeeded.trim().length < 10 ||
-      servicesNeeded.trim().length > 2000
+      servicesNeeded.trim().length < 5 ||
+      servicesNeeded.trim().length > 3000
     ) {
-      return NextResponse.json({ error: 'Please describe the services needed (10-2000 characters)' }, { status: 400 });
+      return NextResponse.json({ error: 'Please describe the services needed (5-3000 characters)' }, { status: 400 });
     }
 
     // Validate optional fields with constraints
@@ -87,6 +88,10 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ error: 'Invalid delivery preference' }, { status: 400 });
     }
 
+    if (state && (typeof state !== 'string' || state.trim().length > 100)) {
+      return NextResponse.json({ error: 'Invalid state value' }, { status: 400 });
+    }
+
     // Save to database first (critical operation)
     const inquiry = await prisma.schoolInquiry.upsert({
       where: { contactEmail: email.toLowerCase().trim() },
@@ -96,6 +101,7 @@ export async function POST(req: NextRequest) {
         contactTitle: contactTitle?.trim() || null,
         schoolName: schoolName.trim(),
         districtName: districtName?.trim() || null,
+        state: state?.trim() || null,
         servicesNeeded: servicesNeeded.trim(),
         studentCount: studentCount?.trim() || null,
         timeline: timeline?.trim() || null,
@@ -109,6 +115,7 @@ export async function POST(req: NextRequest) {
         contactTitle: contactTitle?.trim() || null,
         schoolName: schoolName.trim(),
         districtName: districtName?.trim() || null,
+        state: state?.trim() || null,
         servicesNeeded: servicesNeeded.trim(),
         studentCount: studentCount?.trim() || null,
         timeline: timeline?.trim() || null,
@@ -126,6 +133,7 @@ export async function POST(req: NextRequest) {
         html: schoolContactAdminEmail({
           schoolName: schoolName.trim(),
           districtName: districtName?.trim() || null,
+          state: state?.trim() || null,
           contactName: contactName.trim(),
           contactEmail: email.trim(),
           contactPhone: phone?.trim() || null,

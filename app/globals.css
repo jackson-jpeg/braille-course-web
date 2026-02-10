@@ -12410,6 +12410,157 @@ details.faq-item.reveal:nth-child(6) {
   margin: 0;
 }
 
+/* Section groupings */
+.school-contact-form-section {
+  border: none;
+  padding: 0;
+  margin: 0 0 var(--space-xl) 0;
+}
+
+.school-contact-form-section-divider {
+  padding-top: var(--space-xl);
+  border-top: 1px solid var(--gold-soft);
+}
+
+.school-contact-form-section-legend {
+  font-family: var(--font-heading);
+  font-size: 1.25rem;
+  color: var(--navy);
+  font-weight: 400;
+  margin-bottom: var(--space-lg);
+  display: block;
+  width: 100%;
+}
+
+.school-contact-form-section-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: var(--space-lg);
+}
+
+/* Checkbox pills */
+.school-contact-form-checkboxes {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-sm);
+  margin-top: var(--space-xs);
+}
+
+.school-contact-form-checkbox-item {
+  display: flex;
+  align-items: center;
+  gap: var(--space-xs);
+  cursor: pointer;
+  padding: 10px 18px;
+  border: 2px solid var(--gold-soft);
+  border-radius: var(--radius-full);
+  background: var(--cream);
+  transition: all var(--transition-micro);
+  user-select: none;
+}
+
+.school-contact-form-checkbox-item:hover {
+  border-color: var(--gold-light);
+  background: white;
+}
+
+.school-contact-form-checkbox-item input[type='checkbox'] {
+  margin: 0;
+  cursor: pointer;
+  width: 16px;
+  height: 16px;
+  accent-color: var(--gold);
+}
+
+.school-contact-form-checkbox-item span {
+  font-size: 0.9rem;
+  color: var(--text-secondary);
+}
+
+.school-contact-form-checkbox-item--checked {
+  border-color: var(--gold);
+  background: var(--gold-soft);
+}
+
+.school-contact-form-checkbox-item--checked span {
+  font-weight: 600;
+  color: var(--navy);
+}
+
+/* Delivery preference cards */
+.school-contact-form-delivery-cards {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: var(--space-md);
+  margin-top: var(--space-xs);
+}
+
+.school-contact-form-delivery-card {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--space-xs);
+  padding: var(--space-lg) var(--space-md);
+  border: 2px solid var(--gold-soft);
+  border-radius: var(--radius-md);
+  background: var(--cream);
+  cursor: pointer;
+  transition: all var(--transition-micro);
+  text-align: center;
+  user-select: none;
+}
+
+.school-contact-form-delivery-card input[type='radio'] {
+  position: absolute;
+  opacity: 0;
+  width: 0;
+  height: 0;
+}
+
+.school-contact-form-delivery-card:hover {
+  border-color: var(--gold-light);
+  background: white;
+  transform: translateY(-1px);
+  box-shadow: 0 2px 8px rgba(27, 42, 74, 0.08);
+}
+
+.school-contact-form-delivery-card--selected {
+  border-color: var(--gold);
+  background: white;
+  box-shadow: 0 2px 12px rgba(212, 168, 83, 0.2);
+}
+
+.school-contact-form-delivery-icon {
+  color: var(--slate);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.school-contact-form-delivery-card--selected .school-contact-form-delivery-icon {
+  color: var(--gold);
+}
+
+.school-contact-form-delivery-label {
+  font-weight: 600;
+  font-size: 0.95rem;
+  color: var(--navy);
+}
+
+.school-contact-form-delivery-subtitle {
+  font-size: 0.8rem;
+  color: var(--slate);
+  line-height: 1.4;
+}
+
+.school-contact-form-delivery-check {
+  position: absolute;
+  top: 8px;
+  right: 8px;
+  color: var(--gold);
+}
+
 .school-contact-form-radios {
   display: flex;
   flex-wrap: wrap;
@@ -12636,11 +12787,27 @@ details.faq-item.reveal:nth-child(6) {
     font-size: 2rem;
   }
 
+  .school-contact-form-section-grid {
+    grid-template-columns: 1fr;
+  }
+
   .school-contact-form-radios {
     flex-direction: column;
   }
 
   .school-contact-form-radio-item {
+    width: 100%;
+  }
+
+  .school-contact-form-delivery-cards {
+    grid-template-columns: 1fr;
+  }
+
+  .school-contact-form-checkboxes {
+    flex-direction: column;
+  }
+
+  .school-contact-form-checkbox-item {
     width: 100%;
   }
 }
@@ -12699,6 +12866,10 @@ details.faq-item.reveal:nth-child(6) {
   background: white;
   border-color: var(--gold);
   color: var(--gold-text);
+}
+
+.admin-pipeline-search {
+  margin-bottom: var(--space-lg);
 }
 
 /* Kanban Board */
@@ -13237,6 +13408,408 @@ details.faq-item.reveal:nth-child(6) {
   .admin-school-panel-field-full {
     grid-column: 1;
   }
+
+  .admin-contracts-table-wrap {
+    overflow-x: auto;
+  }
+}
+
+/* ── Archived Section ── */
+.admin-archived-section {
+  margin-top: var(--space-xl);
+  border-top: 1px solid var(--gold-soft);
+  padding-top: var(--space-md);
+}
+
+.admin-archived-toggle {
+  display: flex;
+  align-items: center;
+  gap: var(--space-sm);
+  font-family: var(--font-body);
+  font-size: 0.9rem;
+  font-weight: 600;
+  color: var(--slate);
+  background: none;
+  border: none;
+  cursor: pointer;
+  padding: var(--space-sm) 0;
+  transition: color var(--transition-micro);
+}
+
+.admin-archived-toggle:hover {
+  color: var(--navy);
+}
+
+.admin-archived-toggle svg {
+  transition: transform var(--transition-micro);
+}
+
+.admin-archived-chevron-open {
+  transform: rotate(180deg);
+}
+
+.admin-archived-count {
+  background: var(--gold-soft);
+  color: var(--gold-text);
+  font-size: 0.75rem;
+  font-weight: 600;
+  padding: 2px 8px;
+  border-radius: var(--radius-full);
+}
+
+.admin-archived-content {
+  margin-top: var(--space-md);
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-lg);
+}
+
+.admin-archived-group-header {
+  display: flex;
+  align-items: center;
+  gap: var(--space-sm);
+  font-size: 0.85rem;
+  font-weight: 600;
+  color: var(--navy);
+  margin-bottom: var(--space-sm);
+}
+
+.admin-archived-group-count {
+  font-size: 0.75rem;
+  font-weight: 600;
+  color: var(--slate);
+  background: var(--cream);
+  padding: 2px 8px;
+  border-radius: var(--radius-full);
+}
+
+.admin-archived-row {
+  display: flex;
+  align-items: center;
+  gap: var(--space-lg);
+  padding: var(--space-sm) var(--space-md);
+  border-radius: var(--radius-sm);
+  cursor: pointer;
+  transition: background var(--transition-micro);
+}
+
+.admin-archived-row:hover {
+  background: var(--gold-soft);
+}
+
+.admin-archived-row-school {
+  font-weight: 600;
+  font-size: 0.9rem;
+  color: var(--navy);
+  min-width: 160px;
+}
+
+.admin-archived-row-district {
+  font-size: 0.85rem;
+  color: var(--slate);
+  min-width: 140px;
+}
+
+.admin-archived-row-contact {
+  font-size: 0.85rem;
+  color: var(--text-secondary);
+  flex: 1;
+}
+
+.admin-archived-row-date {
+  font-size: 0.8rem;
+  color: var(--slate);
+  white-space: nowrap;
+}
+
+/* ── Active Contracts Table ── */
+.admin-contracts-actions {
+  margin-bottom: var(--space-lg);
+}
+
+.admin-contracts-empty {
+  text-align: center;
+  padding: var(--space-2xl) var(--space-lg);
+  color: var(--slate);
+}
+
+.admin-contracts-empty p:first-child {
+  font-size: 1.05rem;
+  font-weight: 600;
+  color: var(--navy);
+  margin-bottom: var(--space-sm);
+}
+
+.admin-contracts-empty-hint {
+  font-size: 0.9rem;
+  color: var(--slate);
+}
+
+.admin-contracts-table-wrap {
+  border: 1px solid var(--gold-soft);
+  border-radius: var(--radius-md);
+  overflow: hidden;
+}
+
+.admin-contracts-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.88rem;
+}
+
+.admin-contracts-table thead {
+  background: var(--cream);
+}
+
+.admin-contracts-table th {
+  padding: 12px 16px;
+  font-weight: 600;
+  font-size: 0.8rem;
+  color: var(--navy);
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  text-align: left;
+  border-bottom: 2px solid var(--gold-soft);
+  cursor: pointer;
+  user-select: none;
+  white-space: nowrap;
+}
+
+.admin-contracts-table th:hover {
+  color: var(--gold-text);
+}
+
+.admin-contracts-table td {
+  padding: 14px 16px;
+  color: var(--text-secondary);
+  border-bottom: 1px solid var(--gold-soft);
+}
+
+.admin-contracts-row {
+  cursor: pointer;
+  transition: background var(--transition-micro);
+}
+
+.admin-contracts-row:hover {
+  background: rgba(212, 168, 83, 0.06);
+}
+
+.admin-contracts-cell-school {
+  font-weight: 600;
+  color: var(--navy) !important;
+}
+
+.admin-contracts-cell-date {
+  white-space: nowrap;
+}
+
+.admin-contracts-sort-arrow {
+  font-size: 0.7rem;
+}
+
+/* ── Admin Panel Input (for contract fields) ── */
+.admin-school-panel-input {
+  font-family: var(--font-body);
+  font-size: 0.95rem;
+  padding: 10px 14px;
+  border: 2px solid var(--gold-soft);
+  border-radius: var(--radius-sm);
+  background: var(--cream);
+  color: var(--navy);
+  width: 100%;
+  transition: all var(--transition-micro);
+}
+
+.admin-school-panel-input:focus {
+  outline: none;
+  border-color: var(--gold);
+  background: white;
+  box-shadow: 0 0 0 4px var(--gold-glow);
+}
+
+/* ── Activity Log ── */
+.admin-activity-form {
+  background: var(--cream);
+  border: 1px solid var(--gold-soft);
+  border-radius: var(--radius-sm);
+  padding: var(--space-md);
+  margin-bottom: var(--space-lg);
+}
+
+.admin-activity-form-row {
+  display: flex;
+  gap: var(--space-sm);
+  margin-bottom: var(--space-sm);
+}
+
+.admin-activity-form-select,
+.admin-activity-form-date {
+  font-family: var(--font-body);
+  font-size: 0.88rem;
+  padding: 8px 12px;
+  border: 2px solid var(--gold-soft);
+  border-radius: var(--radius-sm);
+  background: white;
+  color: var(--navy);
+  transition: all var(--transition-micro);
+}
+
+.admin-activity-form-select {
+  flex: 1;
+}
+
+.admin-activity-form-select:focus,
+.admin-activity-form-date:focus {
+  outline: none;
+  border-color: var(--gold);
+  box-shadow: 0 0 0 4px var(--gold-glow);
+}
+
+.admin-activity-form-textarea {
+  font-family: var(--font-body);
+  font-size: 0.9rem;
+  padding: 10px 14px;
+  border: 2px solid var(--gold-soft);
+  border-radius: var(--radius-sm);
+  background: white;
+  color: var(--navy);
+  width: 100%;
+  resize: vertical;
+  min-height: 60px;
+  line-height: 1.5;
+  margin-bottom: var(--space-sm);
+  transition: all var(--transition-micro);
+}
+
+.admin-activity-form-textarea:focus {
+  outline: none;
+  border-color: var(--gold);
+  box-shadow: 0 0 0 4px var(--gold-glow);
+}
+
+.admin-activity-form-submit {
+  font-family: var(--font-body);
+  font-size: 0.85rem;
+  font-weight: 600;
+  padding: 8px 20px;
+  background: var(--gold);
+  color: white;
+  border: none;
+  border-radius: var(--radius-full);
+  cursor: pointer;
+  transition: all var(--transition-micro);
+}
+
+.admin-activity-form-submit:hover:not(:disabled) {
+  background: var(--navy);
+}
+
+.admin-activity-form-submit:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.admin-activity-loading,
+.admin-activity-empty {
+  font-size: 0.9rem;
+  color: var(--slate);
+  font-style: italic;
+  padding: var(--space-md) 0;
+}
+
+.admin-activity-timeline {
+  display: flex;
+  flex-direction: column;
+  gap: 0;
+  position: relative;
+}
+
+.admin-activity-item {
+  display: flex;
+  gap: var(--space-md);
+  position: relative;
+  padding-bottom: var(--space-lg);
+}
+
+.admin-activity-item:last-child {
+  padding-bottom: 0;
+}
+
+.admin-activity-item::before {
+  content: '';
+  position: absolute;
+  left: 5px;
+  top: 14px;
+  bottom: 0;
+  width: 2px;
+  background: var(--gold-soft);
+}
+
+.admin-activity-item:last-child::before {
+  display: none;
+}
+
+.admin-activity-item-dot {
+  width: 12px;
+  height: 12px;
+  border-radius: 50%;
+  flex-shrink: 0;
+  margin-top: 4px;
+  z-index: 1;
+}
+
+.admin-activity-item-content {
+  flex: 1;
+  min-width: 0;
+}
+
+.admin-activity-item-header {
+  display: flex;
+  align-items: center;
+  gap: var(--space-sm);
+  margin-bottom: var(--space-xs);
+}
+
+.admin-activity-type-badge {
+  font-size: 0.75rem;
+  font-weight: 600;
+  padding: 2px 10px;
+  border-radius: var(--radius-full);
+  text-transform: uppercase;
+  letter-spacing: 0.3px;
+}
+
+.admin-activity-item-date {
+  font-size: 0.8rem;
+  color: var(--slate);
+}
+
+.admin-activity-delete {
+  margin-left: auto;
+  padding: 4px;
+  background: none;
+  border: none;
+  color: var(--slate);
+  cursor: pointer;
+  opacity: 0;
+  transition: all var(--transition-micro);
+  display: flex;
+  align-items: center;
+}
+
+.admin-activity-item:hover .admin-activity-delete {
+  opacity: 1;
+}
+
+.admin-activity-delete:hover {
+  color: #ef4444;
+}
+
+.admin-activity-item-text {
+  font-size: 0.9rem;
+  color: var(--text-secondary);
+  line-height: 1.6;
+  white-space: pre-wrap;
 }
 
 /* ===========================================================================
