@@ -64,11 +64,12 @@ export function recordGameResult(
   }
 
   // Update game stats
+  const validScore = Math.max(0, score);
   const stats = progress.games[gameId] || createDefaultGameStats();
   stats.gamesPlayed++;
   if (won) stats.gamesWon++;
-  stats.bestScore = Math.max(stats.bestScore, score);
-  stats.totalScore += score;
+  stats.bestScore = Math.max(stats.bestScore, validScore);
+  stats.totalScore += validScore;
   stats.lastPlayed = now;
 
   // Difficulty-specific

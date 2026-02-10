@@ -100,7 +100,7 @@ export function checkAchievements(progress: ProgressData): Achievement[] {
 
   // Word Game - best score is fewest guesses (lower is better, stored as 7-guesses)
   const wordStats = progress.games.wordgame;
-  if (wordStats && wordStats.bestScore >= 5) unlock('word-smith'); // 7-2=5 means solved in 2
+  if (wordStats && wordStats.bestScore >= 4) unlock('word-smith'); // score 4 = solved in 3 guesses
 
   // Memory Match
   const memStats = progress.games.memorymatch;
