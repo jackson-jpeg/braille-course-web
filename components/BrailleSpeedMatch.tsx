@@ -187,7 +187,7 @@ export default function BrailleSpeedMatch() {
         </div>
 
         {/* Streak display */}
-        <div className="speedmatch-streak">
+        <div className="speedmatch-streak" aria-live="polite" aria-atomic="true">
           <div className="speedmatch-streak-current">
             <span className="speedmatch-streak-value">{streak}</span>
             <span className="speedmatch-streak-label">Streak</span>

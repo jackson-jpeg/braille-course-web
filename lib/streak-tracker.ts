@@ -14,7 +14,7 @@ export interface StreakInfo {
 export function getStreakInfo(): StreakInfo {
   const progress = loadProgress();
   const { streak } = progress;
-  const today = new Date().toISOString().slice(0, 10);
+  const today = new Date().toLocaleDateString('en-CA'); // YYYY-MM-DD in local tz
 
   return {
     currentStreak: streak.currentStreak,

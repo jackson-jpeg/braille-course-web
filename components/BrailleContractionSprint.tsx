@@ -198,7 +198,7 @@ export default function BrailleContractionSprint() {
 
         {phase === 'playing' && currentWord && (
           <>
-            <div className="csprint-status">
+            <div className="csprint-status" aria-live="polite" aria-atomic="true">
               <span className="csprint-timer">{timeLeft}s</span>
               <span className="csprint-score">Score: {score}</span>
             </div>
@@ -264,7 +264,7 @@ export default function BrailleContractionSprint() {
         )}
 
         {phase === 'result' && (
-          <div className="csprint-result">
+          <div className="csprint-result" aria-live="polite">
             <div className="csprint-result-score">{score}</div>
             <div className="csprint-result-label">
               {score === 0 ? 'Keep practicing!' : score < 5 ? 'Good effort!' : score < 10 ? 'Great job!' : 'Amazing!'}

@@ -160,6 +160,7 @@ export function importProgress(json: string): boolean {
       settings: { ...defaults.settings, ...(data.settings || {}) },
       streak: { ...defaults.streak, ...(data.streak || {}) },
       achievements: { ...defaults.achievements, ...(data.achievements || {}) },
+      dailyChallenge: { ...defaults.dailyChallenge, ...(data.dailyChallenge || {}) },
       version: CURRENT_VERSION,
     };
     saveProgress(merged);

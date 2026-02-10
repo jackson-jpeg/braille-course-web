@@ -179,7 +179,7 @@ export default function BrailleSequence() {
       <div className="seq-body">
         {phase !== 'result' && (
           <>
-            <div className="seq-status">
+            <div className="seq-status" aria-live="polite" aria-atomic="true">
               <span>Round {round + 1} / {totalRounds}</span>
               <span>Score: {score}</span>
             </div>
@@ -223,7 +223,7 @@ export default function BrailleSequence() {
             )}
 
             {feedback !== null && (
-              <div className={`seq-feedback ${feedback ? 'correct' : 'wrong'}`}>
+              <div className={`seq-feedback ${feedback ? 'correct' : 'wrong'}`} aria-live="assertive">
                 {feedback
                   ? 'Correct order!'
                   : `Correct: ${correctOrder.join(' → ')}`}

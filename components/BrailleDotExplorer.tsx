@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useMemo } from 'react';
+import { useState, useMemo, useEffect, useRef } from 'react';
 import { brailleMap } from '@/lib/braille-map';
 import { buildContractedReverseLookup } from '@/lib/contracted-braille-map';
 
@@ -23,6 +23,41 @@ export default function BrailleDotExplorer() {
   const [mode, setMode] = useState<ExplorerMode>('alphabetic');
   const reverseLookup = useMemo(() => buildReverseLookup(), []);
   const contractedLookup = useMemo(() => buildContractedReverseLookup(), []);
+
+  const containerRef = useRef<HTMLDivElement>(null);
+  const visibleRef = useRef(true);
+
+  // Visibility-scoped keyboard
+  useEffect(() => {
+    const el = containerRef.current;
+    if (!el) return;
+    const observer = new IntersectionObserver(
+      ([entry]) => { visibleRef.current = entry.isIntersecting; },
+      { threshold: 0.3 }
+    );
+    observer.observe(el);
+    return () => observer.disconnect();
+  }, []);
+
+  // Keyboard: 1-6 to toggle dots, C to clear
+  useEffect(() => {
+    function onKeyDown(e: KeyboardEvent) {
+      if (!visibleRef.current) return;
+      if (e.ctrlKey || e.metaKey || e.altKey) return;
+      // Map key to grid index: keys 1-6 map to dot positions
+      const dotKeyMap: Record<string, number> = {
+        '1': 0, '4': 1, '2': 2, '5': 3, '3': 4, '6': 5,
+      };
+      if (e.key in dotKeyMap) {
+        toggleDot(dotKeyMap[e.key]);
+      }
+      if (e.key.toLowerCase() === 'c') {
+        clearAll();
+      }
+    }
+    window.addEventListener('keydown', onKeyDown);
+    return () => window.removeEventListener('keydown', onKeyDown);
+  }, []); // toggleDot and clearAll use setState updaters, stable by reference
 
   const patternKey = dots.join(',');
   const matchedLetter = reverseLookup.get(patternKey) || null;
@@ -56,11 +91,11 @@ export default function BrailleDotExplorer() {
     .sort((a, b) => a! - b!) as number[];
 
   return (
-    <div className="explorer-container">
+    <div className="explorer-container" ref={containerRef}>
       <div className="explorer-header">
         <span className="section-label">Explore</span>
         <h2>Dot Explorer</h2>
-        <p>Toggle dots to discover braille {mode === 'contracted' ? 'contractions' : 'letters'}</p>
+        <p>Toggle dots to discover braille {mode === 'contracted' ? 'contractions' : 'letters'} <span className="explorer-kbd-hint">Keys 1–6 toggle dots</span></p>
       </div>
 
       <div className="explorer-mode-toggle" role="radiogroup" aria-label="Explorer mode">

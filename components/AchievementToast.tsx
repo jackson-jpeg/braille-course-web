@@ -67,7 +67,12 @@ export default function AchievementToast() {
       className={`achievement-toast ${visible ? 'visible' : ''}`}
       role="alert"
       aria-live="polite"
-      onClick={() => setVisible(false)}
+      onClick={() => {
+        clearTimers();
+        setVisible(false);
+        setCurrent(null);
+        if (achievementQueue.length > 0) showNext();
+      }}
       style={{ cursor: 'pointer' }}
     >
       <span

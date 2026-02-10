@@ -188,7 +188,7 @@ export default function BrailleHangman() {
           })}
         </div>
 
-        <div className="hangman-wrong-count">
+        <div className="hangman-wrong-count" aria-live="polite" aria-atomic="true">
           {wrongCount} / {MAX_WRONG} wrong
         </div>
 

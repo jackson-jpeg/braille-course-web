@@ -13366,13 +13366,49 @@ details.faq-item.reveal:nth-child(6) { transition-delay: 0.4s; }
 
 /* ---------- Keyboard hints ---------- */
 .reflex-kbd-hint,
-.numsense-kbd-hint {
+.numsense-kbd-hint,
+.explorer-kbd-hint {
   display: block;
   margin-top: 0.4em;
   font-size: 0.82em;
   opacity: 0.55;
   font-style: italic;
 }
+
+/* ---------- Game error boundary ---------- */
+.game-error-card {
+  padding: 2.5rem 2rem;
+  text-align: center;
+  color: var(--slate);
+  background: var(--cream-dark, #f5f0e8);
+  border: 1px dashed var(--gold);
+  border-radius: var(--radius-md);
+}
+.game-error-card p { margin-bottom: 1rem; }
+.game-error-retry,
+.games-error-retry {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  padding: 0.6rem 1.4rem;
+  background: var(--gold);
+  color: var(--navy);
+  border: none;
+  border-radius: var(--radius-sm, 8px);
+  font-weight: 600;
+  cursor: pointer;
+  transition: opacity 0.2s;
+}
+.game-error-retry:hover,
+.games-error-retry:hover { opacity: 0.85; }
+.games-error {
+  max-width: 480px;
+  margin: 4rem auto;
+  text-align: center;
+  padding: 3rem 2rem;
+}
+.games-error h2 { margin-bottom: 0.5rem; }
+.games-error p { margin-bottom: 1.5rem; color: var(--slate); }
 
 /* ---------- Print: hide overlays ---------- */
 @media print {

@@ -17,6 +17,7 @@ import ProgressDashboard from '@/components/ProgressDashboard';
 import DailyChallengeBanner from '@/components/DailyChallenge';
 import AchievementToast from '@/components/AchievementToast';
 import QuickStartFAB from '@/components/QuickStartFAB';
+import GameErrorBoundary from '@/components/GameErrorBoundary';
 
 export const metadata: Metadata = {
   title: 'Interactive Braille Practice — TeachBraille.org',
@@ -60,53 +61,73 @@ export default function GamesPage() {
       <GamesNav />
 
       {/* ========== WORD GAME ========== */}
-      <section className="wordgame-section" id="wordgame">
-        <BrailleWordGame />
+      <section className="wordgame-section" id="wordgame" aria-label="Braille Word Game">
+        <GameErrorBoundary gameName="Word Game">
+          <BrailleWordGame />
+        </GameErrorBoundary>
       </section>
 
       {/* ========== DOT EXPLORER ========== */}
-      <section className="explorer-section" id="explorer">
-        <BrailleDotExplorer />
+      <section className="explorer-section" id="explorer" aria-label="Dot Explorer">
+        <GameErrorBoundary gameName="Dot Explorer">
+          <BrailleDotExplorer />
+        </GameErrorBoundary>
       </section>
 
       {/* ========== HANGMAN ========== */}
-      <section className="hangman-section" id="hangman">
-        <BrailleHangman />
+      <section className="hangman-section" id="hangman" aria-label="Braille Hangman">
+        <GameErrorBoundary gameName="Hangman">
+          <BrailleHangman />
+        </GameErrorBoundary>
       </section>
 
       {/* ========== SPEED MATCH ========== */}
-      <section className="speedmatch-section" id="speedmatch">
-        <BrailleSpeedMatch />
+      <section className="speedmatch-section" id="speedmatch" aria-label="Speed Match">
+        <GameErrorBoundary gameName="Speed Match">
+          <BrailleSpeedMatch />
+        </GameErrorBoundary>
       </section>
 
       {/* ========== MEMORY MATCH ========== */}
-      <section className="memorymatch-section" id="memorymatch">
-        <BrailleMemoryMatch />
+      <section className="memorymatch-section" id="memorymatch" aria-label="Memory Match">
+        <GameErrorBoundary gameName="Memory Match">
+          <BrailleMemoryMatch />
+        </GameErrorBoundary>
       </section>
 
       {/* ========== CONTRACTION SPRINT ========== */}
-      <section className="csprint-section" id="contraction-sprint">
-        <BrailleContractionSprint />
+      <section className="csprint-section" id="contraction-sprint" aria-label="Contraction Sprint">
+        <GameErrorBoundary gameName="Contraction Sprint">
+          <BrailleContractionSprint />
+        </GameErrorBoundary>
       </section>
 
       {/* ========== NUMBER SENSE ========== */}
-      <section className="numsense-section" id="number-sense">
-        <BrailleNumberSense />
+      <section className="numsense-section" id="number-sense" aria-label="Number Sense">
+        <GameErrorBoundary gameName="Number Sense">
+          <BrailleNumberSense />
+        </GameErrorBoundary>
       </section>
 
       {/* ========== REFLEX DOTS ========== */}
-      <section className="reflex-section" id="reflex-dots">
-        <BrailleReflexDots />
+      <section className="reflex-section" id="reflex-dots" aria-label="Reflex Dots">
+        <GameErrorBoundary gameName="Reflex Dots">
+          <BrailleReflexDots />
+        </GameErrorBoundary>
       </section>
 
       {/* ========== SEQUENCE ========== */}
-      <section className="seq-section" id="sequence">
-        <BrailleSequence />
+      <section className="seq-section" id="sequence" aria-label="Braille Sequence">
+        <GameErrorBoundary gameName="Sequence">
+          <BrailleSequence />
+        </GameErrorBoundary>
       </section>
 
       {/* ========== SENTENCE DECODER ========== */}
-      <section className="decoder-section" id="sentence-decoder">
-        <BrailleSentenceDecoder />
+      <section className="decoder-section" id="sentence-decoder" aria-label="Sentence Decoder">
+        <GameErrorBoundary gameName="Sentence Decoder">
+          <BrailleSentenceDecoder />
+        </GameErrorBoundary>
       </section>
 
       {/* ========== FAB ========== */}

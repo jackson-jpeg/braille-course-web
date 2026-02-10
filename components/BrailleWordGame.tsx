@@ -94,7 +94,7 @@ export default function BrailleWordGame() {
   }, []);
 
   // Visibility-scoped keyboard: only capture keys when this section is visible
-  const sectionRef = useRef<HTMLElement>(null);
+  const sectionRef = useRef<HTMLDivElement>(null);
   const visibleRef = useRef(true);
 
   useEffect(() => {
@@ -285,8 +285,7 @@ export default function BrailleWordGame() {
   }
 
   return (
-    <section className="wordgame-section" ref={sectionRef}>
-      <div className="wordgame-inner">
+    <div className="wordgame-inner" ref={sectionRef}>
         <div className="wordgame-header">
           <span className="section-label">Practice</span>
           <h2>Braille Word Game</h2>
@@ -384,7 +383,6 @@ export default function BrailleWordGame() {
             </button>
           </>
         )}
-      </div>
-    </section>
+    </div>
   );
 }

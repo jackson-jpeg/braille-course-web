@@ -149,7 +149,7 @@ export default function BrailleMemoryMatch() {
       </div>
 
       <div className="memorymatch-body">
-        <div className="memorymatch-stats">
+        <div className="memorymatch-stats" aria-live="polite" aria-atomic="true">
           <span>Moves: <strong>{moves}</strong></span>
           <span>Pairs: <strong>{matchedPairs}</strong> / {PAIR_COUNT}</span>
         </div>
@@ -186,7 +186,7 @@ export default function BrailleMemoryMatch() {
         </div>
 
         {won && (
-          <div className="memorymatch-win">
+          <div className="memorymatch-win" aria-live="polite">
             All pairs matched in {moves} moves!
           </div>
         )}

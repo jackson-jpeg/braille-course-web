@@ -157,7 +157,7 @@ export default function BrailleReflexDots() {
 
         {(phase === 'show' || phase === 'input' || phase === 'feedback') && (
           <>
-            <div className="reflex-status">
+            <div className="reflex-status" aria-live="polite" aria-atomic="true">
               <span>Round {round + 1} / {params.rounds}</span>
               <span>Score: {score}</span>
             </div>
@@ -202,7 +202,7 @@ export default function BrailleReflexDots() {
 
             {/* Feedback phase */}
             {phase === 'feedback' && (
-              <div className={`reflex-feedback ${isCorrect ? 'correct' : 'wrong'}`}>
+              <div className={`reflex-feedback ${isCorrect ? 'correct' : 'wrong'}`} aria-live="assertive">
                 <div className="reflex-feedback-icon">{isCorrect ? '✓' : '✗'}</div>
                 <div className="reflex-feedback-text">
                   {isCorrect ? 'Correct!' : `That was "${targetLetter}"`}

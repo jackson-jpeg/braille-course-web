@@ -120,7 +120,7 @@ export default function BrailleSentenceDecoder() {
       <div className="decoder-body">
         {!gameOver && sentence && (
           <>
-            <div className="decoder-status">
+            <div className="decoder-status" aria-live="polite" aria-atomic="true">
               <span>Sentence {round + 1} / {totalRounds}</span>
               <span>Score: {score}</span>
             </div>
@@ -166,7 +166,7 @@ export default function BrailleSentenceDecoder() {
             </div>
 
             {submitted && (
-              <div className={`decoder-feedback ${isCorrect ? 'correct' : 'wrong'}`}>
+              <div className={`decoder-feedback ${isCorrect ? 'correct' : 'wrong'}`} aria-live="assertive">
                 {isCorrect ? (
                   'Correct!'
                 ) : (
