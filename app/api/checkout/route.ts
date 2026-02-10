@@ -58,7 +58,6 @@ export async function POST(req: NextRequest) {
       mode: 'payment',
       ui_mode: 'embedded',
       customer_creation: 'always',
-      automatic_payment_methods: { enabled: true },
       line_items: [
         {
           price: plan === 'deposit' ? process.env.STRIPE_PRICE_DEPOSIT! : process.env.STRIPE_PRICE_FULL!,
