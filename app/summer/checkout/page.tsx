@@ -9,9 +9,12 @@ export const metadata = {
 function CheckoutLoading() {
   return (
     <div className="checkout-page">
-      <div className="checkout-header">
-        <h1>Complete Your Enrollment</h1>
-        <p className="checkout-subtitle">Preparing checkout&hellip;</p>
+      <div className="checkout-summary" style={{ borderRadius: '16px 16px 0 0' }}>
+        <div className="checkout-summary-brand">
+          <span className="checkout-summary-name">TeachBraille</span>
+        </div>
+        <h1 className="checkout-summary-title">Summer Braille Course</h1>
+        <p className="checkout-summary-schedule">Preparing checkout&hellip;</p>
       </div>
       <div className="checkout-embed-wrapper">
         <div className="checkout-loading-shimmer" />

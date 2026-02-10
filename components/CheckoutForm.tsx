@@ -12,9 +12,17 @@ import getStripe from '@/lib/stripe-client';
 const VALID_PLANS = ['full', 'deposit'] as const;
 type Plan = (typeof VALID_PLANS)[number];
 
-const PLAN_LABELS: Record<Plan, string> = {
-  full: '$500 — Pay in Full',
-  deposit: '$150 Deposit',
+const PLAN_INFO: Record<Plan, { label: string; price: string; note: string }> = {
+  full: {
+    label: 'Pay in Full',
+    price: '$500',
+    note: 'One-time payment — no balance due',
+  },
+  deposit: {
+    label: 'Reserve with Deposit',
+    price: '$150',
+    note: '$350 balance charged automatically on May 1st',
+  },
 };
 
 export default function CheckoutForm() {
@@ -98,15 +106,42 @@ export default function CheckoutForm() {
     );
   }
 
+  const info = PLAN_INFO[plan];
+
   return (
     <div className="checkout-page">
-      <div className="checkout-header">
-        <Link href="/summer#cta" className="checkout-back">
-          &larr; Back to enrollment
-        </Link>
-        <h1>Complete Your Enrollment</h1>
-        <p className="checkout-subtitle">{PLAN_LABELS[plan]}</p>
+      <Link href="/summer#cta" className="checkout-back">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" aria-hidden="true">
+          <line x1="19" y1="12" x2="5" y2="12" />
+          <polyline points="12 19 5 12 12 5" />
+        </svg>
+        Back to enrollment
+      </Link>
+
+      {/* Branded summary card */}
+      <div className="checkout-summary">
+        <div className="checkout-summary-brand">
+          <span className="checkout-summary-dots" aria-hidden="true">
+            <span /><span className="filled" /><span className="filled" />
+            <span className="filled" /><span className="filled" /><span />
+          </span>
+          <span className="checkout-summary-name">TeachBraille</span>
+        </div>
+        <h1 className="checkout-summary-title">Summer Braille Course</h1>
+        <p className="checkout-summary-schedule">
+          June 8 &ndash; July 27, 2026 &middot; 16 live sessions
+        </p>
+        <div className="checkout-summary-divider" />
+        <div className="checkout-summary-plan">
+          <div className="checkout-summary-plan-row">
+            <span className="checkout-summary-plan-label">{info.label}</span>
+            <span className="checkout-summary-plan-price">{info.price}</span>
+          </div>
+          <p className="checkout-summary-plan-note">{info.note}</p>
+        </div>
       </div>
+
+      {/* Stripe embed */}
       <div className="checkout-embed-wrapper">
         <EmbeddedCheckoutProvider
           stripe={getStripe()}
@@ -115,12 +150,19 @@ export default function CheckoutForm() {
           <EmbeddedCheckout />
         </EmbeddedCheckoutProvider>
       </div>
+
       <div className="checkout-trust-row">
-        <svg viewBox="0 0 16 16" fill="none" aria-hidden="true">
-          <rect x="3" y="7" width="10" height="7" rx="1.5" stroke="currentColor" strokeWidth="1.3"/>
-          <path d="M5.5 7V5a2.5 2.5 0 015 0v2" stroke="currentColor" strokeWidth="1.3" strokeLinecap="round"/>
-        </svg>
-        Secure checkout on TeachBraille.org
+        <span className="checkout-trust-item">
+          <svg viewBox="0 0 16 16" fill="none" aria-hidden="true">
+            <rect x="3" y="7" width="10" height="7" rx="1.5" stroke="currentColor" strokeWidth="1.3"/>
+            <path d="M5.5 7V5a2.5 2.5 0 015 0v2" stroke="currentColor" strokeWidth="1.3" strokeLinecap="round"/>
+          </svg>
+          Secure payment
+        </span>
+        <span className="checkout-trust-sep">&middot;</span>
+        <span className="checkout-trust-item">100% refundable before May 1</span>
+        <span className="checkout-trust-sep">&middot;</span>
+        <span className="checkout-trust-item">Powered by Stripe</span>
       </div>
     </div>
   );
