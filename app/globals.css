@@ -1614,6 +1614,7 @@ details.faq-item.reveal:nth-child(6) { transition-delay: 0.4s; }
   font-size: 0.8rem;
   color: var(--text-secondary);
   opacity: 0.7;
+  animation: fadeUp 0.6s var(--ease-out) 0.4s both;
 }
 .checkout-trust-row svg {
   width: 14px;
@@ -1621,10 +1622,33 @@ details.faq-item.reveal:nth-child(6) { transition-delay: 0.4s; }
   flex-shrink: 0;
 }
 
-/* Center back link in card states */
-.checkout-card .checkout-back {
-  display: inline-flex;
-  margin-top: 4px;
+/* Card icon (error / info states) */
+.checkout-card-icon {
+  width: 56px;
+  height: 56px;
+  margin: 0 auto 20px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: var(--gold-soft);
+  color: var(--gold);
+}
+.checkout-card-icon svg {
+  width: 28px;
+  height: 28px;
+}
+.checkout-card-icon--error {
+  background: rgba(200, 60, 60, 0.08);
+  color: #c83c3c;
+}
+.checkout-card .home-button {
+  margin-top: 8px;
+}
+
+/* Embed wrapper entrance */
+.checkout-embed-wrapper {
+  animation: fadeUp 0.8s var(--ease-out) 0.15s both;
 }
 
 @media (max-width: 520px) {

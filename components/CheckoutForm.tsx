@@ -7,7 +7,7 @@ import {
   EmbeddedCheckoutProvider,
   EmbeddedCheckout,
 } from '@stripe/react-stripe-js';
-import stripePromise from '@/lib/stripe-client';
+import getStripe from '@/lib/stripe-client';
 
 const VALID_PLANS = ['full', 'deposit'] as const;
 type Plan = (typeof VALID_PLANS)[number];
@@ -53,10 +53,21 @@ export default function CheckoutForm() {
     return (
       <div className="checkout-page">
         <div className="checkout-card">
+          <div className="checkout-card-icon" aria-hidden="true">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+              <circle cx="12" cy="12" r="10" />
+              <line x1="12" y1="8" x2="12" y2="12" />
+              <line x1="12" y1="16" x2="12.01" y2="16" />
+            </svg>
+          </div>
           <h1>Invalid Checkout Link</h1>
           <p>This checkout link is missing required information.</p>
-          <Link href="/summer#cta" className="checkout-back">
-            &larr; Back to enrollment
+          <Link href="/summer#cta" className="home-button">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" aria-hidden="true">
+              <line x1="19" y1="12" x2="5" y2="12" />
+              <polyline points="12 19 5 12 12 5" />
+            </svg>
+            Back to Enrollment
           </Link>
         </div>
       </div>
@@ -67,10 +78,20 @@ export default function CheckoutForm() {
     return (
       <div className="checkout-page">
         <div className="checkout-card">
+          <div className="checkout-card-icon checkout-card-icon--error" aria-hidden="true">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5">
+              <line x1="18" y1="6" x2="6" y2="18" />
+              <line x1="6" y1="6" x2="18" y2="18" />
+            </svg>
+          </div>
           <h1>Unable to Check Out</h1>
           <p>{error}</p>
-          <Link href="/summer#cta" className="checkout-back">
-            &larr; Back to enrollment
+          <Link href="/summer#cta" className="home-button">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" aria-hidden="true">
+              <line x1="19" y1="12" x2="5" y2="12" />
+              <polyline points="12 19 5 12 12 5" />
+            </svg>
+            Back to Enrollment
           </Link>
         </div>
       </div>
@@ -88,7 +109,7 @@ export default function CheckoutForm() {
       </div>
       <div className="checkout-embed-wrapper">
         <EmbeddedCheckoutProvider
-          stripe={stripePromise}
+          stripe={getStripe()}
           options={{ fetchClientSecret }}
         >
           <EmbeddedCheckout />
