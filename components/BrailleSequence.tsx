@@ -14,13 +14,11 @@ type Phase = 'playing' | 'checking' | 'result';
 interface SequenceCard {
   letter: string;
   pattern: number[];
-  currentIndex: number; // position in the user's arrangement
 }
 
-/** Pick N letters with some similarity for harder difficulty */
+/** Pick N unique letters; harder difficulty picks visually similar ones */
 function pickLetters(count: number, difficulty: string): string[] {
   if (difficulty === 'advanced') {
-    // Pick one anchor, then find similar letters
     const anchor = ALL_LETTERS[Math.floor(Math.random() * ALL_LETTERS.length)];
     const scored = ALL_LETTERS
       .filter((l) => l !== anchor)
@@ -30,8 +28,6 @@ function pickLetters(count: number, difficulty: string): string[] {
     const shuffled = pool.sort(() => Math.random() - 0.5).slice(0, count - 1);
     return [anchor, ...shuffled.map((p) => p.letter)].sort(() => Math.random() - 0.5);
   }
-
-  // Random selection
   const shuffled = [...ALL_LETTERS].sort(() => Math.random() - 0.5);
   return shuffled.slice(0, count);
 }
@@ -56,9 +52,15 @@ export default function BrailleSequence() {
   const [score, setScore] = useState(0);
   const [totalRounds] = useState(5);
   const [feedback, setFeedback] = useState<boolean | null>(null);
+  const [cardResults, setCardResults] = useState<boolean[]>([]);
   const [tip, setTip] = useState('');
 
   const containerRef = useRef<HTMLDivElement>(null);
+  // Refs for the check function to always read latest state
+  const cardsRef = useRef(cards);
+  cardsRef.current = cards;
+  const correctOrderRef = useRef(correctOrder);
+  correctOrderRef.current = correctOrder;
 
   const params = getDifficultyParams('sequence', difficulty) as { letterCount: number };
 
@@ -67,18 +69,21 @@ export default function BrailleSequence() {
     const sorted = [...letters].sort();
     setCorrectOrder(sorted);
 
-    // Scramble for display — ensure it's not already in order
+    // Scramble — ensure not already in order
     let scrambled = [...letters].sort(() => Math.random() - 0.5);
-    while (scrambled.every((l, i) => l === sorted[i]) && letters.length > 1) {
+    let attempts = 0;
+    while (scrambled.every((l, i) => l === sorted[i]) && letters.length > 1 && attempts < 20) {
       scrambled = [...letters].sort(() => Math.random() - 0.5);
+      attempts++;
     }
-    setCards(scrambled.map((letter, i) => ({
+
+    setCards(scrambled.map((letter) => ({
       letter,
       pattern: brailleMap[letter],
-      currentIndex: i,
     })));
     setSelectedIdx(null);
     setFeedback(null);
+    setCardResults([]);
     setPhase('playing');
   }, [params.letterCount, difficulty]);
 
@@ -99,16 +104,16 @@ export default function BrailleSequence() {
     if (selectedIdx === null) {
       setSelectedIdx(index);
     } else if (selectedIdx === index) {
-      // Deselect same card
       setSelectedIdx(null);
     } else {
-      // Swap
+      // Swap cards
+      const si = selectedIdx;
       setCards((prev) => {
         const next = [...prev];
-        const temp = next[selectedIdx];
-        next[selectedIdx] = next[index];
+        const temp = next[si];
+        next[si] = next[index];
         next[index] = temp;
-        return next.map((c, i) => ({ ...c, currentIndex: i }));
+        return next;
       });
       setSelectedIdx(null);
     }
@@ -118,9 +123,26 @@ export default function BrailleSequence() {
     if (phase !== 'playing') return;
     setPhase('checking');
 
-    const isCorrect = cards.every((card, i) => card.letter === correctOrder[i]);
-    setFeedback(isCorrect);
+    // Read from refs to guarantee latest state
+    const currentCards = cardsRef.current;
+    const expected = correctOrderRef.current;
 
+    // Safety: if data is somehow empty, treat as wrong
+    if (currentCards.length === 0 || expected.length === 0) {
+      setFeedback(false);
+      setCardResults([]);
+      setTimeout(() => {
+        startRound();
+      }, 1500);
+      return;
+    }
+
+    // Check each card individually
+    const perCard = currentCards.map((card, i) => card.letter === expected[i]);
+    const isCorrect = perCard.every(Boolean);
+
+    setCardResults(perCard);
+    setFeedback(isCorrect);
     if (isCorrect) setScore((s) => s + 1);
 
     setTimeout(() => {
@@ -135,8 +157,8 @@ export default function BrailleSequence() {
       } else {
         startRound();
       }
-    }, isCorrect ? 800 : 1500);
-  }, [phase, cards, correctOrder, round, totalRounds, score, startRound, recordResult]);
+    }, isCorrect ? 800 : 2000);
+  }, [phase, round, totalRounds, score, startRound, recordResult]);
 
   return (
     <div className="seq-container" ref={containerRef}>
@@ -165,7 +187,9 @@ export default function BrailleSequence() {
                   className={`seq-card ${
                     selectedIdx === i ? 'selected' : ''
                   } ${
-                    feedback === true ? 'correct' : feedback === false ? 'wrong' : ''
+                    cardResults.length > 0
+                      ? cardResults[i] ? 'correct' : 'wrong'
+                      : ''
                   }`}
                   onClick={() => handleCardClick(i)}
                   disabled={phase !== 'playing'}
@@ -174,6 +198,11 @@ export default function BrailleSequence() {
                   <BrailleCell pattern={card.pattern} />
                   {feedback !== null && (
                     <span className="seq-card-letter">{card.letter}</span>
+                  )}
+                  {cardResults.length > 0 && (
+                    <span className={`seq-card-mark ${cardResults[i] ? 'correct' : 'wrong'}`}>
+                      {cardResults[i] ? '✓' : '✗'}
+                    </span>
                   )}
                 </button>
               ))}

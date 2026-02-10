@@ -143,20 +143,21 @@ export default function BrailleContractionSprint() {
     setSelectedPieces(newSelected);
     setUsedTileIndices(newUsed);
 
-    // Check if selection matches
+    // Check if selection matches when all slots filled
     if (newSelected.length === currentWord.pieces.length) {
-      const isCorrect = newSelected.every((p, i) => p === currentWord.pieces[i]);
+      const isCorrect = newSelected.length > 0 &&
+        newSelected.every((p, i) => p === currentWord.pieces[i]);
       if (isCorrect) {
         setFeedback('correct');
         setScore((s) => s + 1);
-        setTimeout(() => pickNewWord(), 500);
+        setTimeout(() => pickNewWord(), 600);
       } else {
         setFeedback('wrong');
         setTimeout(() => {
           setSelectedPieces([]);
           setUsedTileIndices(new Set());
           setFeedback(null);
-        }, 800);
+        }, 1200);
       }
     }
   }, [phase, currentWord, selectedPieces, usedTileIndices, pickNewWord]);
@@ -234,6 +235,13 @@ export default function BrailleContractionSprint() {
                 </button>
               )}
             </div>
+
+            {/* Show correct answer when wrong */}
+            {feedback === 'wrong' && (
+              <div className="csprint-answer">
+                Answer: {currentWord.pieces.join(' + ')}
+              </div>
+            )}
 
             {/* Available tiles */}
             <div className="csprint-tiles" role="group" aria-label="Available contraction tiles">

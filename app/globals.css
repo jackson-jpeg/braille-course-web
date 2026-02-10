@@ -12725,6 +12725,16 @@ details.faq-item.reveal:nth-child(6) { transition-delay: 0.4s; }
 }
 .csprint-dot.filled { background: var(--navy); }
 .csprint-dot.empty { background: rgba(27,42,74,0.1); }
+.csprint-answer {
+  text-align: center;
+  font-size: 0.85rem;
+  font-weight: 600;
+  color: #dc5050;
+  margin-top: 8px;
+  padding: 8px 16px;
+  background: rgba(220,80,80,0.06);
+  border-radius: var(--radius-sm);
+}
 .csprint-result-score {
   font-family: var(--font-heading), 'DM Serif Display', serif;
   font-size: 3.5rem;
@@ -13059,6 +13069,7 @@ details.faq-item.reveal:nth-child(6) { transition-delay: 0.4s; }
   margin-bottom: 24px;
 }
 .seq-card {
+  position: relative;
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -13076,6 +13087,16 @@ details.faq-item.reveal:nth-child(6) { transition-delay: 0.4s; }
 .seq-card.correct { border-color: var(--sage-dark); background: rgba(168,191,160,0.1); }
 .seq-card.wrong { border-color: #dc5050; background: rgba(220,80,80,0.06); }
 .seq-card-letter { font-weight: 700; font-size: 0.85rem; color: var(--navy); }
+.seq-card-mark {
+  position: absolute;
+  top: 4px;
+  right: 4px;
+  font-size: 0.7rem;
+  font-weight: 800;
+  line-height: 1;
+}
+.seq-card-mark.correct { color: var(--sage-dark); }
+.seq-card-mark.wrong { color: #dc5050; }
 .seq-cell {
   display: grid;
   grid-template-columns: 1fr 1fr;
