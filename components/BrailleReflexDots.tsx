@@ -210,18 +210,18 @@ export default function BrailleReflexDots() {
                     : <>That was <span className="reflex-letter-badge">{targetLetter}</span></>}
                 </div>
                 {!isCorrect && (
-                  <div className="reflex-comparison">
-                    <div className="reflex-comparison-col">
+                  <div className="reflex-comparison" role="group" aria-label="Pattern comparison">
+                    <div className="reflex-comparison-col" aria-label="Your answer">
                       <div className="reflex-comparison-label">Your answer</div>
                       <div className="reflex-grid reflex-grid-show">
                         {userPattern.map((v, i) => (
-                          <span key={i} className={`reflex-dot-display ${v ? 'filled' : 'empty'}`}>
+                          <span key={i} className={`reflex-dot-display ${v ? 'filled' : 'empty'}${v !== targetPattern[i] ? ' mismatch' : ''}`}>
                             {v ? '●' : '○'}
                           </span>
                         ))}
                       </div>
                     </div>
-                    <div className="reflex-comparison-col">
+                    <div className="reflex-comparison-col" aria-label="Correct pattern">
                       <div className="reflex-comparison-label">Correct</div>
                       <div className="reflex-grid reflex-grid-show">
                         {targetPattern.map((v, i) => (

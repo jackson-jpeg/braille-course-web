@@ -13126,6 +13126,8 @@ details.faq-item.reveal:nth-child(6) { transition-delay: 0.4s; }
   margin-top: 12px;
 }
 .reflex-comparison-col { text-align: center; }
+.reflex-comparison .reflex-grid { max-width: 120px; margin-bottom: 0; }
+.reflex-comparison .reflex-dot-display { width: 46px; height: 46px; font-size: 1.2rem; }
 .reflex-comparison-label {
   font-size: 0.72rem;
   font-weight: 700;
@@ -13133,6 +13135,9 @@ details.faq-item.reveal:nth-child(6) { transition-delay: 0.4s; }
   letter-spacing: 0.06em;
   color: var(--text-secondary);
   margin-bottom: 8px;
+}
+.reflex-dot-display.mismatch {
+  box-shadow: 0 0 0 2.5px var(--game-wrong);
 }
 .reflex-result-score {
   font-family: var(--font-heading), 'DM Serif Display', serif;

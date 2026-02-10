@@ -166,7 +166,7 @@ export default function BrailleContractionSprint() {
   }, [phase, recordResult]);
 
   const handleTileClick = useCallback((piece: string, tileIndex: number) => {
-    if (phase !== 'playing' || !currentWord) return;
+    if (phase !== 'playing' || !currentWord || feedback) return;
     if (usedTileIndices.has(tileIndex)) return;
 
     const newSelected = [...selectedPieces, piece];
@@ -192,7 +192,7 @@ export default function BrailleContractionSprint() {
         }, 1200);
       }
     }
-  }, [phase, currentWord, selectedPieces, usedTileIndices, pickNewWord]);
+  }, [phase, currentWord, feedback, selectedPieces, usedTileIndices, pickNewWord]);
 
   const handleUndo = useCallback(() => {
     if (feedback) return;
@@ -274,7 +274,7 @@ export default function BrailleContractionSprint() {
 
             {/* Show correct answer when wrong */}
             {feedback === 'wrong' && (
-              <div className="csprint-answer">
+              <div className="csprint-answer" aria-live="polite">
                 <span className="csprint-answer-label">Answer:</span>
                 <div className="csprint-answer-pieces">
                   {currentWord.pieces.map((piece, i) => (
