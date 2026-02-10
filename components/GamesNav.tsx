@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { getGameMastery } from '@/lib/progress-storage';
 import type { GameId } from '@/lib/progress-types';
 
@@ -25,6 +25,7 @@ function MasteryDot({ mastery }: { mastery: number }) {
 }
 
 export default function GamesNav() {
+  const navRef = useRef<HTMLElement>(null);
   const [activeId, setActiveId] = useState<string | null>(null);
   const [masteries, setMasteries] = useState<Record<GameId, number>>({} as Record<GameId, number>);
 
@@ -55,8 +56,16 @@ export default function GamesNav() {
     return () => observer.disconnect();
   }, []);
 
+  useEffect(() => {
+    if (!activeId || !navRef.current) return;
+    const link = navRef.current.querySelector(`[href="#${activeId}"]`);
+    if (link) {
+      link.scrollIntoView({ behavior: 'smooth', block: 'nearest', inline: 'center' });
+    }
+  }, [activeId]);
+
   return (
-    <nav className="games-nav" aria-label="Game navigation">
+    <nav ref={navRef} className="games-nav" aria-label="Game navigation">
       {SECTIONS.map(({ id, gameId, label }) => (
         <a
           key={id}
