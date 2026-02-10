@@ -4,6 +4,15 @@ export type SectionStatus = 'OPEN' | 'FULL';
 export type PaymentPlan = 'FULL' | 'DEPOSIT';
 export type PaymentStatus = 'PENDING' | 'COMPLETED' | 'WAITLISTED';
 export type LeadStatus = 'NEW' | 'CONTACTED';
+export type SchoolInquiryStatus =
+  | 'NEW_INQUIRY'
+  | 'CONTACTED'
+  | 'PROPOSAL_SENT'
+  | 'NEGOTIATING'
+  | 'CONTRACTED'
+  | 'ON_HOLD'
+  | 'CLOSED_WON'
+  | 'CLOSED_LOST';
 
 export interface Section {
   id: string;
@@ -153,6 +162,26 @@ export interface Lead {
   notes: string | null;
   phone: string | null;
   preferredCallbackTime: string | null;
+  createdAt: string;
+  updatedAt: string;
+}
+
+/* ── School Inquiry ── */
+export interface SchoolInquiry {
+  id: string;
+  contactEmail: string;
+  contactName: string;
+  contactPhone: string | null;
+  contactTitle: string | null;
+  schoolName: string;
+  districtName: string | null;
+  servicesNeeded: string;
+  studentCount: string | null;
+  timeline: string | null;
+  deliveryPreference: string | null;
+  status: SchoolInquiryStatus;
+  sortOrder: number;
+  adminNotes: string | null;
   createdAt: string;
   updatedAt: string;
 }
@@ -354,5 +383,6 @@ export interface AdminProps {
   sections: Section[];
   enrollments: Enrollment[];
   leads: Lead[];
+  schoolInquiries: SchoolInquiry[];
   scheduleMap: Record<string, string>;
 }

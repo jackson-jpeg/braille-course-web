@@ -4,19 +4,20 @@ import { useState, useEffect, useCallback, useMemo } from 'react';
 import AdminStudentModal from './AdminStudentModal';
 import AdminTodoWidget from './AdminTodoWidget';
 import AdminCalendarView from './AdminCalendarView';
-import type { Section, Enrollment, Lead, PaymentSummary } from './admin-types';
+import type { Section, Enrollment, Lead, SchoolInquiry, PaymentSummary } from './admin-types';
 import { relativeTime } from './admin-utils';
 
 interface Props {
   sections: Section[];
   enrollments: Enrollment[];
   leads: Lead[];
+  schoolInquiries: SchoolInquiry[];
   scheduleMap: Record<string, string>;
   onNavigate: (tab: string) => void;
   onSendEmail: (email: string) => void;
 }
 
-export default function AdminOverviewTab({ sections, enrollments, leads, scheduleMap, onNavigate, onSendEmail }: Props) {
+export default function AdminOverviewTab({ sections, enrollments, leads, schoolInquiries, scheduleMap, onNavigate, onSendEmail }: Props) {
   const [paymentSummary, setPaymentSummary] = useState<PaymentSummary | null>(null);
   const [selectedStudent, setSelectedStudent] = useState<Enrollment | null>(null);
   const [viewMode, setViewMode] = useState<'dashboard' | 'calendar'>('dashboard');
@@ -45,7 +46,8 @@ export default function AdminOverviewTab({ sections, enrollments, leads, schedul
   // Attention items — only things that need action
   const newLeads = useMemo(() => leads.filter((l) => l.status === 'NEW'), [leads]);
   const waitlisted = useMemo(() => enrollments.filter((e) => e.paymentStatus === 'WAITLISTED'), [enrollments]);
-  const hasAttention = newLeads.length > 0 || waitlisted.length > 0 || (pendingBalance > 0 && paymentSummary);
+  const newSchoolInquiries = useMemo(() => schoolInquiries.filter((s) => s.status === 'NEW_INQUIRY'), [schoolInquiries]);
+  const hasAttention = newLeads.length > 0 || waitlisted.length > 0 || newSchoolInquiries.length > 0 || (pendingBalance > 0 && paymentSummary);
 
   // Group enrollments by section for the roster cards
   const sectionRosters = useMemo(() => {
@@ -118,6 +120,18 @@ export default function AdminOverviewTab({ sections, enrollments, leads, schedul
         <div className="admin-attention">
           <h3 className="admin-attention-title">Needs your attention</h3>
           <div className="admin-attention-list">
+            {newSchoolInquiries.length > 0 && (
+              <button className="admin-attention-item" onClick={() => onNavigate('schools')}>
+                <span className="admin-attention-dot admin-attention-dot-blue" />
+                <span className="admin-attention-text">
+                  <strong>{newSchoolInquiries.length} new school {newSchoolInquiries.length === 1 ? 'inquiry' : 'inquiries'}</strong>
+                  {' \u2014 '}
+                  {newSchoolInquiries.slice(0, 2).map((s) => s.schoolName).join(', ')}
+                  {newSchoolInquiries.length > 2 && ` +${newSchoolInquiries.length - 2} more`}
+                </span>
+                <span className="admin-attention-action">Review &rarr;</span>
+              </button>
+            )}
             {newLeads.length > 0 && (
               <button className="admin-attention-item" onClick={() => onNavigate('students')}>
                 <span className="admin-attention-dot admin-attention-dot-blue" />

@@ -8,12 +8,13 @@ import AdminOverviewTab from './AdminOverviewTab';
 import AdminStudentsTab from './AdminStudentsTab';
 import AdminPaymentsTab from './AdminPaymentsTab';
 import AdminEmailsTab from './AdminEmailsTab';
+import AdminSchoolsTab from './AdminSchoolsTab';
 import AdminCreateTab from './AdminCreateTab';
 import AdminMaterialsTab from './AdminMaterialsTab';
 import AdminSettingsTab from './AdminSettingsTab';
 import type { AdminProps } from './admin-types';
 
-type Tab = 'overview' | 'students' | 'payments' | 'emails' | 'create' | 'materials' | 'settings';
+type Tab = 'overview' | 'students' | 'payments' | 'emails' | 'schools' | 'create' | 'materials' | 'settings';
 
 function getGreeting(): string {
   const h = new Date().getHours();
@@ -62,6 +63,15 @@ const TAB_META: Record<Tab, { label: string; icon: JSX.Element }> = {
       </svg>
     ),
   },
+  schools: {
+    label: 'Schools',
+    icon: (
+      <svg width="15" height="15" viewBox="0 0 16 16" fill="none">
+        <path d="M8 1L1 4v5c0 4 3 6 7 6s7-2 7-6V4L8 1z" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
+        <path d="M8 8L5 6.5v3l3 1.5 3-1.5v-3L8 8z" stroke="currentColor" strokeWidth="1.2" strokeLinejoin="round"/>
+      </svg>
+    ),
+  },
   create: {
     label: 'Create',
     icon: (
@@ -91,7 +101,7 @@ const TAB_META: Record<Tab, { label: string; icon: JSX.Element }> = {
   },
 };
 
-export default function AdminDashboard({ sections, enrollments, leads, scheduleMap }: AdminProps) {
+export default function AdminDashboard({ sections, enrollments, leads, schoolInquiries, scheduleMap }: AdminProps) {
   const [tab, setTab] = useState<Tab>('overview');
   const [emailComposeTo, setEmailComposeTo] = useState('');
   const [emailInitialTemplate, setEmailInitialTemplate] = useState('');
@@ -252,6 +262,10 @@ export default function AdminDashboard({ sections, enrollments, leads, scheduleM
     setTab('emails');
   }
 
+  function handleSync() {
+    router.refresh();
+  }
+
   async function handleLogout() {
     await fetch('/api/admin/logout', { method: 'POST' });
     router.push('/admin');
@@ -313,7 +327,7 @@ export default function AdminDashboard({ sections, enrollments, leads, scheduleM
 
         {/* Tabs */}
         <div className="admin-tabs">
-          {(['overview', 'students', 'payments', 'emails', 'create', 'materials', 'settings'] as Tab[]).map((t) => (
+          {(['overview', 'students', 'payments', 'emails', 'schools', 'create', 'materials', 'settings'] as Tab[]).map((t) => (
             <button
               key={t}
               className={`admin-tab ${tab === t ? 'admin-tab-active' : ''}`}
@@ -348,6 +362,7 @@ export default function AdminDashboard({ sections, enrollments, leads, scheduleM
               sections={sections}
               enrollments={enrollments}
               leads={leads}
+              schoolInquiries={schoolInquiries}
               scheduleMap={scheduleMap}
               onNavigate={handleNavigate}
               onSendEmail={handleSendEmail}
@@ -376,6 +391,14 @@ export default function AdminDashboard({ sections, enrollments, leads, scheduleM
               pendingAttachmentIds={pendingAttachmentIds}
               onClearAttachments={() => setPendingAttachmentIds([])}
               onComposeDirty={handleComposeDirty}
+            />
+          )}
+
+          {tab === 'schools' && (
+            <AdminSchoolsTab
+              schoolInquiries={schoolInquiries}
+              onSync={handleSync}
+              onNavigate={handleNavigate}
             />
           )}
 

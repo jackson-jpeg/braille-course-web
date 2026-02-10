@@ -331,3 +331,152 @@ export function appointmentRequestConfirmationEmail(opts: { name: string }) {
 
   return shell(body);
 }
+
+export function schoolContactAdminEmail(opts: {
+  schoolName: string;
+  districtName?: string | null;
+  contactName: string;
+  contactEmail: string;
+  contactPhone?: string | null;
+  contactTitle?: string | null;
+  servicesNeeded: string;
+  studentCount?: string | null;
+  timeline?: string | null;
+  deliveryPreference?: string | null;
+}) {
+  const {
+    schoolName,
+    districtName,
+    contactName,
+    contactEmail,
+    contactPhone,
+    contactTitle,
+    servicesNeeded,
+    studentCount,
+    timeline,
+    deliveryPreference,
+  } = opts;
+
+  const body = `
+  ${header('New School Inquiry', schoolName)}
+
+  <!-- school info -->
+  <tr>
+    <td style="padding:32px 40px 0;">
+      <h2 style="margin:0 0 16px;font-family:${FONT_HEADING};font-size:20px;font-weight:400;color:${C.navy};">School Information</h2>
+      <table role="presentation" width="100%" cellpadding="0" cellspacing="0">
+        ${detailRow('School Name', escapeHtml(schoolName))}
+        ${districtName ? detailRow('District', escapeHtml(districtName)) : ''}
+      </table>
+    </td>
+  </tr>
+
+  <!-- contact info -->
+  <tr>
+    <td style="padding:24px 40px 0;">
+      <h2 style="margin:0 0 16px;font-family:${FONT_HEADING};font-size:20px;font-weight:400;color:${C.navy};">Contact Information</h2>
+      <table role="presentation" width="100%" cellpadding="0" cellspacing="0">
+        ${detailRow('Name', escapeHtml(contactName))}
+        ${contactTitle ? detailRow('Title', escapeHtml(contactTitle)) : ''}
+        ${detailRow('Email', `<a href="mailto:${escapeHtml(contactEmail)}" style="color:${C.gold};text-decoration:none;">${escapeHtml(contactEmail)}</a>`)}
+        ${contactPhone ? detailRow('Phone', escapeHtml(contactPhone)) : ''}
+      </table>
+    </td>
+  </tr>
+
+  <!-- opportunity details -->
+  <tr>
+    <td style="padding:24px 40px 0;">
+      <h2 style="margin:0 0 16px;font-family:${FONT_HEADING};font-size:20px;font-weight:400;color:${C.navy};">Opportunity Details</h2>
+      <table role="presentation" width="100%" cellpadding="0" cellspacing="0">
+        ${studentCount ? detailRow('Student Count', escapeHtml(studentCount)) : ''}
+        ${timeline ? detailRow('Timeline', escapeHtml(timeline)) : ''}
+        ${deliveryPreference ? detailRow('Delivery Preference', escapeHtml(deliveryPreference)) : ''}
+      </table>
+    </td>
+  </tr>
+
+  <!-- services needed -->
+  <tr>
+    <td style="padding:24px 40px 0;">
+      <h2 style="margin:0 0 12px;font-family:${FONT_HEADING};font-size:20px;font-weight:400;color:${C.navy};">Services Needed</h2>
+      <div style="padding:16px 20px;background:${C.goldSoft};border:1px solid ${C.goldLight};border-radius:10px;font-family:${FONT_BODY};font-size:14px;color:${C.navy};line-height:1.7;white-space:pre-wrap;">${escapeHtml(servicesNeeded)}</div>
+    </td>
+  </tr>
+
+  ${ctaButton('View in Admin Dashboard', 'https://teachbraille.org/admin')}
+
+  <!-- footer note -->
+  <tr>
+    <td style="padding:28px 40px 36px;">
+      <p style="margin:0;font-family:${FONT_BODY};font-size:13px;color:${C.slate};line-height:1.6;text-align:center;">
+        This inquiry was submitted via the TVI Services page.
+      </p>
+    </td>
+  </tr>`;
+
+  return shell(body);
+}
+
+export function schoolContactConfirmationEmail(opts: {
+  contactName: string;
+  schoolName: string;
+}) {
+  const { contactName, schoolName } = opts;
+
+  const body = `
+  ${header('Thank You for Your Inquiry', 'TVI Services for Schools & Districts')}
+
+  <!-- checkmark icon -->
+  <tr>
+    <td align="center" style="padding:32px 40px 0;">
+      <div style="position:relative;display:inline-block;width:56px;height:56px;background:${C.gold};border-radius:50%;text-align:center;line-height:56px;">
+        <!--[if mso]>
+        <v:roundrect xmlns:v="urn:schemas-microsoft-com:vml" xmlns:w="urn:schemas-microsoft-com:office:word" style="height:56px;width:56px;v-text-anchor:middle;" arcsize="50%" fillcolor="${C.gold}">
+        <v:textbox inset="0,0,0,0">
+        <![endif]-->
+        <span style="font-size:28px;color:${C.white};">&#10003;</span>
+        <!--[if mso]></v:textbox></v:roundrect><![endif]-->
+      </div>
+    </td>
+  </tr>
+
+  <!-- main copy -->
+  <tr>
+    <td style="padding:24px 40px 0;font-family:${FONT_BODY};font-size:15px;color:${C.slate};line-height:1.7;">
+      Hi ${escapeHtml(contactName)},
+    </td>
+  </tr>
+  <tr>
+    <td style="padding:16px 40px 0;font-family:${FONT_BODY};font-size:15px;color:${C.slate};line-height:1.7;">
+      Thank you for reaching out about TVI services for <strong style="color:${C.navy};">${escapeHtml(schoolName)}</strong>. I've received your inquiry and will be in touch within <strong style="color:${C.navy};">2 business days</strong> to discuss your vision service needs.
+    </td>
+  </tr>
+
+  <!-- what to expect -->
+  <tr>
+    <td style="padding:24px 40px 0;">
+      <h2 style="margin:0 0 12px;font-family:${FONT_HEADING};font-size:18px;font-weight:400;color:${C.navy};">What to Expect Next</h2>
+      <ul style="margin:0;padding:0 0 0 20px;font-family:${FONT_BODY};font-size:14px;color:${C.slate};line-height:1.8;">
+        <li style="margin-bottom:8px;">I'll contact you to learn more about your students' needs and your vision service requirements</li>
+        <li style="margin-bottom:8px;">We'll schedule a consultation to discuss service options, student goals, and implementation timeline</li>
+        <li style="margin-bottom:8px;">I'll provide a customized proposal outlining services, scheduling, and pricing tailored to your district's needs</li>
+      </ul>
+    </td>
+  </tr>
+
+  <!-- value banner -->
+  ${goldBanner(`
+    <p style="margin:0 0 8px;font-weight:600;color:${C.navy};">Why Schools Choose TeachBraille.org</p>
+    <p style="margin:0;font-size:13px;line-height:1.6;">
+      ✓ Certified TVI with specialized expertise in braille literacy<br />
+      ✓ Flexible remote or in-person service delivery<br />
+      ✓ Individualized instruction tailored to each student's IEP goals<br />
+      ✓ Collaborative approach with your existing special education team
+    </p>
+  `)}
+
+  ${footer('If you have any questions in the meantime, feel free to reply to this email or call me directly.')}`;
+
+  return shell(body);
+}

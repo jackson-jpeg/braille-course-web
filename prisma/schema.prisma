@@ -39,6 +39,17 @@ enum ScheduledEmailStatus {
   CANCELLED
 }
 
+enum SchoolInquiryStatus {
+  NEW_INQUIRY
+  CONTACTED
+  PROPOSAL_SENT
+  NEGOTIATING
+  CONTRACTED
+  ON_HOLD
+  CLOSED_WON
+  CLOSED_LOST
+}
+
 model Section {
   id            String        @id @default(cuid())
   label         String        @unique
@@ -221,4 +232,37 @@ model MaterialDraft {
   wasCorrected Boolean  @default(false)
   createdAt    DateTime @default(now())
   updatedAt    DateTime @updatedAt
+}
+
+model SchoolInquiry {
+  id                 String              @id @default(cuid())
+
+  // Contact Information
+  contactEmail       String              @unique
+  contactName        String
+  contactPhone       String?
+  contactTitle       String?
+
+  // School/District Information
+  schoolName         String
+  districtName       String?
+
+  // Opportunity Details
+  servicesNeeded     String
+  studentCount       String?
+  timeline           String?
+  deliveryPreference String?
+
+  // Pipeline Management
+  status             SchoolInquiryStatus @default(NEW_INQUIRY)
+  sortOrder          Int                 @default(0)
+  adminNotes         String?
+
+  // Metadata
+  createdAt          DateTime            @default(now())
+  updatedAt          DateTime            @updatedAt
+
+  @@index([status, sortOrder])
+  @@index([contactEmail])
+  @@index([schoolName])
 }

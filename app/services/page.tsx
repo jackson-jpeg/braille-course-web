@@ -2,6 +2,7 @@ import { Metadata } from 'next';
 import Link from 'next/link';
 import Footer from '@/components/Footer';
 import BrailleHero from '@/components/BrailleHero';
+import SchoolContactForm from '@/components/SchoolContactForm';
 
 export const metadata: Metadata = {
   title: 'TVI Services — TeachBraille.org',
@@ -349,26 +350,18 @@ export default function ServicesPage() {
         </div>
       </section>
 
-      {/* ========== CTA ========== */}
-      <section className="services-cta" aria-labelledby="services-cta-heading">
-        <div className="services-cta-inner reveal">
-          <h2 id="services-cta-heading">Get in Touch</h2>
-          <a
-            href="mailto:Delaney@TeachBraille.org?subject=TVI%20Services%20Inquiry"
-            className="services-email-cta"
-          >
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" aria-hidden="true">
-              <rect x="2" y="4" width="20" height="16" rx="2" />
-              <path d="M22 4L12 13 2 4" />
-            </svg>
-            Email Delaney to Get Started
-          </a>
-          <p className="services-email-sub">
-            Include your school or district name, student needs, and preferred
-            service model
+      {/* ========== CONTACT FORM ========== */}
+      <section className="services-contact" aria-labelledby="services-contact-heading">
+        <div className="services-contact-inner reveal">
+          <h2 id="services-contact-heading">Get in Touch</h2>
+          <p className="services-contact-intro">
+            Fill out the form below and Delaney will reach out within 2 business days to
+            discuss your vision service needs and schedule a consultation.
           </p>
-          <p className="services-response-note">
-            Delaney typically responds within 24 hours
+          <SchoolContactForm />
+          <p className="services-fallback-email">
+            Prefer email? Contact{' '}
+            <a href="mailto:Delaney@TeachBraille.org">Delaney@TeachBraille.org</a>
           </p>
         </div>
       </section>
