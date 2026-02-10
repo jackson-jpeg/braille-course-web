@@ -6,7 +6,7 @@ import {
   Difficulty,
   GameStats,
   ProgressData,
-  DEFAULT_GAME_STATS,
+  createDefaultGameStats,
 } from '@/lib/progress-types';
 import {
   loadProgress,
@@ -33,7 +33,7 @@ interface UseGameProgressReturn {
 }
 
 export function useGameProgress(gameId: GameId): UseGameProgressReturn {
-  const [stats, setStats] = useState<GameStats>({ ...DEFAULT_GAME_STATS });
+  const [stats, setStats] = useState<GameStats>(createDefaultGameStats());
   const [mastery, setMastery] = useState(0);
   const [difficulty, setDiffState] = useState<Difficulty>('beginner');
   const [streak, setStreak] = useState(0);

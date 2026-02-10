@@ -42,6 +42,9 @@ export default function BrailleSentenceDecoder() {
 
   const inputRef = useRef<HTMLInputElement>(null);
   const containerRef = useRef<HTMLDivElement>(null);
+  const roundTimerRef = useRef<ReturnType<typeof setTimeout>>();
+  const scoreRef = useRef(score);
+  scoreRef.current = score;
 
   const params = getDifficultyParams('sentence-decoder', difficulty) as {
     maxWords: number;
@@ -80,11 +83,11 @@ export default function BrailleSentenceDecoder() {
     setIsCorrect(correct);
     if (correct) setScore((s) => s + 1);
 
-    setTimeout(() => {
+    roundTimerRef.current = setTimeout(() => {
       const nextR = round + 1;
       setRound(nextR);
       if (nextR >= totalRounds) {
-        const finalScore = correct ? score + 1 : score;
+        const finalScore = correct ? scoreRef.current + 1 : scoreRef.current;
         setGameOver(true);
         const achievements = recordResult(finalScore >= totalRounds / 2, finalScore);
         pushAchievements(achievements);
@@ -93,7 +96,12 @@ export default function BrailleSentenceDecoder() {
         loadSentence();
       }
     }, correct ? 1000 : 2500);
-  }, [sentence, submitted, userInput, round, totalRounds, score, loadSentence, recordResult]);
+  }, [sentence, submitted, userInput, round, totalRounds, loadSentence, recordResult]);
+
+  // Cleanup timer
+  useEffect(() => {
+    return () => { if (roundTimerRef.current) clearTimeout(roundTimerRef.current); };
+  }, []);
 
   const handleKeyDown = useCallback((e: React.KeyboardEvent) => {
     if (e.key === 'Enter') {

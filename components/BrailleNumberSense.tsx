@@ -52,6 +52,9 @@ export default function BrailleNumberSense() {
 
   const containerRef = useRef<HTMLDivElement>(null);
   const visibleRef = useRef(true);
+  const roundTimerRef = useRef<ReturnType<typeof setTimeout>>();
+  const scoreRef = useRef(score);
+  scoreRef.current = score;
 
   // Visibility-scoped keyboard
   useEffect(() => {
@@ -101,11 +104,11 @@ export default function BrailleNumberSense() {
 
     if (correct) setScore((s) => s + 1);
 
-    setTimeout(() => {
+    roundTimerRef.current = setTimeout(() => {
       const nextR = round + 1;
       setRound(nextR);
       if (nextR >= totalRounds) {
-        const finalScore = correct ? score + 1 : score;
+        const finalScore = correct ? scoreRef.current + 1 : scoreRef.current;
         setGameOver(true);
         const achievements = recordResult(finalScore >= totalRounds / 2, finalScore);
         pushAchievements(achievements);
@@ -114,7 +117,12 @@ export default function BrailleNumberSense() {
         nextRound();
       }
     }, correct ? 600 : 1200);
-  }, [locked, problem, round, totalRounds, score, nextRound, recordResult]);
+  }, [locked, problem, round, totalRounds, nextRound, recordResult]);
+
+  // Cleanup timer
+  useEffect(() => {
+    return () => { if (roundTimerRef.current) clearTimeout(roundTimerRef.current); };
+  }, []);
 
   // Keyboard support (1-4)
   useEffect(() => {

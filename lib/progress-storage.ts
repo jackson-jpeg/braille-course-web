@@ -8,7 +8,7 @@ import {
   GameId,
   GameStats,
   Difficulty,
-  DEFAULT_GAME_STATS,
+  createDefaultGameStats,
   createDefaultProgress,
 } from './progress-types';
 
@@ -42,7 +42,7 @@ export function saveProgress(data: ProgressData): void {
 /** Get stats for a specific game */
 export function getGameStats(gameId: GameId): GameStats {
   const progress = loadProgress();
-  return progress.games[gameId] || { ...DEFAULT_GAME_STATS };
+  return progress.games[gameId] || createDefaultGameStats();
 }
 
 /** Record a completed game round */
@@ -64,7 +64,7 @@ export function recordGameResult(
   }
 
   // Update game stats
-  const stats = progress.games[gameId] || { ...DEFAULT_GAME_STATS };
+  const stats = progress.games[gameId] || createDefaultGameStats();
   stats.gamesPlayed++;
   if (won) stats.gamesWon++;
   stats.bestScore = Math.max(stats.bestScore, score);
@@ -149,9 +149,19 @@ export function exportProgress(): string {
 /** Import progress from JSON string */
 export function importProgress(json: string): boolean {
   try {
-    const data = JSON.parse(json) as ProgressData;
+    const data = JSON.parse(json) as Partial<ProgressData>;
     if (!data.version) return false;
-    saveProgress(data);
+    // Merge with defaults to fill any missing fields
+    const defaults = createDefaultProgress();
+    const merged: ProgressData = {
+      ...defaults,
+      ...data,
+      settings: { ...defaults.settings, ...(data.settings || {}) },
+      streak: { ...defaults.streak, ...(data.streak || {}) },
+      achievements: { ...defaults.achievements, ...(data.achievements || {}) },
+      version: CURRENT_VERSION,
+    };
+    saveProgress(merged);
     return true;
   } catch {
     return false;

@@ -25,6 +25,9 @@ export default function BrailleReflexDots() {
   const containerRef = useRef<HTMLDivElement>(null);
   const visibleRef = useRef(true);
   const showTimeoutRef = useRef<ReturnType<typeof setTimeout>>();
+  const roundTimerRef = useRef<ReturnType<typeof setTimeout>>();
+  const scoreRef = useRef(score);
+  scoreRef.current = score;
 
   const params = getDifficultyParams('reflex-dots', difficulty) as {
     displayTime: number;
@@ -68,6 +71,7 @@ export default function BrailleReflexDots() {
   useEffect(() => {
     return () => {
       if (showTimeoutRef.current) clearTimeout(showTimeoutRef.current);
+      if (roundTimerRef.current) clearTimeout(roundTimerRef.current);
     };
   }, []);
 
@@ -89,11 +93,11 @@ export default function BrailleReflexDots() {
 
     if (correct) setScore((s) => s + 1);
 
-    setTimeout(() => {
+    roundTimerRef.current = setTimeout(() => {
       const nextRound = round + 1;
       setRound(nextRound);
       if (nextRound >= params.rounds) {
-        const finalScore = correct ? score + 1 : score;
+        const finalScore = correct ? scoreRef.current + 1 : scoreRef.current;
         setPhase('result');
         const achievements = recordResult(finalScore >= params.rounds / 2, finalScore);
         pushAchievements(achievements);
@@ -102,7 +106,7 @@ export default function BrailleReflexDots() {
         startRound();
       }
     }, 800);
-  }, [phase, userPattern, targetPattern, round, params.rounds, score, startRound, recordResult]);
+  }, [phase, userPattern, targetPattern, round, params.rounds, startRound, recordResult]);
 
   // Keyboard: 1-6 to toggle dots, Enter to submit
   useEffect(() => {

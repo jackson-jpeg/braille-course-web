@@ -62,18 +62,21 @@ export interface ProgressData {
   firstPlayDate: string;
 }
 
-export const DEFAULT_GAME_STATS: GameStats = {
-  gamesPlayed: 0,
-  gamesWon: 0,
-  bestScore: 0,
-  totalScore: 0,
-  lastPlayed: '',
-  difficultyStats: {
-    beginner: { played: 0, won: 0 },
-    intermediate: { played: 0, won: 0 },
-    advanced: { played: 0, won: 0 },
-  },
-};
+/** Factory to avoid shared mutable nested objects */
+export function createDefaultGameStats(): GameStats {
+  return {
+    gamesPlayed: 0,
+    gamesWon: 0,
+    bestScore: 0,
+    totalScore: 0,
+    lastPlayed: '',
+    difficultyStats: {
+      beginner: { played: 0, won: 0 },
+      intermediate: { played: 0, won: 0 },
+      advanced: { played: 0, won: 0 },
+    },
+  };
+}
 
 export const DEFAULT_SETTINGS: UserSettings = {
   difficulty: {

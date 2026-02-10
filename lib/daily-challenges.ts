@@ -26,6 +26,8 @@ const GAME_POOL: { gameId: GameId; weight: number }[] = [
   { gameId: 'contraction-sprint', weight: 10 },
   { gameId: 'number-sense', weight: 10 },
   { gameId: 'reflex-dots', weight: 5 },
+  { gameId: 'sequence', weight: 5 },
+  { gameId: 'sentence-decoder', weight: 5 },
 ];
 
 const GAME_LABELS: Record<GameId, string> = {
@@ -131,6 +133,22 @@ function generateChallenge(gameId: GameId, rng: () => number, index: number): Da
         id, gameId, title: `Lightning Fast`,
         description: `Score ${score}+ in ${label}`,
         target: score, xp: 30, type: 'speed',
+      };
+    }
+    case 'sequence': {
+      const wins = 3 + Math.floor(rng() * 3);
+      return {
+        id, gameId, title: `In Order`,
+        description: `Get ${wins}+ correct in ${label}`,
+        target: wins, xp: 30, type: 'score',
+      };
+    }
+    case 'sentence-decoder': {
+      const wins = 3 + Math.floor(rng() * 3);
+      return {
+        id, gameId, title: `Speed Reader`,
+        description: `Decode ${wins}+ sentences in ${label}`,
+        target: wins, xp: 40, type: 'score',
       };
     }
     default: {

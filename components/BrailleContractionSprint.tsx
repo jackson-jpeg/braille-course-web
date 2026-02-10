@@ -49,6 +49,7 @@ export default function BrailleContractionSprint() {
   const containerRef = useRef<HTMLDivElement>(null);
   const visibleRef = useRef(true);
   const timerRef = useRef<ReturnType<typeof setInterval>>();
+  const feedbackTimerRef = useRef<ReturnType<typeof setTimeout>>();
   const scoreRef = useRef(score);
   scoreRef.current = score;
 
@@ -116,10 +117,11 @@ export default function BrailleContractionSprint() {
     }, 1000);
   }, [difficulty, pickNewWord]);
 
-  // Cleanup timer
+  // Cleanup timers
   useEffect(() => {
     return () => {
       if (timerRef.current) clearInterval(timerRef.current);
+      if (feedbackTimerRef.current) clearTimeout(feedbackTimerRef.current);
     };
   }, []);
 
@@ -150,10 +152,10 @@ export default function BrailleContractionSprint() {
       if (isCorrect) {
         setFeedback('correct');
         setScore((s) => s + 1);
-        setTimeout(() => pickNewWord(), 600);
+        feedbackTimerRef.current = setTimeout(() => pickNewWord(), 600);
       } else {
         setFeedback('wrong');
-        setTimeout(() => {
+        feedbackTimerRef.current = setTimeout(() => {
           setSelectedPieces([]);
           setUsedTileIndices(new Set());
           setFeedback(null);

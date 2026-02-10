@@ -56,6 +56,9 @@ export default function BrailleSequence() {
   const [tip, setTip] = useState('');
 
   const containerRef = useRef<HTMLDivElement>(null);
+  const roundTimerRef = useRef<ReturnType<typeof setTimeout>>();
+  const scoreRef = useRef(score);
+  scoreRef.current = score;
   // Refs for the check function to always read latest state
   const cardsRef = useRef(cards);
   cardsRef.current = cards;
@@ -97,6 +100,11 @@ export default function BrailleSequence() {
   useEffect(() => {
     startGame();
   }, []); // eslint-disable-line react-hooks/exhaustive-deps
+
+  // Cleanup timer
+  useEffect(() => {
+    return () => { if (roundTimerRef.current) clearTimeout(roundTimerRef.current); };
+  }, []);
 
   const handleCardClick = useCallback((index: number) => {
     if (phase !== 'playing') return;
@@ -145,11 +153,11 @@ export default function BrailleSequence() {
     setFeedback(isCorrect);
     if (isCorrect) setScore((s) => s + 1);
 
-    setTimeout(() => {
+    roundTimerRef.current = setTimeout(() => {
       const nextR = round + 1;
       setRound(nextR);
       if (nextR >= totalRounds) {
-        const finalScore = isCorrect ? score + 1 : score;
+        const finalScore = isCorrect ? scoreRef.current + 1 : scoreRef.current;
         setPhase('result');
         const achievements = recordResult(finalScore >= totalRounds / 2, finalScore);
         pushAchievements(achievements);

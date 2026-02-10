@@ -79,13 +79,7 @@ export default function ProgressDashboard() {
 
   return (
     <div className="progress-dashboard">
-      <div
-        className="progress-dashboard-header"
-        onClick={() => setExpanded(!expanded)}
-        onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); setExpanded(!expanded); } }}
-        role="button"
-        tabIndex={0}
-      >
+      <div className="progress-dashboard-header">
         <div className="progress-dashboard-summary">
           <ProgressRing progress={overallMastery} size={52} />
           <span className="sr-only">{overallMastery}% mastered</span>
@@ -101,6 +95,7 @@ export default function ProgressDashboard() {
         </div>
         <button
           className="progress-dashboard-toggle"
+          onClick={() => setExpanded(!expanded)}
           aria-expanded={expanded}
           aria-label={expanded ? 'Collapse progress' : 'Expand progress'}
         >

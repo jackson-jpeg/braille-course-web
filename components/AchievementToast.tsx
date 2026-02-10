@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect, useCallback } from 'react';
+import { useState, useEffect, useCallback, useRef } from 'react';
 import { type Achievement, getTierColor } from '@/lib/achievements';
 
 /** Global achievement queue — games push here, toast component reads */
@@ -20,6 +20,12 @@ export function pushAchievements(achievements: Achievement[]) {
 export default function AchievementToast() {
   const [current, setCurrent] = useState<Achievement | null>(null);
   const [visible, setVisible] = useState(false);
+  const timerRefs = useRef<ReturnType<typeof setTimeout>[]>([]);
+
+  const clearTimers = useCallback(() => {
+    timerRefs.current.forEach(clearTimeout);
+    timerRefs.current = [];
+  }, []);
 
   const showNext = useCallback(() => {
     if (achievementQueue.length === 0) return;
@@ -27,15 +33,16 @@ export default function AchievementToast() {
     setCurrent(next);
     setVisible(true);
 
-    setTimeout(() => {
+    const t1 = setTimeout(() => {
       setVisible(false);
-      setTimeout(() => {
+      const t2 = setTimeout(() => {
         setCurrent(null);
-        // Show next if queued
         if (achievementQueue.length > 0) showNext();
       }, 300);
+      timerRefs.current.push(t2);
     }, 3500);
-  }, []);
+    timerRefs.current.push(t1);
+  }, []); // eslint-disable-line react-hooks/exhaustive-deps
 
   useEffect(() => {
     const listener = () => {
@@ -47,6 +54,11 @@ export default function AchievementToast() {
       if (idx !== -1) listeners.splice(idx, 1);
     };
   }, [current, showNext]);
+
+  // Cleanup timers on unmount
+  useEffect(() => {
+    return () => clearTimers();
+  }, [clearTimers]);
 
   if (!current) return null;
 

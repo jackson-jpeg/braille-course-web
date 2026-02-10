@@ -60,9 +60,9 @@ export default function GamesPage() {
       <GamesNav />
 
       {/* ========== WORD GAME ========== */}
-      <div id="wordgame">
+      <section className="wordgame-section" id="wordgame">
         <BrailleWordGame />
-      </div>
+      </section>
 
       {/* ========== DOT EXPLORER ========== */}
       <section className="explorer-section" id="explorer">
