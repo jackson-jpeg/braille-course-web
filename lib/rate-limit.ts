@@ -1,3 +1,7 @@
+// In-memory rate limiter — state resets on each serverless cold start.
+// Acceptable for the admin login endpoint (password is the primary defense).
+// For stricter guarantees, swap to Vercel KV or Upstash Redis.
+
 const WINDOW_MS = 15 * 60 * 1000; // 15 minutes
 const MAX_ATTEMPTS = 5;
 
