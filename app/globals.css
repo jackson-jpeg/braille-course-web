@@ -13309,6 +13309,29 @@ details.faq-item.reveal:nth-child(6) { transition-delay: 0.4s; }
   .reflex-grid { gap: 8px; max-width: 140px; }
 }
 
+/* ---------- Screen-reader only ---------- */
+.sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border: 0;
+}
+
+/* ---------- Keyboard hints ---------- */
+.reflex-kbd-hint,
+.numsense-kbd-hint {
+  display: block;
+  margin-top: 0.4em;
+  font-size: 0.82em;
+  opacity: 0.55;
+  font-style: italic;
+}
+
 /* ---------- Reduced motion ---------- */
 @media (prefers-reduced-motion: reduce) {
   .celebration-confetti-piece,

@@ -70,7 +70,7 @@ export default function BrailleSentenceDecoder() {
   }, []); // eslint-disable-line react-hooks/exhaustive-deps
 
   const handleSubmit = useCallback(() => {
-    if (!sentence || submitted) return;
+    if (!sentence || submitted || !userInput.trim()) return;
 
     const normalized = userInput.trim().toLowerCase().replace(/\s+/g, ' ');
     const expected = sentence.plainText.toLowerCase().replace(/\s+/g, ' ');

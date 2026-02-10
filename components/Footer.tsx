@@ -48,8 +48,8 @@ export default function Footer() {
         Back to top
       </a>
       <p>
-        &copy; 2026 Delaney Costello, Teacher of the Visually Impaired &middot;
-        TVI Services &amp; Braille Instruction
+        &copy; 2026 Frankly the Best Education, LLC &middot;
+        Delaney Costello, Teacher of the Visually Impaired
       </p>
     </footer>
   );

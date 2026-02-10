@@ -88,6 +88,7 @@ export default function ProgressDashboard() {
       >
         <div className="progress-dashboard-summary">
           <ProgressRing progress={overallMastery} size={52} />
+          <span className="sr-only">{overallMastery}% mastered</span>
           <div className="progress-dashboard-stats">
             <span className="progress-dashboard-label">Your Progress</span>
             <span className="progress-dashboard-numbers">
@@ -114,9 +115,10 @@ export default function ProgressDashboard() {
             return (
               <a key={game.id} href={game.anchor} className="progress-game-card">
                 <ProgressRing progress={m} size={40} />
+                <span className="sr-only">{game.label}: {m}% mastered</span>
                 <div className="progress-game-info">
                   <span className="progress-game-name">{game.label}</span>
-                  <span className="progress-game-pct">{m}%</span>
+                  <span className="progress-game-pct" aria-hidden="true">{m}%</span>
                 </div>
               </a>
             );

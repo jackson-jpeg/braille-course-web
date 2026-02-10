@@ -49,6 +49,8 @@ export default function BrailleContractionSprint() {
   const containerRef = useRef<HTMLDivElement>(null);
   const visibleRef = useRef(true);
   const timerRef = useRef<ReturnType<typeof setInterval>>();
+  const scoreRef = useRef(score);
+  scoreRef.current = score;
 
   // Visibility-scoped keyboard
   useEffect(() => {
@@ -124,11 +126,12 @@ export default function BrailleContractionSprint() {
   // Record result when game ends
   useEffect(() => {
     if (phase === 'result') {
-      const achievements = recordResult(score > 0, score);
+      const s = scoreRef.current;
+      const achievements = recordResult(s >= 3, s);
       pushAchievements(achievements);
       setTip(getRandomTip().fact);
     }
-  }, [phase]); // eslint-disable-line react-hooks/exhaustive-deps
+  }, [phase, recordResult]);
 
   const handleTileClick = useCallback((piece: string, tileIndex: number) => {
     if (phase !== 'playing' || !currentWord) return;

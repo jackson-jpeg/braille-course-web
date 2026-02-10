@@ -143,6 +143,7 @@ export default function BrailleReflexDots() {
           <div className="reflex-ready">
             <p className="reflex-instructions">
               A braille pattern will flash briefly. Tap the dots to recreate it from memory!
+              <span className="reflex-kbd-hint">Keyboard: 1–6 toggle dots, Enter to submit</span>
             </p>
             <button className="reflex-start-btn" onClick={startGame}>
               Start Game

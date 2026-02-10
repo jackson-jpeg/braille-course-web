@@ -67,8 +67,11 @@ export default function BrailleSequence() {
     const sorted = [...letters].sort();
     setCorrectOrder(sorted);
 
-    // Scramble for display
-    const scrambled = [...letters].sort(() => Math.random() - 0.5);
+    // Scramble for display — ensure it's not already in order
+    let scrambled = [...letters].sort(() => Math.random() - 0.5);
+    while (scrambled.every((l, i) => l === sorted[i]) && letters.length > 1) {
+      scrambled = [...letters].sort(() => Math.random() - 0.5);
+    }
     setCards(scrambled.map((letter, i) => ({
       letter,
       pattern: brailleMap[letter],
@@ -158,7 +161,7 @@ export default function BrailleSequence() {
             <div className="seq-cards" role="group" aria-label="Braille sequence cards">
               {cards.map((card, i) => (
                 <button
-                  key={`${card.letter}-${i}`}
+                  key={card.letter}
                   className={`seq-card ${
                     selectedIdx === i ? 'selected' : ''
                   } ${
@@ -166,7 +169,7 @@ export default function BrailleSequence() {
                   }`}
                   onClick={() => handleCardClick(i)}
                   disabled={phase !== 'playing'}
-                  aria-label={`Position ${i + 1}: braille pattern`}
+                  aria-label={`Position ${i + 1}${feedback !== null ? `: letter ${card.letter}` : ''}`}
                 >
                   <BrailleCell pattern={card.pattern} />
                   {feedback !== null && (

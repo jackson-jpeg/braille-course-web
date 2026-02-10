@@ -135,7 +135,7 @@ export default function BrailleNumberSense() {
       <div className="numsense-header">
         <span className="section-label">Numbers</span>
         <h2>Number Sense</h2>
-        <p>Solve math in braille</p>
+        <p>Solve math in braille <span className="numsense-kbd-hint">Keys 1–4 to answer</span></p>
       </div>
 
       <div className="numsense-body">

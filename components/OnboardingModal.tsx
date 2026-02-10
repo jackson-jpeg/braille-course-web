@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect, useCallback } from 'react';
+import { useState, useEffect, useCallback, useRef } from 'react';
 import { loadProgress, markOnboardingSeen, setTrackingConsent } from '@/lib/progress-storage';
 
 const STEPS = [
@@ -24,6 +24,7 @@ const STEPS = [
 export default function OnboardingModal() {
   const [visible, setVisible] = useState(false);
   const [step, setStep] = useState(0);
+  const modalRef = useRef<HTMLDivElement>(null);
 
   const handleClose = useCallback((consent: boolean) => {
     markOnboardingSeen();
@@ -38,14 +39,36 @@ export default function OnboardingModal() {
     }
   }, []);
 
-  // Escape key dismisses
+  // Escape key dismisses + focus trap
   useEffect(() => {
     if (!visible) return;
     function onKeyDown(e: KeyboardEvent) {
       if (e.key === 'Escape') handleClose(true);
+      if (e.key === 'Tab' && modalRef.current) {
+        const focusable = modalRef.current.querySelectorAll<HTMLElement>(
+          'button, [href], input, [tabindex]:not([tabindex="-1"])'
+        );
+        if (focusable.length === 0) return;
+        const first = focusable[0];
+        const last = focusable[focusable.length - 1];
+        if (e.shiftKey && document.activeElement === first) {
+          e.preventDefault();
+          last.focus();
+        } else if (!e.shiftKey && document.activeElement === last) {
+          e.preventDefault();
+          first.focus();
+        }
+      }
     }
+    // Move focus into modal on open
+    const timer = setTimeout(() => {
+      modalRef.current?.querySelector<HTMLElement>('button')?.focus();
+    }, 50);
     window.addEventListener('keydown', onKeyDown);
-    return () => window.removeEventListener('keydown', onKeyDown);
+    return () => {
+      window.removeEventListener('keydown', onKeyDown);
+      clearTimeout(timer);
+    };
   }, [visible, handleClose]);
 
   if (!visible) return null;
@@ -62,8 +85,8 @@ export default function OnboardingModal() {
   const isLast = step === STEPS.length - 1;
 
   return (
-    <div className="onboarding-overlay" role="dialog" aria-modal="true" aria-label="Welcome">
-      <div className="onboarding-modal">
+    <div className="onboarding-overlay" role="dialog" aria-modal="true" aria-labelledby="onboarding-title">
+      <div className="onboarding-modal" ref={modalRef}>
         <button
           className="onboarding-close"
           onClick={() => handleClose(true)}
@@ -73,7 +96,7 @@ export default function OnboardingModal() {
         </button>
 
         <div className="onboarding-icon">{current.icon}</div>
-        <h3 className="onboarding-title">{current.title}</h3>
+        <h3 id="onboarding-title" className="onboarding-title">{current.title}</h3>
         <p className="onboarding-desc">{current.description}</p>
 
         {/* Step dots */}

@@ -84,7 +84,7 @@ export function getDifficultyParams(gameId: GameId, difficulty: Difficulty): Rec
     },
   };
 
-  return params[gameId]?.[difficulty] || {};
+  return params[gameId]?.[difficulty] || params[gameId]?.['beginner'] || {};
 }
 
 /** Check if a difficulty level is unlocked for a game */
