@@ -202,23 +202,20 @@ export default function AdminScheduledEmailsPanel({ onRefreshSent }: Props) {
                 {email.status === 'PENDING' && (
                   <div className="admin-scheduled-actions">
                     <button
-                      className="admin-send-btn"
-                      style={{ fontSize: '0.75rem', padding: '3px 10px' }}
+                      className="admin-send-btn admin-action-btn-sm"
                       onClick={() => handleSendNow(email)}
                       disabled={sendingNowId === email.id}
                     >
                       {sendingNowId === email.id ? 'Sending\u2026' : 'Send Now'}
                     </button>
                     <button
-                      className="admin-refresh-btn"
-                      style={{ fontSize: '0.75rem', padding: '3px 10px' }}
+                      className="admin-refresh-btn admin-action-btn-sm"
                       onClick={() => startEdit(email)}
                     >
                       Edit
                     </button>
                     <button
-                      className="admin-refund-confirm"
-                      style={{ fontSize: '0.75rem', padding: '3px 10px' }}
+                      className="admin-refund-confirm admin-action-btn-sm"
                       onClick={() => setCancellingId(email.id)}
                     >
                       Cancel

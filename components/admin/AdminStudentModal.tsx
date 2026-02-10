@@ -419,15 +419,13 @@ export default function AdminStudentModal({ enrollment, scheduleMap, onClose, on
                             />
                             <div style={{ display: 'flex', gap: 6, marginTop: 4 }}>
                               <button
-                                className="admin-send-btn"
-                                style={{ fontSize: '0.75rem', padding: '3px 10px' }}
+                                className="admin-send-btn admin-action-btn-sm"
                                 onClick={() => saveNoteEdit(n.id)}
                               >
                                 Save
                               </button>
                               <button
-                                className="admin-refresh-btn"
-                                style={{ fontSize: '0.75rem', padding: '3px 10px' }}
+                                className="admin-refresh-btn admin-action-btn-sm"
                                 onClick={() => setEditingNoteId(null)}
                               >
                                 Cancel
@@ -440,14 +438,8 @@ export default function AdminStudentModal({ enrollment, scheduleMap, onClose, on
                             <div className="admin-note-meta">
                               <span title={fullDate(n.createdAt)}>{relativeTime(n.createdAt)}</span>
                               <button
-                                className="admin-stripe-link"
-                                style={{
-                                  fontSize: '0.75rem',
-                                  background: 'none',
-                                  border: 'none',
-                                  cursor: 'pointer',
-                                  padding: 0,
-                                }}
+                                className="admin-stripe-link admin-action-btn-sm"
+                                style={{ background: 'none', border: 'none', cursor: 'pointer', padding: 0 }}
                                 onClick={() => {
                                   setEditingNoteId(n.id);
                                   setEditingNoteContent(n.content);
@@ -474,10 +466,10 @@ export default function AdminStudentModal({ enrollment, scheduleMap, onClose, on
                       style={{ resize: 'vertical' }}
                     />
                     <button
-                      className="admin-send-btn"
+                      className="admin-send-btn admin-action-btn-sm"
                       onClick={addNote}
                       disabled={noteLoading || !newNote.trim()}
-                      style={{ marginTop: 6, fontSize: '0.8rem', padding: '4px 12px' }}
+                      style={{ marginTop: 6 }}
                     >
                       {noteLoading ? 'Adding\u2026' : 'Add Note'}
                     </button>

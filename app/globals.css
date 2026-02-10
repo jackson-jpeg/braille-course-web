@@ -6115,6 +6115,15 @@ details.faq-item.reveal:nth-child(6) {
   font-size: 0.75rem;
   padding: 4px 10px;
 }
+.admin-action-btn-sm-danger {
+  font-size: 0.75rem;
+  padding: 4px 10px;
+  color: #dc2626;
+}
+.admin-action-btn-xs {
+  font-size: 0.72rem;
+  padding: 2px 8px;
+}
 
 /* Compose Form */
 .admin-compose {

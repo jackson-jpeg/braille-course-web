@@ -183,7 +183,7 @@ export default function AdminEmailsTab({
         .then((json) => {
           setAttachments((json.materials as Material[]).filter((m) => ids.has(m.id)));
         })
-        .catch(() => {});
+        .catch(() => showToast('Failed to load attachment details', 'error'));
     }
   }, [pendingAttachmentIds]);
 
@@ -801,8 +801,7 @@ export default function AdminEmailsTab({
                         )}
                         <button
                           type="button"
-                          className="admin-compose-btn"
-                          style={{ fontSize: '0.8rem', padding: '5px 12px' }}
+                          className="admin-compose-btn admin-action-btn-sm"
                           onClick={handleTogglePicker}
                         >
                           <svg width="14" height="14" viewBox="0 0 24 24" fill="none" style={{ marginRight: 4 }}>
@@ -1126,8 +1125,8 @@ export default function AdminEmailsTab({
             <div className="admin-email-error">
               {receivedError}
               <button
-                className="admin-refresh-btn"
-                style={{ marginLeft: 12, fontSize: '0.82rem', padding: '4px 12px' }}
+                className="admin-refresh-btn admin-action-btn-sm"
+                style={{ marginLeft: 12 }}
                 onClick={() => {
                   setReceivedError('');
                   fetchReceivedEmails();

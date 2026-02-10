@@ -174,8 +174,8 @@ export default function AdminCreateTab({ onEmailMaterial }: Props) {
         const data = await res.json();
         setRecentMaterials((data.materials || []).slice(0, 10));
       }
-    } catch {
-      /* ignore */
+    } catch (err) {
+      console.error('Failed to load recent materials:', err);
     }
   }, []);
 
@@ -187,8 +187,8 @@ export default function AdminCreateTab({ onEmailMaterial }: Props) {
         const data = await res.json();
         setTemplates(data.templates || []);
       }
-    } catch {
-      /* ignore */
+    } catch (err) {
+      console.error('Failed to load templates:', err);
     }
   }, []);
 
@@ -220,8 +220,8 @@ export default function AdminCreateTab({ onEmailMaterial }: Props) {
           }),
         });
       }
-    } catch {
-      /* ignore */
+    } catch (err) {
+      console.error('Failed to load next session:', err);
     }
   }, []);
 
@@ -265,8 +265,8 @@ export default function AdminCreateTab({ onEmailMaterial }: Props) {
             if (!draftId) setDraftId(data.draft.id);
             setDraftSaveStatus('saved');
           }
-        } catch {
-          /* ignore */
+        } catch (err) {
+          console.error('Failed to autosave draft:', err);
         }
       }, 3000);
     },
@@ -289,8 +289,8 @@ export default function AdminCreateTab({ onEmailMaterial }: Props) {
         setDuplicateWarning(match.filename);
         return true;
       }
-    } catch {
-      /* ignore */
+    } catch (err) {
+      console.error('Failed to check for duplicates:', err);
     }
     return false;
   }
@@ -843,8 +843,8 @@ export default function AdminCreateTab({ onEmailMaterial }: Props) {
               {notes.length > 20 && !isGenerating && (
                 <button
                   type="button"
-                  className="admin-compose-btn"
-                  style={{ fontSize: '0.72rem', padding: '2px 8px', marginLeft: 8 }}
+                  className="admin-compose-btn admin-action-btn-xs"
+                  style={{ marginLeft: 8 }}
                   onClick={handlePolishNotes}
                   disabled={polishing}
                 >
@@ -861,8 +861,8 @@ export default function AdminCreateTab({ onEmailMaterial }: Props) {
               {title.trim() && notes.trim() && !isGenerating && (
                 <button
                   type="button"
-                  className="admin-compose-btn"
-                  style={{ fontSize: '0.72rem', padding: '2px 8px', marginLeft: 8 }}
+                  className="admin-compose-btn admin-action-btn-xs"
+                  style={{ marginLeft: 8 }}
                   onClick={handleSaveTemplate}
                   disabled={savingTemplate}
                 >
@@ -1111,15 +1111,13 @@ export default function AdminCreateTab({ onEmailMaterial }: Props) {
                     <td>
                       <div style={{ display: 'flex', gap: 6 }}>
                         <button
-                          className="admin-compose-btn"
-                          style={{ fontSize: '0.75rem', padding: '4px 10px' }}
+                          className="admin-compose-btn admin-action-btn-sm"
                           onClick={() => onEmailMaterial(m.id)}
                         >
                           Email
                         </button>
                         <button
-                          className="admin-compose-btn"
-                          style={{ fontSize: '0.75rem', padding: '4px 10px', color: '#dc2626' }}
+                          className="admin-compose-btn admin-action-btn-sm-danger"
                           onClick={() => handleDeleteMaterial(m.id)}
                         >
                           Delete

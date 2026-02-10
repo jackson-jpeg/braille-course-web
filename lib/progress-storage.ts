@@ -15,14 +15,22 @@ import {
 const STORAGE_KEY = 'brailleGames_progress';
 const CURRENT_VERSION = 1;
 
+// In-memory cache to avoid repeated JSON.parse on every read
+let _cache: ProgressData | null = null;
+
 /** Read full progress from localStorage */
 export function loadProgress(): ProgressData {
+  if (_cache) return _cache;
   if (typeof window === 'undefined') return createDefaultProgress();
   try {
     const raw = localStorage.getItem(STORAGE_KEY);
     if (!raw) return createDefaultProgress();
     const data = JSON.parse(raw) as ProgressData;
-    if (data.version !== CURRENT_VERSION) return migrateData(data);
+    if (data.version !== CURRENT_VERSION) {
+      _cache = migrateData(data);
+      return _cache;
+    }
+    _cache = data;
     return data;
   } catch {
     return createDefaultProgress();
@@ -31,6 +39,7 @@ export function loadProgress(): ProgressData {
 
 /** Write full progress to localStorage */
 export function saveProgress(data: ProgressData): void {
+  _cache = data;
   if (typeof window === 'undefined') return;
   try {
     localStorage.setItem(STORAGE_KEY, JSON.stringify(data));
@@ -164,6 +173,7 @@ export function importProgress(json: string): boolean {
       version: CURRENT_VERSION,
     };
     saveProgress(merged);
+    _cache = null;
     return true;
   } catch {
     return false;
@@ -172,6 +182,7 @@ export function importProgress(json: string): boolean {
 
 /** Clear all progress data */
 export function clearProgress(): void {
+  _cache = null;
   if (typeof window === 'undefined') return;
   localStorage.removeItem(STORAGE_KEY);
 }
