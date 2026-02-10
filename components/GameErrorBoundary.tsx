@@ -25,10 +25,14 @@ export default class GameErrorBoundary extends React.Component<Props, State> {
     return { hasError: true };
   }
 
+  componentDidCatch(error: Error, errorInfo: React.ErrorInfo) {
+    console.error(`[${this.props.gameName}] crashed:`, error, errorInfo);
+  }
+
   render() {
     if (this.state.hasError) {
       return (
-        <div className="game-error-card">
+        <div className="game-error-card" role="alert">
           <p>
             <strong>{this.props.gameName}</strong> couldn&apos;t load.
           </p>

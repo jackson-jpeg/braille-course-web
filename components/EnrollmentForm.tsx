@@ -1,20 +1,21 @@
 'use client';
 
-import { useState, useEffect, useRef } from 'react';
+import { useState, useEffect } from 'react';
+import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 import { useSpots } from '@/lib/spots-context';
 import { SECTION_SCHEDULES } from '@/lib/schedule';
 
-type LoadingStage = null | 'processing' | 'redirecting' | 'slow';
+type LoadingStage = null | 'processing';
 
 export default function EnrollmentForm() {
-  const { sections, totalRemaining, refreshSections } = useSpots();
+  const router = useRouter();
+  const { sections, totalRemaining } = useSpots();
   const [selectedSection, setSelectedSection] = useState<string>('');
   const [selectedPlan, setSelectedPlan] = useState<string>('');
   const [loadingStage, setLoadingStage] = useState<LoadingStage>(null);
   const [error, setError] = useState<string | null>(null);
   const [justFilledId, setJustFilledId] = useState<string | null>(null);
-  const slowTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
   const loading = loadingStage !== null;
 
@@ -36,80 +37,23 @@ export default function EnrollmentForm() {
     }
   }, [sections, selectedSection]);
 
-  // Cleanup slow timer
-  useEffect(() => {
-    return () => {
-      if (slowTimerRef.current) clearTimeout(slowTimerRef.current);
-    };
-  }, []);
-
-  const handleSubmit = async () => {
+  const handleSubmit = () => {
     if (!selectedSection || !selectedPlan) return;
+
+    // Pre-flight: check if local state already shows section is full
+    const section = sections.find((s) => s.id === selectedSection);
+    if (section && section.maxCapacity - section.enrolledCount <= 0) {
+      setJustFilledId(selectedSection);
+      setSelectedSection('');
+      setError('This section just filled up. Please choose another.');
+      return;
+    }
 
     setLoadingStage('processing');
     setError(null);
-
-    try {
-      const res = await fetch('/api/checkout', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          sectionId: selectedSection,
-          plan: selectedPlan,
-        }),
-      });
-
-      if (res.status === 409) {
-        // Mark the section that just filled
-        setJustFilledId(selectedSection);
-        await refreshSections();
-
-        // Find the next available section
-        const updated = sections.find(
-          (s) =>
-            s.id !== selectedSection &&
-            s.status !== 'FULL' &&
-            s.maxCapacity - s.enrolledCount > 0
-        );
-
-        if (updated) {
-          const schedule = SECTION_SCHEDULES[updated.label] || updated.label;
-          const spotsLeft = updated.maxCapacity - updated.enrolledCount;
-          setSelectedSection(updated.id);
-          setError(
-            `That section just filled up. We've selected ${schedule} for you — ${spotsLeft} spot${spotsLeft !== 1 ? 's' : ''} remain.`
-          );
-        } else {
-          setSelectedSection('');
-          setError(
-            'This section just filled up and no other sections are available.'
-          );
-        }
-
-        setLoadingStage(null);
-        return;
-      }
-
-      if (!res.ok) {
-        const data = await res.json();
-        setError(data.error || 'Something went wrong. Please try again.');
-        setLoadingStage(null);
-        return;
-      }
-
-      const data = await res.json();
-      setLoadingStage('redirecting');
-
-      // Start slow-connection timer
-      slowTimerRef.current = setTimeout(() => {
-        setLoadingStage('slow');
-      }, 4000);
-
-      window.location.href = data.url;
-    } catch {
-      setError('Network error. Please check your connection and try again.');
-      setLoadingStage(null);
-    }
+    router.push(
+      `/summer/checkout?sectionId=${encodeURIComponent(selectedSection)}&plan=${encodeURIComponent(selectedPlan)}`,
+    );
   };
 
   const [waitlistEmail, setWaitlistEmail] = useState('');
@@ -181,6 +125,7 @@ export default function EnrollmentForm() {
               onChange={(e) => setWaitlistEmail(e.target.value)}
               required
               className="enrollment-waitlist-input"
+              aria-label="Email address for waitlist"
               disabled={waitlistSubmitting}
             />
             <button
@@ -204,7 +149,7 @@ export default function EnrollmentForm() {
               )}
             </button>
             {waitlistError && (
-              <div className="enrollment-error">{waitlistError}</div>
+              <div className="enrollment-error" role="alert">{waitlistError}</div>
             )}
           </form>
         )}
@@ -223,17 +168,9 @@ export default function EnrollmentForm() {
   const canSubmit = selectedSection && selectedPlan && !loading;
 
   const buttonText = (() => {
-    switch (loadingStage) {
-      case 'processing':
-        return 'Processing...';
-      case 'redirecting':
-      case 'slow':
-        return 'Opening Stripe...';
-      default: {
-        const price = selectedPlan === 'full' ? '$500' : selectedPlan === 'deposit' ? '$150' : '';
-        return price ? `Continue to Checkout — ${price}` : 'Continue to Checkout';
-      }
-    }
+    if (loadingStage === 'processing') return 'Processing...';
+    const price = selectedPlan === 'full' ? '$500' : selectedPlan === 'deposit' ? '$150' : '';
+    return price ? `Continue to Checkout — ${price}` : 'Continue to Checkout';
   })();
 
   return (
@@ -352,7 +289,7 @@ export default function EnrollmentForm() {
 
       {/* Step 3: Submit */}
       <button
-        className={`enrollment-submit${loadingStage === 'redirecting' || loadingStage === 'slow' ? ' enrollment-submit--redirecting' : ''}`}
+        className="enrollment-submit"
         disabled={!canSubmit}
         onClick={handleSubmit}
       >
@@ -372,27 +309,9 @@ export default function EnrollmentForm() {
             <polyline points="12 5 19 12 12 19" />
           </svg>
         )}
-        {(loadingStage === 'redirecting' || loadingStage === 'slow') && (
-          <svg
-            viewBox="0 0 24 24"
-            fill="none"
-            stroke="currentColor"
-            strokeWidth="2.5"
-            aria-hidden="true"
-          >
-            <line x1="5" y1="12" x2="19" y2="12" />
-            <polyline points="12 5 19 12 12 19" />
-          </svg>
-        )}
       </button>
 
-      {loadingStage === 'slow' && (
-        <div className="enrollment-slow-note">
-          Taking longer than expected. Please wait&hellip;
-        </div>
-      )}
-
-      {error && <div className="enrollment-error">{error}</div>}
+      {error && <div className="enrollment-error" role="alert">{error}</div>}
 
       <div className="enrollment-trust-row">
         <span className="enrollment-trust-item">

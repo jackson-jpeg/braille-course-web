@@ -58,7 +58,9 @@ export default function RootLayout({
         <div className="braille-bg" aria-hidden="true"></div>
         <NavBar />
         <ScrollRevealInit />
-        {children}
+        <main id="main-content">
+          {children}
+        </main>
         <Analytics />
       </body>
     </html>

@@ -71,6 +71,7 @@ export async function POST(req: NextRequest) {
 
     const sessionParams: Stripe.Checkout.SessionCreateParams = {
       mode: 'payment',
+      ui_mode: 'embedded',
       customer_creation: 'always',
       payment_method_types: ['card'],
       line_items: [
@@ -96,8 +97,7 @@ export async function POST(req: NextRequest) {
         },
         description: `${courseName} — ${schedule}`,
       },
-      success_url: `${siteUrl}/summer/success?session_id={CHECKOUT_SESSION_ID}`,
-      cancel_url: `${siteUrl}/summer`,
+      return_url: `${siteUrl}/summer/success?session_id={CHECKOUT_SESSION_ID}`,
     };
 
     // Deposit: save card for future balance charge, show balance reminder
@@ -129,7 +129,7 @@ export async function POST(req: NextRequest) {
       idempotencyKey,
     });
 
-    return NextResponse.json({ url: session.url });
+    return NextResponse.json({ clientSecret: session.client_secret });
   } catch (err) {
     console.error('Checkout session creation failed:', (err as Error).message);
     return NextResponse.json(

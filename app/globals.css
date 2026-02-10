@@ -1511,6 +1511,128 @@ details.faq-item.reveal:nth-child(6) { transition-delay: 0.4s; }
   .success-card { padding: 40px 28px; }
 }
 
+/* ===== CHECKOUT PAGE (Embedded Stripe) ===== */
+.checkout-page {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 100px 24px 40px;
+}
+
+.checkout-header {
+  text-align: center;
+  margin-bottom: 28px;
+  animation: fadeUp 0.8s var(--ease-out) both;
+}
+.checkout-header h1 {
+  font-family: var(--font-heading), 'DM Serif Display', serif;
+  font-size: clamp(1.6rem, 4vw, 2rem);
+  color: var(--navy);
+  line-height: 1.25;
+  margin-bottom: 6px;
+}
+.checkout-subtitle {
+  font-size: 1.05rem;
+  color: var(--sage-dark);
+  font-weight: 300;
+}
+
+.checkout-back {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  font-size: 0.85rem;
+  color: var(--text-secondary);
+  text-decoration: none;
+  margin-bottom: 16px;
+  transition: color 0.2s ease;
+}
+.checkout-back:hover {
+  color: var(--navy);
+}
+
+.checkout-embed-wrapper {
+  background: white;
+  border: 1px solid rgba(212, 168, 83, 0.15);
+  border-radius: var(--radius-lg);
+  padding: 0;
+  max-width: 580px;
+  width: 100%;
+  box-shadow: 0 16px 64px rgba(27, 42, 74, 0.06);
+  overflow: hidden;
+}
+
+/* Error / invalid state card */
+.checkout-card {
+  position: relative;
+  z-index: 1;
+  background: white;
+  border: 1px solid rgba(212, 168, 83, 0.15);
+  border-radius: var(--radius-lg);
+  padding: 56px 48px;
+  max-width: 580px;
+  width: 100%;
+  text-align: center;
+  box-shadow: 0 16px 64px rgba(27, 42, 74, 0.06);
+  animation: fadeUp 0.8s var(--ease-out) both;
+}
+.checkout-card h1 {
+  font-family: var(--font-heading), 'DM Serif Display', serif;
+  font-size: clamp(1.4rem, 3.5vw, 1.8rem);
+  color: var(--navy);
+  margin-bottom: 12px;
+}
+.checkout-card p {
+  font-size: 1rem;
+  color: var(--text-secondary);
+  line-height: 1.6;
+  margin-bottom: 24px;
+}
+
+/* Loading shimmer */
+.checkout-loading-shimmer {
+  height: 400px;
+  background: linear-gradient(
+    90deg,
+    rgba(212, 168, 83, 0.04) 25%,
+    rgba(212, 168, 83, 0.1) 50%,
+    rgba(212, 168, 83, 0.04) 75%
+  );
+  background-size: 200% 100%;
+  animation: shimmer 1.5s ease-in-out infinite;
+  border-radius: var(--radius-md);
+}
+
+/* Trust row below embed */
+.checkout-trust-row {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  margin-top: 16px;
+  font-size: 0.8rem;
+  color: var(--text-secondary);
+  opacity: 0.7;
+}
+.checkout-trust-row svg {
+  width: 14px;
+  height: 14px;
+  flex-shrink: 0;
+}
+
+/* Center back link in card states */
+.checkout-card .checkout-back {
+  display: inline-flex;
+  margin-top: 4px;
+}
+
+@media (max-width: 520px) {
+  .checkout-page { padding: 80px 16px 24px; }
+  .checkout-card { padding: 40px 24px; }
+  .checkout-embed-wrapper { border-radius: var(--radius-md); }
+}
+
 /* ===== ENROLLMENT FORM ===== */
 .enrollment-form {
   max-width: 440px;
@@ -2325,7 +2447,36 @@ details.faq-item.reveal:nth-child(6) { transition-delay: 0.4s; }
   background: rgba(253, 248, 240, 0.95);
   backdrop-filter: blur(12px);
   -webkit-backdrop-filter: blur(12px);
-  border-bottom: 1px solid rgba(212, 168, 83, 0.12);
+  transition: box-shadow 0.35s var(--ease-out), background 0.35s var(--ease-out);
+}
+/* Gradient bottom border via pseudo-element */
+.site-nav::after {
+  content: '';
+  position: absolute;
+  bottom: 0;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 100%;
+  max-width: 900px;
+  height: 1px;
+  background: linear-gradient(
+    90deg,
+    transparent 0%,
+    rgba(212, 168, 83, 0.25) 20%,
+    rgba(212, 168, 83, 0.35) 50%,
+    rgba(212, 168, 83, 0.25) 80%,
+    transparent 100%
+  );
+  transition: max-width 0.35s var(--ease-out), opacity 0.35s var(--ease-out);
+}
+/* Scrolled state */
+.site-nav--scrolled {
+  box-shadow: 0 2px 16px rgba(27, 42, 74, 0.06);
+  background: rgba(253, 248, 240, 0.98);
+}
+.site-nav--scrolled::after {
+  max-width: 100%;
+  opacity: 0.85;
 }
 
 .site-nav-inner {
@@ -2336,43 +2487,102 @@ details.faq-item.reveal:nth-child(6) { transition-delay: 0.4s; }
   justify-content: space-between;
   padding: 0 24px;
   height: 60px;
+  transition: height 0.35s var(--ease-out);
+}
+.site-nav--scrolled .site-nav-inner {
+  height: 52px;
 }
 
+/* Logo with braille dot cell */
 .site-nav-logo {
+  display: flex;
+  align-items: center;
+  gap: 8px;
   font-family: var(--font-heading), 'DM Serif Display', serif;
   font-size: 1.35rem;
   color: var(--navy);
   text-decoration: none;
   letter-spacing: -0.5px;
-  transition: color 0.2s ease;
+  transition: color 0.2s ease, font-size 0.35s var(--ease-out);
+}
+.site-nav--scrolled .site-nav-logo {
+  font-size: 1.2rem;
 }
 .site-nav-logo:hover {
   color: var(--gold);
 }
 
+/* Braille "T" dot cell — 2×3 grid */
+.site-nav-logo-dots {
+  display: inline-grid;
+  grid-template-columns: 1fr 1fr;
+  grid-template-rows: 1fr 1fr 1fr;
+  gap: 2px;
+  width: 14px;
+  height: 20px;
+  flex-shrink: 0;
+}
+.site-nav-logo-dot {
+  width: 5px;
+  height: 5px;
+  border-radius: 50%;
+  border: 1px solid rgba(212, 168, 83, 0.3);
+  transition: all 0.3s var(--ease-out);
+}
+.site-nav-logo-dot.filled {
+  background: var(--gold);
+  border-color: var(--gold);
+  box-shadow: 0 0 4px rgba(212, 168, 83, 0.3);
+}
+.site-nav-logo:hover .site-nav-logo-dot.filled {
+  box-shadow: 0 0 8px rgba(212, 168, 83, 0.5);
+}
+
+/* Nav links */
 .site-nav-links {
   display: flex;
   align-items: center;
-  gap: 8px;
+  gap: 4px;
 }
 
 .site-nav-link {
-  font-size: 0.88rem;
+  position: relative;
+  font-size: 0.85rem;
   font-weight: 500;
+  letter-spacing: 0.2px;
   color: var(--text-secondary);
   text-decoration: none;
-  padding: 8px 16px;
+  padding: 8px 18px;
   border-radius: var(--radius-full);
-  transition: all 0.25s ease;
+  transition: all 0.25s var(--ease-out);
 }
 .site-nav-link:hover {
   color: var(--navy);
   background: rgba(212, 168, 83, 0.08);
+  transform: translateY(-1px);
 }
 .site-nav-link.active {
   color: var(--navy);
   background: var(--gold-soft);
   font-weight: 600;
+  box-shadow: 0 1px 4px rgba(212, 168, 83, 0.12);
+}
+/* Active dot indicator — braille dot motif */
+.site-nav-link.active::after {
+  content: '';
+  position: absolute;
+  bottom: 2px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 4px;
+  height: 4px;
+  border-radius: 50%;
+  background: var(--gold);
+}
+
+/* Mobile decorative dots — hidden on desktop */
+.site-nav-mobile-dots {
+  display: none;
 }
 
 /* Hamburger toggle (mobile only) */
@@ -2384,7 +2594,12 @@ details.faq-item.reveal:nth-child(6) { transition-delay: 0.4s; }
   border: none;
   cursor: pointer;
   padding: 6px;
+  border-radius: var(--radius-sm);
   z-index: 510;
+  transition: background 0.2s ease;
+}
+.site-nav-toggle:hover {
+  background: rgba(212, 168, 83, 0.1);
 }
 .site-nav-toggle span {
   display: block;
@@ -2404,6 +2619,35 @@ details.faq-item.reveal:nth-child(6) { transition-delay: 0.4s; }
   transform: translateY(-7px) rotate(-45deg);
 }
 
+/* Backdrop overlay for mobile menu */
+.site-nav-backdrop {
+  position: fixed;
+  inset: 0;
+  z-index: 490;
+  background: rgba(27, 42, 74, 0.2);
+  backdrop-filter: blur(4px);
+  -webkit-backdrop-filter: blur(4px);
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.3s var(--ease-out);
+}
+.site-nav-backdrop.open {
+  opacity: 1;
+  pointer-events: all;
+}
+
+/* Staggered link entrance animation */
+@keyframes navLinkSlideIn {
+  from {
+    opacity: 0;
+    transform: translateY(-8px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
 @media (max-width: 768px) {
   .site-nav-toggle {
     display: flex;
@@ -2413,6 +2657,7 @@ details.faq-item.reveal:nth-child(6) { transition-delay: 0.4s; }
     top: 60px;
     left: 0;
     right: 0;
+    z-index: 505;
     background: rgba(253, 248, 240, 0.98);
     backdrop-filter: blur(16px);
     -webkit-backdrop-filter: blur(16px);
@@ -2425,16 +2670,49 @@ details.faq-item.reveal:nth-child(6) { transition-delay: 0.4s; }
     transition: all 0.3s var(--ease-out);
     pointer-events: none;
   }
+  .site-nav--scrolled .site-nav-links {
+    top: 52px;
+  }
   .site-nav-links.open {
     transform: translateY(0);
     opacity: 1;
     pointer-events: all;
+  }
+  .site-nav-links.open .site-nav-link {
+    animation: navLinkSlideIn 0.3s var(--ease-out) both;
+    animation-delay: calc(var(--link-index, 0) * 30ms);
   }
   .site-nav-link {
     width: 100%;
     text-align: center;
     padding: 12px 16px;
     font-size: 1rem;
+    position: relative;
+  }
+  /* Mobile active: left gold accent bar instead of bottom dot */
+  .site-nav-link.active::after {
+    bottom: auto;
+    left: 12px;
+    top: 50%;
+    transform: translateY(-50%);
+    width: 3px;
+    height: 18px;
+    border-radius: 2px;
+  }
+  /* Decorative dots at bottom of mobile menu */
+  .site-nav-mobile-dots {
+    display: flex;
+    justify-content: center;
+    gap: 6px;
+    padding-top: 12px;
+    margin-top: 8px;
+  }
+  .site-nav-mobile-dots span {
+    width: 4px;
+    height: 4px;
+    border-radius: 50%;
+    background: var(--gold);
+    opacity: 0.4;
   }
 }
 

@@ -7,7 +7,7 @@ export default function HubPage() {
     <>
       {/* ========== HUB HERO ========== */}
       <section className="hub-hero" id="top">
-        <div className="hub-hero-content" id="main-content">
+        <div className="hub-hero-content">
           <BrailleHero />
 
           <h1>

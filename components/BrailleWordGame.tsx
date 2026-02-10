@@ -5,6 +5,7 @@ import { brailleMap, dotDescription } from '@/lib/braille-map';
 import { answerWords, validGuesses } from '@/lib/game-words';
 import { useGameProgress } from '@/hooks/useGameProgress';
 import { pushAchievements } from '@/components/AchievementToast';
+import { getRandomTip } from '@/lib/learning-tips';
 
 type TileStatus = 'empty' | 'active' | 'correct' | 'present' | 'absent';
 type KeyStatus = 'unused' | 'correct' | 'present' | 'absent';
@@ -78,6 +79,7 @@ export default function BrailleWordGame() {
   const [won, setWon] = useState(false);
   const [keyStatuses, setKeyStatuses] = useState<Record<string, KeyStatus>>({});
   const [shakeRow, setShakeRow] = useState<number | null>(null);
+  const [tip, setTip] = useState('');
 
   // Animation state
   const [revealingRow, setRevealingRow] = useState<number | null>(null);
@@ -174,12 +176,14 @@ export default function BrailleWordGame() {
             setWon(true);
             setGameOver(true);
             setWinBounce(true);
+            setTip(getRandomTip().fact);
             // Score: higher is better (ROWS + 1 - guesses used)
             const score = ROWS + 1 - (row + 1);
             const achievements = recordResult(true, score);
             pushAchievements(achievements);
           } else if (isLastRow) {
             setGameOver(true);
+            setTip(getRandomTip().fact);
             const achievements = recordResult(false, 0);
             pushAchievements(achievements);
           }
@@ -230,6 +234,7 @@ export default function BrailleWordGame() {
     setRevealGuess(null);
     setPopTile(null);
     setWinBounce(false);
+    setTip('');
   }
 
   // Build the tile grid
@@ -372,16 +377,17 @@ export default function BrailleWordGame() {
         </div>
 
         {gameOver && (
-          <>
+          <div className="wordgame-result" aria-live="polite">
             <div className="wordgame-message">
               {won
                 ? 'Great job! You found the word!'
                 : `The word was ${answer}.`}
             </div>
+            {tip && <p className="wordgame-tip">{tip}</p>}
             <button className="wordgame-play-again" onClick={resetGame}>
               Play Again
             </button>
-          </>
+          </div>
         )}
     </div>
   );

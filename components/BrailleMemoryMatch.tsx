@@ -4,6 +4,7 @@ import { useState, useEffect, useCallback, useRef } from 'react';
 import { brailleMap } from '@/lib/braille-map';
 import { useGameProgress } from '@/hooks/useGameProgress';
 import { pushAchievements } from '@/components/AchievementToast';
+import { getRandomTip } from '@/lib/learning-tips';
 
 const ALL_LETTERS = Object.keys(brailleMap);
 
@@ -50,6 +51,7 @@ export default function BrailleMemoryMatch() {
   const [matchedPairs, setMatchedPairs] = useState(0);
   const [won, setWon] = useState(false);
   const [checking, setChecking] = useState(false);
+  const [tip, setTip] = useState('');
 
   const containerRef = useRef<HTMLDivElement>(null);
   const matchTimerRef = useRef<ReturnType<typeof setTimeout>>();
@@ -64,6 +66,7 @@ export default function BrailleMemoryMatch() {
     setMatchedPairs(0);
     setWon(false);
     setChecking(false);
+    setTip('');
   }, []);
 
   useEffect(() => {
@@ -114,6 +117,7 @@ export default function BrailleMemoryMatch() {
             const next = p + 1;
             if (next === PAIR_COUNT) {
               setWon(true);
+              setTip(getRandomTip().fact);
               const finalMoves = movesRef.current + 1; // +1 for this move
               const score = Math.max(1, PAIR_COUNT * 2 - finalMoves);
               const achievements = recordResult(true, score);
@@ -187,7 +191,8 @@ export default function BrailleMemoryMatch() {
 
         {won && (
           <div className="memorymatch-win" aria-live="polite">
-            All pairs matched in {moves} moves!
+            <div>All pairs matched in {moves} moves!</div>
+            {tip && <p className="memorymatch-tip">{tip}</p>}
           </div>
         )}
 

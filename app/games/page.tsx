@@ -39,7 +39,7 @@ export default function GamesPage() {
 
       {/* ========== HERO ========== */}
       <section className="games-hero" id="top">
-        <div className="games-hero-content" id="main-content">
+        <div className="games-hero-content">
           <BrailleHero word="INTERACTIVE" easterEggs />
           <div className="section-label">Interactive Learning</div>
           <h1>

@@ -12,7 +12,7 @@ export const metadata = {
 function ErrorCard({ title, message }: { title: string; message: string }) {
   return (
     <div className="success-page">
-      <div className="success-card" role="main">
+      <div className="success-card">
         <div className="check-icon check-icon-error" aria-hidden="true">
           <svg
             viewBox="0 0 24 24"
@@ -55,7 +55,7 @@ export default async function SuccessPage({
     return (
       <ErrorCard
         title="No Payment Found"
-        message="We couldn&rsquo;t find a payment associated with this page."
+        message="We couldn\u2019t find a payment associated with this page."
       />
     );
   }
@@ -67,7 +67,7 @@ export default async function SuccessPage({
     return (
       <ErrorCard
         title="No Payment Found"
-        message="We couldn&rsquo;t verify your payment. Please contact us if you believe this is an error."
+        message="We couldn\u2019t verify your payment. Please contact us if you believe this is an error."
       />
     );
   }
@@ -76,7 +76,7 @@ export default async function SuccessPage({
     return (
       <ErrorCard
         title="Payment Not Completed"
-        message="Your payment hasn&rsquo;t been processed yet. Please try again or contact us for help."
+        message="Your payment hasn\u2019t been processed yet. Please try again or contact us for help."
       />
     );
   }
@@ -99,7 +99,7 @@ export default async function SuccessPage({
   // Enrollment not found yet (webhook race) — show "details processing"
   return (
     <div className="success-page">
-      <div className="success-card" role="main">
+      <div className="success-card">
         <div className="check-icon" aria-hidden="true">
           <svg
             viewBox="0 0 24 24"

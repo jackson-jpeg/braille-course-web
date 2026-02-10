@@ -10,7 +10,7 @@ export const metadata: Metadata = {
 export default function PoliciesPage() {
   return (
     <>
-      <main className="policies-page" id="main-content">
+      <div className="policies-page">
         <div className="policies-hero">
           <h1>Policies</h1>
           <p>
@@ -143,7 +143,7 @@ export default function PoliciesPage() {
             </p>
           </section>
         </div>
-      </main>
+      </div>
       <Footer />
     </>
   );

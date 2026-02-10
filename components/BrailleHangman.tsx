@@ -5,6 +5,7 @@ import { brailleMap, dotDescription } from '@/lib/braille-map';
 import { hangmanWords } from '@/lib/hangman-words';
 import { useGameProgress } from '@/hooks/useGameProgress';
 import { pushAchievements } from '@/components/AchievementToast';
+import { getRandomTip } from '@/lib/learning-tips';
 
 const MAX_WRONG = 6;
 
@@ -76,6 +77,7 @@ export default function BrailleHangman() {
   const [guessedLetters, setGuessedLetters] = useState<Set<string>>(new Set());
   const [gameOver, setGameOver] = useState(false);
   const [won, setWon] = useState(false);
+  const [tip, setTip] = useState('');
 
   // Visibility-scoped keyboard: only capture keys when this section is visible
   const containerRef = useRef<HTMLDivElement>(null);
@@ -112,11 +114,13 @@ export default function BrailleHangman() {
     if (isWon && !gameOver) {
       setWon(true);
       setGameOver(true);
+      setTip(getRandomTip().fact);
       // Score: MAX_WRONG - wrongCount (higher = fewer wrong guesses)
       const achievements = recordResult(true, MAX_WRONG - wrongCount);
       pushAchievements(achievements);
     } else if (isLost && !gameOver) {
       setGameOver(true);
+      setTip(getRandomTip().fact);
       const achievements = recordResult(false, 0);
       pushAchievements(achievements);
     }
@@ -148,6 +152,7 @@ export default function BrailleHangman() {
     setGuessedLetters(new Set());
     setGameOver(false);
     setWon(false);
+    setTip('');
   }
 
   function getLetterStatus(letter: string): 'unused' | 'correct' | 'wrong' {
@@ -215,16 +220,17 @@ export default function BrailleHangman() {
         </div>
 
         {gameOver && (
-          <>
+          <div className="hangman-result" aria-live="polite">
             <div className="hangman-message">
               {won
                 ? 'You saved the stick figure!'
                 : `The word was ${answer}.`}
             </div>
+            {tip && <p className="hangman-tip">{tip}</p>}
             <button className="hangman-play-again" onClick={resetGame}>
               Play Again
             </button>
-          </>
+          </div>
         )}
       </div>
     </div>
