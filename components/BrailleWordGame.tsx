@@ -183,7 +183,7 @@ export default function BrailleWordGame() {
         setCurrentGuess((prev) => prev + key);
       }
     },
-    [answer, currentGuess, currentRow, gameOver, revealingRow]
+    [answer, currentGuess, currentRow, gameOver, revealingRow, recordResult]
   );
 
   // Physical keyboard listener (only when this game section is visible)
@@ -345,6 +345,7 @@ export default function BrailleWordGame() {
                     key={key}
                     className={`wordgame-key${wideClass}${statusClass}`}
                     onClick={() => handleKey(key)}
+                    disabled={gameOver}
                     aria-label={ariaLabel}
                   >
                     {!isSpecial && <BrailleCell letter={key} small />}

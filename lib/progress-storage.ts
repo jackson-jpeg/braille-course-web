@@ -56,7 +56,7 @@ export function recordGameResult(
   if (!progress.settings.trackingEnabled) return progress;
 
   const now = new Date().toISOString();
-  const today = now.slice(0, 10);
+  const today = getDateString(new Date());
 
   // Initialize first play date
   if (!progress.firstPlayDate) {
@@ -201,9 +201,10 @@ export function getGameMastery(gameId: GameId): number {
   return Math.round(winRate * 70 + volumeBonus * 30);
 }
 
-// Helpers
+// Helpers — use local timezone for date comparisons so streaks
+// align with the user's calendar day, not UTC midnight.
 function getDateString(date: Date): string {
-  return date.toISOString().slice(0, 10);
+  return date.toLocaleDateString('en-CA'); // YYYY-MM-DD in local tz
 }
 
 function migrateData(data: ProgressData): ProgressData {

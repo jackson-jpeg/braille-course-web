@@ -163,7 +163,7 @@ function generateChallenge(gameId: GameId, rng: () => number, index: number): Da
 
 /** Get today's 3 challenges (deterministic based on date) */
 export function getTodayChallenges(): DailyChallenge[] {
-  const today = new Date().toISOString().slice(0, 10);
+  const today = new Date().toLocaleDateString('en-CA');
   const seed = dateToSeed(today);
   const rng = seededRandom(seed);
 
@@ -183,7 +183,7 @@ export function getTodayChallenges(): DailyChallenge[] {
 export function getDailyChallengeStatus(): { challenges: DailyChallenge[]; completed: boolean[] } {
   const challenges = getTodayChallenges();
   const progress = loadProgress();
-  const today = new Date().toISOString().slice(0, 10);
+  const today = new Date().toLocaleDateString('en-CA');
 
   if (progress.dailyChallenge.date !== today) {
     // New day — reset
