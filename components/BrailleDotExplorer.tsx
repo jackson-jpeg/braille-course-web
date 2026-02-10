@@ -41,23 +41,27 @@ export default function BrailleDotExplorer() {
 
   // Keyboard: 1-6 to toggle dots, C to clear
   useEffect(() => {
+    const dotKeyMap: Record<string, number> = {
+      '1': 0, '4': 1, '2': 2, '5': 3, '3': 4, '6': 5,
+    };
     function onKeyDown(e: KeyboardEvent) {
       if (!visibleRef.current) return;
       if (e.ctrlKey || e.metaKey || e.altKey) return;
-      // Map key to grid index: keys 1-6 map to dot positions
-      const dotKeyMap: Record<string, number> = {
-        '1': 0, '4': 1, '2': 2, '5': 3, '3': 4, '6': 5,
-      };
       if (e.key in dotKeyMap) {
-        toggleDot(dotKeyMap[e.key]);
+        const idx = dotKeyMap[e.key];
+        setDots((prev) => {
+          const next = [...prev];
+          next[idx] = next[idx] === 1 ? 0 : 1;
+          return next;
+        });
       }
       if (e.key.toLowerCase() === 'c') {
-        clearAll();
+        setDots([0, 0, 0, 0, 0, 0]);
       }
     }
     window.addEventListener('keydown', onKeyDown);
     return () => window.removeEventListener('keydown', onKeyDown);
-  }, []); // toggleDot and clearAll use setState updaters, stable by reference
+  }, []);
 
   const patternKey = dots.join(',');
   const matchedLetter = reverseLookup.get(patternKey) || null;

@@ -31,14 +31,14 @@ function saveState(state: HintState): void {
 /** Get remaining hints for today */
 export function getHintsRemaining(): number {
   const state = getState();
-  const today = new Date().toISOString().slice(0, 10);
+  const today = new Date().toLocaleDateString('en-CA');
   if (state.date !== today) return MAX_HINTS_PER_DAY;
   return Math.max(0, MAX_HINTS_PER_DAY - state.used);
 }
 
 /** Use a hint, returns false if none remaining */
 export function useHint(): boolean {
-  const today = new Date().toISOString().slice(0, 10);
+  const today = new Date().toLocaleDateString('en-CA');
   const state = getState();
 
   if (state.date !== today) {
