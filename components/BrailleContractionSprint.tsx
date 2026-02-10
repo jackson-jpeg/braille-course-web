@@ -23,6 +23,36 @@ function getPiecePattern(piece: string): number[] {
   return entry?.pattern || [0, 0, 0, 0, 0, 0];
 }
 
+const TYPE_LABELS: Record<string, string> = {
+  wordsign: 'Alphabetic wordsign',
+  strong: 'Strong contraction',
+  'groupsign-strong': 'Strong groupsign',
+  'groupsign-lower': 'Lower groupsign',
+  'wordsign-lower': 'Lower wordsign',
+};
+
+const TYPE_PRIORITY = ['groupsign-strong', 'groupsign-lower', 'strong', 'wordsign-lower', 'wordsign'];
+
+/** Return a human-readable contraction type for the most interesting piece in a word */
+function getWordType(pieces: string[]): string | null {
+  let best: string | null = null;
+  let bestPri = TYPE_PRIORITY.length;
+  for (const piece of pieces) {
+    if (piece.length === 1 && /^[A-Z]$/.test(piece)) continue; // plain letter
+    const entry = contractedBrailleEntries.find(
+      (e) => e.label.toLowerCase() === piece.toLowerCase()
+    );
+    if (entry) {
+      const pri = TYPE_PRIORITY.indexOf(entry.type);
+      if (pri !== -1 && pri < bestPri) {
+        bestPri = pri;
+        best = entry.type;
+      }
+    }
+  }
+  return best ? (TYPE_LABELS[best] || null) : null;
+}
+
 function BrailleCell({ pattern, size = 'medium' }: { pattern: number[]; size?: 'small' | 'medium' }) {
   return (
     <div className={`csprint-cell csprint-cell-${size}`} aria-hidden="true">
@@ -165,6 +195,7 @@ export default function BrailleContractionSprint() {
   }, [phase, currentWord, selectedPieces, usedTileIndices, pickNewWord]);
 
   const handleUndo = useCallback(() => {
+    if (feedback) return;
     setSelectedPieces((prev) => prev.slice(0, -1));
     setUsedTileIndices((prev) => {
       const next = new Set(prev);
@@ -172,8 +203,9 @@ export default function BrailleContractionSprint() {
       if (arr.length > 0) next.delete(arr[arr.length - 1]);
       return next;
     });
-    setFeedback(null);
-  }, []);
+  }, [feedback]);
+
+  const wordType = currentWord ? getWordType(currentWord.pieces) : null;
 
   return (
     <div className="csprint-container" ref={containerRef}>
@@ -205,6 +237,7 @@ export default function BrailleContractionSprint() {
 
             <div className="csprint-target">
               <span className="csprint-target-word">{currentWord.word}</span>
+              {wordType && <span className="csprint-type-tag">{wordType}</span>}
               <span className="csprint-target-hint">
                 {currentWord.pieces.length} piece{currentWord.pieces.length > 1 ? 's' : ''}
               </span>
@@ -218,7 +251,8 @@ export default function BrailleContractionSprint() {
                   className={`csprint-slot ${
                     selectedPieces[i]
                       ? feedback === 'correct' ? 'correct'
-                      : feedback === 'wrong' ? 'wrong'
+                      : feedback === 'wrong'
+                        ? (selectedPieces[i] === currentWord.pieces[i] ? 'slot-right' : 'wrong')
                       : 'filled'
                     : 'empty'
                   }`}
@@ -231,7 +265,7 @@ export default function BrailleContractionSprint() {
                   )}
                 </div>
               ))}
-              {selectedPieces.length > 0 && (
+              {selectedPieces.length > 0 && !feedback && (
                 <button className="csprint-undo" onClick={handleUndo} aria-label="Undo last piece">
                   ⌫
                 </button>
@@ -241,7 +275,15 @@ export default function BrailleContractionSprint() {
             {/* Show correct answer when wrong */}
             {feedback === 'wrong' && (
               <div className="csprint-answer">
-                Answer: {currentWord.pieces.join(' + ')}
+                <span className="csprint-answer-label">Answer:</span>
+                <div className="csprint-answer-pieces">
+                  {currentWord.pieces.map((piece, i) => (
+                    <div key={i} className="csprint-answer-piece">
+                      <BrailleCell pattern={getPiecePattern(piece)} size="small" />
+                      <span className="csprint-answer-piece-label">{piece}</span>
+                    </div>
+                  ))}
+                </div>
               </div>
             )}
 

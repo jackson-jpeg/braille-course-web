@@ -2266,6 +2266,17 @@ details.faq-item.reveal:nth-child(6) { transition-delay: 0.4s; }
   color: var(--navy);
 }
 
+.wordgame-tip {
+  font-size: 0.82rem;
+  color: var(--text-secondary);
+  line-height: 1.5;
+  margin-top: 12px;
+  margin-bottom: 4px;
+  max-width: 320px;
+  margin-left: auto;
+  margin-right: auto;
+}
+
 .wordgame-play-again {
   display: inline-flex;
   align-items: center;
@@ -4188,6 +4199,17 @@ details.faq-item.reveal:nth-child(6) { transition-delay: 0.4s; }
   color: var(--navy);
 }
 
+.hangman-tip {
+  font-size: 0.82rem;
+  color: var(--text-secondary);
+  line-height: 1.5;
+  margin-top: 12px;
+  margin-bottom: 4px;
+  max-width: 320px;
+  margin-left: auto;
+  margin-right: auto;
+}
+
 .hangman-play-again {
   display: inline-flex;
   align-items: center;
@@ -4572,6 +4594,16 @@ details.faq-item.reveal:nth-child(6) { transition-delay: 0.4s; }
   font-size: 1.1rem;
   color: var(--navy);
   margin-bottom: 12px;
+}
+
+.memorymatch-tip {
+  font-size: 0.82rem;
+  color: var(--text-secondary);
+  line-height: 1.5;
+  margin-top: 8px;
+  max-width: 320px;
+  margin-left: auto;
+  margin-right: auto;
 }
 
 /* Play Again button */
@@ -12736,6 +12768,9 @@ details.faq-item.reveal:nth-child(6) { transition-delay: 0.4s; }
 .csprint-dot.filled { background: var(--navy); }
 .csprint-dot.empty { background: rgba(27,42,74,0.1); }
 .csprint-answer {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
   text-align: center;
   font-size: 0.85rem;
   font-weight: 600;
@@ -12744,6 +12779,48 @@ details.faq-item.reveal:nth-child(6) { transition-delay: 0.4s; }
   padding: 8px 16px;
   background: var(--game-wrong-bg);
   border-radius: var(--radius-sm);
+}
+.csprint-type-tag {
+  display: inline-block;
+  margin-top: 4px;
+  padding: 3px 10px;
+  font-size: 0.63rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: var(--gold);
+  background: rgba(212, 168, 83, 0.12);
+  border-radius: var(--radius-full);
+}
+.csprint-answer-label {
+  display: block;
+  font-size: 0.75rem;
+  font-weight: 700;
+  color: var(--game-wrong);
+  margin-bottom: 6px;
+}
+.csprint-answer-pieces {
+  display: flex;
+  gap: 8px;
+  justify-content: center;
+  flex-wrap: wrap;
+}
+.csprint-answer-piece {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 2px;
+}
+.csprint-answer-piece-label {
+  font-size: 0.6rem;
+  font-weight: 600;
+  color: var(--navy);
+  text-transform: uppercase;
+}
+.csprint-slot.slot-right {
+  border-color: var(--sage-dark);
+  background: rgba(168, 191, 160, 0.12);
+  border-style: solid;
 }
 .csprint-result-score {
   font-family: var(--font-heading), 'DM Serif Display', serif;
@@ -13033,7 +13110,30 @@ details.faq-item.reveal:nth-child(6) { transition-delay: 0.4s; }
 .reflex-feedback.correct .reflex-feedback-icon { color: var(--sage-dark); }
 .reflex-feedback.wrong .reflex-feedback-icon { color: var(--game-wrong); }
 .reflex-feedback-text { font-weight: 600; color: var(--navy); }
-.reflex-correct-pattern { margin-top: 12px; }
+.reflex-letter-badge {
+  display: inline-block;
+  font-family: var(--font-heading), 'DM Serif Display', serif;
+  font-size: 1.4em;
+  font-weight: 700;
+  color: var(--navy);
+  margin-left: 4px;
+  vertical-align: baseline;
+}
+.reflex-comparison {
+  display: flex;
+  gap: 24px;
+  justify-content: center;
+  margin-top: 12px;
+}
+.reflex-comparison-col { text-align: center; }
+.reflex-comparison-label {
+  font-size: 0.72rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  color: var(--text-secondary);
+  margin-bottom: 8px;
+}
 .reflex-result-score {
   font-family: var(--font-heading), 'DM Serif Display', serif;
   font-size: 2.5rem;
@@ -13356,6 +13456,9 @@ details.faq-item.reveal:nth-child(6) { transition-delay: 0.4s; }
   .csprint-selected { flex-wrap: wrap; }
   .csprint-slot { width: 48px; height: 56px; }
   .reflex-grid { gap: 8px; max-width: 140px; }
+  .reflex-comparison { gap: 16px; }
+  .reflex-comparison .reflex-grid { max-width: 100px; }
+  .reflex-comparison .reflex-dot-display { width: 40px; height: 40px; font-size: 1.1rem; }
   .csprint-body,
   .numsense-body,
   .reflex-body,

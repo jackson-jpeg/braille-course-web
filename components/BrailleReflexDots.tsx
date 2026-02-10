@@ -105,7 +105,7 @@ export default function BrailleReflexDots() {
       } else {
         startRound();
       }
-    }, 800);
+    }, correct ? 800 : 1200);
   }, [phase, userPattern, targetPattern, round, params.rounds, startRound, recordResult]);
 
   // Keyboard: 1-6 to toggle dots, Enter to submit
@@ -165,7 +165,7 @@ export default function BrailleReflexDots() {
             {/* Show phase: display the target pattern */}
             {phase === 'show' && (
               <div className="reflex-display" aria-label={`Remember this pattern for letter ${targetLetter}`}>
-                <div className="reflex-flash-label">Memorize!</div>
+                <div className="reflex-flash-label">Memorize: <span className="reflex-letter-badge">{targetLetter}</span></div>
                 <div className="reflex-grid reflex-grid-show">
                   {targetPattern.map((v, i) => (
                     <span key={i} className={`reflex-dot-display ${v ? 'filled' : 'empty'}`}>
@@ -178,8 +178,8 @@ export default function BrailleReflexDots() {
 
             {/* Input phase: user taps dots */}
             {phase === 'input' && (
-              <div className="reflex-input" aria-label="Tap dots to recreate the pattern">
-                <div className="reflex-prompt-text">Recreate the pattern!</div>
+              <div className="reflex-input" aria-label={`Recreate the pattern for letter ${targetLetter}`}>
+                <div className="reflex-prompt-text">Recreate: <span className="reflex-letter-badge">{targetLetter}</span></div>
                 <div className="reflex-grid reflex-grid-input" role="group">
                   {userPattern.map((v, i) => (
                     <button
@@ -205,16 +205,31 @@ export default function BrailleReflexDots() {
               <div className={`reflex-feedback ${isCorrect ? 'correct' : 'wrong'}`} aria-live="assertive">
                 <div className="reflex-feedback-icon">{isCorrect ? '✓' : '✗'}</div>
                 <div className="reflex-feedback-text">
-                  {isCorrect ? 'Correct!' : `That was "${targetLetter}"`}
+                  {isCorrect
+                    ? <>Correct! That&apos;s <span className="reflex-letter-badge">{targetLetter}</span></>
+                    : <>That was <span className="reflex-letter-badge">{targetLetter}</span></>}
                 </div>
                 {!isCorrect && (
-                  <div className="reflex-correct-pattern">
-                    <div className="reflex-grid reflex-grid-show">
-                      {targetPattern.map((v, i) => (
-                        <span key={i} className={`reflex-dot-display ${v ? 'filled' : 'empty'}`}>
-                          {v ? '●' : '○'}
-                        </span>
-                      ))}
+                  <div className="reflex-comparison">
+                    <div className="reflex-comparison-col">
+                      <div className="reflex-comparison-label">Your answer</div>
+                      <div className="reflex-grid reflex-grid-show">
+                        {userPattern.map((v, i) => (
+                          <span key={i} className={`reflex-dot-display ${v ? 'filled' : 'empty'}`}>
+                            {v ? '●' : '○'}
+                          </span>
+                        ))}
+                      </div>
+                    </div>
+                    <div className="reflex-comparison-col">
+                      <div className="reflex-comparison-label">Correct</div>
+                      <div className="reflex-grid reflex-grid-show">
+                        {targetPattern.map((v, i) => (
+                          <span key={i} className={`reflex-dot-display ${v ? 'filled' : 'empty'}`}>
+                            {v ? '●' : '○'}
+                          </span>
+                        ))}
+                      </div>
                     </div>
                   </div>
                 )}
