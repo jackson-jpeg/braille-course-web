@@ -1157,7 +1157,7 @@ body::after {
 }
 .footer p {
   font-size: 0.75rem;
-  color: rgba(255,255,255,0.25);
+  color: rgba(255,255,255,0.6);
   font-weight: 300;
 }
 .back-to-top {
@@ -1168,7 +1168,7 @@ body::after {
   font-weight: 500;
   letter-spacing: 1.5px;
   text-transform: uppercase;
-  color: rgba(255,255,255,0.2);
+  color: rgba(255,255,255,0.6);
   text-decoration: none;
   transition: color 0.2s ease;
 }
@@ -1196,12 +1196,12 @@ body::after {
   font-weight: 600;
   letter-spacing: 1.5px;
   text-transform: uppercase;
-  color: rgba(255,255,255,0.35);
+  color: rgba(255,255,255,0.7);
   margin-bottom: 12px;
 }
 .footer-description {
   font-size: 0.78rem;
-  color: rgba(255,255,255,0.3);
+  color: rgba(255,255,255,0.6);
   font-weight: 300;
   line-height: 1.6;
   margin-bottom: 10px;
@@ -1223,7 +1223,7 @@ body::after {
 }
 .footer-link-group nav a {
   font-size: 0.78rem;
-  color: rgba(255,255,255,0.3);
+  color: rgba(255,255,255,0.6);
   text-decoration: none;
   transition: color 0.2s ease;
 }
@@ -6967,7 +6967,7 @@ details.faq-item.reveal:nth-child(6) { transition-delay: 0.4s; }
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  padding: 100px 24px 60px;
+  padding: 100px 24px 120px;
   text-align: center;
   overflow: hidden;
 }
@@ -7466,6 +7466,7 @@ details.faq-item.reveal:nth-child(6) { transition-delay: 0.4s; }
 /* -- Intro responsive -- */
 @media (max-width: 768px) {
   .intro-hero { min-height: auto; }
+  .intro-hero .scroll-hint { display: none; }
   .intro-history-grid,
   .intro-history-grid--reversed {
     grid-template-columns: 1fr;
@@ -12816,22 +12817,34 @@ details.faq-item.reveal:nth-child(6) { transition-delay: 0.4s; }
 }
 .numsense-dot.filled { background: var(--navy); }
 .numsense-dot.empty { background: rgba(27,42,74,0.1); }
-.numsense-operator {
-  font-family: var(--font-heading), 'DM Serif Display', serif;
-  font-size: 1.8rem;
-  color: var(--gold);
+.numsense-operator-cell {
+  display: flex;
+  gap: 4px;
+  margin: 0 4px;
 }
-.numsense-equals {
-  font-size: 1.8rem;
-  color: var(--text-secondary);
-}
-.numsense-question {
-  font-family: var(--font-heading), 'DM Serif Display', serif;
-  font-size: 2rem;
-  color: var(--gold);
+.numsense-answer-blank {
+  display: inline-block;
+  width: 28px;
+  height: 36px;
+  border-radius: 4px;
+  border: 2px dashed var(--gold);
+  opacity: 0.5;
   animation: numsense-pulse 1.5s ease infinite;
 }
-@keyframes numsense-pulse { 0%, 100% { opacity: 1; } 50% { opacity: 0.5; } }
+@keyframes numsense-pulse { 0%, 100% { opacity: 0.5; } 50% { opacity: 0.2; } }
+.numsense-badge {
+  display: inline-block;
+  font-size: 0.65rem;
+  font-weight: 700;
+  letter-spacing: 0.5px;
+  text-transform: uppercase;
+  background: var(--navy);
+  color: white;
+  padding: 2px 8px;
+  border-radius: var(--radius-full, 999px);
+  vertical-align: middle;
+  margin-left: 4px;
+}
 .numsense-choices {
   display: grid;
   grid-template-columns: repeat(2, 1fr);
@@ -13455,7 +13468,7 @@ details.faq-item.reveal:nth-child(6) { transition-delay: 0.4s; }
   .onboarding-modal,
   .achievement-toast,
   .quickstart-fab-tooltip,
-  .numsense-question,
+  .numsense-answer-blank,
   .reflex-flash-label {
     animation: none !important;
   }

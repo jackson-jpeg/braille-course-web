@@ -9,6 +9,7 @@
 
 import { contractedBrailleEntries, type ContractionEntry } from './contracted-braille-map';
 import { brailleMap } from './braille-map';
+import { frames, type SentenceFrame, type SlotRef, type Word } from './sentence-bank';
 
 export interface SentenceData {
   /** The plain English sentence */
@@ -25,81 +26,48 @@ export interface BrailleToken {
   meaning: string;
 }
 
-// ── Sentence templates ──
-// Words in {braces} are standalone wordsigns / strong contractions.
-// Other words are spelled letter-by-letter.
-const TEMPLATES: { template: string; words: string[] }[] = [
-  // 3-word sentences (beginner)
-  { template: '{the} cat sat', words: ['the'] },
-  { template: '{you} {can} run', words: ['you', 'can'] },
-  { template: 'I {have} fun', words: ['have'] },
-  { template: '{the} dog ran', words: ['the'] },
-  { template: '{not} {so} bad', words: ['not', 'so'] },
-  { template: 'I {go} home', words: ['go'] },
-  { template: '{but} I stay', words: ['but'] },
-  { template: '{the} sun set', words: ['the'] },
-  { template: 'he {can} sing', words: ['can'] },
-  { template: 'I {like} pie', words: ['like'] },
-  { template: '{that} is fun', words: ['that'] },
-  { template: '{just} be kind', words: ['just'] },
-
-  // 4-word sentences
-  { template: '{the} cat is big', words: ['the'] },
-  { template: '{you} {can} {do} {it}', words: ['you', 'can', 'do', 'it'] },
-  { template: 'I {have} a pen', words: ['have'] },
-  { template: '{the} bird {can} fly', words: ['the', 'can'] },
-  { template: 'we {like} {the} park', words: ['like', 'the'] },
-  { template: '{the} sun is hot', words: ['the'] },
-  { template: 'she {will} be fine', words: ['will'] },
-  { template: '{people} {like} {the} rain', words: ['people', 'like', 'the'] },
-  { template: 'I {just} got home', words: ['just'] },
-  { template: 'he ran {so} fast', words: ['so'] },
-  { template: 'I {do} {not} know', words: ['do', 'not'] },
-  { template: '{the} cat got out', words: ['the'] },
-  { template: '{but} {the} dog sat', words: ['but', 'the'] },
-  { template: 'we {go} {for} walks', words: ['go', 'for'] },
-  { template: '{every} day I run', words: ['every'] },
-  { template: '{have} a nice day', words: ['have'] },
-
-  // 5-word sentences
-  { template: '{the} cat is on {the} mat', words: ['the', 'the'] },
-  { template: '{the} dog {and} cat play', words: ['the', 'and'] },
-  { template: 'we {will} {go} {for} {it}', words: ['will', 'go', 'for', 'it'] },
-  { template: 'she {can} sing {very} well', words: ['can', 'very'] },
-  { template: '{that} is {not} {so} hard', words: ['that', 'not', 'so'] },
-  { template: 'we {have} {more} time now', words: ['have', 'more'] },
-  { template: 'I {just} got {from} work', words: ['just', 'from'] },
-  { template: '{the} rain {will} stop soon', words: ['the', 'will'] },
-  { template: '{you} {do} {not} know yet', words: ['you', 'do', 'not'] },
-  { template: 'I {like} {the} red hat', words: ['like', 'the'] },
-  { template: '{every} kid {can} read well', words: ['every', 'can'] },
-  { template: '{people} {go} {for} a walk', words: ['people', 'go', 'for'] },
-  { template: '{the} ball went {so} far', words: ['the', 'so'] },
-
-  // 6-word sentences
-  { template: '{the} bird {with} {the} red wing', words: ['the', 'with', 'the'] },
-  { template: '{you} {do} {not} {have} a pen', words: ['you', 'do', 'not', 'have'] },
-  { template: '{every} child {can} learn {from} {us}', words: ['every', 'can', 'from', 'us'] },
-  { template: 'I {will} {go} {with} {you} now', words: ['will', 'go', 'with', 'you'] },
-  { template: '{but} {the} game is {so} fun', words: ['but', 'the', 'so'] },
-  { template: '{the} fish swim {for} {the} food', words: ['the', 'for', 'the'] },
-  { template: '{you} {and} I {can} play ball', words: ['you', 'and', 'can'] },
-  { template: 'she {will} {rather} stay {with} {us}', words: ['will', 'rather', 'with', 'us'] },
-  { template: '{that} cup {of} tea is nice', words: ['that', 'of'] },
-
-  // 7-word sentences
-  { template: '{you} {and} I {will} {go} {for} {it}', words: ['you', 'and', 'will', 'go', 'for', 'it'] },
-  { template: 'cat {and} dog play in {the} yard', words: ['and', 'the'] },
-  { template: '{people} {like} {the} park {but} {not} rain', words: ['people', 'like', 'the', 'but', 'not'] },
-  { template: 'I {have} {just} {the} thing {for} {you}', words: ['have', 'just', 'the', 'for', 'you'] },
-  { template: 'she is {very} good {with} {every} child here', words: ['very', 'with', 'every'] },
-  { template: '{rather} {not} {go} now {but} I {will}', words: ['rather', 'not', 'go', 'but', 'will'] },
-];
-
 // Build contraction lookup
 const contractionLookup = new Map<string, ContractionEntry>();
 for (const entry of contractedBrailleEntries) {
   contractionLookup.set(entry.label.toLowerCase(), entry);
+}
+
+// ── Deduplication ──
+
+const usedSentences = new Set<string>();
+
+/** Clear sentence history (call when starting a new game session) */
+export function resetSentenceHistory(): void {
+  usedSentences.clear();
+}
+
+// ── Frame-based generation ──
+
+function isSlotRef(slot: SlotRef | Word): slot is SlotRef {
+  return 'list' in slot;
+}
+
+function pickRandom<T>(arr: T[]): T {
+  return arr[Math.floor(Math.random() * arr.length)];
+}
+
+/** Generate a template string from a sentence frame */
+function generateFromFrame(frame: SentenceFrame): string {
+  const words: string[] = [];
+  for (const slot of frame.slots) {
+    let word: Word;
+    if (isSlotRef(slot)) {
+      const candidates = slot.filter ? slot.list.filter(slot.filter) : slot.list;
+      word = pickRandom(candidates);
+    } else {
+      word = slot;
+    }
+    const text = word.text === 'I' ? 'I' : word.text.toLowerCase();
+    words.push(word.contraction ? `{${text}}` : text);
+  }
+  // Capitalize first character (handle possible leading brace)
+  const result = words.join(' ');
+  return result.replace(/^(\{?)(\w)/, (_m, brace, ch) => brace + ch.toUpperCase());
 }
 
 /** Convert a sentence template to braille tokens */
@@ -148,23 +116,39 @@ function templateToTokens(template: string): BrailleToken[] {
 
 /** Get a random sentence for the given difficulty */
 export function getRandomSentence(maxWords: number = 5): SentenceData {
-  // Filter templates by word count
-  const eligible = TEMPLATES.filter((t) => {
-    const wordCount = t.template.split(' ').length;
-    return wordCount <= maxWords;
-  });
+  // Filter frames by word count
+  const eligible = frames.filter((f) => f.wordCount <= maxWords);
 
   if (eligible.length === 0) {
-    const t = TEMPLATES[0];
+    // Fallback: use the smallest frame
+    const fallback = frames.reduce((a, b) => (a.wordCount < b.wordCount ? a : b));
+    const template = generateFromFrame(fallback);
     return {
-      plainText: t.template.replace(/[{}]/g, ''),
-      brailleTokens: templateToTokens(t.template),
+      plainText: template.replace(/[{}]/g, ''),
+      brailleTokens: templateToTokens(template),
     };
   }
 
-  const chosen = eligible[Math.floor(Math.random() * eligible.length)];
+  // Try to generate a non-duplicate sentence (max 10 attempts)
+  for (let attempt = 0; attempt < 10; attempt++) {
+    const frame = pickRandom(eligible);
+    const template = generateFromFrame(frame);
+    const plain = template.replace(/[{}]/g, '');
+
+    if (!usedSentences.has(plain) || attempt === 9) {
+      usedSentences.add(plain);
+      return {
+        plainText: plain,
+        brailleTokens: templateToTokens(template),
+      };
+    }
+  }
+
+  // Unreachable, but TypeScript needs it
+  const frame = pickRandom(eligible);
+  const template = generateFromFrame(frame);
   return {
-    plainText: chosen.template.replace(/[{}]/g, ''),
-    brailleTokens: templateToTokens(chosen.template),
+    plainText: template.replace(/[{}]/g, ''),
+    brailleTokens: templateToTokens(template),
   };
 }

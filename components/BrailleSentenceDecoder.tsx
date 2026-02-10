@@ -1,7 +1,7 @@
 'use client';
 
 import { useState, useEffect, useCallback, useRef } from 'react';
-import { getRandomSentence, type SentenceData, type BrailleToken } from '@/lib/sentence-generator';
+import { getRandomSentence, resetSentenceHistory, type SentenceData, type BrailleToken } from '@/lib/sentence-generator';
 import { useGameProgress } from '@/hooks/useGameProgress';
 import { pushAchievements } from '@/components/AchievementToast';
 import { getRandomTip } from '@/lib/learning-tips';
@@ -69,6 +69,7 @@ export default function BrailleSentenceDecoder() {
     setRound(0);
     setGameOver(false);
     setTip('');
+    resetSentenceHistory();
     loadSentence();
   }, [loadSentence]);
 
