@@ -25,7 +25,9 @@ export default async function AdminPage() {
     return <AdminLogin />;
   }
 
-  const [sections, enrollments, leads, schoolInquiries, scheduleMap] = await Promise.all([
+  let sections, enrollments, leads, schoolInquiries, scheduleMap;
+  try {
+  [sections, enrollments, leads, schoolInquiries, scheduleMap] = await Promise.all([
     prisma.section.findMany({ orderBy: { label: 'asc' } }),
     prisma.enrollment.findMany({
       include: { section: true },
@@ -35,6 +37,10 @@ export default async function AdminPage() {
     prisma.schoolInquiry.findMany({ orderBy: { createdAt: 'desc' } }),
     loadScheduleMap(),
   ]);
+  } catch (err) {
+    console.error('Admin data load failed:', err);
+    return <AdminLogin />;
+  }
 
   // Serialize for the client component (dates → strings)
   const serializedEnrollments = enrollments.map((e) => ({
