@@ -3,6 +3,8 @@ import Link from 'next/link';
 import Footer from '@/components/Footer';
 import BrailleHero from '@/components/BrailleHero';
 import SchoolContactForm from '@/components/SchoolContactForm';
+import FAQ from '@/components/FAQ';
+import HowItWorks from '@/components/HowItWorks';
 
 export const metadata: Metadata = {
   title: 'TVI Services — TeachBraille.org',
@@ -28,6 +30,9 @@ export default function ServicesPage() {
           <p className="services-hero-sub">Contracted Vision Services for Schools &amp; Districts</p>
         </div>
       </section>
+
+      {/* ========== HOW IT WORKS (3-step visual) ========== */}
+      <HowItWorks />
 
       {/* ========== ABOUT / PROFESSIONAL BIO ========== */}
       <section className="services-about" aria-labelledby="services-about-heading">
@@ -326,6 +331,34 @@ export default function ServicesPage() {
           </div>
         </div>
       </section>
+
+      {/* ========== STATS BANNER ========== */}
+      <section className="services-stats-banner" aria-label="Impact statistics">
+        <div className="services-stats-inner reveal">
+          <div className="stats-item">
+            <span className="stats-number">9+</span>
+            <span className="stats-label">Years Teaching Experience</span>
+          </div>
+          <div className="stats-divider" aria-hidden="true" />
+          <div className="stats-item">
+            <span className="stats-number">4</span>
+            <span className="stats-label">State Licenses</span>
+          </div>
+          <div className="stats-divider" aria-hidden="true" />
+          <div className="stats-item">
+            <span className="stats-number">8 of 9</span>
+            <span className="stats-label">ECC Areas Covered</span>
+          </div>
+          <div className="stats-divider" aria-hidden="true" />
+          <div className="stats-item">
+            <span className="stats-number">PK–12</span>
+            <span className="stats-label">Grade Levels Served</span>
+          </div>
+        </div>
+      </section>
+
+      {/* ========== FAQ ========== */}
+      <FAQ />
 
       {/* ========== CONTACT FORM ========== */}
       <section className="services-contact" aria-labelledby="services-contact-heading">

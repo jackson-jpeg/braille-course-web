@@ -15812,3 +15812,549 @@ details.faq-item.reveal:nth-child(6) {
     opacity: 1;
   }
 }
+
+/* ============================================================
+   HOW IT WORKS (services page — 3-step visual)
+   ============================================================ */
+.services-how-it-works {
+  position: relative;
+  z-index: 1;
+  padding: 80px 24px;
+  background: white;
+}
+.services-how-it-works-inner {
+  max-width: 900px;
+  margin: 0 auto;
+  text-align: center;
+}
+.services-how-it-works h2 {
+  font-family: var(--font-heading), 'DM Serif Display', serif;
+  font-size: clamp(1.6rem, 3.5vw, 2.2rem);
+  color: var(--navy);
+  margin-bottom: 48px;
+}
+.how-it-works-steps {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 24px;
+  position: relative;
+}
+.how-it-works-step {
+  text-align: center;
+  padding: 24px 20px;
+  position: relative;
+}
+.how-it-works-icon-wrap {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: 12px;
+}
+.how-it-works-icon {
+  width: 56px;
+  height: 56px;
+  border-radius: 50%;
+  background: var(--navy);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin: 0 auto;
+  flex-shrink: 0;
+}
+.how-it-works-icon svg {
+  width: 26px;
+  height: 26px;
+  stroke: var(--gold-light);
+}
+.how-it-works-connector {
+  position: absolute;
+  top: 50%;
+  left: calc(50% + 36px);
+  width: calc(100% - 36px);
+  height: 2px;
+  background: linear-gradient(to right, var(--gold), var(--gold-light));
+  transform: translateY(-50%);
+}
+.how-it-works-num {
+  font-family: var(--font-heading), 'DM Serif Display', serif;
+  font-size: 0.85rem;
+  font-weight: 700;
+  color: var(--gold-text);
+  margin-bottom: 8px;
+}
+.how-it-works-step h3 {
+  font-family: var(--font-heading), 'DM Serif Display', serif;
+  font-size: 1.2rem;
+  color: var(--navy);
+  margin-bottom: 10px;
+}
+.how-it-works-step p {
+  font-size: 0.95rem;
+  line-height: 1.65;
+  color: var(--text-secondary);
+  font-weight: 300;
+}
+
+/* ============================================================
+   STATS BANNER (services page)
+   ============================================================ */
+.services-stats-banner {
+  position: relative;
+  z-index: 1;
+  padding: 48px 24px;
+  background: var(--navy);
+}
+.services-stats-inner {
+  max-width: 900px;
+  margin: 0 auto;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 32px;
+  flex-wrap: wrap;
+}
+.stats-item {
+  text-align: center;
+  flex: 1 1 120px;
+}
+.stats-number {
+  display: block;
+  font-family: var(--font-heading), 'DM Serif Display', serif;
+  font-size: clamp(1.5rem, 3vw, 2.2rem);
+  color: var(--gold);
+  line-height: 1.2;
+  margin-bottom: 6px;
+}
+.stats-label {
+  font-size: 0.85rem;
+  color: var(--gold-light);
+  font-weight: 300;
+  letter-spacing: 0.3px;
+}
+.stats-divider {
+  width: 1px;
+  height: 40px;
+  background: rgba(212, 168, 83, 0.25);
+  flex-shrink: 0;
+}
+
+/* ============================================================
+   TESTIMONIALS (services page)
+   ============================================================ */
+.services-testimonials {
+  position: relative;
+  z-index: 1;
+  padding: 80px 24px;
+  background: var(--section-bg);
+}
+.services-testimonials-inner {
+  max-width: 1000px;
+  margin: 0 auto;
+  text-align: center;
+}
+.services-testimonials h2 {
+  font-family: var(--font-heading), 'DM Serif Display', serif;
+  font-size: clamp(1.6rem, 3.5vw, 2.2rem);
+  color: var(--navy);
+  margin-bottom: 48px;
+}
+.testimonials-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 24px;
+  text-align: left;
+}
+.testimonial-card {
+  background: white;
+  border: 1px solid rgba(212, 168, 83, 0.15);
+  border-radius: var(--radius-md);
+  padding: 28px 28px 24px;
+  margin: 0;
+  transition: box-shadow var(--transition-default), transform var(--transition-default);
+}
+.testimonial-card:hover {
+  box-shadow: 0 4px 20px rgba(27, 42, 74, 0.06);
+  transform: translateY(-2px);
+}
+.testimonial-quote {
+  font-size: 0.95rem;
+  line-height: 1.75;
+  color: var(--text-secondary);
+  font-weight: 300;
+  margin-bottom: 20px;
+  position: relative;
+  padding-left: 20px;
+  border-left: 3px solid var(--gold-light);
+}
+.testimonial-attribution {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+.testimonial-name {
+  font-style: normal;
+  font-weight: 600;
+  font-size: 0.9rem;
+  color: var(--navy);
+}
+.testimonial-role {
+  font-size: 0.82rem;
+  color: var(--gold-text);
+  font-weight: 500;
+}
+.testimonial-org {
+  font-size: 0.82rem;
+  color: var(--text-secondary);
+  font-weight: 300;
+}
+
+/* ============================================================
+   FAQ ACCORDION (services page)
+   ============================================================ */
+.services-faq {
+  position: relative;
+  z-index: 1;
+  padding: 80px 24px;
+  background: white;
+}
+.services-faq-inner {
+  max-width: 750px;
+  margin: 0 auto;
+  text-align: center;
+}
+.services-faq h2 {
+  font-family: var(--font-heading), 'DM Serif Display', serif;
+  font-size: clamp(1.6rem, 3.5vw, 2.2rem);
+  color: var(--navy);
+  margin-bottom: 48px;
+}
+.faq-list {
+  text-align: left;
+}
+.faq-item {
+  border-bottom: 1px solid rgba(212, 168, 83, 0.2);
+}
+.faq-item:first-child {
+  border-top: 1px solid rgba(212, 168, 83, 0.2);
+}
+.faq-question {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 16px;
+  width: 100%;
+  padding: 20px 4px;
+  background: none;
+  border: none;
+  cursor: pointer;
+  font-family: inherit;
+  font-size: 1rem;
+  font-weight: 500;
+  color: var(--navy);
+  line-height: 1.5;
+  text-align: left;
+  transition: color var(--transition-micro);
+}
+.faq-question:hover {
+  color: var(--gold-text);
+}
+.faq-icon {
+  font-size: 1.4rem;
+  flex-shrink: 0;
+  width: 28px;
+  height: 28px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 50%;
+  background: var(--gold-soft);
+  color: var(--gold-text);
+  font-weight: 600;
+  transition: transform var(--transition-micro), background var(--transition-micro);
+}
+.faq-item-open .faq-icon {
+  background: var(--navy);
+  color: var(--gold-light);
+}
+.faq-answer {
+  overflow: hidden;
+}
+.faq-answer[hidden] {
+  display: none;
+}
+.faq-answer p {
+  padding: 0 4px 20px;
+  margin: 0;
+  font-size: 0.95rem;
+  line-height: 1.75;
+  color: var(--text-secondary);
+  font-weight: 300;
+}
+
+/* ============================================================
+   ANALYTICS DASHBOARD (admin overview tab upgrade)
+   ============================================================ */
+.admin-analytics-section {
+  margin-bottom: 28px;
+}
+.admin-analytics-section-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 16px;
+}
+.admin-analytics-section h3 {
+  font-size: 1rem;
+  font-weight: 600;
+  color: var(--navy);
+  margin: 0;
+}
+.admin-bar-chart {
+  display: flex;
+  align-items: flex-end;
+  gap: 8px;
+  height: 140px;
+  padding: 0 4px;
+}
+.admin-bar-col {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 6px;
+  height: 100%;
+  justify-content: flex-end;
+}
+.admin-bar {
+  width: 100%;
+  max-width: 48px;
+  border-radius: 4px 4px 0 0;
+  background: var(--gold);
+  min-height: 4px;
+  transition: height 0.4s var(--ease-out);
+  position: relative;
+}
+.admin-bar-value {
+  font-size: 0.72rem;
+  font-weight: 600;
+  color: var(--navy);
+  white-space: nowrap;
+}
+.admin-bar-label {
+  font-size: 0.72rem;
+  color: var(--text-secondary);
+  font-weight: 400;
+}
+/* Horizontal bars */
+.admin-hbar-chart {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+.admin-hbar-row {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+.admin-hbar-label {
+  min-width: 100px;
+  font-size: 0.85rem;
+  font-weight: 500;
+  color: var(--navy);
+  text-align: right;
+  flex-shrink: 0;
+}
+.admin-hbar-track {
+  flex: 1;
+  height: 22px;
+  background: rgba(212, 168, 83, 0.1);
+  border-radius: 4px;
+  overflow: hidden;
+  position: relative;
+}
+.admin-hbar-fill {
+  height: 100%;
+  border-radius: 4px;
+  background: var(--gold);
+  transition: width 0.5s var(--ease-out);
+  min-width: 2px;
+}
+.admin-hbar-fill-navy {
+  background: var(--navy);
+}
+.admin-hbar-fill-sage {
+  background: var(--sage-dark);
+}
+.admin-hbar-count {
+  min-width: 36px;
+  font-size: 0.82rem;
+  font-weight: 600;
+  color: var(--navy);
+}
+/* Quick actions */
+.admin-quick-actions {
+  display: flex;
+  gap: 10px;
+  flex-wrap: wrap;
+  padding: 4px 0;
+}
+.admin-quick-action-btn {
+  padding: 8px 16px;
+  font-family: inherit;
+  font-size: 0.82rem;
+  font-weight: 500;
+  border: 1px solid rgba(212, 168, 83, 0.3);
+  border-radius: var(--radius-full);
+  background: white;
+  color: var(--navy);
+  cursor: pointer;
+  transition: all var(--transition-micro);
+}
+.admin-quick-action-btn:hover {
+  background: var(--gold-soft);
+  border-color: var(--gold);
+}
+
+/* Student progress overview table in analytics */
+.admin-progress-overview-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.85rem;
+}
+.admin-progress-overview-table th {
+  text-align: left;
+  padding: 8px 12px;
+  border-bottom: 2px solid rgba(212, 168, 83, 0.2);
+  font-weight: 600;
+  color: var(--navy);
+  font-size: 0.8rem;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+.admin-progress-overview-table td {
+  padding: 8px 12px;
+  border-bottom: 1px solid rgba(0, 0, 0, 0.05);
+  color: var(--text-secondary);
+}
+.admin-mini-progress {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+.admin-mini-progress-track {
+  flex: 1;
+  height: 8px;
+  background: rgba(212, 168, 83, 0.1);
+  border-radius: 4px;
+  overflow: hidden;
+}
+.admin-mini-progress-fill {
+  height: 100%;
+  border-radius: 4px;
+  background: var(--sage-dark);
+  transition: width 0.4s var(--ease-out);
+}
+.admin-mini-progress-pct {
+  font-size: 0.78rem;
+  font-weight: 600;
+  color: var(--navy);
+  min-width: 36px;
+}
+
+/* ============================================================
+   STUDENT PROGRESS (admin — cloud-synced)
+   ============================================================ */
+.admin-student-progress-card {
+  background: white;
+  border: 1px solid rgba(0, 0, 0, 0.08);
+  border-radius: var(--radius-sm);
+  padding: 16px;
+  margin-bottom: 12px;
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  flex-wrap: wrap;
+}
+.admin-student-progress-email {
+  font-weight: 500;
+  color: var(--navy);
+  font-size: 0.9rem;
+  min-width: 180px;
+}
+.admin-student-progress-bar {
+  flex: 1;
+  min-width: 120px;
+}
+.admin-student-progress-meta {
+  display: flex;
+  gap: 16px;
+  font-size: 0.82rem;
+  color: var(--text-secondary);
+}
+.admin-inactive-badge {
+  display: inline-block;
+  padding: 2px 8px;
+  font-size: 0.72rem;
+  font-weight: 600;
+  background: var(--color-error-bg);
+  color: var(--game-wrong);
+  border-radius: var(--radius-full);
+  border: 1px solid var(--color-error-border);
+}
+
+/* ============================================================
+   MERGE TAGS (email compose)
+   ============================================================ */
+.admin-merge-tags {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  margin-top: 6px;
+  flex-wrap: wrap;
+}
+.admin-merge-tags-label {
+  font-size: 0.78rem;
+  color: var(--text-secondary);
+  font-weight: 400;
+}
+.admin-merge-tag-btn {
+  padding: 2px 8px;
+  font-family: 'SFMono-Regular', Consolas, monospace;
+  font-size: 0.72rem;
+  font-weight: 500;
+  border: 1px solid rgba(212, 168, 83, 0.3);
+  border-radius: var(--radius-sm);
+  background: var(--gold-soft);
+  color: var(--gold-text);
+  cursor: pointer;
+  transition: all var(--transition-micro);
+}
+.admin-merge-tag-btn:hover {
+  background: var(--gold-light);
+  border-color: var(--gold);
+}
+
+/* ============================================================
+   SERVICES RESPONSIVE (new sections)
+   ============================================================ */
+@media (max-width: 768px) {
+  .how-it-works-steps {
+    grid-template-columns: 1fr;
+    gap: 12px;
+  }
+  .how-it-works-connector {
+    display: none;
+  }
+  .testimonials-grid {
+    grid-template-columns: 1fr;
+  }
+  .services-stats-inner {
+    flex-direction: column;
+    gap: 20px;
+  }
+  .stats-divider {
+    width: 60px;
+    height: 1px;
+  }
+}

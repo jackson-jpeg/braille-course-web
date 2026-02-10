@@ -234,6 +234,17 @@ model MaterialDraft {
   updatedAt    DateTime @updatedAt
 }
 
+model GameProgress {
+  id            String   @id @default(cuid())
+  enrollmentId  String   @unique
+  progressJson  String   // Full ProgressData as JSON
+  lastSyncedAt  DateTime @default(now())
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+
+  @@index([enrollmentId])
+}
+
 model SchoolInquiry {
   id                 String              @id @default(cuid())
 

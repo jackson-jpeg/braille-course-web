@@ -5,6 +5,95 @@ import { useToast } from './AdminToast';
 import AdminConfirmDialog from './AdminConfirmDialog';
 import type { Section, Enrollment, Assignment, Grade } from './admin-types';
 
+interface StudentProgress {
+  enrollmentId: string;
+  email: string | null;
+  section: string;
+  totalGamesPlayed: number;
+  totalGamesWon: number;
+  gamesWithActivity: number;
+  completionPct: number;
+  achievementCount: number;
+  currentStreak: number;
+  longestStreak: number;
+  lastActive: string | null;
+  daysSinceActive: number | null;
+  inactive: boolean;
+  hasProgress: boolean;
+}
+
+function GameProgressView() {
+  const [students, setStudents] = useState<StudentProgress[]>([]);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    (async () => {
+      try {
+        const res = await fetch('/api/admin/student-progress');
+        const data = await res.json();
+        if (res.ok) setStudents(data.students);
+      } catch (err) {
+        console.error('Failed to fetch student progress:', err);
+      }
+      setLoading(false);
+    })();
+  }, []);
+
+  if (loading) {
+    return <p style={{ padding: '12px 0', color: '#6b7280', fontSize: '0.9rem' }}>Loading game progress&hellip;</p>;
+  }
+
+  if (students.length === 0) {
+    return (
+      <div className="admin-empty-state" style={{ padding: '32px 0' }}>
+        <p className="admin-empty-state-title">No game progress data</p>
+        <p className="admin-empty-state-sub">
+          Student game progress will appear here once students start playing and syncing.
+        </p>
+      </div>
+    );
+  }
+
+  const sorted = [...students].sort((a, b) => b.completionPct - a.completionPct);
+
+  return (
+    <div>
+      {sorted.map((s) => (
+        <div key={s.enrollmentId} className="admin-student-progress-card">
+          <div className="admin-student-progress-email">
+            {s.email || 'Unknown'}
+            {s.inactive && <span className="admin-inactive-badge">Inactive 7d+</span>}
+          </div>
+          <div className="admin-student-progress-bar">
+            <div className="admin-mini-progress">
+              <div className="admin-mini-progress-track">
+                <div
+                  className="admin-mini-progress-fill"
+                  style={{ width: `${s.completionPct}%` }}
+                />
+              </div>
+              <span className="admin-mini-progress-pct">{s.completionPct}%</span>
+            </div>
+          </div>
+          <div className="admin-student-progress-meta">
+            <span title="Games played">{s.totalGamesPlayed} played</span>
+            <span title="Win rate">
+              {s.totalGamesPlayed > 0 ? Math.round((s.totalGamesWon / s.totalGamesPlayed) * 100) : 0}% wins
+            </span>
+            <span title="Achievements">{s.achievementCount} achievements</span>
+            <span title="Current streak">{s.currentStreak}d streak</span>
+            {s.lastActive && (
+              <span title="Last active">
+                Last: {new Date(s.lastActive).toLocaleDateString('en-US', { month: 'short', day: 'numeric' })}
+              </span>
+            )}
+          </div>
+        </div>
+      ))}
+    </div>
+  );
+}
+
 interface Props {
   sections: Section[];
   enrollments: Enrollment[];
@@ -13,6 +102,7 @@ interface Props {
 
 export default function AdminProgressTab({ sections, enrollments, scheduleMap }: Props) {
   const { showToast } = useToast();
+  const [progressView, setProgressView] = useState<'grades' | 'games'>('grades');
   const [selectedSectionId, setSelectedSectionId] = useState(sections[0]?.id || '');
   const [assignments, setAssignments] = useState<Assignment[]>([]);
   const [grades, setGrades] = useState<Grade[]>([]);
@@ -186,6 +276,26 @@ export default function AdminProgressTab({ sections, enrollments, scheduleMap }:
 
   return (
     <>
+      {/* View toggle: Grades vs Game Progress */}
+      <div className="admin-email-subtabs" style={{ marginBottom: 16 }}>
+        <button
+          className={`admin-email-subtab ${progressView === 'grades' ? 'admin-email-subtab-active' : ''}`}
+          onClick={() => setProgressView('grades')}
+        >
+          Grades
+        </button>
+        <button
+          className={`admin-email-subtab ${progressView === 'games' ? 'admin-email-subtab-active' : ''}`}
+          onClick={() => setProgressView('games')}
+        >
+          Game Progress
+        </button>
+      </div>
+
+      {progressView === 'games' ? (
+        <GameProgressView />
+      ) : (
+      <>
       <div className="admin-attendance-controls">
         <select
           className="admin-select"
@@ -337,6 +447,8 @@ export default function AdminProgressTab({ sections, enrollments, scheduleMap }:
           onConfirm={handleDeleteAssignment}
           onCancel={() => setDeletingAssignment(null)}
         />
+      )}
+      </>
       )}
     </>
   );

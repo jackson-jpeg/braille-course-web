@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useCallback, useEffect } from 'react';
+import { useState, useCallback, useEffect, useRef } from 'react';
 import { GameId, Difficulty, GameStats, ProgressData, createDefaultGameStats } from '@/lib/progress-types';
 import {
   loadProgress,
@@ -9,6 +9,9 @@ import {
   getGameMastery,
   getGameDifficulty,
   setGameDifficulty,
+  saveProgress,
+  mergeProgress,
+  invalidateCache,
 } from '@/lib/progress-storage';
 import { checkAchievements, type Achievement } from '@/lib/achievements';
 
@@ -90,4 +93,63 @@ export function useProgressOverview() {
   }, []);
 
   return { progress, refresh };
+}
+
+/**
+ * Hook for cloud sync of game progress.
+ * Pass the enrollmentId of the logged-in student.
+ * If null, sync is disabled (anonymous user).
+ */
+export function useCloudSync(enrollmentId: string | null) {
+  const [syncing, setSyncing] = useState(false);
+  const [lastSynced, setLastSynced] = useState<Date | null>(null);
+  const syncTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const hasSyncedRef = useRef(false);
+
+  // Load from cloud on mount
+  useEffect(() => {
+    if (!enrollmentId || hasSyncedRef.current) return;
+    hasSyncedRef.current = true;
+
+    (async () => {
+      try {
+        const res = await fetch(`/api/game-progress?enrollmentId=${enrollmentId}`);
+        if (!res.ok) return;
+        const data = await res.json();
+        if (data.progress) {
+          const local = loadProgress();
+          const merged = mergeProgress(local, data.progress);
+          saveProgress(merged);
+          invalidateCache();
+          setLastSynced(new Date(data.lastSyncedAt));
+        }
+      } catch (err) {
+        console.error('Cloud sync load failed:', err);
+      }
+    })();
+  }, [enrollmentId]);
+
+  // Debounced save to cloud
+  const syncToCloud = useCallback(() => {
+    if (!enrollmentId) return;
+
+    if (syncTimerRef.current) clearTimeout(syncTimerRef.current);
+    syncTimerRef.current = setTimeout(async () => {
+      setSyncing(true);
+      try {
+        const progress = loadProgress();
+        const res = await fetch('/api/game-progress', {
+          method: 'PUT',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ enrollmentId, progress }),
+        });
+        if (res.ok) setLastSynced(new Date());
+      } catch (err) {
+        console.error('Cloud sync save failed:', err);
+      }
+      setSyncing(false);
+    }, 5000);
+  }, [enrollmentId]);
+
+  return { syncing, lastSynced, syncToCloud };
 }

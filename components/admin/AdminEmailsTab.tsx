@@ -135,6 +135,10 @@ export default function AdminEmailsTab({
   const [lastFetched, setLastFetched] = useState<Date | null>(null);
   const [receivedLastFetched, setReceivedLastFetched] = useState<Date | null>(null);
 
+  // Template preview state
+  const [showTemplatePreview, setShowTemplatePreview] = useState(false);
+  const [previewTemplateName, setPreviewTemplateName] = useState('');
+
   // AI draft state
   const [showDraftInput, setShowDraftInput] = useState(false);
   const [draftBrief, setDraftBrief] = useState('');
@@ -156,6 +160,14 @@ export default function AdminEmailsTab({
     if (!composeSubject.trim() && !composeBody.trim()) return '';
     return customEmail({ subject: composeSubject || 'Subject', body: composeBody || '' });
   }, [composeSubject, composeBody]);
+
+  // Template preview HTML
+  const templatePreviewHtml = useMemo(() => {
+    if (!previewTemplateName) return '';
+    const t = EMAIL_TEMPLATES.find((tpl) => tpl.label === previewTemplateName);
+    if (!t) return '';
+    return customEmail({ subject: t.subject, body: t.body });
+  }, [previewTemplateName]);
 
   // Track compose dirty state
   useEffect(() => {
@@ -603,7 +615,9 @@ export default function AdminEmailsTab({
         <div className="admin-delivery-stats">
           <span className="admin-delivery-pill">{sentCount} Sent</span>
           <span className="admin-delivery-pill admin-delivery-delivered">{deliveredCount} Delivered</span>
-          <span className="admin-delivery-pill admin-delivery-opened">{openedCount} Opened</span>
+          <span className="admin-delivery-pill admin-delivery-opened">
+            {openedCount} Opened{deliveredCount > 0 && ` (${Math.round((openedCount / deliveredCount) * 100)}%)`}
+          </span>
           {bouncedCount > 0 && (
             <span className="admin-delivery-pill admin-delivery-bounced">{bouncedCount} Bounced</span>
           )}
@@ -645,11 +659,70 @@ export default function AdminEmailsTab({
             >
               {showCompose ? 'Cancel' : 'Compose Email'}
             </button>
+            <button
+              onClick={() => {
+                setShowTemplatePreview(!showTemplatePreview);
+                if (!previewTemplateName && EMAIL_TEMPLATES.length > 0) {
+                  setPreviewTemplateName(EMAIL_TEMPLATES[0].label);
+                }
+              }}
+              className="admin-refresh-btn"
+            >
+              {showTemplatePreview ? 'Hide Templates' : 'Preview Templates'}
+            </button>
             <button onClick={fetchEmails} className="admin-refresh-btn" disabled={emailsLoading}>
               {emailsLoading ? 'Loading\u2026' : 'Refresh'}
             </button>
             {lastFetched && <span className="admin-last-updated">{lastUpdatedText(lastFetched)}</span>}
           </div>
+
+          {/* Template preview panel */}
+          {showTemplatePreview && (
+            <div className="admin-compose admin-compose-animate" style={{ marginBottom: 16 }}>
+              <div className="admin-compose-field">
+                <label>Select Template to Preview</label>
+                <select
+                  value={previewTemplateName}
+                  onChange={(e) => setPreviewTemplateName(e.target.value)}
+                  className="admin-select"
+                >
+                  {EMAIL_TEMPLATES.map((t) => (
+                    <option key={t.label} value={t.label}>
+                      {t.label}
+                    </option>
+                  ))}
+                </select>
+              </div>
+              {templatePreviewHtml && (
+                <div style={{ marginTop: 12 }}>
+                  <iframe
+                    srcDoc={templatePreviewHtml}
+                    title="Template preview"
+                    className="admin-compose-preview-iframe"
+                    style={{ width: '100%', height: 400, border: '1px solid rgba(0,0,0,0.1)', borderRadius: 8 }}
+                    sandbox="allow-same-origin"
+                  />
+                  <button
+                    type="button"
+                    className="admin-send-btn"
+                    style={{ marginTop: 8 }}
+                    onClick={() => {
+                      const t = EMAIL_TEMPLATES.find((tpl) => tpl.label === previewTemplateName);
+                      if (t) {
+                        setComposeSubject(t.subject);
+                        setComposeBody(t.body);
+                        setSelectedTemplate(t.label);
+                        setShowCompose(true);
+                        setShowTemplatePreview(false);
+                      }
+                    }}
+                  >
+                    Use This Template
+                  </button>
+                </div>
+              )}
+            </div>
+          )}
 
           {/* Compose backdrop */}
           {showCompose && (
@@ -776,6 +849,19 @@ export default function AdminEmailsTab({
                         rows={8}
                         required
                       />
+                      <div className="admin-merge-tags">
+                        <span className="admin-merge-tags-label">Merge tags:</span>
+                        {['{{firstName}}', '{{courseName}}', '{{email}}'].map((tag) => (
+                          <button
+                            key={tag}
+                            type="button"
+                            className="admin-merge-tag-btn"
+                            onClick={() => setComposeBody((prev) => prev + tag)}
+                          >
+                            {tag}
+                          </button>
+                        ))}
+                      </div>
                     </div>
 
                     {/* Attachments section */}

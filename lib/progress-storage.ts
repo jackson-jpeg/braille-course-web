@@ -208,6 +208,92 @@ export function getGameMastery(gameId: GameId): number {
   return Math.round(winRate * 70 + volumeBonus * 30);
 }
 
+/**
+ * Merge local and cloud progress data.
+ * - Achievements: union of unlocked sets (cloud wins)
+ * - Streak: take the higher values
+ * - Game stats: take per-game max of gamesPlayed/gamesWon/bestScore
+ * - Settings: local wins (user's current device preferences)
+ */
+export function mergeProgress(local: ProgressData, cloud: ProgressData): ProgressData {
+  const merged: ProgressData = {
+    ...local,
+    version: CURRENT_VERSION,
+    firstPlayDate: local.firstPlayDate || cloud.firstPlayDate,
+    // Merge achievements — union of unlocked
+    achievements: {
+      unlocked: [...new Set([...local.achievements.unlocked, ...cloud.achievements.unlocked])],
+      progress: { ...cloud.achievements.progress, ...local.achievements.progress },
+      lastChecked: local.achievements.lastChecked || cloud.achievements.lastChecked,
+    },
+    // Streak — take higher values
+    streak: {
+      currentStreak: Math.max(local.streak.currentStreak, cloud.streak.currentStreak),
+      longestStreak: Math.max(local.streak.longestStreak, cloud.streak.longestStreak),
+      lastPlayedDate: local.streak.lastPlayedDate > cloud.streak.lastPlayedDate
+        ? local.streak.lastPlayedDate
+        : cloud.streak.lastPlayedDate,
+      freezesAvailable: Math.max(local.streak.freezesAvailable, cloud.streak.freezesAvailable),
+    },
+    // Settings — local wins (current device)
+    settings: {
+      ...local.settings,
+      difficulty: { ...local.settings.difficulty },
+    },
+    // Daily challenge — use whichever is more recent
+    dailyChallenge: local.dailyChallenge.date >= cloud.dailyChallenge.date
+      ? local.dailyChallenge
+      : cloud.dailyChallenge,
+    // Games — merge per-game stats
+    games: { ...cloud.games },
+  };
+
+  // Merge per-game: take max of each stat
+  const allGameIds = new Set([
+    ...Object.keys(local.games),
+    ...Object.keys(cloud.games),
+  ]) as Set<GameId>;
+
+  for (const gameId of allGameIds) {
+    const l = local.games[gameId];
+    const c = cloud.games[gameId];
+    if (!l) {
+      merged.games[gameId] = c;
+    } else if (!c) {
+      merged.games[gameId] = l;
+    } else {
+      merged.games[gameId] = {
+        gamesPlayed: Math.max(l.gamesPlayed, c.gamesPlayed),
+        gamesWon: Math.max(l.gamesWon, c.gamesWon),
+        bestScore: Math.max(l.bestScore, c.bestScore),
+        totalScore: Math.max(l.totalScore, c.totalScore),
+        lastPlayed: l.lastPlayed > c.lastPlayed ? l.lastPlayed : c.lastPlayed,
+        difficultyStats: {
+          beginner: {
+            played: Math.max(l.difficultyStats.beginner.played, c.difficultyStats.beginner.played),
+            won: Math.max(l.difficultyStats.beginner.won, c.difficultyStats.beginner.won),
+          },
+          intermediate: {
+            played: Math.max(l.difficultyStats.intermediate.played, c.difficultyStats.intermediate.played),
+            won: Math.max(l.difficultyStats.intermediate.won, c.difficultyStats.intermediate.won),
+          },
+          advanced: {
+            played: Math.max(l.difficultyStats.advanced.played, c.difficultyStats.advanced.played),
+            won: Math.max(l.difficultyStats.advanced.won, c.difficultyStats.advanced.won),
+          },
+        },
+      };
+    }
+  }
+
+  return merged;
+}
+
+/** Invalidate the in-memory cache (used after cloud sync) */
+export function invalidateCache(): void {
+  _cache = null;
+}
+
 // Helpers — use local timezone for date comparisons so streaks
 // align with the user's calendar day, not UTC midnight.
 function getDateString(date: Date): string {
