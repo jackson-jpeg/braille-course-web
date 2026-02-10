@@ -43,7 +43,7 @@ export default function OnboardingModal() {
   useEffect(() => {
     if (!visible) return;
     function onKeyDown(e: KeyboardEvent) {
-      if (e.key === 'Escape') handleClose(false);
+      if (e.key === 'Escape') handleClose(true);
       if (e.key === 'Tab' && modalRef.current) {
         const focusable = modalRef.current.querySelectorAll<HTMLElement>(
           'button, [href], input, [tabindex]:not([tabindex="-1"])'

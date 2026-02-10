@@ -64,8 +64,11 @@ export function checkAchievements(progress: ProgressData): Achievement[] {
   const totalWins = Object.values(progress.games).reduce(
     (s, g) => s + (g?.gamesWon || 0), 0
   );
-  const gamesTriedCount = Object.values(progress.games).filter(
+  const allGamesTriedCount = Object.values(progress.games).filter(
     (g) => g && g.gamesPlayed > 0
+  ).length;
+  const scoredGamesTriedCount = Object.entries(progress.games).filter(
+    ([id, g]) => g && g.gamesPlayed > 0 && id !== 'explorer'
   ).length;
 
   function unlock(id: string) {
@@ -81,7 +84,7 @@ export function checkAchievements(progress: ProgressData): Achievement[] {
   if (totalPlayed >= 1) unlock('first-steps');
   if (totalWins >= 1) unlock('first-win');
   if (totalPlayed >= 5) unlock('five-games');
-  if (gamesTriedCount >= 3) unlock('explorer');
+  if (allGamesTriedCount >= 3) unlock('explorer');
 
   // Check daily challenge completion
   const dailyCompleted = progress.dailyChallenge.challenges.filter((c) => c.completed).length;
@@ -90,7 +93,7 @@ export function checkAchievements(progress: ProgressData): Achievement[] {
 
   // Skill
   if (totalWins >= 10) unlock('ten-wins');
-  if (gamesTriedCount >= 9) unlock('all-games'); // 9 scored games (explorer is a tool, not a game)
+  if (scoredGamesTriedCount >= 9) unlock('all-games'); // 9 scored games (explorer is a tool, not a game)
 
   // Speed Match streaks
   const speedStats = progress.games.speedmatch;
