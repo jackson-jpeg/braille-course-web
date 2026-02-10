@@ -4,8 +4,8 @@ import { useState, useEffect, useCallback, useRef } from 'react';
 import { type Achievement, getTierColor } from '@/lib/achievements';
 
 /** Global achievement queue — games push here, toast component reads */
-let achievementQueue: Achievement[] = [];
-let listeners: (() => void)[] = [];
+const achievementQueue: Achievement[] = [];
+const listeners: (() => void)[] = [];
 
 export function pushAchievement(achievement: Achievement) {
   achievementQueue.push(achievement);

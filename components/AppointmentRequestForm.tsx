@@ -163,7 +163,7 @@ export default function AppointmentRequestForm() {
             maxLength={200}
             disabled={loading}
           />
-          <p className="appointment-form-hint">Let us know when you're typically available for a call</p>
+          <p className="appointment-form-hint">Let us know when you&apos;re typically available for a call</p>
         </div>
 
         <div className="appointment-form-field appointment-form-field-full">

@@ -179,8 +179,8 @@ export async function POST(req: NextRequest) {
       stack: (err as Error).stack,
       name: (err as Error).name,
       // For Prisma errors
-      code: (err as any).code,
-      meta: (err as any).meta,
+      code: (err as Record<string, unknown>).code,
+      meta: (err as Record<string, unknown>).meta,
     });
     return NextResponse.json(
       { error: 'Unable to process your request. Please try again or email Delaney@TeachBraille.org directly.' },

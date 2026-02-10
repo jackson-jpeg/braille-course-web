@@ -104,7 +104,7 @@ export function validateBrailleText(text: string): {
 
   let match;
   while ((match = letterDotsPattern.exec(text)) !== null) {
-    let label = match[1].replace(/['"]/g, '').trim();
+    const label = match[1].replace(/['"]/g, '').trim();
     const claimedDots = match[2].trim();
     matches.push({ fullMatch: match[0], label, claimedDots, index: match.index });
   }

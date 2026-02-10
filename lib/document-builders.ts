@@ -146,8 +146,8 @@ export function drawBrailleCell(doc: any, pattern: number[], x: number, y: numbe
   return cellW; // return width for positioning
 }
 
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
 export function drawBrailleWord(
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   doc: any,
   word: string,
   x: number,

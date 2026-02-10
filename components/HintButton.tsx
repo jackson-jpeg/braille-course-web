@@ -1,7 +1,7 @@
 'use client';
 
 import { useState, useEffect, useCallback } from 'react';
-import { getHintsRemaining, useHint } from '@/lib/hint-system';
+import { getHintsRemaining, useHint as consumeHint } from '@/lib/hint-system';
 
 interface HintButtonProps {
   onUseHint: () => void;
@@ -19,7 +19,7 @@ export default function HintButton({ onUseHint, disabled = false }: HintButtonPr
 
   const handleClick = useCallback(() => {
     if (remaining <= 0 || disabled) return;
-    const success = useHint();
+    const success = consumeHint();
     if (success) {
       setRemaining((r) => r - 1);
       onUseHint();
