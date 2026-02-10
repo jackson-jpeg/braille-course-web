@@ -3,6 +3,8 @@
 import { useState, useEffect, useCallback, useRef } from 'react';
 import { brailleMap, dotDescription } from '@/lib/braille-map';
 import { answerWords, validGuesses } from '@/lib/game-words';
+import { useGameProgress } from '@/hooks/useGameProgress';
+import { pushAchievements } from '@/components/AchievementToast';
 
 type TileStatus = 'empty' | 'active' | 'correct' | 'present' | 'absent';
 type KeyStatus = 'unused' | 'correct' | 'present' | 'absent';
@@ -67,6 +69,7 @@ const FLIP_DURATION = 500; // ms per tile flip
 const FLIP_STAGGER = 250; // ms between each tile starting
 
 export default function BrailleWordGame() {
+  const { recordResult } = useGameProgress('wordgame');
   const [answer, setAnswer] = useState('');
   const [guesses, setGuesses] = useState<string[]>([]);
   const [currentGuess, setCurrentGuess] = useState('');
@@ -158,8 +161,14 @@ export default function BrailleWordGame() {
             setWon(true);
             setGameOver(true);
             setWinBounce(true);
+            // Score: higher is better (ROWS + 1 - guesses used)
+            const score = ROWS + 1 - (row + 1);
+            const achievements = recordResult(true, score);
+            pushAchievements(achievements);
           } else if (isLastRow) {
             setGameOver(true);
+            const achievements = recordResult(false, 0);
+            pushAchievements(achievements);
           }
         }, totalRevealTime);
 

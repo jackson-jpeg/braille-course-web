@@ -48,17 +48,16 @@ export default function BrailleSentenceDecoder() {
 
   const params = getDifficultyParams('sentence-decoder', difficulty) as {
     maxWords: number;
-    contractionDensity: number;
   };
 
   const loadSentence = useCallback(() => {
-    const s = getRandomSentence(params.maxWords, params.contractionDensity);
+    const s = getRandomSentence(params.maxWords);
     setSentence(s);
     setUserInput('');
     setSubmitted(false);
     setIsCorrect(false);
     setTimeout(() => inputRef.current?.focus(), 100);
-  }, [params.maxWords, params.contractionDensity]);
+  }, [params.maxWords]);
 
   const startGame = useCallback(() => {
     setScore(0);

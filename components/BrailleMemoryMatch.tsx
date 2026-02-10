@@ -2,6 +2,8 @@
 
 import { useState, useEffect, useCallback, useRef } from 'react';
 import { brailleMap } from '@/lib/braille-map';
+import { useGameProgress } from '@/hooks/useGameProgress';
+import { pushAchievements } from '@/components/AchievementToast';
 
 const ALL_LETTERS = Object.keys(brailleMap);
 
@@ -38,7 +40,10 @@ function BrailleFace({ pattern }: { pattern: number[] }) {
   );
 }
 
+const PAIR_COUNT = 6;
+
 export default function BrailleMemoryMatch() {
+  const { recordResult } = useGameProgress('memorymatch');
   const [cards, setCards] = useState<Card[]>([]);
   const [flippedIds, setFlippedIds] = useState<number[]>([]);
   const [moves, setMoves] = useState(0);
@@ -49,7 +54,7 @@ export default function BrailleMemoryMatch() {
   const containerRef = useRef<HTMLDivElement>(null);
 
   const startGame = useCallback(() => {
-    const letters = pickRandomLetters(6);
+    const letters = pickRandomLetters(PAIR_COUNT);
     setCards(buildDeck(letters));
     setFlippedIds([]);
     setMoves(0);
@@ -99,7 +104,14 @@ export default function BrailleMemoryMatch() {
           );
           setMatchedPairs((p) => {
             const next = p + 1;
-            if (next === 6) setWon(true);
+            if (next === PAIR_COUNT) {
+              setWon(true);
+              // Score: PAIR_COUNT * 2 - moves (fewer moves = higher score, min 1)
+              const finalMoves = moves + 1; // +1 for this move
+              const score = Math.max(1, PAIR_COUNT * 2 - finalMoves);
+              const achievements = recordResult(true, score);
+              pushAchievements(achievements);
+            }
             return next;
           });
           setFlippedIds([]);
@@ -132,7 +144,7 @@ export default function BrailleMemoryMatch() {
       <div className="memorymatch-body">
         <div className="memorymatch-stats">
           <span>Moves: <strong>{moves}</strong></span>
-          <span>Pairs: <strong>{matchedPairs}</strong> / 6</span>
+          <span>Pairs: <strong>{matchedPairs}</strong> / {PAIR_COUNT}</span>
         </div>
 
         <div className="memorymatch-grid" role="group" aria-label="Memory game cards">

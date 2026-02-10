@@ -12,7 +12,7 @@ const tips: LearningTip[] = [
   { fact: 'Louis Braille invented the braille system in 1824, when he was just 15 years old.', category: 'history' },
   { fact: 'Braille was inspired by a military communication system called "night writing."', category: 'history' },
   { fact: 'The braille cell has remained unchanged since 1824 — still 6 dots in a 2×3 grid.', category: 'history' },
-  { fact: 'UEB (Unified English Braille) was adopted in 2012 to standardize braille worldwide.', category: 'history' },
+  { fact: 'UEB (Unified English Braille) was formally published in 2010 and adopted by major English-speaking countries starting in 2012.', category: 'history' },
   { fact: 'Before braille, raised print letters were used, but they were slow to read by touch.', category: 'history' },
 
   // Technique

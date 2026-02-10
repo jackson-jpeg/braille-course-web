@@ -26,7 +26,7 @@ export interface GameDifficultyParams {
   'number-sense': { maxNumber: number; operations: string[] };
   'reflex-dots': { displayTime: number; rounds: number };
   sequence: { letterCount: number };
-  'sentence-decoder': { maxWords: number; contractionDensity: number };
+  'sentence-decoder': { maxWords: number };
 }
 
 /** Get difficulty parameters for a game */
@@ -78,9 +78,9 @@ export function getDifficultyParams(gameId: GameId, difficulty: Difficulty): Rec
       advanced: { letterCount: 8 },
     },
     'sentence-decoder': {
-      beginner: { maxWords: 3, contractionDensity: 0.3 },
-      intermediate: { maxWords: 5, contractionDensity: 0.5 },
-      advanced: { maxWords: 7, contractionDensity: 0.7 },
+      beginner: { maxWords: 3 },
+      intermediate: { maxWords: 5 },
+      advanced: { maxWords: 7 },
     },
   };
 

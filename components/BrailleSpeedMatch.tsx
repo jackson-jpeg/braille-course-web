@@ -2,6 +2,8 @@
 
 import { useState, useEffect, useCallback, useRef } from 'react';
 import { brailleMap, computeSimilarity } from '@/lib/braille-map';
+import { useGameProgress } from '@/hooks/useGameProgress';
+import { pushAchievements } from '@/components/AchievementToast';
 
 const LETTERS = Object.keys(brailleMap).filter((k) => /^[A-Z]$/.test(k));
 
@@ -36,6 +38,7 @@ function BrailleCell({ pattern, size }: { pattern: number[]; size: 'large' | 'sm
 }
 
 export default function BrailleSpeedMatch() {
+  const { recordResult } = useGameProgress('speedmatch');
   const [mode, setMode] = useState<Mode>('read');
   const [currentLetter, setCurrentLetter] = useState('');
   const [choices, setChoices] = useState<string[]>([]);
@@ -86,14 +89,18 @@ export default function BrailleSpeedMatch() {
       setStreak((s) => {
         const next = s + 1;
         setBestStreak((b) => Math.max(b, next));
+        // Record each correct answer with current streak as score
+        const achievements = recordResult(true, next);
+        pushAchievements(achievements);
         return next;
       });
       setTimeout(nextRound, 600);
     } else {
       setStreak(0);
+      recordResult(false, 0);
       setTimeout(nextRound, 1500);
     }
-  }, [locked, currentLetter, nextRound]);
+  }, [locked, currentLetter, nextRound, recordResult]);
 
   // Keyboard support (1-4)
   useEffect(() => {

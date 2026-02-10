@@ -12958,6 +12958,8 @@ details.faq-item.reveal:nth-child(6) { transition-delay: 0.4s; }
   max-width: 160px;
   margin: 0 auto 20px;
 }
+.reflex-grid-show { pointer-events: none; }
+.reflex-grid-input { cursor: pointer; }
 .reflex-dot-display {
   width: 60px;
   height: 60px;
@@ -13329,6 +13331,9 @@ details.faq-item.reveal:nth-child(6) { transition-delay: 0.4s; }
   .quickstart-fab-btn { width: 46px; height: 46px; }
   .achievement-toast { right: 12px; left: 12px; }
   .decoder-input-wrap { flex-direction: column; }
+  .csprint-tiles { gap: 6px; }
+  .csprint-tile { min-width: 70px; padding: 10px 8px; }
+  .csprint-target-word { font-size: 1.6rem; }
 }
 
 @media (max-width: 480px) {

@@ -37,7 +37,7 @@ export const ACHIEVEMENTS: Achievement[] = [
   { id: 'math-whiz', name: 'Math Whiz', description: 'Score 10+ in Number Sense', tier: 'silver', category: 'skill', icon: '🔢' },
   { id: 'quick-reflexes', name: 'Quick Reflexes', description: 'Score 15+ in Reflex Dots', tier: 'silver', category: 'skill', icon: '👆' },
   { id: 'week-warrior', name: 'Week Warrior', description: 'Maintain a 7-day streak', tier: 'silver', category: 'skill', icon: '🗓️' },
-  { id: 'all-games', name: 'Renaissance Player', description: 'Play all 10 game types', tier: 'silver', category: 'skill', icon: '🎪' },
+  { id: 'all-games', name: 'Renaissance Player', description: 'Play all 9 games', tier: 'silver', category: 'skill', icon: '🎪' },
 
   // === MASTERY (Gold) ===
   { id: 'fifty-wins', name: 'Half Century', description: 'Win 50 games', tier: 'gold', category: 'mastery', icon: '🏆' },
@@ -51,7 +51,6 @@ export const ACHIEVEMENTS: Achievement[] = [
   { id: 'hundred-wins', name: 'Century Champion', description: 'Win 100 games', tier: 'platinum', category: 'mastery', icon: '👑' },
   { id: 'braille-master', name: 'Braille Master', description: 'Unlock 20 other achievements', tier: 'platinum', category: 'special', icon: '🌠' },
   { id: 'speed-legend', name: 'Speed Legend', description: 'Get a 30-streak in Speed Match', tier: 'platinum', category: 'mastery', icon: '💎' },
-  { id: 'perfect-week', name: 'Perfect Week', description: 'Complete all daily challenges for 7 days', tier: 'platinum', category: 'special', icon: '✨' },
 ];
 
 /** Check for newly unlocked achievements. Returns newly unlocked ones. */
@@ -91,7 +90,7 @@ export function checkAchievements(progress: ProgressData): Achievement[] {
 
   // Skill
   if (totalWins >= 10) unlock('ten-wins');
-  if (gamesTriedCount >= 10) unlock('all-games');
+  if (gamesTriedCount >= 9) unlock('all-games'); // 9 scored games (explorer is a tool, not a game)
 
   // Speed Match streaks
   const speedStats = progress.games.speedmatch;
@@ -105,7 +104,7 @@ export function checkAchievements(progress: ProgressData): Achievement[] {
 
   // Memory Match
   const memStats = progress.games.memorymatch;
-  if (memStats && memStats.bestScore >= 1 && memStats.bestScore <= 10) unlock('perfect-memory');
+  if (memStats && memStats.bestScore >= 3) unlock('perfect-memory'); // score ≥ 3 means < 10 moves
 
   // Hangman
   const hangStats = progress.games.hangman;

@@ -89,8 +89,8 @@ const TEMPLATES: { template: string; words: string[] }[] = [
 
   // 7-word sentences
   { template: '{you} {and} I {will} {go} {for} {it}', words: ['you', 'and', 'will', 'go', 'for', 'it'] },
-  { template: '{the} cat {and} dog play in {the} yard', words: ['the', 'and', 'the'] },
-  { template: '{people} {like} {the} park {but} {not} {the} rain', words: ['people', 'like', 'the', 'but', 'not', 'the'] },
+  { template: 'cat {and} dog play in {the} yard', words: ['and', 'the'] },
+  { template: '{people} {like} {the} park {but} {not} rain', words: ['people', 'like', 'the', 'but', 'not'] },
   { template: 'I {have} {just} {the} thing {for} {you}', words: ['have', 'just', 'the', 'for', 'you'] },
   { template: 'she is {very} good {with} {every} child here', words: ['very', 'with', 'every'] },
   { template: '{rather} {not} {go} now {but} I {will}', words: ['rather', 'not', 'go', 'but', 'will'] },
@@ -147,7 +147,7 @@ function templateToTokens(template: string): BrailleToken[] {
 }
 
 /** Get a random sentence for the given difficulty */
-export function getRandomSentence(maxWords: number = 5, contractionDensity: number = 0.5): SentenceData {
+export function getRandomSentence(maxWords: number = 5): SentenceData {
   // Filter templates by word count
   const eligible = TEMPLATES.filter((t) => {
     const wordCount = t.template.split(' ').length;

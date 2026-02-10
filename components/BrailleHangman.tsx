@@ -3,6 +3,8 @@
 import { useState, useEffect, useCallback, useRef } from 'react';
 import { brailleMap, dotDescription } from '@/lib/braille-map';
 import { hangmanWords } from '@/lib/hangman-words';
+import { useGameProgress } from '@/hooks/useGameProgress';
+import { pushAchievements } from '@/components/AchievementToast';
 
 const MAX_WRONG = 6;
 
@@ -69,6 +71,7 @@ function HangmanSvg({ wrongCount }: { wrongCount: number }) {
 }
 
 export default function BrailleHangman() {
+  const { recordResult } = useGameProgress('hangman');
   const [answer, setAnswer] = useState('');
   const [guessedLetters, setGuessedLetters] = useState<Set<string>>(new Set());
   const [gameOver, setGameOver] = useState(false);
@@ -109,10 +112,15 @@ export default function BrailleHangman() {
     if (isWon && !gameOver) {
       setWon(true);
       setGameOver(true);
+      // Score: MAX_WRONG - wrongCount (higher = fewer wrong guesses)
+      const achievements = recordResult(true, MAX_WRONG - wrongCount);
+      pushAchievements(achievements);
     } else if (isLost && !gameOver) {
       setGameOver(true);
+      const achievements = recordResult(false, 0);
+      pushAchievements(achievements);
     }
-  }, [isWon, isLost, gameOver, answer]);
+  }, [isWon, isLost, gameOver, answer, wrongCount, recordResult]);
 
   const handleGuess = useCallback(
     (letter: string) => {
