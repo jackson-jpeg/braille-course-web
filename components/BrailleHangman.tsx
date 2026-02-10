@@ -166,7 +166,7 @@ export default function BrailleHangman() {
       <div className="hangman-body">
         <HangmanSvg wrongCount={wrongCount} />
 
-        <div className="hangman-word" aria-label="Word to guess">
+        <div className="hangman-word" aria-label="Word to guess" aria-live="polite">
           {answer.split('').map((letter, i) => {
             const revealed = guessedLetters.has(letter);
             return (

@@ -85,6 +85,14 @@ export default function BrailleWordGame() {
   const [popTile, setPopTile] = useState<string | null>(null); // "row-col"
   const [winBounce, setWinBounce] = useState(false);
 
+  // Timer cleanup to prevent state updates after unmount
+  const timersRef = useRef<ReturnType<typeof setTimeout>[]>([]);
+  const scheduleTimeout = useCallback((fn: () => void, delay: number) => {
+    const id = setTimeout(fn, delay);
+    timersRef.current.push(id);
+    return id;
+  }, []);
+
   // Visibility-scoped keyboard: only capture keys when this section is visible
   const sectionRef = useRef<HTMLElement>(null);
   const visibleRef = useRef(true);
@@ -98,6 +106,11 @@ export default function BrailleWordGame() {
     );
     observer.observe(el);
     return () => observer.disconnect();
+  }, []);
+
+  // Cleanup all scheduled timers on unmount
+  useEffect(() => {
+    return () => { timersRef.current.forEach(clearTimeout); };
   }, []);
 
   // Pick a word on mount
@@ -119,7 +132,7 @@ export default function BrailleWordGame() {
 
         if (!validGuesses.has(currentGuess)) {
           setShakeRow(currentRow);
-          setTimeout(() => setShakeRow(null), 500);
+          scheduleTimeout(() => setShakeRow(null), 500);
           return;
         }
 
@@ -133,7 +146,7 @@ export default function BrailleWordGame() {
 
         // After all tiles have flipped, finalize
         const totalRevealTime = FLIP_STAGGER * (COLS - 1) + FLIP_DURATION;
-        setTimeout(() => {
+        scheduleTimeout(() => {
           const statuses = computeStatuses(guess, answer);
 
           // Update key statuses
@@ -179,11 +192,11 @@ export default function BrailleWordGame() {
       if (/^[A-Z]$/.test(key) && currentGuess.length < COLS) {
         const col = currentGuess.length;
         setPopTile(`${currentRow}-${col}`);
-        setTimeout(() => setPopTile(null), 150);
+        scheduleTimeout(() => setPopTile(null), 150);
         setCurrentGuess((prev) => prev + key);
       }
     },
-    [answer, currentGuess, currentRow, gameOver, revealingRow, recordResult]
+    [answer, currentGuess, currentRow, gameOver, revealingRow, recordResult, scheduleTimeout]
   );
 
   // Physical keyboard listener (only when this game section is visible)

@@ -52,6 +52,9 @@ export default function BrailleMemoryMatch() {
   const [checking, setChecking] = useState(false);
 
   const containerRef = useRef<HTMLDivElement>(null);
+  const matchTimerRef = useRef<ReturnType<typeof setTimeout>>();
+  const movesRef = useRef(moves);
+  movesRef.current = moves;
 
   const startGame = useCallback(() => {
     const letters = pickRandomLetters(PAIR_COUNT);
@@ -66,6 +69,11 @@ export default function BrailleMemoryMatch() {
   useEffect(() => {
     startGame();
   }, [startGame]);
+
+  // Cleanup match/mismatch timer on unmount
+  useEffect(() => {
+    return () => { if (matchTimerRef.current) clearTimeout(matchTimerRef.current); };
+  }, []);
 
   const handleFlip = useCallback((cardId: number) => {
     if (checking) return;
@@ -87,14 +95,14 @@ export default function BrailleMemoryMatch() {
       setChecking(true);
 
       const first = cards.find((c) => c.id === newFlipped[0])!;
-      const second = cardId === newFlipped[0] ? card : cards.find((c) => c.id === cardId)!;
+      const second = cards.find((c) => c.id === newFlipped[1])!;
 
       const isMatch =
         first.letter === second.letter &&
         first.type !== second.type;
 
       if (isMatch) {
-        setTimeout(() => {
+        matchTimerRef.current = setTimeout(() => {
           setCards((prev) =>
             prev.map((c) =>
               c.id === first.id || c.id === second.id
@@ -106,8 +114,7 @@ export default function BrailleMemoryMatch() {
             const next = p + 1;
             if (next === PAIR_COUNT) {
               setWon(true);
-              // Score: PAIR_COUNT * 2 - moves (fewer moves = higher score, min 1)
-              const finalMoves = moves + 1; // +1 for this move
+              const finalMoves = movesRef.current + 1; // +1 for this move
               const score = Math.max(1, PAIR_COUNT * 2 - finalMoves);
               const achievements = recordResult(true, score);
               pushAchievements(achievements);
@@ -118,7 +125,7 @@ export default function BrailleMemoryMatch() {
           setChecking(false);
         }, 600);
       } else {
-        setTimeout(() => {
+        matchTimerRef.current = setTimeout(() => {
           setCards((prev) =>
             prev.map((c) =>
               c.id === first.id || c.id === second.id
@@ -131,7 +138,7 @@ export default function BrailleMemoryMatch() {
         }, 1000);
       }
     }
-  }, [cards, flippedIds, checking]);
+  }, [cards, flippedIds, checking, recordResult]);
 
   return (
     <div className="memorymatch-container" ref={containerRef}>
