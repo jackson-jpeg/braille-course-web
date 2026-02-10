@@ -29,7 +29,7 @@ export default function SuccessCelebration({
             x: Math.random() * 100,
             delay: Math.random() * 0.6,
             color: colors[Math.floor(Math.random() * colors.length)],
-          }))
+          })),
         );
       }
     }

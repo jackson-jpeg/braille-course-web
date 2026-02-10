@@ -3,10 +3,7 @@
 import { useCallback, useState } from 'react';
 import { useSearchParams } from 'next/navigation';
 import Link from 'next/link';
-import {
-  EmbeddedCheckoutProvider,
-  EmbeddedCheckout,
-} from '@stripe/react-stripe-js';
+import { EmbeddedCheckoutProvider, EmbeddedCheckout } from '@stripe/react-stripe-js';
 import getStripe from '@/lib/stripe-client';
 
 const VALID_PLANS = ['full', 'deposit'] as const;
@@ -41,9 +38,7 @@ export default function CheckoutForm() {
     });
 
     if (res.status === 409) {
-      setError(
-        'This section just filled up. Please go back and choose another.',
-      );
+      setError('This section just filled up. Please go back and choose another.');
       throw new Error('Section full');
     }
 
@@ -122,15 +117,17 @@ export default function CheckoutForm() {
       <div className="checkout-summary">
         <div className="checkout-summary-brand">
           <span className="checkout-summary-dots" aria-hidden="true">
-            <span /><span className="filled" /><span className="filled" />
-            <span className="filled" /><span className="filled" /><span />
+            <span />
+            <span className="filled" />
+            <span className="filled" />
+            <span className="filled" />
+            <span className="filled" />
+            <span />
           </span>
           <span className="checkout-summary-name">TeachBraille</span>
         </div>
         <h1 className="checkout-summary-title">Summer Braille Course</h1>
-        <p className="checkout-summary-schedule">
-          June 8 &ndash; July 27, 2026 &middot; 16 live sessions
-        </p>
+        <p className="checkout-summary-schedule">June 8 &ndash; July 27, 2026 &middot; 16 live sessions</p>
         <div className="checkout-summary-divider" />
         <div className="checkout-summary-plan">
           <div className="checkout-summary-plan-row">
@@ -143,10 +140,7 @@ export default function CheckoutForm() {
 
       {/* Stripe embed */}
       <div className="checkout-embed-wrapper">
-        <EmbeddedCheckoutProvider
-          stripe={getStripe()}
-          options={{ fetchClientSecret }}
-        >
+        <EmbeddedCheckoutProvider stripe={getStripe()} options={{ fetchClientSecret }}>
           <EmbeddedCheckout />
         </EmbeddedCheckoutProvider>
       </div>
@@ -154,8 +148,8 @@ export default function CheckoutForm() {
       <div className="checkout-trust-row">
         <span className="checkout-trust-item">
           <svg viewBox="0 0 16 16" fill="none" aria-hidden="true">
-            <rect x="3" y="7" width="10" height="7" rx="1.5" stroke="currentColor" strokeWidth="1.3"/>
-            <path d="M5.5 7V5a2.5 2.5 0 015 0v2" stroke="currentColor" strokeWidth="1.3" strokeLinecap="round"/>
+            <rect x="3" y="7" width="10" height="7" rx="1.5" stroke="currentColor" strokeWidth="1.3" />
+            <path d="M5.5 7V5a2.5 2.5 0 015 0v2" stroke="currentColor" strokeWidth="1.3" strokeLinecap="round" />
           </svg>
           Secure payment
         </span>

@@ -41,11 +41,7 @@ export default function QuickStartFAB() {
         <div className="quickstart-fab-tooltip" role="tooltip">
           <span className="quickstart-fab-game">{rec.name}</span>
           <span className="quickstart-fab-reason">{rec.reason}</span>
-          <a
-            href={`#${rec.gameId}`}
-            className="quickstart-fab-go"
-            onClick={() => setExpanded(false)}
-          >
+          <a href={`#${rec.gameId}`} className="quickstart-fab-go" onClick={() => setExpanded(false)}>
             Play Now →
           </a>
         </div>

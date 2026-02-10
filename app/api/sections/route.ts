@@ -19,9 +19,6 @@ export async function GET() {
     return NextResponse.json(sections);
   } catch (err) {
     console.error('Failed to fetch sections:', (err as Error).message);
-    return NextResponse.json(
-      { error: 'Failed to fetch sections' },
-      { status: 500 }
-    );
+    return NextResponse.json({ error: 'Failed to fetch sections' }, { status: 500 });
   }
 }

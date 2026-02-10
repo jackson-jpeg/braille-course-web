@@ -24,9 +24,6 @@ export async function GET(req: NextRequest) {
       responseStatus: e.responseStatus,
       responseText: e.responseText,
     });
-    return NextResponse.json(
-      { error: `Failed to fetch received emails: ${e.message}` },
-      { status: 500 }
-    );
+    return NextResponse.json({ error: `Failed to fetch received emails: ${e.message}` }, { status: 500 });
   }
 }

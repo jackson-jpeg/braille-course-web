@@ -4,7 +4,13 @@ import { loadScheduleMap } from '@/lib/schedule';
 import { verifySessionToken } from '@/lib/admin-auth';
 import AdminLogin from '@/components/AdminLogin';
 import AdminDashboard from '@/components/admin/AdminDashboard';
-import type { PaymentPlan, PaymentStatus, SectionStatus, LeadStatus, SchoolInquiryStatus } from '@/components/admin/admin-types';
+import type {
+  PaymentPlan,
+  PaymentStatus,
+  SectionStatus,
+  LeadStatus,
+  SchoolInquiryStatus,
+} from '@/components/admin/admin-types';
 
 export const metadata = {
   title: 'Admin Dashboard',

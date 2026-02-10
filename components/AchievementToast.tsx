@@ -75,10 +75,7 @@ export default function AchievementToast() {
       }}
       style={{ cursor: 'pointer' }}
     >
-      <span
-        className="achievement-toast-icon"
-        style={{ background: getTierColor(current.tier) }}
-      >
+      <span className="achievement-toast-icon" style={{ background: getTierColor(current.tier) }}>
         {current.icon}
       </span>
       <div className="achievement-toast-content">

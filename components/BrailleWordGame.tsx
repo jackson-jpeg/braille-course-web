@@ -103,8 +103,10 @@ export default function BrailleWordGame() {
     const el = sectionRef.current;
     if (!el) return;
     const observer = new IntersectionObserver(
-      ([entry]) => { visibleRef.current = entry.isIntersecting; },
-      { threshold: 0.3 }
+      ([entry]) => {
+        visibleRef.current = entry.isIntersecting;
+      },
+      { threshold: 0.3 },
     );
     observer.observe(el);
     return () => observer.disconnect();
@@ -112,7 +114,9 @@ export default function BrailleWordGame() {
 
   // Cleanup all scheduled timers on unmount
   useEffect(() => {
-    return () => { timersRef.current.forEach(clearTimeout); };
+    return () => {
+      timersRef.current.forEach(clearTimeout);
+    };
   }, []);
 
   // Pick a word on mount
@@ -200,7 +204,7 @@ export default function BrailleWordGame() {
         setCurrentGuess((prev) => prev + key);
       }
     },
-    [answer, currentGuess, currentRow, gameOver, revealingRow, recordResult, scheduleTimeout]
+    [answer, currentGuess, currentRow, gameOver, revealingRow, recordResult, scheduleTimeout],
   );
 
   // Physical keyboard listener (only when this game section is visible)
@@ -238,7 +242,10 @@ export default function BrailleWordGame() {
   }
 
   // Build the tile grid
-  function getTileData(row: number, col: number): {
+  function getTileData(
+    row: number,
+    col: number,
+  ): {
     letter: string;
     status: TileStatus;
     revealing: boolean;
@@ -291,104 +298,92 @@ export default function BrailleWordGame() {
 
   return (
     <div className="wordgame-inner" ref={sectionRef}>
-        <div className="wordgame-header">
-          <span className="section-label">Practice</span>
-          <h2>Braille Word Game</h2>
-          <p>Guess the 4-letter word</p>
-        </div>
+      <div className="wordgame-header">
+        <span className="section-label">Practice</span>
+        <h2>Braille Word Game</h2>
+        <p>Guess the 4-letter word</p>
+      </div>
 
-        <div className="wordgame-board" role="grid" aria-label="Game board">
-          {Array.from({ length: ROWS }).map((_, row) => (
-            <div
-              key={row}
-              className={`wordgame-row${shakeRow === row ? ' shake' : ''}`}
-            >
-              {Array.from({ length: COLS }).map((_, col) => {
-                const { letter, status, revealing, revealIndex, isWinBounce } = getTileData(row, col);
-                const isPop = popTile === `${row}-${col}`;
+      <div className="wordgame-board" role="grid" aria-label="Game board">
+        {Array.from({ length: ROWS }).map((_, row) => (
+          <div key={row} className={`wordgame-row${shakeRow === row ? ' shake' : ''}`}>
+            {Array.from({ length: COLS }).map((_, col) => {
+              const { letter, status, revealing, revealIndex, isWinBounce } = getTileData(row, col);
+              const isPop = popTile === `${row}-${col}`;
 
-                const tileClasses = [
-                  'wordgame-tile',
-                  revealing ? 'revealing' : status,
-                  isPop ? 'pop' : '',
-                  isWinBounce ? 'win-bounce' : '',
-                ].filter(Boolean).join(' ');
+              const tileClasses = [
+                'wordgame-tile',
+                revealing ? 'revealing' : status,
+                isPop ? 'pop' : '',
+                isWinBounce ? 'win-bounce' : '',
+              ]
+                .filter(Boolean)
+                .join(' ');
 
-                const style: Record<string, string> = {};
-                if (revealing) {
-                  style['--reveal-delay'] = `${revealIndex * FLIP_STAGGER}ms`;
-                }
-                if (isWinBounce) {
-                  style['--bounce-delay'] = `${col * 100}ms`;
-                }
+              const style: Record<string, string> = {};
+              if (revealing) {
+                style['--reveal-delay'] = `${revealIndex * FLIP_STAGGER}ms`;
+              }
+              if (isWinBounce) {
+                style['--bounce-delay'] = `${col * 100}ms`;
+              }
 
-                return (
-                  <div
-                    key={col}
-                    className={tileClasses}
-                    data-status={revealing ? status : undefined}
-                    style={style}
-                  >
-                    {letter ? (
-                      <>
-                        <BrailleCell letter={letter} />
-                        <span className="tile-letter">{letter}</span>
-                      </>
-                    ) : null}
-                  </div>
-                );
-              })}
-            </div>
-          ))}
-        </div>
-
-        <div className="wordgame-keyboard">
-          {KB_ROWS.map((rowKeys, ri) => (
-            <div key={ri} className="wordgame-kb-row">
-              {rowKeys.map((key) => {
-                const isSpecial = key === 'ENTER' || key === 'BACK';
-                const ks = !isSpecial ? (keyStatuses[key] || 'unused') : 'unused';
-                const statusClass = ks !== 'unused' ? ` ${ks}` : '';
-                const wideClass = isSpecial ? ' wide' : '';
-
-                const ariaLabel = isSpecial
-                  ? key === 'ENTER'
-                    ? 'Enter'
-                    : 'Backspace'
-                  : `Letter ${key}, Braille ${dotDescription(key)}`;
-
-                return (
-                  <button
-                    key={key}
-                    className={`wordgame-key${wideClass}${statusClass}`}
-                    onClick={() => handleKey(key)}
-                    disabled={gameOver}
-                    aria-label={ariaLabel}
-                  >
-                    {!isSpecial && <BrailleCell letter={key} small />}
-                    <span className="key-letter">
-                      {key === 'BACK' ? '⌫' : key}
-                    </span>
-                  </button>
-                );
-              })}
-            </div>
-          ))}
-        </div>
-
-        {gameOver && (
-          <div className="wordgame-result" aria-live="polite">
-            <div className="wordgame-message">
-              {won
-                ? 'Great job! You found the word!'
-                : `The word was ${answer}.`}
-            </div>
-            {tip && <p className="wordgame-tip">{tip}</p>}
-            <button className="wordgame-play-again" onClick={resetGame}>
-              Play Again
-            </button>
+              return (
+                <div key={col} className={tileClasses} data-status={revealing ? status : undefined} style={style}>
+                  {letter ? (
+                    <>
+                      <BrailleCell letter={letter} />
+                      <span className="tile-letter">{letter}</span>
+                    </>
+                  ) : null}
+                </div>
+              );
+            })}
           </div>
-        )}
+        ))}
+      </div>
+
+      <div className="wordgame-keyboard">
+        {KB_ROWS.map((rowKeys, ri) => (
+          <div key={ri} className="wordgame-kb-row">
+            {rowKeys.map((key) => {
+              const isSpecial = key === 'ENTER' || key === 'BACK';
+              const ks = !isSpecial ? keyStatuses[key] || 'unused' : 'unused';
+              const statusClass = ks !== 'unused' ? ` ${ks}` : '';
+              const wideClass = isSpecial ? ' wide' : '';
+
+              const ariaLabel = isSpecial
+                ? key === 'ENTER'
+                  ? 'Enter'
+                  : 'Backspace'
+                : `Letter ${key}, Braille ${dotDescription(key)}`;
+
+              return (
+                <button
+                  key={key}
+                  className={`wordgame-key${wideClass}${statusClass}`}
+                  onClick={() => handleKey(key)}
+                  disabled={gameOver}
+                  aria-label={ariaLabel}
+                >
+                  {!isSpecial && <BrailleCell letter={key} small />}
+                  <span className="key-letter">{key === 'BACK' ? '⌫' : key}</span>
+                </button>
+              );
+            })}
+          </div>
+        ))}
+      </div>
+
+      {gameOver && (
+        <div className="wordgame-result" aria-live="polite">
+          <div className="wordgame-message">{won ? 'Great job! You found the word!' : `The word was ${answer}.`}</div>
+          {tip && <p className="wordgame-tip">{tip}</p>}
+          <button className="wordgame-play-again" onClick={resetGame}>
+            Play Again
+          </button>
+        </div>
+      )}
     </div>
   );
 }

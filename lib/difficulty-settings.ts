@@ -112,7 +112,7 @@ export function getDifficultySuggestion(gameId: GameId): string | null {
   if (winRate >= 0.7 && stats.gamesWon >= 5) {
     if (!isDifficultyUnlocked(gameId, 'intermediate')) return null;
     if (stats.difficultyStats.intermediate.played === 0) {
-      return 'You\'re doing great! Ready to try Intermediate?';
+      return "You're doing great! Ready to try Intermediate?";
     }
   }
 

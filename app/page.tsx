@@ -16,15 +16,11 @@ export default function HubPage() {
             Teacher of the Visually Impaired
           </h1>
 
-          <p className="hub-hero-subtitle">
-            Specialized TVI Services, Including Braille
-          </p>
+          <p className="hub-hero-subtitle">Specialized TVI Services, Including Braille</p>
 
           <p className="hub-hero-description">
-            Personalized support for students who are visually impaired and their
-            families. From braille instruction and assistive technology to
-            compensatory skills and educational team consultation — all available
-            remotely.
+            Personalized support for students who are visually impaired and their families. From braille instruction and
+            assistive technology to compensatory skills and educational team consultation — all available remotely.
           </p>
         </div>
       </section>
@@ -35,31 +31,27 @@ export default function HubPage() {
           <div className="section-label">About Delaney</div>
           <h2 id="hub-about-heading">Hi, I&apos;m Delaney Costello</h2>
           <p className="hub-about-text">
-            I am a <strong>Teacher of the Visually Impaired</strong> with{' '}
-            <strong>9 years of experience</strong> helping students and families
-            navigate the world of visual impairment. My services include braille
-            instruction, assistive technology, compensatory and daily living
-            skills, visual efficiency, and educational team collaboration.
+            I am a <strong>Teacher of the Visually Impaired</strong> with <strong>9 years of experience</strong> helping
+            students and families navigate the world of visual impairment. My services include braille instruction,
+            assistive technology, compensatory and daily living skills, visual efficiency, and educational team
+            collaboration.
           </p>
           <p className="hub-about-text">
-            Whether I&apos;m teaching a student to read braille, helping a family
-            get started with assistive technology, or consulting with a school
-            team on accommodations — my focus is always on empowering students
-            and the people who support them.
+            Whether I&apos;m teaching a student to read braille, helping a family get started with assistive technology,
+            or consulting with a school team on accommodations — my focus is always on empowering students and the
+            people who support them.
           </p>
 
           <blockquote className="pullquote reveal">
             <p>
-              &ldquo;Every student and family I work with has a unique story.
-              Being part of that journey is the most rewarding work I can
-              imagine.&rdquo;
+              &ldquo;Every student and family I work with has a unique story. Being part of that journey is the most
+              rewarding work I can imagine.&rdquo;
             </p>
           </blockquote>
 
           <p className="hub-about-text">
-            I offer services both remotely and in person, including structured
-            courses, one-on-one sessions, and free braille practice tools right
-            here on this site.
+            I offer services both remotely and in person, including structured courses, one-on-one sessions, and free
+            braille practice tools right here on this site.
           </p>
         </div>
       </section>
@@ -68,21 +60,15 @@ export default function HubPage() {
       <section className="benefit-callout" aria-labelledby="hub-benefit-heading">
         <div className="benefit-inner reveal">
           <div className="benefit-icon" aria-hidden="true">
-            <svg
-              viewBox="0 0 24 24"
-              fill="none"
-              stroke="currentColor"
-              strokeWidth="2"
-            >
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
               <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z" />
             </svg>
           </div>
           <h2 id="hub-benefit-heading">Why Work with a TVI?</h2>
           <p>
-            A Teacher of the Visually Impaired provides specialized instruction
-            for students with visual impairments — including braille, assistive
-            technology, and daily living skills. Working with a TVI ensures that
-            a student&apos;s education is shaped around how they learn best.
+            A Teacher of the Visually Impaired provides specialized instruction for students with visual impairments —
+            including braille, assistive technology, and daily living skills. Working with a TVI ensures that a
+            student&apos;s education is shaped around how they learn best.
           </p>
         </div>
       </section>
@@ -105,7 +91,9 @@ export default function HubPage() {
                 </svg>
               </div>
               <h3>Braille Introduction</h3>
-              <p>Braille is a core part of TVI instruction. Explore what it is, its history, and the full A–Z alphabet.</p>
+              <p>
+                Braille is a core part of TVI instruction. Explore what it is, its history, and the full A–Z alphabet.
+              </p>
               <span className="hub-card-cta">
                 Start learning
                 <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" aria-hidden="true">
@@ -145,7 +133,10 @@ export default function HubPage() {
                 </svg>
               </div>
               <h3>1-on-1 Sessions</h3>
-              <p>Personalized support in braille, assistive technology, compensatory skills, and more — tailored to your pace and goals.</p>
+              <p>
+                Personalized support in braille, assistive technology, compensatory skills, and more — tailored to your
+                pace and goals.
+              </p>
               <span className="hub-card-cta">
                 Book a session
                 <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" aria-hidden="true">

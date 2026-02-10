@@ -16,13 +16,7 @@ export default function NotFound() {
         <p>The page you&rsquo;re looking for doesn&rsquo;t exist or has been moved.</p>
         <Link href="/" className="home-button">
           Back to Home
-          <svg
-            viewBox="0 0 24 24"
-            fill="none"
-            stroke="currentColor"
-            strokeWidth="2.5"
-            aria-hidden="true"
-          >
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" aria-hidden="true">
             <line x1="5" y1="12" x2="19" y2="12" />
             <polyline points="12 5 19 12 12 19" />
           </svg>

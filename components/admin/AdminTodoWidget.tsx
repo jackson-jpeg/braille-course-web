@@ -22,7 +22,9 @@ export default function AdminTodoWidget() {
     }
   }, []);
 
-  useEffect(() => { fetchTodos(); }, [fetchTodos]);
+  useEffect(() => {
+    fetchTodos();
+  }, [fetchTodos]);
 
   async function handleAdd(e: React.FormEvent) {
     e.preventDefault();
@@ -45,7 +47,7 @@ export default function AdminTodoWidget() {
   }
 
   async function handleToggle(id: string, done: boolean) {
-    setTodos((prev) => prev.map((t) => t.id === id ? { ...t, done } : t));
+    setTodos((prev) => prev.map((t) => (t.id === id ? { ...t, done } : t)));
     try {
       await fetch(`/api/admin/todos/${id}`, {
         method: 'PATCH',
@@ -55,7 +57,7 @@ export default function AdminTodoWidget() {
       await fetchTodos();
     } catch (err) {
       console.error('Failed to toggle todo:', err);
-      setTodos((prev) => prev.map((t) => t.id === id ? { ...t, done: !done } : t));
+      setTodos((prev) => prev.map((t) => (t.id === id ? { ...t, done: !done } : t)));
     }
   }
 
@@ -103,44 +105,47 @@ export default function AdminTodoWidget() {
 
   return (
     <div className="admin-todo-widget">
-      <button
-        className="admin-todo-header"
-        onClick={() => setCollapsed(!collapsed)}
-        aria-expanded={!collapsed}
-      >
+      <button className="admin-todo-header" onClick={() => setCollapsed(!collapsed)} aria-expanded={!collapsed}>
         <span className="admin-todo-header-left">
           <svg width="14" height="14" viewBox="0 0 16 16" fill="none" style={{ opacity: 0.6 }}>
-            <rect x="1" y="1" width="14" height="14" rx="2" stroke="currentColor" strokeWidth="1.5"/>
-            <path d="M4.5 8l2.5 2.5L11.5 5" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
+            <rect x="1" y="1" width="14" height="14" rx="2" stroke="currentColor" strokeWidth="1.5" />
+            <path
+              d="M4.5 8l2.5 2.5L11.5 5"
+              stroke="currentColor"
+              strokeWidth="1.5"
+              strokeLinecap="round"
+              strokeLinejoin="round"
+            />
           </svg>
           <span>Tasks</span>
-          {undoneCount > 0 && (
-            <span className="admin-todo-badge">{undoneCount}</span>
-          )}
+          {undoneCount > 0 && <span className="admin-todo-badge">{undoneCount}</span>}
         </span>
         <svg
-          width="12" height="12" viewBox="0 0 12 12" fill="none"
+          width="12"
+          height="12"
+          viewBox="0 0 12 12"
+          fill="none"
           style={{ transform: collapsed ? 'rotate(-90deg)' : 'rotate(0)', transition: 'transform 0.2s' }}
         >
-          <path d="M3 4.5L6 7.5L9 4.5" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
+          <path
+            d="M3 4.5L6 7.5L9 4.5"
+            stroke="currentColor"
+            strokeWidth="1.5"
+            strokeLinecap="round"
+            strokeLinejoin="round"
+          />
         </svg>
       </button>
 
       {!collapsed && (
         <div className="admin-todo-body">
-          {todos.length === 0 && (
-            <p className="admin-todo-empty">No tasks yet. Add one below.</p>
-          )}
+          {todos.length === 0 && <p className="admin-todo-empty">No tasks yet. Add one below.</p>}
 
           <div className="admin-todo-list">
             {todos.map((t) => (
               <div key={t.id} className={`admin-todo-item ${t.done ? 'admin-todo-item-done' : ''}`}>
                 <label className="admin-todo-check">
-                  <input
-                    type="checkbox"
-                    checked={t.done}
-                    onChange={() => handleToggle(t.id, !t.done)}
-                  />
+                  <input type="checkbox" checked={t.done} onChange={() => handleToggle(t.id, !t.done)} />
                   <span className="admin-todo-checkmark" />
                 </label>
                 <span className="admin-todo-text">{t.text}</span>
@@ -149,11 +154,7 @@ export default function AdminTodoWidget() {
                     {formatDueDate(t.dueDate)}
                   </span>
                 )}
-                <button
-                  className="admin-todo-delete"
-                  onClick={() => handleDelete(t.id)}
-                  aria-label="Delete task"
-                >
+                <button className="admin-todo-delete" onClick={() => handleDelete(t.id)} aria-label="Delete task">
                   &times;
                 </button>
               </div>

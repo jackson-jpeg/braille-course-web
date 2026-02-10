@@ -82,80 +82,120 @@ function generateChallenge(gameId: GameId, rng: () => number, index: number): Da
     case 'speedmatch': {
       const target = 8 + Math.floor(rng() * 12);
       return {
-        id, gameId, title: `${target}-Streak`,
+        id,
+        gameId,
+        title: `${target}-Streak`,
         description: `Get a ${target}-streak in ${label}`,
-        target, xp: target * 3, type: 'streak',
+        target,
+        xp: target * 3,
+        type: 'streak',
       };
     }
     case 'wordgame': {
       const tries = 2 + Math.floor(rng() * 3);
       return {
-        id, gameId, title: `Quick Solve`,
+        id,
+        gameId,
+        title: `Quick Solve`,
         description: `Win ${label} in ${tries} guesses or fewer`,
-        target: tries, xp: 40, type: 'perfect',
+        target: tries,
+        xp: 40,
+        type: 'perfect',
       };
     }
     case 'hangman': {
       const maxWrong = 1 + Math.floor(rng() * 3);
       return {
-        id, gameId, title: `Clean Win`,
+        id,
+        gameId,
+        title: `Clean Win`,
         description: `Win ${label} with ${maxWrong} or fewer wrong guesses`,
-        target: maxWrong, xp: 35, type: 'perfect',
+        target: maxWrong,
+        xp: 35,
+        type: 'perfect',
       };
     }
     case 'memorymatch': {
       const games = 2 + Math.floor(rng() * 2);
       return {
-        id, gameId, title: `Memory Master`,
+        id,
+        gameId,
+        title: `Memory Master`,
         description: `Complete ${games} ${label} games`,
-        target: games, xp: 30, type: 'wins',
+        target: games,
+        xp: 30,
+        type: 'wins',
       };
     }
     case 'contraction-sprint': {
       const score = 6 + Math.floor(rng() * 8);
       return {
-        id, gameId, title: `Sprint Star`,
+        id,
+        gameId,
+        title: `Sprint Star`,
         description: `Score ${score}+ in ${label}`,
-        target: score, xp: 40, type: 'score',
+        target: score,
+        xp: 40,
+        type: 'score',
       };
     }
     case 'number-sense': {
       const score = 5 + Math.floor(rng() * 8);
       return {
-        id, gameId, title: `Number Crunch`,
+        id,
+        gameId,
+        title: `Number Crunch`,
         description: `Score ${score}+ in ${label}`,
-        target: score, xp: 35, type: 'score',
+        target: score,
+        xp: 35,
+        type: 'score',
       };
     }
     case 'reflex-dots': {
       const score = 10 + Math.floor(rng() * 10);
       return {
-        id, gameId, title: `Lightning Fast`,
+        id,
+        gameId,
+        title: `Lightning Fast`,
         description: `Score ${score}+ in ${label}`,
-        target: score, xp: 30, type: 'speed',
+        target: score,
+        xp: 30,
+        type: 'speed',
       };
     }
     case 'sequence': {
       const wins = 3 + Math.floor(rng() * 3);
       return {
-        id, gameId, title: `In Order`,
+        id,
+        gameId,
+        title: `In Order`,
         description: `Get ${wins}+ correct in ${label}`,
-        target: wins, xp: 30, type: 'score',
+        target: wins,
+        xp: 30,
+        type: 'score',
       };
     }
     case 'sentence-decoder': {
       const wins = 3 + Math.floor(rng() * 3);
       return {
-        id, gameId, title: `Speed Reader`,
+        id,
+        gameId,
+        title: `Speed Reader`,
         description: `Decode ${wins}+ sentences in ${label}`,
-        target: wins, xp: 40, type: 'score',
+        target: wins,
+        xp: 40,
+        type: 'score',
       };
     }
     default: {
       return {
-        id, gameId, title: `Play ${label}`,
+        id,
+        gameId,
+        title: `Play ${label}`,
         description: `Complete a round of ${label}`,
-        target: 1, xp: 20, type: 'wins',
+        target: 1,
+        xp: 20,
+        type: 'wins',
       };
     }
   }

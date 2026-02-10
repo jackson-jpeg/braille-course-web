@@ -9,9 +9,9 @@ import { brailleMap, dotDescription } from '@/lib/braille-map';
 import { contractedBrailleEntries } from '@/lib/contracted-braille-map';
 
 export interface CorrectionEntry {
-  original: string;       // "dots 1 3"
-  corrected: string;      // "dots 1 2"
-  context: string;        // surrounding text snippet
+  original: string; // "dots 1 3"
+  corrected: string; // "dots 1 2"
+  context: string; // surrounding text snippet
   letterOrContraction: string; // "B"
 }
 
@@ -94,7 +94,8 @@ export function validateBrailleText(text: string): {
 
   // Pattern: "letter X is dots Y Z" or "letter X (dots Y Z)" or "X: dots Y Z" or "X is dots Y Z"
   // Also matches contractions like "the contraction 'and' is dots 1 2 3 4 6"
-  const letterDotsPattern = /(?:(?:letter|character|sign|symbol)\s+)?([A-Za-z]|'[a-z]+'|"[a-z]+")\s*(?:is|=|:|—|–|-|\()\s*dots?\s+([\d\s,]+)/gi;
+  const letterDotsPattern =
+    /(?:(?:letter|character|sign|symbol)\s+)?([A-Za-z]|'[a-z]+'|"[a-z]+")\s*(?:is|=|:|—|–|-|\()\s*dots?\s+([\d\s,]+)/gi;
 
   let correctedText = text;
 
@@ -135,7 +136,8 @@ export function validateBrailleText(text: string): {
       // Replace in the corrected text
       const originalDotsInMatch = `dots ${m.claimedDots.trim()}`;
       const correctedDotsInMatch = canonical.dotsString;
-      const newMatch = m.fullMatch.replace(originalDotsInMatch, correctedDotsInMatch)
+      const newMatch = m.fullMatch
+        .replace(originalDotsInMatch, correctedDotsInMatch)
         .replace(`dot ${m.claimedDots.trim()}`, correctedDotsInMatch);
       correctedText = correctedText.slice(0, m.index) + newMatch + correctedText.slice(m.index + m.fullMatch.length);
     }

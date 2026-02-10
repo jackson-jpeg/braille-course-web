@@ -27,10 +27,8 @@ export default function IntroPage() {
             Intro to <em>Braille</em>
           </h1>
           <p className="intro-hero-sub">
-            Braille is a tactile reading system that opens doors to literacy for
-            millions. In 5&nbsp;minutes, you&rsquo;ll understand the history,
-            explore the 6-dot cell, and interact with the full A&ndash;Z
-            alphabet.
+            Braille is a tactile reading system that opens doors to literacy for millions. In 5&nbsp;minutes,
+            you&rsquo;ll understand the history, explore the 6-dot cell, and interact with the full A&ndash;Z alphabet.
           </p>
           <div className="scroll-hint">
             <span>Scroll to explore</span>
@@ -47,19 +45,15 @@ export default function IntroPage() {
 
           <div className="intro-history-grid reveal">
             <p className="intro-history-text">
-              Braille is a tactile writing system used by people who are blind or
-              visually impaired. It was created by{' '}
-              <strong>Louis Braille in 1824</strong> when he was just 15 years
-              old, while studying at the Royal Institute for Blind Youth in
-              Paris. Louis lost his sight at age 3 after an accident in his
-              father&apos;s workshop.
+              Braille is a tactile writing system used by people who are blind or visually impaired. It was created by{' '}
+              <strong>Louis Braille in 1824</strong> when he was just 15 years old, while studying at the Royal
+              Institute for Blind Youth in Paris. Louis lost his sight at age 3 after an accident in his father&apos;s
+              workshop.
             </p>
             <div className="intro-history-stat-card">
               <span className="intro-stat-number">15</span>
               <span className="intro-stat-label">Years Old</span>
-              <span className="intro-stat-detail">
-                Louis Braille&apos;s age when he invented the system
-              </span>
+              <span className="intro-stat-detail">Louis Braille&apos;s age when he invented the system</span>
             </div>
           </div>
 
@@ -69,26 +63,21 @@ export default function IntroPage() {
               <polyline points="12 6 12 12 16 14" />
             </svg>
             <p>
-              <strong>1824:</strong> Louis adapted Charles Barbier&apos;s
-              military &ldquo;night writing&rdquo; system into the elegant 6-dot
-              code we know today.
+              <strong>1824:</strong> Louis adapted Charles Barbier&apos;s military &ldquo;night writing&rdquo; system
+              into the elegant 6-dot code we know today.
             </p>
           </div>
 
           <div className="intro-history-grid intro-history-grid--reversed reveal">
             <p className="intro-history-text">
-              Each braille character is formed within a{' '}
-              <strong>cell of 6 dots</strong> arranged in a 3-row, 2-column
-              matrix &mdash; giving <strong>64 possible combinations</strong>{' '}
-              including the blank cell. This compact system can represent
-              letters, numbers, punctuation, and even music notation.
+              Each braille character is formed within a <strong>cell of 6 dots</strong> arranged in a 3-row, 2-column
+              matrix &mdash; giving <strong>64 possible combinations</strong> including the blank cell. This compact
+              system can represent letters, numbers, punctuation, and even music notation.
             </p>
             <div className="intro-history-stat-card">
               <span className="intro-stat-number">64</span>
               <span className="intro-stat-label">Combinations</span>
-              <span className="intro-stat-detail">
-                Possible patterns from a single 6-dot cell
-              </span>
+              <span className="intro-stat-detail">Possible patterns from a single 6-dot cell</span>
             </div>
           </div>
         </div>
@@ -106,9 +95,8 @@ export default function IntroPage() {
           <div className="section-label">Structure</div>
           <h2 id="intro-cell-heading">The Braille Cell</h2>
           <p className="intro-history-text">
-            Every braille character lives inside a cell of six dot positions.
-            The left column holds dots <strong>1, 2, 3</strong> (top to bottom)
-            and the right column holds dots <strong>4, 5, 6</strong>. Different
+            Every braille character lives inside a cell of six dot positions. The left column holds dots{' '}
+            <strong>1, 2, 3</strong> (top to bottom) and the right column holds dots <strong>4, 5, 6</strong>. Different
             combinations of raised dots form each letter, number, or symbol.
           </p>
           <div
@@ -118,11 +106,7 @@ export default function IntroPage() {
           >
             <div className="intro-cell-grid">
               {[1, 4, 2, 5, 3, 6].map((num, idx) => (
-                <span
-                  key={num}
-                  className="intro-cell-dot"
-                  style={{ animationDelay: `${idx * 0.1}s` }}
-                >
+                <span key={num} className="intro-cell-dot" style={{ animationDelay: `${idx * 0.1}s` }}>
                   {num}
                 </span>
               ))}
@@ -142,9 +126,7 @@ export default function IntroPage() {
         <div className="intro-alphabet-inner reveal">
           <div className="section-label">Explore</div>
           <h2 id="intro-alpha-heading">The A–Z Alphabet</h2>
-          <p className="intro-history-text">
-            Tap any letter to see its braille dot pattern up close.
-          </p>
+          <p className="intro-history-text">Tap any letter to see its braille dot pattern up close.</p>
           <BrailleAlphabet />
         </div>
       </section>
@@ -165,10 +147,7 @@ export default function IntroPage() {
                 </svg>
               </div>
               <h3>Practice with Games</h3>
-              <p>
-                Free interactive activities &mdash; Word Game, Dot Explorer,
-                Hangman, and more. No account needed.
-              </p>
+              <p>Free interactive activities &mdash; Word Game, Dot Explorer, Hangman, and more. No account needed.</p>
               <span className="intro-cta-arrow" aria-hidden="true">
                 <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
                   <line x1="5" y1="12" x2="19" y2="12" />
@@ -187,10 +166,7 @@ export default function IntroPage() {
                 </svg>
               </div>
               <h3>Take the Course</h3>
-              <p>
-                8-week remote braille course, Summer 2026. Live instruction with
-                personalized feedback.
-              </p>
+              <p>8-week remote braille course, Summer 2026. Live instruction with personalized feedback.</p>
               <span className="intro-cta-arrow" aria-hidden="true">
                 <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
                   <line x1="5" y1="12" x2="19" y2="12" />

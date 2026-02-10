@@ -5,10 +5,7 @@ import { getSettings, getSetting } from '@/lib/settings';
 import { dotDescription } from '@/lib/braille-map';
 import { contractedBrailleEntries } from '@/lib/contracted-braille-map';
 import { validateContentJson } from '@/lib/braille-validator';
-import {
-  buildPreview,
-  sseEncode,
-} from '@/lib/document-builders';
+import { buildPreview, sseEncode } from '@/lib/document-builders';
 
 export const maxDuration = 60;
 
@@ -52,11 +49,11 @@ function buildBrailleContext(difficulty: Difficulty): string {
     lines.push('');
     lines.push('--- Grade 2 Contractions ---');
 
-    const wordsigns = contractedBrailleEntries.filter(e => e.type === 'wordsign');
-    const strong = contractedBrailleEntries.filter(e => e.type === 'strong');
-    const groupsignsStrong = contractedBrailleEntries.filter(e => e.type === 'groupsign-strong');
-    const groupsignsLower = contractedBrailleEntries.filter(e => e.type === 'groupsign-lower');
-    const wordsignsLower = contractedBrailleEntries.filter(e => e.type === 'wordsign-lower');
+    const wordsigns = contractedBrailleEntries.filter((e) => e.type === 'wordsign');
+    const strong = contractedBrailleEntries.filter((e) => e.type === 'strong');
+    const groupsignsStrong = contractedBrailleEntries.filter((e) => e.type === 'groupsign-strong');
+    const groupsignsLower = contractedBrailleEntries.filter((e) => e.type === 'groupsign-lower');
+    const wordsignsLower = contractedBrailleEntries.filter((e) => e.type === 'wordsign-lower');
 
     const dotNums = [1, 4, 2, 5, 3, 6];
     const describeDots = (pattern: number[]) => {
@@ -205,14 +202,23 @@ function validateStructure(format: string, parsed: unknown): void {
       if (!Array.isArray(data.sections) || data.sections.length === 0) {
         throw new Error('Invalid AI response: expected non-empty "sections" array');
       }
-      const validWorksheetTypes = ['fill-in-the-blank', 'matching', 'practice-drill', 'braille-to-print', 'print-to-braille', 'dot-identification'];
+      const validWorksheetTypes = [
+        'fill-in-the-blank',
+        'matching',
+        'practice-drill',
+        'braille-to-print',
+        'print-to-braille',
+        'dot-identification',
+      ];
       for (const section of data.sections) {
         const sec = section as Record<string, unknown>;
         if (!Array.isArray(sec.items) || sec.items.length === 0) {
           throw new Error('Invalid worksheet section: each section needs a non-empty "items" array');
         }
         if (typeof sec.type === 'string' && !validWorksheetTypes.includes(sec.type)) {
-          throw new Error(`Invalid worksheet section type "${sec.type}". Must be one of: ${validWorksheetTypes.join(', ')}`);
+          throw new Error(
+            `Invalid worksheet section type "${sec.type}". Must be one of: ${validWorksheetTypes.join(', ')}`,
+          );
         }
       }
       break;
@@ -296,9 +302,9 @@ export async function POST(req: NextRequest) {
   }
 
   const { prompt, format, title, instructions } = body;
-  const difficulty: Difficulty = (['beginner', 'intermediate', 'advanced'].includes(body.difficulty || '')
-    ? body.difficulty as Difficulty
-    : 'intermediate');
+  const difficulty: Difficulty = ['beginner', 'intermediate', 'advanced'].includes(body.difficulty || '')
+    ? (body.difficulty as Difficulty)
+    : 'intermediate';
 
   if (!prompt || !format || !title) {
     return new Response(JSON.stringify({ error: 'Missing required fields: prompt, format, title' }), {
@@ -308,10 +314,13 @@ export async function POST(req: NextRequest) {
   }
 
   if (!['pptx', 'pdf', 'study-guide', 'worksheet', 'quiz', 'session-bundle'].includes(format)) {
-    return new Response(JSON.stringify({ error: 'Invalid format. Use pptx, pdf, study-guide, worksheet, quiz, or session-bundle' }), {
-      status: 400,
-      headers: { 'Content-Type': 'application/json' },
-    });
+    return new Response(
+      JSON.stringify({ error: 'Invalid format. Use pptx, pdf, study-guide, worksheet, quiz, or session-bundle' }),
+      {
+        status: 400,
+        headers: { 'Content-Type': 'application/json' },
+      },
+    );
   }
 
   const stream = new ReadableStream({
@@ -386,7 +395,8 @@ export async function POST(req: NextRequest) {
             worksheetSections: (worksheetData as { sections: unknown[] }).sections,
           };
         } else {
-          const systemPrompt = pedagogicalPreamble + '\n' + brailleContext + courseContext + '\n' + FORMAT_PROMPTS[format];
+          const systemPrompt =
+            pedagogicalPreamble + '\n' + brailleContext + courseContext + '\n' + FORMAT_PROMPTS[format];
 
           const response = await anthropic.messages.create({
             model: 'claude-sonnet-4-5-20250929',

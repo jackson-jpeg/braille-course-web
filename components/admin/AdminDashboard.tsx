@@ -28,10 +28,10 @@ const TAB_META: Record<Tab, { label: string; icon: JSX.Element }> = {
     label: 'Overview',
     icon: (
       <svg width="15" height="15" viewBox="0 0 16 16" fill="none">
-        <rect x="1" y="1" width="6" height="6" rx="1" stroke="currentColor" strokeWidth="1.5"/>
-        <rect x="9" y="1" width="6" height="6" rx="1" stroke="currentColor" strokeWidth="1.5"/>
-        <rect x="1" y="9" width="6" height="6" rx="1" stroke="currentColor" strokeWidth="1.5"/>
-        <rect x="9" y="9" width="6" height="6" rx="1" stroke="currentColor" strokeWidth="1.5"/>
+        <rect x="1" y="1" width="6" height="6" rx="1" stroke="currentColor" strokeWidth="1.5" />
+        <rect x="9" y="1" width="6" height="6" rx="1" stroke="currentColor" strokeWidth="1.5" />
+        <rect x="1" y="9" width="6" height="6" rx="1" stroke="currentColor" strokeWidth="1.5" />
+        <rect x="9" y="9" width="6" height="6" rx="1" stroke="currentColor" strokeWidth="1.5" />
       </svg>
     ),
   },
@@ -39,10 +39,15 @@ const TAB_META: Record<Tab, { label: string; icon: JSX.Element }> = {
     label: 'Students',
     icon: (
       <svg width="15" height="15" viewBox="0 0 16 16" fill="none">
-        <circle cx="6" cy="5" r="2.5" stroke="currentColor" strokeWidth="1.5"/>
-        <path d="M1.5 14c0-2.5 2-4.5 4.5-4.5s4.5 2 4.5 4.5" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round"/>
-        <circle cx="11.5" cy="5.5" r="1.8" stroke="currentColor" strokeWidth="1.2"/>
-        <path d="M14.5 14c0-2 -1.3-3.5-3-3.5" stroke="currentColor" strokeWidth="1.2" strokeLinecap="round"/>
+        <circle cx="6" cy="5" r="2.5" stroke="currentColor" strokeWidth="1.5" />
+        <path
+          d="M1.5 14c0-2.5 2-4.5 4.5-4.5s4.5 2 4.5 4.5"
+          stroke="currentColor"
+          strokeWidth="1.5"
+          strokeLinecap="round"
+        />
+        <circle cx="11.5" cy="5.5" r="1.8" stroke="currentColor" strokeWidth="1.2" />
+        <path d="M14.5 14c0-2 -1.3-3.5-3-3.5" stroke="currentColor" strokeWidth="1.2" strokeLinecap="round" />
       </svg>
     ),
   },
@@ -50,7 +55,13 @@ const TAB_META: Record<Tab, { label: string; icon: JSX.Element }> = {
     label: 'Payments',
     icon: (
       <svg width="15" height="15" viewBox="0 0 16 16" fill="none">
-        <path d="M8 1v14M5 4h4.5a2.5 2.5 0 010 5H5M5.5 9H11a2.5 2.5 0 010 5H5" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
+        <path
+          d="M8 1v14M5 4h4.5a2.5 2.5 0 010 5H5M5.5 9H11a2.5 2.5 0 010 5H5"
+          stroke="currentColor"
+          strokeWidth="1.5"
+          strokeLinecap="round"
+          strokeLinejoin="round"
+        />
       </svg>
     ),
   },
@@ -58,8 +69,14 @@ const TAB_META: Record<Tab, { label: string; icon: JSX.Element }> = {
     label: 'Emails',
     icon: (
       <svg width="15" height="15" viewBox="0 0 16 16" fill="none">
-        <rect x="1.5" y="3" width="13" height="10" rx="1.5" stroke="currentColor" strokeWidth="1.5"/>
-        <path d="M1.5 5l6.5 4 6.5-4" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
+        <rect x="1.5" y="3" width="13" height="10" rx="1.5" stroke="currentColor" strokeWidth="1.5" />
+        <path
+          d="M1.5 5l6.5 4 6.5-4"
+          stroke="currentColor"
+          strokeWidth="1.5"
+          strokeLinecap="round"
+          strokeLinejoin="round"
+        />
       </svg>
     ),
   },
@@ -67,8 +84,14 @@ const TAB_META: Record<Tab, { label: string; icon: JSX.Element }> = {
     label: 'Schools',
     icon: (
       <svg width="15" height="15" viewBox="0 0 16 16" fill="none">
-        <path d="M8 1L1 4v5c0 4 3 6 7 6s7-2 7-6V4L8 1z" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
-        <path d="M8 8L5 6.5v3l3 1.5 3-1.5v-3L8 8z" stroke="currentColor" strokeWidth="1.2" strokeLinejoin="round"/>
+        <path
+          d="M8 1L1 4v5c0 4 3 6 7 6s7-2 7-6V4L8 1z"
+          stroke="currentColor"
+          strokeWidth="1.5"
+          strokeLinecap="round"
+          strokeLinejoin="round"
+        />
+        <path d="M8 8L5 6.5v3l3 1.5 3-1.5v-3L8 8z" stroke="currentColor" strokeWidth="1.2" strokeLinejoin="round" />
       </svg>
     ),
   },
@@ -76,7 +99,12 @@ const TAB_META: Record<Tab, { label: string; icon: JSX.Element }> = {
     label: 'Create',
     icon: (
       <svg width="15" height="15" viewBox="0 0 16 16" fill="none">
-        <path d="M8 1L6 6l-5 .7 3.6 3.5-.9 5L8 13l4.3 2.2-.9-5L15 6.7 10 6 8 1z" stroke="currentColor" strokeWidth="1.3" strokeLinejoin="round"/>
+        <path
+          d="M8 1L6 6l-5 .7 3.6 3.5-.9 5L8 13l4.3 2.2-.9-5L15 6.7 10 6 8 1z"
+          stroke="currentColor"
+          strokeWidth="1.3"
+          strokeLinejoin="round"
+        />
       </svg>
     ),
   },
@@ -84,9 +112,27 @@ const TAB_META: Record<Tab, { label: string; icon: JSX.Element }> = {
     label: 'Materials',
     icon: (
       <svg width="15" height="15" viewBox="0 0 16 16" fill="none">
-        <path d="M14 8.87l-3.5 2.13L8 9.5 5.5 11 2 8.87" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
-        <path d="M14 5.87l-3.5 2.13L8 6.5 5.5 8 2 5.87" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
-        <path d="M14 2.87l-3.5 2.13L8 3.5 5.5 5 2 2.87" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
+        <path
+          d="M14 8.87l-3.5 2.13L8 9.5 5.5 11 2 8.87"
+          stroke="currentColor"
+          strokeWidth="1.5"
+          strokeLinecap="round"
+          strokeLinejoin="round"
+        />
+        <path
+          d="M14 5.87l-3.5 2.13L8 6.5 5.5 8 2 5.87"
+          stroke="currentColor"
+          strokeWidth="1.5"
+          strokeLinecap="round"
+          strokeLinejoin="round"
+        />
+        <path
+          d="M14 2.87l-3.5 2.13L8 3.5 5.5 5 2 2.87"
+          stroke="currentColor"
+          strokeWidth="1.5"
+          strokeLinecap="round"
+          strokeLinejoin="round"
+        />
       </svg>
     ),
   },
@@ -94,8 +140,13 @@ const TAB_META: Record<Tab, { label: string; icon: JSX.Element }> = {
     label: 'Settings',
     icon: (
       <svg width="15" height="15" viewBox="0 0 16 16" fill="none">
-        <circle cx="8" cy="8" r="2.5" stroke="currentColor" strokeWidth="1.5"/>
-        <path d="M8 1v2M8 13v2M1 8h2M13 8h2M2.93 2.93l1.41 1.41M11.66 11.66l1.41 1.41M13.07 2.93l-1.41 1.41M4.34 11.66l-1.41 1.41" stroke="currentColor" strokeWidth="1.3" strokeLinecap="round"/>
+        <circle cx="8" cy="8" r="2.5" stroke="currentColor" strokeWidth="1.5" />
+        <path
+          d="M8 1v2M8 13v2M1 8h2M13 8h2M2.93 2.93l1.41 1.41M11.66 11.66l1.41 1.41M13.07 2.93l-1.41 1.41M4.34 11.66l-1.41 1.41"
+          stroke="currentColor"
+          strokeWidth="1.3"
+          strokeLinecap="round"
+        />
       </svg>
     ),
   },
@@ -110,7 +161,10 @@ export default function AdminDashboard({ sections, enrollments, leads, schoolInq
 
   // Badge counts
   const newInquiryCount = useMemo(() => leads.filter((l) => l.status === 'NEW').length, [leads]);
-  const waitlistedCount = useMemo(() => enrollments.filter((e) => e.paymentStatus === 'WAITLISTED').length, [enrollments]);
+  const waitlistedCount = useMemo(
+    () => enrollments.filter((e) => e.paymentStatus === 'WAITLISTED').length,
+    [enrollments],
+  );
   const [pendingInvoiceCount, setPendingInvoiceCount] = useState(0);
   const [hasUnsavedCompose, setHasUnsavedCompose] = useState(false);
 
@@ -120,7 +174,9 @@ export default function AdminDashboard({ sections, enrollments, leads, schoolInq
       .then((r) => r.json())
       .then((json) => {
         if (json.invoices) {
-          const pending = json.invoices.filter((inv: { status: string }) => inv.status === 'draft' || inv.status === 'open').length;
+          const pending = json.invoices.filter(
+            (inv: { status: string }) => inv.status === 'draft' || inv.status === 'open',
+          ).length;
           setPendingInvoiceCount(pending);
         }
       })
@@ -167,23 +223,119 @@ export default function AdminDashboard({ sections, enrollments, leads, schoolInq
 
     // Quick actions (always available)
     const actions: PaletteResult[] = [
-      { id: 'act-compose', label: 'Compose Email', action: () => { handleNavigate('emails-compose'); setShowPalette(false); } },
-      { id: 'act-invoice', label: 'Create Invoice', detail: 'Open invoice dialog', action: () => { setTab('payments'); setShowPalette(false); } },
-      { id: 'act-export', label: 'Export Students', detail: 'Download CSV', action: () => { downloadCsv(enrollments, scheduleMap); setShowPalette(false); } },
-      { id: 'act-attendance', label: 'Take Attendance', detail: 'Go to Attendance tab', action: () => { setTab('students'); setShowPalette(false); } },
-      { id: 'act-waitlist', label: 'Manage Waitlist', detail: 'View waitlisted students', action: () => { setTab('students'); setShowPalette(false); } },
-      { id: 'act-scheduled', label: 'View Scheduled Emails', detail: 'Upcoming emails', action: () => { setTab('emails'); setShowPalette(false); } },
+      {
+        id: 'act-compose',
+        label: 'Compose Email',
+        action: () => {
+          handleNavigate('emails-compose');
+          setShowPalette(false);
+        },
+      },
+      {
+        id: 'act-invoice',
+        label: 'Create Invoice',
+        detail: 'Open invoice dialog',
+        action: () => {
+          setTab('payments');
+          setShowPalette(false);
+        },
+      },
+      {
+        id: 'act-export',
+        label: 'Export Students',
+        detail: 'Download CSV',
+        action: () => {
+          downloadCsv(enrollments, scheduleMap);
+          setShowPalette(false);
+        },
+      },
+      {
+        id: 'act-attendance',
+        label: 'Take Attendance',
+        detail: 'Go to Attendance tab',
+        action: () => {
+          setTab('students');
+          setShowPalette(false);
+        },
+      },
+      {
+        id: 'act-waitlist',
+        label: 'Manage Waitlist',
+        detail: 'View waitlisted students',
+        action: () => {
+          setTab('students');
+          setShowPalette(false);
+        },
+      },
+      {
+        id: 'act-scheduled',
+        label: 'View Scheduled Emails',
+        detail: 'Upcoming emails',
+        action: () => {
+          setTab('emails');
+          setShowPalette(false);
+        },
+      },
     ];
 
     // Tab navigation
     const tabs: PaletteResult[] = [
-      { id: 'tab-overview', label: 'Go to Overview', action: () => { setTab('overview'); setShowPalette(false); } },
-      { id: 'tab-students', label: 'Go to Students', action: () => { setTab('students'); setShowPalette(false); } },
-      { id: 'tab-payments', label: 'Go to Payments', action: () => { setTab('payments'); setShowPalette(false); } },
-      { id: 'tab-emails', label: 'Go to Emails', action: () => { setTab('emails'); setShowPalette(false); } },
-      { id: 'tab-create', label: 'Go to Create', action: () => { setTab('create'); setShowPalette(false); } },
-      { id: 'tab-materials', label: 'Go to Materials', action: () => { setTab('materials'); setShowPalette(false); } },
-      { id: 'tab-settings', label: 'Go to Settings', action: () => { setTab('settings'); setShowPalette(false); } },
+      {
+        id: 'tab-overview',
+        label: 'Go to Overview',
+        action: () => {
+          setTab('overview');
+          setShowPalette(false);
+        },
+      },
+      {
+        id: 'tab-students',
+        label: 'Go to Students',
+        action: () => {
+          setTab('students');
+          setShowPalette(false);
+        },
+      },
+      {
+        id: 'tab-payments',
+        label: 'Go to Payments',
+        action: () => {
+          setTab('payments');
+          setShowPalette(false);
+        },
+      },
+      {
+        id: 'tab-emails',
+        label: 'Go to Emails',
+        action: () => {
+          setTab('emails');
+          setShowPalette(false);
+        },
+      },
+      {
+        id: 'tab-create',
+        label: 'Go to Create',
+        action: () => {
+          setTab('create');
+          setShowPalette(false);
+        },
+      },
+      {
+        id: 'tab-materials',
+        label: 'Go to Materials',
+        action: () => {
+          setTab('materials');
+          setShowPalette(false);
+        },
+      },
+      {
+        id: 'tab-settings',
+        label: 'Go to Settings',
+        action: () => {
+          setTab('settings');
+          setShowPalette(false);
+        },
+      },
     ];
 
     if (!q) {
@@ -198,7 +350,10 @@ export default function AdminDashboard({ sections, enrollments, leads, schoolInq
         id: `student-${e.id}`,
         label: e.email || 'Unknown',
         detail: `${e.section.label} \u2022 ${e.paymentStatus}`,
-        action: () => { setTab('students'); setShowPalette(false); },
+        action: () => {
+          setTab('students');
+          setShowPalette(false);
+        },
       }));
 
     // Search leads by email/name
@@ -209,7 +364,10 @@ export default function AdminDashboard({ sections, enrollments, leads, schoolInq
         id: `lead-${l.id}`,
         label: l.name || l.email,
         detail: `Lead \u2022 ${l.status}`,
-        action: () => { setTab('students'); setShowPalette(false); },
+        action: () => {
+          setTab('students');
+          setShowPalette(false);
+        },
       }));
 
     // Filter actions/tabs
@@ -241,9 +399,7 @@ export default function AdminDashboard({ sections, enrollments, leads, schoolInq
 
   function handleNavigate(target: string) {
     if (target === 'emails-compose') {
-      const allEmails = enrollments
-        .map((e) => e.email)
-        .filter((e): e is string => !!e);
+      const allEmails = enrollments.map((e) => e.email).filter((e): e is string => !!e);
       setEmailComposeTo([...new Set(allEmails)].join(', '));
       setTab('emails');
     } else {
@@ -318,41 +474,52 @@ export default function AdminDashboard({ sections, enrollments, leads, schoolInq
             <p className="admin-subtitle">
               Here&apos;s what&apos;s happening with your braille courses
               <button className="admin-cmdk-hint" onClick={() => setShowPalette(true)} aria-label="Open search palette">
-                <kbd>⌘</kbd><kbd>K</kbd>
+                <kbd>⌘</kbd>
+                <kbd>K</kbd>
               </button>
             </p>
           </div>
-          <button className="admin-signout-link" onClick={handleLogout}>Sign out</button>
+          <button className="admin-signout-link" onClick={handleLogout}>
+            Sign out
+          </button>
         </div>
 
         {/* Tabs */}
         <div className="admin-tabs">
-          {(['overview', 'students', 'payments', 'emails', 'schools', 'create', 'materials', 'settings'] as Tab[]).map((t) => (
-            <button
-              key={t}
-              className={`admin-tab ${tab === t ? 'admin-tab-active' : ''}`}
-              onClick={() => {
-                if (tab === 'emails' && t !== 'emails' && hasUnsavedCompose) {
-                  if (!window.confirm('You have an unsaved email draft. Leave anyway?')) return;
-                }
-                setTab(t);
-                if (t !== 'emails') { setEmailComposeTo(''); setEmailInitialTemplate(''); setPendingAttachmentIds([]); }
-              }}
-            >
-              <span className="admin-tab-icon">{TAB_META[t].icon}</span>
-              {TAB_META[t].label}
-              {t === 'students' && (newInquiryCount > 0 || waitlistedCount > 0) && (
-                <span className={`admin-tab-badge admin-tab-badge-count ${waitlistedCount > 0 ? 'admin-tab-badge-orange' : 'admin-tab-badge-red'}`}>
-                  {newInquiryCount + waitlistedCount}
-                </span>
-              )}
-              {t === 'payments' && pendingInvoiceCount > 0 && (
-                <span className="admin-tab-badge admin-tab-badge-count admin-tab-badge-gold">
-                  {pendingInvoiceCount}
-                </span>
-              )}
-            </button>
-          ))}
+          {(['overview', 'students', 'payments', 'emails', 'schools', 'create', 'materials', 'settings'] as Tab[]).map(
+            (t) => (
+              <button
+                key={t}
+                className={`admin-tab ${tab === t ? 'admin-tab-active' : ''}`}
+                onClick={() => {
+                  if (tab === 'emails' && t !== 'emails' && hasUnsavedCompose) {
+                    if (!window.confirm('You have an unsaved email draft. Leave anyway?')) return;
+                  }
+                  setTab(t);
+                  if (t !== 'emails') {
+                    setEmailComposeTo('');
+                    setEmailInitialTemplate('');
+                    setPendingAttachmentIds([]);
+                  }
+                }}
+              >
+                <span className="admin-tab-icon">{TAB_META[t].icon}</span>
+                {TAB_META[t].label}
+                {t === 'students' && (newInquiryCount > 0 || waitlistedCount > 0) && (
+                  <span
+                    className={`admin-tab-badge admin-tab-badge-count ${waitlistedCount > 0 ? 'admin-tab-badge-orange' : 'admin-tab-badge-red'}`}
+                  >
+                    {newInquiryCount + waitlistedCount}
+                  </span>
+                )}
+                {t === 'payments' && pendingInvoiceCount > 0 && (
+                  <span className="admin-tab-badge admin-tab-badge-count admin-tab-badge-gold">
+                    {pendingInvoiceCount}
+                  </span>
+                )}
+              </button>
+            ),
+          )}
         </div>
 
         {/* Tab content with fade transition */}
@@ -379,9 +546,7 @@ export default function AdminDashboard({ sections, enrollments, leads, schoolInq
             />
           )}
 
-          {tab === 'payments' && (
-            <AdminPaymentsTab enrollments={enrollments} />
-          )}
+          {tab === 'payments' && <AdminPaymentsTab enrollments={enrollments} />}
 
           {tab === 'emails' && (
             <AdminEmailsTab
@@ -395,24 +560,14 @@ export default function AdminDashboard({ sections, enrollments, leads, schoolInq
           )}
 
           {tab === 'schools' && (
-            <AdminSchoolsTab
-              schoolInquiries={schoolInquiries}
-              onSync={handleSync}
-              onNavigate={handleNavigate}
-            />
+            <AdminSchoolsTab schoolInquiries={schoolInquiries} onSync={handleSync} onNavigate={handleNavigate} />
           )}
 
-          {tab === 'create' && (
-            <AdminCreateTab onEmailMaterial={handleEmailMaterial} />
-          )}
+          {tab === 'create' && <AdminCreateTab onEmailMaterial={handleEmailMaterial} />}
 
-          {tab === 'materials' && (
-            <AdminMaterialsTab onEmailMaterial={handleEmailMaterial} />
-          )}
+          {tab === 'materials' && <AdminMaterialsTab onEmailMaterial={handleEmailMaterial} />}
 
-          {tab === 'settings' && (
-            <AdminSettingsTab />
-          )}
+          {tab === 'settings' && <AdminSettingsTab />}
         </div>
       </div>
     </ToastProvider>

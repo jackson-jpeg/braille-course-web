@@ -25,8 +25,7 @@ export const metadata: Metadata = {
     'Practice braille with 10 interactive activities. Word Game, Dot Explorer, Hangman, Speed Match, Memory Match, Contraction Sprint, Number Sense, Reflex Dots, Sequence, and Sentence Decoder.',
   openGraph: {
     title: 'Interactive Braille Practice — TeachBraille.org',
-    description:
-      'Interactive braille learning: 10 games from letter recognition to sentence reading.',
+    description: 'Interactive braille learning: 10 games from letter recognition to sentence reading.',
   },
 };
 
@@ -45,9 +44,7 @@ export default function GamesPage() {
           <h1>
             Braille <em>Interactive</em>
           </h1>
-          <p className="games-hero-sub">
-            Practice and build your braille skills with 10 interactive activities.
-          </p>
+          <p className="games-hero-sub">Practice and build your braille skills with 10 interactive activities.</p>
         </div>
       </section>
 

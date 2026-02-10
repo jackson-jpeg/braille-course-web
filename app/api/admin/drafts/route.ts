@@ -31,10 +31,7 @@ export async function POST(req: NextRequest) {
     const { id, title, notes, format, difficulty, instructions, contentJson, wasCorrected } = body;
 
     if (!title || !format || !contentJson) {
-      return NextResponse.json(
-        { error: 'title, format, and contentJson are required' },
-        { status: 400 }
-      );
+      return NextResponse.json({ error: 'title, format, and contentJson are required' }, { status: 400 });
     }
 
     const data = {

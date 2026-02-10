@@ -33,7 +33,10 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ error: 'Questions must be less than 1000 characters' }, { status: 400 });
     }
 
-    if (preferredCallbackTime && (typeof preferredCallbackTime !== 'string' || preferredCallbackTime.trim().length > 200)) {
+    if (
+      preferredCallbackTime &&
+      (typeof preferredCallbackTime !== 'string' || preferredCallbackTime.trim().length > 200)
+    ) {
       return NextResponse.json({ error: 'Preferred callback time must be less than 200 characters' }, { status: 400 });
     }
 
@@ -111,7 +114,7 @@ export async function POST(req: NextRequest) {
     });
     return NextResponse.json(
       { error: 'Unable to process your request. Please try again or email Delaney@TeachBraille.org directly.' },
-      { status: 500 }
+      { status: 500 },
     );
   }
 }

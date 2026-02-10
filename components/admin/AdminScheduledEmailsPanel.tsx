@@ -29,11 +29,15 @@ export default function AdminScheduledEmailsPanel({ onRefreshSent }: Props) {
       const res = await fetch('/api/admin/emails/schedule');
       const data = await res.json();
       if (res.ok) setEmails(data.emails);
-    } catch (err) { console.error('Failed to fetch scheduled emails:', err); }
+    } catch (err) {
+      console.error('Failed to fetch scheduled emails:', err);
+    }
     setLoading(false);
   }, []);
 
-  useEffect(() => { fetchScheduled(); }, [fetchScheduled]);
+  useEffect(() => {
+    fetchScheduled();
+  }, [fetchScheduled]);
 
   async function handleCancel() {
     if (!cancellingId) return;
@@ -127,9 +131,7 @@ export default function AdminScheduledEmailsPanel({ onRefreshSent }: Props) {
     setSendingNowId(null);
   }
 
-  const filtered = filterStatus === 'all'
-    ? emails
-    : emails.filter((e) => e.status === filterStatus);
+  const filtered = filterStatus === 'all' ? emails : emails.filter((e) => e.status === filterStatus);
 
   if (loading) {
     return <p style={{ padding: '12px 0', color: '#6b7280', fontSize: '0.9rem' }}>Loading scheduled emails&hellip;</p>;
@@ -138,11 +140,7 @@ export default function AdminScheduledEmailsPanel({ onRefreshSent }: Props) {
   return (
     <div className="admin-scheduled-panel">
       <div className="admin-email-actions" style={{ marginBottom: 12 }}>
-        <select
-          className="admin-select"
-          value={filterStatus}
-          onChange={(e) => setFilterStatus(e.target.value)}
-        >
+        <select className="admin-select" value={filterStatus} onChange={(e) => setFilterStatus(e.target.value)}>
           <option value="all">All Statuses</option>
           <option value="PENDING">Pending</option>
           <option value="SENT">Sent</option>
@@ -152,15 +150,23 @@ export default function AdminScheduledEmailsPanel({ onRefreshSent }: Props) {
         <button onClick={fetchScheduled} className="admin-refresh-btn" disabled={loading}>
           Refresh
         </button>
-        <span className="admin-result-count">{filtered.length} scheduled email{filtered.length !== 1 ? 's' : ''}</span>
+        <span className="admin-result-count">
+          {filtered.length} scheduled email{filtered.length !== 1 ? 's' : ''}
+        </span>
       </div>
 
       {filtered.length === 0 ? (
         <div className="admin-empty-state-calm">
           <div className="admin-empty-state-calm-icon">
             <svg width="24" height="24" viewBox="0 0 24 24" fill="none">
-              <circle cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="1.5"/>
-              <polyline points="12,6 12,12 16,14" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
+              <circle cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="1.5" />
+              <polyline
+                points="12,6 12,12 16,14"
+                stroke="currentColor"
+                strokeWidth="1.5"
+                strokeLinecap="round"
+                strokeLinejoin="round"
+              />
             </svg>
           </div>
           <p className="admin-empty-state-calm-title">No scheduled emails</p>
@@ -178,17 +184,21 @@ export default function AdminScheduledEmailsPanel({ onRefreshSent }: Props) {
                 </span>
                 <span className="admin-scheduled-time" title={fullDate(email.scheduledFor)}>
                   <svg width="12" height="12" viewBox="0 0 24 24" fill="none">
-                    <circle cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="1.5"/>
-                    <polyline points="12,6 12,12 16,14" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
+                    <circle cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="1.5" />
+                    <polyline
+                      points="12,6 12,12 16,14"
+                      stroke="currentColor"
+                      strokeWidth="1.5"
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                    />
                   </svg>
                   {new Date(email.scheduledFor).toLocaleString()}
                 </span>
               </div>
               <div className="admin-scheduled-line2">
                 <span className="admin-scheduled-subject">{email.subject}</span>
-                <span className={`admin-scheduled-status-${email.status}`}>
-                  {email.status}
-                </span>
+                <span className={`admin-scheduled-status-${email.status}`}>{email.status}</span>
                 {email.status === 'PENDING' && (
                   <div className="admin-scheduled-actions">
                     <button
@@ -248,17 +258,14 @@ export default function AdminScheduledEmailsPanel({ onRefreshSent }: Props) {
       {editingEmail && (
         <div className="admin-modal-overlay" onClick={() => setEditingEmail(null)}>
           <div className="admin-student-modal" onClick={(e) => e.stopPropagation()} style={{ maxWidth: 560 }}>
-            <button className="admin-modal-close" onClick={() => setEditingEmail(null)}>&times;</button>
+            <button className="admin-modal-close" onClick={() => setEditingEmail(null)}>
+              &times;
+            </button>
             <div className="admin-student-modal-content" style={{ padding: 24 }}>
               <h3 style={{ marginBottom: 16 }}>Edit Scheduled Email</h3>
               <div className="admin-compose-field">
                 <label>To</label>
-                <input
-                  type="text"
-                  className="admin-compose-input"
-                  value={editingEmail.to.join(', ')}
-                  disabled
-                />
+                <input type="text" className="admin-compose-input" value={editingEmail.to.join(', ')} disabled />
               </div>
               <div className="admin-compose-field">
                 <label>Subject</label>
@@ -288,17 +295,10 @@ export default function AdminScheduledEmailsPanel({ onRefreshSent }: Props) {
                 />
               </div>
               <div className="admin-compose-actions">
-                <button
-                  className="admin-send-btn"
-                  onClick={saveEdit}
-                  disabled={editSaving}
-                >
+                <button className="admin-send-btn" onClick={saveEdit} disabled={editSaving}>
                   {editSaving ? 'Saving\u2026' : 'Save Changes'}
                 </button>
-                <button
-                  className="admin-refresh-btn"
-                  onClick={() => setEditingEmail(null)}
-                >
+                <button className="admin-refresh-btn" onClick={() => setEditingEmail(null)}>
                   Cancel
                 </button>
               </div>

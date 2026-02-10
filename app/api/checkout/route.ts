@@ -11,32 +11,20 @@ export async function POST(req: NextRequest) {
 
     // Validate inputs
     if (!sectionId || typeof sectionId !== 'string') {
-      return NextResponse.json(
-        { error: 'Missing or invalid sectionId' },
-        { status: 400 }
-      );
+      return NextResponse.json({ error: 'Missing or invalid sectionId' }, { status: 400 });
     }
     if (plan !== 'deposit' && plan !== 'full') {
-      return NextResponse.json(
-        { error: 'Invalid plan. Use "deposit" or "full"' },
-        { status: 400 }
-      );
+      return NextResponse.json({ error: 'Invalid plan. Use "deposit" or "full"' }, { status: 400 });
     }
 
     // Env var validation
     if (plan === 'deposit' && !process.env.STRIPE_PRICE_DEPOSIT) {
       console.error('Missing STRIPE_PRICE_DEPOSIT env var');
-      return NextResponse.json(
-        { error: 'Server configuration error' },
-        { status: 500 }
-      );
+      return NextResponse.json({ error: 'Server configuration error' }, { status: 500 });
     }
     if (plan === 'full' && !process.env.STRIPE_PRICE_FULL) {
       console.error('Missing STRIPE_PRICE_FULL env var');
-      return NextResponse.json(
-        { error: 'Server configuration error' },
-        { status: 500 }
-      );
+      return NextResponse.json({ error: 'Server configuration error' }, { status: 500 });
     }
 
     // Check section capacity
@@ -45,17 +33,11 @@ export async function POST(req: NextRequest) {
     });
 
     if (!section) {
-      return NextResponse.json(
-        { error: 'Section not found' },
-        { status: 404 }
-      );
+      return NextResponse.json({ error: 'Section not found' }, { status: 404 });
     }
 
     if (section.enrolledCount >= section.maxCapacity) {
-      return NextResponse.json(
-        { error: 'This section is full' },
-        { status: 409 }
-      );
+      return NextResponse.json({ error: 'This section is full' }, { status: 409 });
     }
 
     // Load settings from DB for dynamic values
@@ -63,7 +45,10 @@ export async function POST(req: NextRequest) {
     const courseName = getSetting(settings, 'course.name', 'Summer Braille Course');
     const balanceAmount = getSetting(settings, 'pricing.balance', '350');
     const balanceDueDate = getSetting(settings, 'course.balanceDueDate', '2026-05-01');
-    const dueDateFormatted = new Date(balanceDueDate + 'T00:00:00').toLocaleDateString('en-US', { month: 'long', day: 'numeric' });
+    const dueDateFormatted = new Date(balanceDueDate + 'T00:00:00').toLocaleDateString('en-US', {
+      month: 'long',
+      day: 'numeric',
+    });
 
     // Create Stripe Checkout Session
     const siteUrl = process.env.SITE_URL || 'https://braille-course-web.vercel.app';
@@ -76,10 +61,7 @@ export async function POST(req: NextRequest) {
       payment_method_types: ['card'],
       line_items: [
         {
-          price:
-            plan === 'deposit'
-              ? process.env.STRIPE_PRICE_DEPOSIT!
-              : process.env.STRIPE_PRICE_FULL!,
+          price: plan === 'deposit' ? process.env.STRIPE_PRICE_DEPOSIT! : process.env.STRIPE_PRICE_FULL!,
           quantity: 1,
         },
       ],
@@ -105,8 +87,7 @@ export async function POST(req: NextRequest) {
       sessionParams.payment_intent_data!.setup_future_usage = 'off_session';
       sessionParams.custom_text = {
         submit: {
-          message:
-            `Your card will be saved securely. The remaining $${balanceAmount} balance will be charged automatically on ${dueDateFormatted}.`,
+          message: `Your card will be saved securely. The remaining $${balanceAmount} balance will be charged automatically on ${dueDateFormatted}.`,
         },
       };
     }
@@ -115,8 +96,7 @@ export async function POST(req: NextRequest) {
     if (plan === 'full') {
       sessionParams.custom_text = {
         submit: {
-          message:
-            'You will receive a confirmation email with your schedule and course details shortly after payment.',
+          message: 'You will receive a confirmation email with your schedule and course details shortly after payment.',
         },
       };
     }
@@ -132,9 +112,6 @@ export async function POST(req: NextRequest) {
     return NextResponse.json({ clientSecret: session.client_secret });
   } catch (err) {
     console.error('Checkout session creation failed:', (err as Error).message);
-    return NextResponse.json(
-      { error: 'Unable to create checkout session' },
-      { status: 500 }
-    );
+    return NextResponse.json({ error: 'Unable to create checkout session' }, { status: 500 });
   }
 }

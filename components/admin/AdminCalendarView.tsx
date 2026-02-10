@@ -50,7 +50,9 @@ export default function AdminCalendarView({ onNavigate }: Props) {
     }
   }, []);
 
-  useEffect(() => { fetchData(); }, [fetchData]);
+  useEffect(() => {
+    fetchData();
+  }, [fetchData]);
 
   const year = currentDate.getFullYear();
   const month = currentDate.getMonth();
@@ -168,16 +170,22 @@ export default function AdminCalendarView({ onNavigate }: Props) {
   return (
     <div className="admin-calendar">
       <div className="admin-calendar-nav">
-        <button className="admin-calendar-nav-btn" onClick={prevMonth}>&larr;</button>
+        <button className="admin-calendar-nav-btn" onClick={prevMonth}>
+          &larr;
+        </button>
         <span className="admin-calendar-month">
           {currentDate.toLocaleDateString('en-US', { month: 'long', year: 'numeric' })}
         </span>
-        <button className="admin-calendar-nav-btn" onClick={nextMonth}>&rarr;</button>
+        <button className="admin-calendar-nav-btn" onClick={nextMonth}>
+          &rarr;
+        </button>
       </div>
 
       <div className="admin-calendar-grid">
         {['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'].map((d) => (
-          <div key={d} className="admin-calendar-dow">{d}</div>
+          <div key={d} className="admin-calendar-dow">
+            {d}
+          </div>
         ))}
 
         {calendarDays.map((day, i) => {
@@ -212,8 +220,8 @@ export default function AdminCalendarView({ onNavigate }: Props) {
                       onClick={() => onNavigate('emails')}
                     >
                       <svg width="8" height="8" viewBox="0 0 16 16" fill="none">
-                        <rect x="1" y="3" width="14" height="10" rx="1.5" stroke="currentColor" strokeWidth="2"/>
-                        <path d="M1 5l7 4 7-4" stroke="currentColor" strokeWidth="2"/>
+                        <rect x="1" y="3" width="14" height="10" rx="1.5" stroke="currentColor" strokeWidth="2" />
+                        <path d="M1 5l7 4 7-4" stroke="currentColor" strokeWidth="2" />
                       </svg>
                     </button>
                   ))}

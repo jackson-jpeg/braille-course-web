@@ -41,7 +41,9 @@ export default function AdminAttendanceTab({ sections, enrollments, scheduleMap 
     setLoading(false);
   }, [selectedSectionId]);
 
-  useEffect(() => { fetchSessions(); }, [fetchSessions]);
+  useEffect(() => {
+    fetchSessions();
+  }, [fetchSessions]);
 
   async function handleGenerate() {
     setGenerating(true);
@@ -112,7 +114,7 @@ export default function AdminAttendanceTab({ sections, enrollments, scheduleMap 
 
   const selectedSection = sections.find((s) => s.id === selectedSectionId);
   const sectionEnrollments = enrollments.filter(
-    (e) => e.section.label === selectedSection?.label && e.paymentStatus === 'COMPLETED'
+    (e) => e.section.label === selectedSection?.label && e.paymentStatus === 'COMPLETED',
   );
 
   // Auto-set next session number
@@ -136,16 +138,14 @@ export default function AdminAttendanceTab({ sections, enrollments, scheduleMap 
             </option>
           ))}
         </select>
-        <button
-          className="admin-compose-btn"
-          onClick={handleGenerate}
-          disabled={generating}
-        >
+        <button className="admin-compose-btn" onClick={handleGenerate} disabled={generating}>
           {generating ? 'Generating\u2026' : 'Generate Sessions'}
         </button>
         <button
           className="admin-refresh-btn"
-          onClick={() => { setShowAddSession(!showAddSession); }}
+          onClick={() => {
+            setShowAddSession(!showAddSession);
+          }}
         >
           {showAddSession ? 'Cancel' : '+ Add Session'}
         </button>
@@ -206,7 +206,8 @@ export default function AdminAttendanceTab({ sections, enrollments, scheduleMap 
         <div className="admin-empty-state" style={{ padding: '32px 0' }}>
           <p className="admin-empty-state-title">No sessions yet</p>
           <p className="admin-empty-state-sub">
-            Click &quot;Generate Sessions&quot; to create all 16 sessions for this section, or add individual sessions manually.
+            Click &quot;Generate Sessions&quot; to create all 16 sessions for this section, or add individual sessions
+            manually.
           </p>
         </div>
       ) : (
@@ -241,9 +242,7 @@ export default function AdminAttendanceTab({ sections, enrollments, scheduleMap 
                           {session.attendanceCount}/{session.totalEnrolled || sectionEnrollments.length}
                         </span>
                       ) : (
-                        <span style={{ color: '#9ca3af', fontSize: '0.85rem' }}>
-                          {isPast ? 'Not taken' : '\u2014'}
-                        </span>
+                        <span style={{ color: '#9ca3af', fontSize: '0.85rem' }}>{isPast ? 'Not taken' : '\u2014'}</span>
                       )}
                     </td>
                     <td>
@@ -275,7 +274,10 @@ export default function AdminAttendanceTab({ sections, enrollments, scheduleMap 
         <AdminAttendanceModal
           sessionId={attendanceSessionId}
           sectionEnrollments={sectionEnrollments}
-          onClose={() => { setAttendanceSessionId(null); fetchSessions(); }}
+          onClose={() => {
+            setAttendanceSessionId(null);
+            fetchSessions();
+          }}
         />
       )}
 

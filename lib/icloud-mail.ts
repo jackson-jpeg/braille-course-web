@@ -104,9 +104,7 @@ export async function listReceivedEmails(limit = 50): Promise<ImapEmail[]> {
     await client.logout();
   }
 
-  return emails.sort(
-    (a, b) => new Date(b.created_at).getTime() - new Date(a.created_at).getTime()
-  );
+  return emails.sort((a, b) => new Date(b.created_at).getTime() - new Date(a.created_at).getTime());
 }
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -149,9 +147,7 @@ export async function getReceivedEmail(uid: string): Promise<ImapEmailDetail | n
 
       // Extract addresses from parsed mail
       const fromList = parsed.from?.value || [];
-      const toList = parsed.to
-        ? (Array.isArray(parsed.to) ? parsed.to : [parsed.to]).flatMap((a) => a.value)
-        : [];
+      const toList = parsed.to ? (Array.isArray(parsed.to) ? parsed.to : [parsed.to]).flatMap((a) => a.value) : [];
 
       return {
         id: uid,
@@ -183,10 +179,14 @@ export async function searchEmailsBySubject(query: string): Promise<ImapEmail[]>
       const uids = await client.search({ subject: query }, { uid: true });
       if (!uids || uids.length === 0) return [];
 
-      for await (const msg of client.fetch(uids as number[], {
-        uid: true,
-        envelope: true,
-      }, { uid: true })) {
+      for await (const msg of client.fetch(
+        uids as number[],
+        {
+          uid: true,
+          envelope: true,
+        },
+        { uid: true },
+      )) {
         const env = msg.envelope;
         if (!env) continue;
 

@@ -49,25 +49,16 @@ export default async function SummerPage() {
             This Summer
           </h1>
 
-          <p className="hero-subtitle">
-            An introductory course for parents &amp; loved ones
-          </p>
+          <p className="hero-subtitle">An introductory course for parents &amp; loved ones</p>
 
           <p className="hero-description">
-            Connect with your visually impaired child, family member, or friend
-            in a whole new way. This 8-week remote course will give you a strong
-            foundation in the Unified English Braille Code.
+            Connect with your visually impaired child, family member, or friend in a whole new way. This 8-week remote
+            course will give you a strong foundation in the Unified English Braille Code.
           </p>
 
           <div className="hero-meta" role="list" aria-label="Course quick facts">
             <span className="meta-chip" role="listitem">
-              <svg
-                viewBox="0 0 24 24"
-                fill="none"
-                stroke="currentColor"
-                strokeWidth="2"
-                aria-hidden="true"
-              >
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" aria-hidden="true">
                 <rect x="3" y="4" width="18" height="18" rx="2" />
                 <line x1="16" y1="2" x2="16" y2="6" />
                 <line x1="8" y1="2" x2="8" y2="6" />
@@ -76,26 +67,14 @@ export default async function SummerPage() {
               June 8 – July 27
             </span>
             <span className="meta-chip" role="listitem">
-              <svg
-                viewBox="0 0 24 24"
-                fill="none"
-                stroke="currentColor"
-                strokeWidth="2"
-                aria-hidden="true"
-              >
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" aria-hidden="true">
                 <circle cx="12" cy="12" r="10" />
                 <polyline points="12,6 12,12 16,14" />
               </svg>
               16 Sessions
             </span>
             <span className="meta-chip" role="listitem">
-              <svg
-                viewBox="0 0 24 24"
-                fill="none"
-                stroke="currentColor"
-                strokeWidth="2"
-                aria-hidden="true"
-              >
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" aria-hidden="true">
                 <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2" />
                 <circle cx="9" cy="7" r="4" />
                 <path d="M23 21v-2a4 4 0 0 0-3-3.87" />
@@ -104,13 +83,7 @@ export default async function SummerPage() {
               <SpotsBadge variant="hero-chip" />
             </span>
             <span className="meta-chip" role="listitem">
-              <svg
-                viewBox="0 0 24 24"
-                fill="none"
-                stroke="currentColor"
-                strokeWidth="2"
-                aria-hidden="true"
-              >
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" aria-hidden="true">
                 <rect x="2" y="3" width="20" height="14" rx="2" />
                 <line x1="8" y1="21" x2="16" y2="21" />
                 <line x1="12" y1="17" x2="12" y2="21" />
@@ -119,7 +92,6 @@ export default async function SummerPage() {
             </span>
           </div>
         </div>
-
       </section>
 
       {/* ========== WHY THIS COURSE EXISTS ========== */}
@@ -128,18 +100,15 @@ export default async function SummerPage() {
           <div className="section-label">Why This Course Exists</div>
           <h2 id="about-heading">Built From a Parent&apos;s Request</h2>
           <p className="about-text">
-            Last summer, a former student&apos;s mother reached out hoping to
-            learn Braille — the first time a parent had ever asked. Over several
-            weeks at the library, her home, and on virtual calls, she learned
-            half the alphabet and gained real confidence in reading and writing
-            Braille. Her curiosity and determination inspired this course, so
-            more families can share that same experience.
+            Last summer, a former student&apos;s mother reached out hoping to learn Braille — the first time a parent
+            had ever asked. Over several weeks at the library, her home, and on virtual calls, she learned half the
+            alphabet and gained real confidence in reading and writing Braille. Her curiosity and determination inspired
+            this course, so more families can share that same experience.
           </p>
 
           <blockquote className="pullquote reveal">
             <p>
-              A summer Braille course for parents is one of the best ways I can
-              think to spend <em>my summer.</em>
+              A summer Braille course for parents is one of the best ways I can think to spend <em>my summer.</em>
             </p>
           </blockquote>
         </div>
@@ -162,9 +131,8 @@ export default async function SummerPage() {
                 Do I need this course to learn Braille?
               </summary>
               <p className="faq-answer">
-                Absolutely not! There are several free, self-paced Braille programs
-                available. This course offers the benefit of live instruction,
-                personalized feedback, and structured pacing to keep you on track.
+                Absolutely not! There are several free, self-paced Braille programs available. This course offers the
+                benefit of live instruction, personalized feedback, and structured pacing to keep you on track.
               </p>
             </details>
 
@@ -176,9 +144,8 @@ export default async function SummerPage() {
                 How long is this course?
               </summary>
               <p className="faq-answer">
-                The course runs for <strong>8 weeks</strong>, beginning the week of{' '}
-                <strong>June 8th</strong> and ending the week of{' '}
-                <strong>July 27th</strong>.
+                The course runs for <strong>8 weeks</strong>, beginning the week of <strong>June 8th</strong> and ending
+                the week of <strong>July 27th</strong>.
               </p>
             </details>
 
@@ -190,10 +157,9 @@ export default async function SummerPage() {
                 How often will we meet?
               </summary>
               <p className="faq-answer">
-                You&apos;ll meet{' '}
-                <strong>twice per week for one hour each session</strong>. Over the
-                8-week course, that comes out to <strong>16 sessions total</strong>.
-                Two time slots are available — pick the one that works best for you:
+                You&apos;ll meet <strong>twice per week for one hour each session</strong>. Over the 8-week course, that
+                comes out to <strong>16 sessions total</strong>. Two time slots are available — pick the one that works
+                best for you:
               </p>
               <ul className="faq-answer" style={{ marginTop: '0.5rem', paddingLeft: '1.25rem' }}>
                 <li>Monday &amp; Wednesday, 1–2 PM ET</li>
@@ -209,9 +175,9 @@ export default async function SummerPage() {
                 How many spots are available?
               </summary>
               <p className="faq-answer">
-                To ensure personalized attention for every learner, enrollment is
-                limited to <strong>10 total spots</strong> — 5 per class.
-                Participants will be chosen on a first-come, first-served basis.
+                To ensure personalized attention for every learner, enrollment is limited to{' '}
+                <strong>10 total spots</strong> — 5 per class. Participants will be chosen on a first-come, first-served
+                basis.
               </p>
             </details>
 
@@ -223,10 +189,8 @@ export default async function SummerPage() {
                 What will I learn?
               </summary>
               <p className="faq-answer">
-                This course is an introduction to the{' '}
-                <strong>Unified English Braille Code (UEB)</strong>. You&apos;ll
-                learn the full alphabet, numbers 0–9, and some commonly used
-                contractions.
+                This course is an introduction to the <strong>Unified English Braille Code (UEB)</strong>. You&apos;ll
+                learn the full alphabet, numbers 0–9, and some commonly used contractions.
               </p>
             </details>
 
@@ -238,11 +202,9 @@ export default async function SummerPage() {
                 What does this course cost?
               </summary>
               <p className="faq-answer">
-                The total cost for 8 weeks of instruction (16 sessions) is{' '}
-                <strong>$500 per learner</strong>. You can pay in full upfront, or
-                reserve your spot with a <strong>$150 deposit</strong> — the
-                remaining <strong>$350</strong> will be charged automatically on{' '}
-                <strong>May 1st</strong>.
+                The total cost for 8 weeks of instruction (16 sessions) is <strong>$500 per learner</strong>. You can
+                pay in full upfront, or reserve your spot with a <strong>$150 deposit</strong> — the remaining{' '}
+                <strong>$350</strong> will be charged automatically on <strong>May 1st</strong>.
               </p>
             </details>
           </div>
@@ -260,12 +222,7 @@ export default async function SummerPage() {
           <div className="glance-grid reveal" role="list">
             <div className="glance-card" role="listitem">
               <div className="glance-icon" aria-hidden="true">
-                <svg
-                  viewBox="0 0 24 24"
-                  fill="none"
-                  stroke="currentColor"
-                  strokeWidth="2"
-                >
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
                   <rect x="3" y="4" width="18" height="18" rx="2" />
                   <line x1="16" y1="2" x2="16" y2="6" />
                   <line x1="8" y1="2" x2="8" y2="6" />
@@ -279,12 +236,7 @@ export default async function SummerPage() {
 
             <div className="glance-card" role="listitem">
               <div className="glance-icon" aria-hidden="true">
-                <svg
-                  viewBox="0 0 24 24"
-                  fill="none"
-                  stroke="currentColor"
-                  strokeWidth="2"
-                >
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
                   <circle cx="12" cy="12" r="10" />
                   <polyline points="12,6 12,12 16,14" />
                 </svg>
@@ -296,12 +248,7 @@ export default async function SummerPage() {
 
             <div className="glance-card" role="listitem">
               <div className="glance-icon" aria-hidden="true">
-                <svg
-                  viewBox="0 0 24 24"
-                  fill="none"
-                  stroke="currentColor"
-                  strokeWidth="2"
-                >
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
                   <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2" />
                   <circle cx="9" cy="7" r="4" />
                   <path d="M23 21v-2a4 4 0 0 0-3-3.87" />
@@ -315,12 +262,7 @@ export default async function SummerPage() {
 
             <div className="glance-card" role="listitem">
               <div className="glance-icon" aria-hidden="true">
-                <svg
-                  viewBox="0 0 24 24"
-                  fill="none"
-                  stroke="currentColor"
-                  strokeWidth="2"
-                >
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
                   <line x1="12" y1="1" x2="12" y2="23" />
                   <path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6" />
                 </svg>
@@ -344,50 +286,32 @@ export default async function SummerPage() {
           <div className="includes-list reveal" role="list">
             <div className="include-item" role="listitem">
               <div className="include-check" aria-hidden="true">
-                <svg
-                  viewBox="0 0 24 24"
-                  fill="none"
-                  stroke="currentColor"
-                  strokeWidth="3"
-                >
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3">
                   <polyline points="20 6 9 17 4 12" />
                 </svg>
               </div>
               <p>
-                A copy of all <strong>Google Slides</strong> used during every
-                session for reference and review
+                A copy of all <strong>Google Slides</strong> used during every session for reference and review
               </p>
             </div>
             <div className="include-item" role="listitem">
               <div className="include-check" aria-hidden="true">
-                <svg
-                  viewBox="0 0 24 24"
-                  fill="none"
-                  stroke="currentColor"
-                  strokeWidth="3"
-                >
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3">
                   <polyline points="20 6 9 17 4 12" />
                 </svg>
               </div>
               <p>
-                <strong>One-on-one individualized braille reading practice</strong>{' '}
-                tailored to your progress
+                <strong>One-on-one individualized braille reading practice</strong> tailored to your progress
               </p>
             </div>
             <div className="include-item" role="listitem">
               <div className="include-check" aria-hidden="true">
-                <svg
-                  viewBox="0 0 24 24"
-                  fill="none"
-                  stroke="currentColor"
-                  strokeWidth="3"
-                >
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3">
                   <polyline points="20 6 9 17 4 12" />
                 </svg>
               </div>
               <p>
-                <strong>Graded writing practice</strong> with personalized feedback
-                to build your skills
+                <strong>Graded writing practice</strong> with personalized feedback to build your skills
               </p>
             </div>
           </div>
@@ -400,13 +324,7 @@ export default async function SummerPage() {
           <h3 id="materials-heading">Materials Needed to Participate</h3>
           <div className="materials-tags" role="list">
             <span className="mat-tag" role="listitem">
-              <svg
-                viewBox="0 0 24 24"
-                fill="none"
-                stroke="currentColor"
-                strokeWidth="2"
-                aria-hidden="true"
-              >
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" aria-hidden="true">
                 <rect x="2" y="3" width="20" height="14" rx="2" />
                 <line x1="8" y1="21" x2="16" y2="21" />
                 <line x1="12" y1="17" x2="12" y2="21" />
@@ -414,13 +332,7 @@ export default async function SummerPage() {
               Computer
             </span>
             <span className="mat-tag" role="listitem">
-              <svg
-                viewBox="0 0 24 24"
-                fill="none"
-                stroke="currentColor"
-                strokeWidth="2"
-                aria-hidden="true"
-              >
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" aria-hidden="true">
                 <path d="M5 12.55a11 11 0 0 1 14.08 0" />
                 <path d="M1.42 9a16 16 0 0 1 21.16 0" />
                 <path d="M8.53 16.11a6 6 0 0 1 6.95 0" />
@@ -429,13 +341,7 @@ export default async function SummerPage() {
               WiFi
             </span>
             <span className="mat-tag" role="listitem">
-              <svg
-                viewBox="0 0 24 24"
-                fill="none"
-                stroke="currentColor"
-                strokeWidth="2"
-                aria-hidden="true"
-              >
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" aria-hidden="true">
                 <path d="M23 7l-7 5 7 5V7z" />
                 <rect x="1" y="5" width="15" height="14" rx="2" />
               </svg>
@@ -443,10 +349,9 @@ export default async function SummerPage() {
             </span>
           </div>
           <p className="materials-note">
-            A <strong>brailler</strong> is optional but highly recommended. If you
-            have access to one, it will greatly enhance your learning experience.
-            Don&apos;t have one? No worries — we can discuss options before the
-            course begins.
+            A <strong>brailler</strong> is optional but highly recommended. If you have access to one, it will greatly
+            enhance your learning experience. Don&apos;t have one? No worries — we can discuss options before the course
+            begins.
           </p>
         </div>
       </section>
@@ -465,29 +370,18 @@ export default async function SummerPage() {
           </div>
 
           <p className="cta-sub">
-            Spots are limited and filled on a first-come, first-served basis.
-            Reserve your place in this summer&apos;s introductory Braille course
-            today.
+            Spots are limited and filled on a first-come, first-served basis. Reserve your place in this summer&apos;s
+            introductory Braille course today.
           </p>
 
           <EnrollmentForm />
 
           <p className="cta-note">
-            Pay in full today, or put down a $150 deposit with the remaining $350
-            charged on May 1st.
+            Pay in full today, or put down a $150 deposit with the remaining $350 charged on May 1st.
           </p>
 
-          <div
-            className="stripe-badge"
-            aria-label="Secure checkout powered by Stripe"
-          >
-            <svg
-              viewBox="0 0 24 24"
-              fill="none"
-              stroke="currentColor"
-              strokeWidth="2"
-              aria-hidden="true"
-            >
+          <div className="stripe-badge" aria-label="Secure checkout powered by Stripe">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" aria-hidden="true">
               <rect x="3" y="11" width="18" height="11" rx="2" />
               <path d="M7 11V7a5 5 0 0 1 10 0v4" />
             </svg>
@@ -497,10 +391,7 @@ export default async function SummerPage() {
           <div className="cta-divider" aria-hidden="true"></div>
 
           <p className="cta-email">
-            Questions? Reach out at{' '}
-            <a href="mailto:Delaney@TeachBraille.org">
-              Delaney@TeachBraille.org
-            </a>
+            Questions? Reach out at <a href="mailto:Delaney@TeachBraille.org">Delaney@TeachBraille.org</a>
           </p>
         </div>
       </section>

@@ -10,8 +10,7 @@ export const metadata: Metadata = {
     'Contracted vision services for schools and districts. Delaney Costello is a certified Teacher of the Visually Impaired offering braille instruction, assistive technology training, and expanded core curriculum services.',
   openGraph: {
     title: 'TVI Services — TeachBraille.org',
-    description:
-      'Contracted vision services for schools, districts, and organizations from a certified TVI.',
+    description: 'Contracted vision services for schools, districts, and organizations from a certified TVI.',
   },
 };
 
@@ -26,9 +25,7 @@ export default function ServicesPage() {
           <h1>
             TVI <em>Services</em>
           </h1>
-          <p className="services-hero-sub">
-            Contracted Vision Services for Schools &amp; Districts
-          </p>
+          <p className="services-hero-sub">Contracted Vision Services for Schools &amp; Districts</p>
         </div>
       </section>
 
@@ -38,36 +35,28 @@ export default function ServicesPage() {
           <div className="section-label">About Delaney</div>
           <h2 id="services-about-heading">Professional Background</h2>
           <p className="services-about-text">
-            Delaney Costello is a <strong>certified Teacher of the Visually
-            Impaired</strong> with <strong>9 years of teaching experience</strong>.
-            She earned her degree in <strong>Blindness &amp; Low Vision
-            Education from Florida State University in 2017</strong> and spent
-            6 years traveling to schools across the state, providing in-person
-            services to PK–12th grade students with a wide range of visual
-            diagnoses — from totally blind to low vision.
+            Delaney Costello is a <strong>certified Teacher of the Visually Impaired</strong> with{' '}
+            <strong>9 years of teaching experience</strong>. She earned her degree in{' '}
+            <strong>Blindness &amp; Low Vision Education from Florida State University in 2017</strong> and spent 6
+            years traveling to schools across the state, providing in-person services to PK–12th grade students with a
+            wide range of visual diagnoses — from totally blind to low vision.
           </p>
           <p className="services-about-text">
-            In 2023, Delaney expanded to <strong>remote service delivery</strong>,
-            obtaining teaching licenses beyond Florida. She is currently
-            licensed in <strong>Florida, Georgia, Kansas, and Virginia</strong> —
-            and is always willing to obtain licensure in additional states.
-            Today she operates a <strong>hybrid model</strong> — offering remote
-            services nationwide and in-person instruction in the Tampa, Florida
-            area — giving schools and districts flexible access to a highly
-            qualified vision specialist.
+            In 2023, Delaney expanded to <strong>remote service delivery</strong>, obtaining teaching licenses beyond
+            Florida. She is currently licensed in <strong>Florida, Georgia, Kansas, and Virginia</strong> — and is
+            always willing to obtain licensure in additional states. Today she operates a <strong>hybrid model</strong>{' '}
+            — offering remote services nationwide and in-person instruction in the Tampa, Florida area — giving schools
+            and districts flexible access to a highly qualified vision specialist.
           </p>
           <p className="services-about-text">
-            Collaboration with other teachers, service providers, and members
-            of the student&apos;s educational team is guaranteed with every
-            contract. This includes full participation in <strong>IEP meetings,
-            504 meetings</strong>, and any other meetings related to the
-            student&apos;s education.
+            Collaboration with other teachers, service providers, and members of the student&apos;s educational team is
+            guaranteed with every contract. This includes full participation in{' '}
+            <strong>IEP meetings, 504 meetings</strong>, and any other meetings related to the student&apos;s education.
           </p>
           <blockquote className="pullquote">
             <p>
-              Every student with a visual impairment deserves access to a
-              <em> certified vision specialist</em> who understands their unique
-              learning needs.
+              Every student with a visual impairment deserves access to a<em> certified vision specialist</em> who
+              understands their unique learning needs.
             </p>
           </blockquote>
         </div>
@@ -125,8 +114,8 @@ export default function ServicesPage() {
               </div>
               <h3>Braille Instruction</h3>
               <p>
-                UEB (Unified English Braille) reading and writing instruction
-                tailored to each student&apos;s level and learning goals.
+                UEB (Unified English Braille) reading and writing instruction tailored to each student&apos;s level and
+                learning goals.
               </p>
             </div>
             <div className="services-card">
@@ -139,8 +128,7 @@ export default function ServicesPage() {
               </div>
               <h3>Screen Reader Instruction</h3>
               <p>
-                Training on JAWS, VoiceOver, NVDA, and ChromeVox to build
-                digital independence and technology fluency.
+                Training on JAWS, VoiceOver, NVDA, and ChromeVox to build digital independence and technology fluency.
               </p>
             </div>
             <div className="services-card">
@@ -152,8 +140,8 @@ export default function ServicesPage() {
               </div>
               <h3>Assistive Technology</h3>
               <p>
-                Comprehensive AT assessment and instruction — helping students
-                find and master the tools that work best for them.
+                Comprehensive AT assessment and instruction — helping students find and master the tools that work best
+                for them.
               </p>
             </div>
             <div className="services-card">
@@ -167,9 +155,8 @@ export default function ServicesPage() {
               </div>
               <h3>Expanded Core Curriculum</h3>
               <p>
-                Instruction across <a href="#ecc">8 of the 9 ECC areas</a> —
-                building the essential skills that go beyond academics for
-                students with visual impairments.
+                Instruction across <a href="#ecc">8 of the 9 ECC areas</a> — building the essential skills that go
+                beyond academics for students with visual impairments.
               </p>
             </div>
             <div className="services-card">
@@ -183,9 +170,8 @@ export default function ServicesPage() {
               </div>
               <h3>Team Collaboration</h3>
               <p>
-                Full participation in IEP meetings, 504 meetings, and
-                collaboration with teachers, service providers, and the
-                student&apos;s entire educational team.
+                Full participation in IEP meetings, 504 meetings, and collaboration with teachers, service providers,
+                and the student&apos;s entire educational team.
               </p>
             </div>
           </div>
@@ -198,9 +184,8 @@ export default function ServicesPage() {
           <div className="section-label">Expanded Core Curriculum</div>
           <h2 id="services-ecc-heading">The Expanded Core Curriculum</h2>
           <p className="services-ecc-intro">
-            The ECC encompasses 9 skill areas essential for students with visual
-            impairments. Delaney provides direct instruction in the following 8
-            areas:
+            The ECC encompasses 9 skill areas essential for students with visual impairments. Delaney provides direct
+            instruction in the following 8 areas:
           </p>
           <div className="services-ecc-grid">
             <div className="services-ecc-item">
@@ -274,7 +259,10 @@ export default function ServicesPage() {
                 </svg>
               </div>
               <h3>Assistive Technology</h3>
-              <p>Screen readers, magnification software, braille displays, and other adaptive tools for learning and communication.</p>
+              <p>
+                Screen readers, magnification software, braille displays, and other adaptive tools for learning and
+                communication.
+              </p>
             </div>
             <div className="services-ecc-item">
               <div className="services-ecc-icon" aria-hidden="true">
@@ -294,25 +282,17 @@ export default function ServicesPage() {
       <section className="benefit-callout" aria-labelledby="services-benefit-heading">
         <div className="benefit-inner reveal">
           <div className="benefit-icon" aria-hidden="true">
-            <svg
-              viewBox="0 0 24 24"
-              fill="none"
-              stroke="currentColor"
-              strokeWidth="2"
-            >
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
               <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14" />
               <polyline points="22,4 12,14.01 9,11.01" />
             </svg>
           </div>
           <h2 id="services-benefit-heading">Why Choose a Certified TVI?</h2>
           <p>
-            Students with visual impairments have unique educational needs that
-            go far beyond what general education support can provide. A certified
-            Teacher of the Visually Impaired brings specialized training in
-            braille literacy, assistive technology, and the Expanded Core
-            Curriculum — ensuring your students receive instruction from someone
-            who truly understands how vision loss impacts learning and
-            development.
+            Students with visual impairments have unique educational needs that go far beyond what general education
+            support can provide. A certified Teacher of the Visually Impaired brings specialized training in braille
+            literacy, assistive technology, and the Expanded Core Curriculum — ensuring your students receive
+            instruction from someone who truly understands how vision loss impacts learning and development.
           </p>
         </div>
       </section>
@@ -323,28 +303,25 @@ export default function ServicesPage() {
           <h2 id="services-start-heading">How to Get Started</h2>
           <div className="services-steps">
             <div className="services-step">
-              <div className="services-step-number" aria-hidden="true">1</div>
+              <div className="services-step-number" aria-hidden="true">
+                1
+              </div>
               <h3>Reach Out</h3>
-              <p>
-                Contact Delaney with your district or school&apos;s vision
-                service needs.
-              </p>
+              <p>Contact Delaney with your district or school&apos;s vision service needs.</p>
             </div>
             <div className="services-step">
-              <div className="services-step-number" aria-hidden="true">2</div>
+              <div className="services-step-number" aria-hidden="true">
+                2
+              </div>
               <h3>Consultation</h3>
-              <p>
-                Discuss student needs, scheduling, and service delivery
-                options — remote, in-person, or hybrid.
-              </p>
+              <p>Discuss student needs, scheduling, and service delivery options — remote, in-person, or hybrid.</p>
             </div>
             <div className="services-step">
-              <div className="services-step-number" aria-hidden="true">3</div>
+              <div className="services-step-number" aria-hidden="true">
+                3
+              </div>
               <h3>Begin Services</h3>
-              <p>
-                Start remote or in-person instruction tailored to each
-                student&apos;s IEP and learning goals.
-              </p>
+              <p>Start remote or in-person instruction tailored to each student&apos;s IEP and learning goals.</p>
             </div>
           </div>
         </div>
@@ -355,13 +332,12 @@ export default function ServicesPage() {
         <div className="services-contact-inner reveal">
           <h2 id="services-contact-heading">Get in Touch</h2>
           <p className="services-contact-intro">
-            Fill out the form below and Delaney will reach out within 2 business days to
-            discuss your vision service needs and schedule a consultation.
+            Fill out the form below and Delaney will reach out within 2 business days to discuss your vision service
+            needs and schedule a consultation.
           </p>
           <SchoolContactForm />
           <p className="services-fallback-email">
-            Prefer email? Contact{' '}
-            <a href="mailto:Delaney@TeachBraille.org">Delaney@TeachBraille.org</a>
+            Prefer email? Contact <a href="mailto:Delaney@TeachBraille.org">Delaney@TeachBraille.org</a>
           </p>
         </div>
       </section>
@@ -370,12 +346,10 @@ export default function ServicesPage() {
       <section className="services-crosslink">
         <div className="services-crosslink-inner reveal">
           <p>
-            Looking for individual braille lessons?{' '}
-            <Link href="/appointments">Book an Appointment &rarr;</Link>
+            Looking for individual braille lessons? <Link href="/appointments">Book an Appointment &rarr;</Link>
           </p>
           <p>
-            New to braille?{' '}
-            <Link href="/intro">Start with Intro to Braille &rarr;</Link>
+            New to braille? <Link href="/intro">Start with Intro to Braille &rarr;</Link>
           </p>
         </div>
       </section>

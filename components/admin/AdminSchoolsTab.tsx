@@ -11,10 +11,7 @@ interface Props {
   onNavigate: (tab: string) => void;
 }
 
-const STATUS_CONFIG: Record<
-  SchoolInquiryStatus,
-  { label: string; color: string; dotClass: string }
-> = {
+const STATUS_CONFIG: Record<SchoolInquiryStatus, { label: string; color: string; dotClass: string }> = {
   NEW_INQUIRY: { label: 'New Inquiry', color: '#3B82F6', dotClass: 'admin-kanban-dot-blue' },
   CONTACTED: { label: 'Contacted', color: '#D4A853', dotClass: 'admin-kanban-dot-gold' },
   PROPOSAL_SENT: { label: 'Proposal Sent', color: '#7A9B6D', dotClass: 'admin-kanban-dot-sage' },
@@ -49,7 +46,7 @@ export default function AdminSchoolsTab({ schoolInquiries, onSync, onNavigate }:
         i.schoolName.toLowerCase().includes(q) ||
         i.districtName?.toLowerCase().includes(q) ||
         i.contactName.toLowerCase().includes(q) ||
-        i.contactEmail.toLowerCase().includes(q)
+        i.contactEmail.toLowerCase().includes(q),
     );
   }, [inquiries, searchQuery]);
 
@@ -71,7 +68,7 @@ export default function AdminSchoolsTab({ schoolInquiries, onSync, onNavigate }:
     // Sort each column by createdAt desc
     Object.keys(result).forEach((key) => {
       result[key as SchoolInquiryStatus].sort(
-        (a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()
+        (a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime(),
       );
     });
     return result;
@@ -107,9 +104,7 @@ export default function AdminSchoolsTab({ schoolInquiries, onSync, onNavigate }:
     }
 
     // Optimistic update
-    const updated = inquiries.map((i) =>
-      i.id === draggedId ? { ...i, status: newStatus } : i
-    );
+    const updated = inquiries.map((i) => (i.id === draggedId ? { ...i, status: newStatus } : i));
     setInquiries(updated);
     setDraggedId(null);
     setDragOverColumn(null);
@@ -121,11 +116,14 @@ export default function AdminSchoolsTab({ schoolInquiries, onSync, onNavigate }:
 
     // Persist to server
     try {
-      const res = await fetch(`/api/admin/school-inquiries/${draggedId}?key=${encodeURIComponent(localStorage.getItem('adminKey') || '')}`, {
-        method: 'PATCH',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ status: newStatus }),
-      });
+      const res = await fetch(
+        `/api/admin/school-inquiries/${draggedId}?key=${encodeURIComponent(localStorage.getItem('adminKey') || '')}`,
+        {
+          method: 'PATCH',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ status: newStatus }),
+        },
+      );
 
       if (!res.ok) {
         throw new Error('Failed to update status');
@@ -133,9 +131,7 @@ export default function AdminSchoolsTab({ schoolInquiries, onSync, onNavigate }:
 
       const data = await res.json();
       // Update with server response
-      setInquiries((prev) =>
-        prev.map((i) => (i.id === draggedId ? data.inquiry : i))
-      );
+      setInquiries((prev) => prev.map((i) => (i.id === draggedId ? data.inquiry : i)));
       if (selectedSchool?.id === draggedId) {
         setSelectedSchool(data.inquiry);
       }
@@ -151,9 +147,7 @@ export default function AdminSchoolsTab({ schoolInquiries, onSync, onNavigate }:
 
   const handleUpdateInquiry = async (id: string, updates: Partial<SchoolInquiry>) => {
     // Optimistic update
-    const updated = inquiries.map((i) =>
-      i.id === id ? { ...i, ...updates } : i
-    );
+    const updated = inquiries.map((i) => (i.id === id ? { ...i, ...updates } : i));
     setInquiries(updated);
     if (selectedSchool?.id === id) {
       setSelectedSchool({ ...selectedSchool, ...updates });
@@ -161,20 +155,21 @@ export default function AdminSchoolsTab({ schoolInquiries, onSync, onNavigate }:
 
     // Persist to server
     try {
-      const res = await fetch(`/api/admin/school-inquiries/${id}?key=${encodeURIComponent(localStorage.getItem('adminKey') || '')}`, {
-        method: 'PATCH',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(updates),
-      });
+      const res = await fetch(
+        `/api/admin/school-inquiries/${id}?key=${encodeURIComponent(localStorage.getItem('adminKey') || '')}`,
+        {
+          method: 'PATCH',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(updates),
+        },
+      );
 
       if (!res.ok) {
         throw new Error('Failed to update inquiry');
       }
 
       const data = await res.json();
-      setInquiries((prev) =>
-        prev.map((i) => (i.id === id ? data.inquiry : i))
-      );
+      setInquiries((prev) => prev.map((i) => (i.id === id ? data.inquiry : i)));
       if (selectedSchool?.id === id) {
         setSelectedSchool(data.inquiry);
       }
@@ -183,9 +178,7 @@ export default function AdminSchoolsTab({ schoolInquiries, onSync, onNavigate }:
       // Revert on error
       const original = inquiries.find((i) => i.id === id);
       if (original) {
-        setInquiries((prev) =>
-          prev.map((i) => (i.id === id ? original : i))
-        );
+        setInquiries((prev) => prev.map((i) => (i.id === id ? original : i)));
         if (selectedSchool?.id === id) {
           setSelectedSchool(original);
         }
@@ -197,9 +190,12 @@ export default function AdminSchoolsTab({ schoolInquiries, onSync, onNavigate }:
     if (!confirm('Are you sure you want to delete this school inquiry?')) return;
 
     try {
-      const res = await fetch(`/api/admin/school-inquiries/${id}?key=${encodeURIComponent(localStorage.getItem('adminKey') || '')}`, {
-        method: 'DELETE',
-      });
+      const res = await fetch(
+        `/api/admin/school-inquiries/${id}?key=${encodeURIComponent(localStorage.getItem('adminKey') || '')}`,
+        {
+          method: 'DELETE',
+        },
+      );
 
       if (!res.ok) {
         throw new Error('Failed to delete inquiry');
@@ -220,9 +216,7 @@ export default function AdminSchoolsTab({ schoolInquiries, onSync, onNavigate }:
       <div className="admin-schools-header">
         <div>
           <h2 className="admin-section-heading">School Inquiries</h2>
-          <p className="admin-section-subtext">
-            Manage school and district partnerships through the sales pipeline
-          </p>
+          <p className="admin-section-subtext">Manage school and district partnerships through the sales pipeline</p>
         </div>
         <div className="admin-schools-actions">
           <input
@@ -278,13 +272,9 @@ export default function AdminSchoolsTab({ schoolInquiries, onSync, onNavigate }:
                   >
                     <div className="admin-school-card-header">
                       <h3 className="admin-school-name">{inquiry.schoolName}</h3>
-                      {inquiry.status === 'NEW_INQUIRY' && (
-                        <span className="admin-school-badge-new">New</span>
-                      )}
+                      {inquiry.status === 'NEW_INQUIRY' && <span className="admin-school-badge-new">New</span>}
                     </div>
-                    {inquiry.districtName && (
-                      <p className="admin-school-district">{inquiry.districtName}</p>
-                    )}
+                    {inquiry.districtName && <p className="admin-school-district">{inquiry.districtName}</p>}
                     <div className="admin-school-contact">
                       <svg width="14" height="14" viewBox="0 0 16 16" fill="none">
                         <circle cx="8" cy="5" r="2.5" stroke="currentColor" strokeWidth="1.5" />
@@ -302,9 +292,7 @@ export default function AdminSchoolsTab({ schoolInquiries, onSync, onNavigate }:
                     </div>
                     {inquiry.studentCount && (
                       <div className="admin-school-meta">
-                        <span className="admin-school-meta-item">
-                          👥 {inquiry.studentCount} students
-                        </span>
+                        <span className="admin-school-meta-item">👥 {inquiry.studentCount} students</span>
                       </div>
                     )}
                     <p className="admin-school-services">
@@ -313,9 +301,7 @@ export default function AdminSchoolsTab({ schoolInquiries, onSync, onNavigate }:
                         : inquiry.servicesNeeded}
                     </p>
                     <div className="admin-school-card-footer">
-                      <span className="admin-school-date">
-                        {relativeTime(inquiry.createdAt)}
-                      </span>
+                      <span className="admin-school-date">{relativeTime(inquiry.createdAt)}</span>
                       <div className="admin-school-quick-actions">
                         <button
                           className="admin-school-action-btn"
@@ -326,8 +312,22 @@ export default function AdminSchoolsTab({ schoolInquiries, onSync, onNavigate }:
                           title="Email contact"
                         >
                           <svg width="14" height="14" viewBox="0 0 16 16" fill="none">
-                            <rect x="1.5" y="3" width="13" height="10" rx="1.5" stroke="currentColor" strokeWidth="1.5" />
-                            <path d="M1.5 5l6.5 4 6.5-4" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
+                            <rect
+                              x="1.5"
+                              y="3"
+                              width="13"
+                              height="10"
+                              rx="1.5"
+                              stroke="currentColor"
+                              strokeWidth="1.5"
+                            />
+                            <path
+                              d="M1.5 5l6.5 4 6.5-4"
+                              stroke="currentColor"
+                              strokeWidth="1.5"
+                              strokeLinecap="round"
+                              strokeLinejoin="round"
+                            />
                           </svg>
                         </button>
                         <button
@@ -339,7 +339,11 @@ export default function AdminSchoolsTab({ schoolInquiries, onSync, onNavigate }:
                           title="View details"
                         >
                           <svg width="14" height="14" viewBox="0 0 16 16" fill="none">
-                            <path d="M8 3c3.5 0 6.5 3.5 7 5-0.5 1.5-3.5 5-7 5s-6.5-3.5-7-5c0.5-1.5 3.5-5 7-5z" stroke="currentColor" strokeWidth="1.5" />
+                            <path
+                              d="M8 3c3.5 0 6.5 3.5 7 5-0.5 1.5-3.5 5-7 5s-6.5-3.5-7-5c0.5-1.5 3.5-5 7-5z"
+                              stroke="currentColor"
+                              strokeWidth="1.5"
+                            />
                             <circle cx="8" cy="8" r="2" stroke="currentColor" strokeWidth="1.5" />
                           </svg>
                         </button>

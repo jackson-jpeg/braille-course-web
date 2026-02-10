@@ -3,10 +3,7 @@ import { prisma } from '@/lib/prisma';
 import { isAuthorized } from '@/lib/admin-auth';
 
 /* ── GET /api/admin/attendance/student/[enrollmentId] ── student attendance history + stats ── */
-export async function GET(
-  req: NextRequest,
-  { params }: { params: Promise<{ enrollmentId: string }> }
-) {
+export async function GET(req: NextRequest, { params }: { params: Promise<{ enrollmentId: string }> }) {
   if (!isAuthorized(req)) {
     return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
   }
@@ -39,9 +36,7 @@ export async function GET(
       orderBy: { classSession: { sessionNum: 'asc' } },
     });
 
-    const attended = attendances.filter(
-      (a) => a.status === 'PRESENT' || a.status === 'LATE'
-    ).length;
+    const attended = attendances.filter((a) => a.status === 'PRESENT' || a.status === 'LATE').length;
 
     return NextResponse.json({
       stats: {

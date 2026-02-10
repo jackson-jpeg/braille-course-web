@@ -60,16 +60,8 @@ export async function POST(req: NextRequest) {
     });
   } catch (err: unknown) {
     // Unique constraint violation
-    if (
-      typeof err === 'object' &&
-      err !== null &&
-      'code' in err &&
-      (err as { code: string }).code === 'P2002'
-    ) {
-      return NextResponse.json(
-        { error: 'A lead with this email already exists' },
-        { status: 409 }
-      );
+    if (typeof err === 'object' && err !== null && 'code' in err && (err as { code: string }).code === 'P2002') {
+      return NextResponse.json({ error: 'A lead with this email already exists' }, { status: 409 });
     }
     return NextResponse.json({ error: 'Failed to create lead' }, { status: 500 });
   }

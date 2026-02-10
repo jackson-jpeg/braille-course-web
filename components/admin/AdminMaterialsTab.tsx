@@ -7,7 +7,17 @@ import { SkeletonTable } from './AdminSkeleton';
 import { formatFileSize, sortArrow as sortArrowUtil, lastUpdatedText } from './admin-utils';
 import type { Material } from './admin-types';
 
-const CATEGORIES = ['All', 'Lesson Plans', 'Handouts', 'Presentations', 'Study Guides', 'Worksheets', 'Assessments', 'Other', 'Uncategorized'] as const;
+const CATEGORIES = [
+  'All',
+  'Lesson Plans',
+  'Handouts',
+  'Presentations',
+  'Study Guides',
+  'Worksheets',
+  'Assessments',
+  'Other',
+  'Uncategorized',
+] as const;
 
 type MaterialSortKey = 'filename' | 'category' | 'size' | 'date';
 
@@ -64,31 +74,34 @@ export default function AdminMaterialsTab({ onEmailMaterial }: Props) {
     }
   }
 
-  const doUpload = useCallback(async (file: File) => {
-    setUploading(true);
-    setError('');
-    try {
-      const formData = new FormData();
-      formData.append('file', file);
-      formData.append('category', uploadCategory);
+  const doUpload = useCallback(
+    async (file: File) => {
+      setUploading(true);
+      setError('');
+      try {
+        const formData = new FormData();
+        formData.append('file', file);
+        formData.append('category', uploadCategory);
 
-      const res = await fetch('/api/admin/materials', {
-        method: 'POST',
-        body: formData,
-      });
-      const json = await res.json();
-      if (!res.ok) throw new Error(json.error || 'Failed to upload');
-      setMaterials((prev) => [json.material, ...prev]);
-      showToast(`Uploaded "${file.name}"`);
-    } catch (err) {
-      const msg = err instanceof Error ? err.message : 'Failed to upload file';
-      showToast(msg, 'error');
-      setError(msg);
-    } finally {
-      setUploading(false);
-      if (fileInputRef.current) fileInputRef.current.value = '';
-    }
-  }, [showToast, uploadCategory]);
+        const res = await fetch('/api/admin/materials', {
+          method: 'POST',
+          body: formData,
+        });
+        const json = await res.json();
+        if (!res.ok) throw new Error(json.error || 'Failed to upload');
+        setMaterials((prev) => [json.material, ...prev]);
+        showToast(`Uploaded "${file.name}"`);
+      } catch (err) {
+        const msg = err instanceof Error ? err.message : 'Failed to upload file';
+        showToast(msg, 'error');
+        setError(msg);
+      } finally {
+        setUploading(false);
+        if (fileInputRef.current) fileInputRef.current.value = '';
+      }
+    },
+    [showToast, uploadCategory],
+  );
 
   function handleFileInput(e: React.ChangeEvent<HTMLInputElement>) {
     const file = e.target.files?.[0];
@@ -134,7 +147,10 @@ export default function AdminMaterialsTab({ onEmailMaterial }: Props) {
 
   function handleSort(key: MaterialSortKey) {
     if (sortKey === key) setSortDir(sortDir === 'asc' ? 'desc' : 'asc');
-    else { setSortKey(key); setSortDir(key === 'date' ? 'desc' : 'asc'); }
+    else {
+      setSortKey(key);
+      setSortDir(key === 'date' ? 'desc' : 'asc');
+    }
   }
   function sortArrowFn(key: MaterialSortKey) {
     return sortArrowUtil(sortKey === key, sortDir);
@@ -158,7 +174,9 @@ export default function AdminMaterialsTab({ onEmailMaterial }: Props) {
         const json = await res.json();
         throw new Error(json.error || 'Failed to update');
       }
-      setMaterials((prev) => prev.map((m) => m.id === id ? { ...m, filename: editFilename, category: editCategory } : m));
+      setMaterials((prev) =>
+        prev.map((m) => (m.id === id ? { ...m, filename: editFilename, category: editCategory } : m)),
+      );
       setEditingId(null);
       showToast('Material updated');
     } catch (err) {
@@ -179,10 +197,18 @@ export default function AdminMaterialsTab({ onEmailMaterial }: Props) {
     list.sort((a, b) => {
       let cmp = 0;
       switch (sortKey) {
-        case 'filename': cmp = a.filename.localeCompare(b.filename); break;
-        case 'category': cmp = a.category.localeCompare(b.category); break;
-        case 'size': cmp = a.size - b.size; break;
-        case 'date': cmp = new Date(a.createdAt).getTime() - new Date(b.createdAt).getTime(); break;
+        case 'filename':
+          cmp = a.filename.localeCompare(b.filename);
+          break;
+        case 'category':
+          cmp = a.category.localeCompare(b.category);
+          break;
+        case 'size':
+          cmp = a.size - b.size;
+          break;
+        case 'date':
+          cmp = new Date(a.createdAt).getTime() - new Date(b.createdAt).getTime();
+          break;
       }
       return sortDir === 'asc' ? cmp : -cmp;
     });
@@ -202,29 +228,32 @@ export default function AdminMaterialsTab({ onEmailMaterial }: Props) {
           onDragLeave={handleDragLeave}
           style={{ flex: 1 }}
         >
-          <input
-            ref={fileInputRef}
-            type="file"
-            onChange={handleFileInput}
-            style={{ display: 'none' }}
-          />
+          <input ref={fileInputRef} type="file" onChange={handleFileInput} style={{ display: 'none' }} />
           <svg className="admin-drop-zone-icon" width="32" height="32" viewBox="0 0 24 24" fill="none">
-            <path d="M12 16V4m0 0l-4 4m4-4l4 4" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
-            <path d="M20 16v2a2 2 0 01-2 2H6a2 2 0 01-2-2v-2" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
+            <path
+              d="M12 16V4m0 0l-4 4m4-4l4 4"
+              stroke="currentColor"
+              strokeWidth="1.5"
+              strokeLinecap="round"
+              strokeLinejoin="round"
+            />
+            <path
+              d="M20 16v2a2 2 0 01-2 2H6a2 2 0 01-2-2v-2"
+              stroke="currentColor"
+              strokeWidth="1.5"
+              strokeLinecap="round"
+              strokeLinejoin="round"
+            />
           </svg>
-          <p className="admin-drop-zone-text">
-            {uploading ? 'Uploading\u2026' : 'Drop files here or click to upload'}
-          </p>
+          <p className="admin-drop-zone-text">{uploading ? 'Uploading\u2026' : 'Drop files here or click to upload'}</p>
         </div>
         <div className="admin-upload-category-select">
           <label>Category</label>
-          <select
-            value={uploadCategory}
-            onChange={(e) => setUploadCategory(e.target.value)}
-            className="admin-select"
-          >
+          <select value={uploadCategory} onChange={(e) => setUploadCategory(e.target.value)} className="admin-select">
             {CATEGORIES.filter((c) => c !== 'All').map((c) => (
-              <option key={c} value={c}>{c}</option>
+              <option key={c} value={c}>
+                {c}
+              </option>
             ))}
           </select>
         </div>
@@ -272,26 +301,44 @@ export default function AdminMaterialsTab({ onEmailMaterial }: Props) {
         <table className="admin-table">
           <thead>
             <tr>
-              <th className="admin-sortable-th" onClick={() => handleSort('filename')}>Filename{sortArrowFn('filename')}</th>
-              <th className="admin-sortable-th" onClick={() => handleSort('category')}>Category{sortArrowFn('category')}</th>
+              <th className="admin-sortable-th" onClick={() => handleSort('filename')}>
+                Filename{sortArrowFn('filename')}
+              </th>
+              <th className="admin-sortable-th" onClick={() => handleSort('category')}>
+                Category{sortArrowFn('category')}
+              </th>
               <th>Type</th>
-              <th className="admin-sortable-th" onClick={() => handleSort('size')}>Size{sortArrowFn('size')}</th>
-              <th className="admin-sortable-th" onClick={() => handleSort('date')}>Uploaded{sortArrowFn('date')}</th>
+              <th className="admin-sortable-th" onClick={() => handleSort('size')}>
+                Size{sortArrowFn('size')}
+              </th>
+              <th className="admin-sortable-th" onClick={() => handleSort('date')}>
+                Uploaded{sortArrowFn('date')}
+              </th>
               <th>Actions</th>
             </tr>
           </thead>
           <tbody>
             {loading && materials.length === 0 ? (
-              <tr><td colSpan={6} className="admin-empty"><SkeletonTable rows={3} cols={6} /></td></tr>
+              <tr>
+                <td colSpan={6} className="admin-empty">
+                  <SkeletonTable rows={3} cols={6} />
+                </td>
+              </tr>
             ) : filteredMaterials.length === 0 ? (
               <tr>
                 <td colSpan={6} className="admin-empty">
                   <div className="admin-empty-state">
                     <p className="admin-empty-state-title">
-                      {selectedCategory === 'All' ? 'No materials uploaded yet' : `No materials in "${selectedCategory}"`}
+                      {selectedCategory === 'All'
+                        ? 'No materials uploaded yet'
+                        : `No materials in "${selectedCategory}"`}
                     </p>
-                    <p className="admin-empty-state-sub">Upload class handouts, worksheets, or other files for your students.</p>
-                    <button className="admin-empty-state-cta" onClick={() => fileInputRef.current?.click()}>Upload a File</button>
+                    <p className="admin-empty-state-sub">
+                      Upload class handouts, worksheets, or other files for your students.
+                    </p>
+                    <button className="admin-empty-state-cta" onClick={() => fileInputRef.current?.click()}>
+                      Upload a File
+                    </button>
                   </div>
                 </td>
               </tr>
@@ -321,7 +368,9 @@ export default function AdminMaterialsTab({ onEmailMaterial }: Props) {
                         style={{ fontSize: '0.85rem', padding: '4px 8px' }}
                       >
                         {CATEGORIES.filter((c) => c !== 'All').map((c) => (
-                          <option key={c} value={c}>{c}</option>
+                          <option key={c} value={c}>
+                            {c}
+                          </option>
                         ))}
                       </select>
                     </td>
@@ -330,7 +379,11 @@ export default function AdminMaterialsTab({ onEmailMaterial }: Props) {
                     <td>{new Date(m.createdAt).toLocaleDateString()}</td>
                     <td>
                       <div className="admin-payment-actions">
-                        <button className="admin-send-btn admin-action-btn-sm" onClick={() => saveEdit(m.id)} disabled={editSaving}>
+                        <button
+                          className="admin-send-btn admin-action-btn-sm"
+                          onClick={() => saveEdit(m.id)}
+                          disabled={editSaving}
+                        >
                           {editSaving ? 'Saving\u2026' : 'Save'}
                         </button>
                         <button className="admin-refresh-btn admin-action-btn-sm" onClick={() => setEditingId(null)}>
@@ -361,10 +414,7 @@ export default function AdminMaterialsTab({ onEmailMaterial }: Props) {
                         >
                           Edit
                         </button>
-                        <button
-                          className="admin-compose-btn admin-action-btn-sm"
-                          onClick={() => onEmailMaterial(m.id)}
-                        >
+                        <button className="admin-compose-btn admin-action-btn-sm" onClick={() => onEmailMaterial(m.id)}>
                           Email
                         </button>
                         <button
@@ -376,7 +426,7 @@ export default function AdminMaterialsTab({ onEmailMaterial }: Props) {
                       </div>
                     </td>
                   </tr>
-                )
+                ),
               )
             )}
           </tbody>

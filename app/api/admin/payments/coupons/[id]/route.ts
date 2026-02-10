@@ -3,10 +3,7 @@ import { stripe } from '@/lib/stripe';
 import { isAuthorized } from '@/lib/admin-auth';
 
 /* PUT /api/admin/payments/coupons/[id] — update coupon name */
-export async function PUT(
-  req: NextRequest,
-  { params }: { params: Promise<{ id: string }> }
-) {
+export async function PUT(req: NextRequest, { params }: { params: Promise<{ id: string }> }) {
   if (!isAuthorized(req)) {
     return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
   }
@@ -27,10 +24,7 @@ export async function PUT(
 }
 
 /* DELETE /api/admin/payments/coupons/[id] — delete coupon */
-export async function DELETE(
-  req: NextRequest,
-  { params }: { params: Promise<{ id: string }> }
-) {
+export async function DELETE(req: NextRequest, { params }: { params: Promise<{ id: string }> }) {
   if (!isAuthorized(req)) {
     return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
   }

@@ -39,7 +39,13 @@ export interface WorksheetItem {
 
 export interface WorksheetSection {
   heading: string;
-  type: 'fill-in-the-blank' | 'matching' | 'practice-drill' | 'braille-to-print' | 'print-to-braille' | 'dot-identification';
+  type:
+    | 'fill-in-the-blank'
+    | 'matching'
+    | 'practice-drill'
+    | 'braille-to-print'
+    | 'print-to-braille'
+    | 'dot-identification';
   instructions: string;
   items: WorksheetItem[];
 }
@@ -130,7 +136,8 @@ export function drawBrailleCell(doc: any, pattern: number[], x: number, y: numbe
 
   // Optional label below the cell
   if (options.label) {
-    doc.fontSize(size === 'medium' ? 9 : 7)
+    doc
+      .fontSize(size === 'medium' ? 9 : 7)
       .fillColor('#1B2A4A')
       .font('Helvetica-Bold')
       .text(options.label, x, y + cellH + 2, { width: cellW, align: 'center' });
@@ -140,7 +147,13 @@ export function drawBrailleCell(doc: any, pattern: number[], x: number, y: numbe
 }
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
-export function drawBrailleWord(doc: any, word: string, x: number, y: number, options: BrailleCellOptions = {}): number {
+export function drawBrailleWord(
+  doc: any,
+  word: string,
+  x: number,
+  y: number,
+  options: BrailleCellOptions = {},
+): number {
   let curX = x;
   const gap = options.size === 'medium' ? 4 : 3;
   for (const char of word.toUpperCase()) {
@@ -168,17 +181,22 @@ export function setupPdfDecorations(doc: any, title: string) {
     doc.fontSize(8).fillColor(NAVY).font('Helvetica-Bold');
     const truncatedTitle = title.length > 60 ? title.slice(0, 57) + '...' : title;
     doc.text(truncatedTitle, 60, 30, { width: 400, lineBreak: false });
-    doc.fontSize(8).fillColor('#999999').font('Helvetica')
+    doc
+      .fontSize(8)
+      .fillColor('#999999')
+      .font('Helvetica')
       .text(`Page ${pageNumber}`, 460, 30, { width: 92, align: 'right' });
     doc.moveTo(60, 44).lineTo(552, 44).strokeColor(GOLD).lineWidth(0.5).stroke();
     doc.restore();
     doc.y = 56;
   });
 
-  return { getDateLine: () => {
-    const dateStr = new Date().toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' });
-    return `Generated ${dateStr}`;
-  }};
+  return {
+    getDateLine: () => {
+      const dateStr = new Date().toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' });
+      return `Generated ${dateStr}`;
+    },
+  };
 }
 
 /* ── Document generators ── */
@@ -197,25 +215,45 @@ export function generatePptxBuffer(data: PptxResponse): Promise<Buffer> {
 
     if (i === 0) {
       s.addText(slide.title, {
-        x: 0.5, y: 1.5, w: '90%', h: 1.5,
-        fontSize: 36, fontFace: 'Arial',
-        color: GOLD, bold: true, align: 'center',
+        x: 0.5,
+        y: 1.5,
+        w: '90%',
+        h: 1.5,
+        fontSize: 36,
+        fontFace: 'Arial',
+        color: GOLD,
+        bold: true,
+        align: 'center',
       });
       if (slide.bullets.length > 0) {
         s.addText(slide.bullets[0], {
-          x: 0.5, y: 3.2, w: '90%', h: 0.8,
-          fontSize: 18, fontFace: 'Arial',
-          color: CREAM, align: 'center',
+          x: 0.5,
+          y: 3.2,
+          w: '90%',
+          h: 0.8,
+          fontSize: 18,
+          fontFace: 'Arial',
+          color: CREAM,
+          align: 'center',
         });
       }
     } else {
       s.addText(slide.title, {
-        x: 0.5, y: 0.3, w: '90%', h: 0.8,
-        fontSize: 24, fontFace: 'Arial',
-        color: NAVY, bold: true,
+        x: 0.5,
+        y: 0.3,
+        w: '90%',
+        h: 0.8,
+        fontSize: 24,
+        fontFace: 'Arial',
+        color: NAVY,
+        bold: true,
       });
       s.addShape(pptx.ShapeType.rect, {
-        x: 0.5, y: 1.0, w: 2, h: 0.04, fill: { color: GOLD },
+        x: 0.5,
+        y: 1.0,
+        w: 2,
+        h: 0.04,
+        fill: { color: GOLD },
       });
 
       if (slide.bullets.length > 0) {
@@ -224,8 +262,12 @@ export function generatePptxBuffer(data: PptxResponse): Promise<Buffer> {
           options: { bullet: true, fontSize: 16, color: '333333', breakLine: true },
         }));
         s.addText(bulletText as PptxGenJS.TextProps[], {
-          x: 0.7, y: 1.3, w: '85%', h: 3.5,
-          fontFace: 'Arial', lineSpacingMultiple: 1.5,
+          x: 0.7,
+          y: 1.3,
+          w: '85%',
+          h: 3.5,
+          fontFace: 'Arial',
+          lineSpacingMultiple: 1.5,
           valign: 'top',
         });
       }
@@ -289,7 +331,12 @@ export function generatePdfBuffer(
       doc.fontSize(16).fillColor(NAVY).font('Helvetica-Bold').text(section.heading);
       // Gold underline below section heading
       doc.save();
-      doc.moveTo(60, doc.y + 2).lineTo(300, doc.y + 2).strokeColor(GOLD).lineWidth(0.75).stroke();
+      doc
+        .moveTo(60, doc.y + 2)
+        .lineTo(300, doc.y + 2)
+        .strokeColor(GOLD)
+        .lineWidth(0.75)
+        .stroke();
       doc.restore();
       doc.moveDown(0.4);
 
@@ -319,7 +366,11 @@ export function generatePdfBuffer(
             const pattern = brailleMap[trimmed.toUpperCase()];
             if (pattern) {
               const textY = doc.y;
-              doc.fontSize(11).fillColor('#555555').font('Helvetica').text(trimmed.toUpperCase(), 70, textY, { continued: false });
+              doc
+                .fontSize(11)
+                .fillColor('#555555')
+                .font('Helvetica')
+                .text(trimmed.toUpperCase(), 70, textY, { continued: false });
               drawBrailleCell(doc, pattern, 90, textY - 2, { size: 'small', label: dotDescription(trimmed) });
               doc.y = textY + 22;
               doc.moveDown(0.15);
@@ -342,7 +393,11 @@ export function generatePdfBuffer(
         const pqStartY = doc.y;
         doc.fontSize(12).fillColor(NAVY).font('Helvetica-Bold').text('Practice Questions:');
         section.practiceQuestions.forEach((q, qi) => {
-          doc.fontSize(11).fillColor('#333333').font('Helvetica').text(`${qi + 1}. ${q}`, { indent: 10 });
+          doc
+            .fontSize(11)
+            .fillColor('#333333')
+            .font('Helvetica')
+            .text(`${qi + 1}. ${q}`, { indent: 10 });
           doc.moveDown(0.15);
         });
         const pqEndY = doc.y;
@@ -354,7 +409,11 @@ export function generatePdfBuffer(
         doc.y = pqStartY;
         doc.fontSize(12).fillColor(NAVY).font('Helvetica-Bold').text('Practice Questions:');
         section.practiceQuestions.forEach((q, qi) => {
-          doc.fontSize(11).fillColor('#333333').font('Helvetica').text(`${qi + 1}. ${q}`, { indent: 10 });
+          doc
+            .fontSize(11)
+            .fillColor('#333333')
+            .font('Helvetica')
+            .text(`${qi + 1}. ${q}`, { indent: 10 });
           doc.moveDown(0.15);
         });
         doc.moveDown(0.3);
@@ -385,7 +444,11 @@ export function generateWorksheetPdfBuffer(data: WorksheetResponse, title: strin
     doc.moveDown(0.15);
     doc.fontSize(9).fillColor('#888888').font('Helvetica').text(getDateLine(), { align: 'center' });
     doc.moveDown(0.2);
-    doc.fontSize(10).fillColor('#666666').font('Helvetica').text('Name: ________________________    Date: ____________', { align: 'center' });
+    doc
+      .fontSize(10)
+      .fillColor('#666666')
+      .font('Helvetica')
+      .text('Name: ________________________    Date: ____________', { align: 'center' });
     doc.moveDown(0.3);
     doc.moveTo(60, doc.y).lineTo(552, doc.y).strokeColor(GOLD).lineWidth(2).stroke();
     doc.moveDown(1);
@@ -398,7 +461,12 @@ export function generateWorksheetPdfBuffer(data: WorksheetResponse, title: strin
       doc.fontSize(16).fillColor(NAVY).font('Helvetica-Bold').text(section.heading);
       // Gold underline
       doc.save();
-      doc.moveTo(60, doc.y + 2).lineTo(300, doc.y + 2).strokeColor(GOLD).lineWidth(0.75).stroke();
+      doc
+        .moveTo(60, doc.y + 2)
+        .lineTo(300, doc.y + 2)
+        .strokeColor(GOLD)
+        .lineWidth(0.75)
+        .stroke();
       doc.restore();
       doc.moveDown(0.2);
       doc.fontSize(10).fillColor('#555555').font('Helvetica-Oblique').text(section.instructions);
@@ -463,7 +531,11 @@ export function generateWorksheetPdfBuffer(data: WorksheetResponse, title: strin
           itemCounter++;
           doc.fontSize(11).fillColor('#333333').font('Helvetica');
           doc.text(`${itemCounter}. ${item.prompt}`);
-          if (section.type === 'braille-to-print' || section.type === 'print-to-braille' || section.type === 'dot-identification') {
+          if (
+            section.type === 'braille-to-print' ||
+            section.type === 'print-to-braille' ||
+            section.type === 'dot-identification'
+          ) {
             doc.moveDown(0.15);
             doc.text('Answer: _______________________________________', { indent: 20 });
           }
@@ -531,7 +603,11 @@ export function generateQuizPdfBuffer(data: QuizResponse, title: string): Promis
     doc.moveDown(0.15);
     doc.fontSize(9).fillColor('#888888').font('Helvetica').text(getDateLine(), { align: 'center' });
     doc.moveDown(0.2);
-    doc.fontSize(10).fillColor('#666666').font('Helvetica').text('Name: ________________________    Date: ____________', { align: 'center' });
+    doc
+      .fontSize(10)
+      .fillColor('#666666')
+      .font('Helvetica')
+      .text('Name: ________________________    Date: ____________', { align: 'center' });
     doc.moveDown(0.2);
     doc.fontSize(10).text(`Total Questions: ${data.questions.length}`, { align: 'center' });
     doc.moveDown(0.3);
@@ -543,7 +619,11 @@ export function generateQuizPdfBuffer(data: QuizResponse, title: string): Promis
       if (doc.y > 620) doc.addPage();
 
       const typeLabel = q.type === 'multiple-choice' ? 'MC' : q.type === 'true-false' ? 'T/F' : 'SA';
-      doc.fontSize(11).fillColor(NAVY).font('Helvetica-Bold').text(`${i + 1}. [${typeLabel}] ${q.question}`);
+      doc
+        .fontSize(11)
+        .fillColor(NAVY)
+        .font('Helvetica-Bold')
+        .text(`${i + 1}. [${typeLabel}] ${q.question}`);
       doc.moveDown(0.2);
 
       if (q.options && q.options.length > 0) {
@@ -555,7 +635,11 @@ export function generateQuizPdfBuffer(data: QuizResponse, title: string): Promis
 
       if (q.type === 'short-answer') {
         doc.moveDown(0.2);
-        doc.fontSize(10).fillColor('#999999').font('Helvetica').text('Answer: ___________________________________________', { indent: 20 });
+        doc
+          .fontSize(10)
+          .fillColor('#999999')
+          .font('Helvetica')
+          .text('Answer: ___________________________________________', { indent: 20 });
       }
 
       doc.moveDown(0.5);
@@ -570,7 +654,11 @@ export function generateQuizPdfBuffer(data: QuizResponse, title: string): Promis
 
     data.questions.forEach((q, i) => {
       if (doc.y > 650) doc.addPage();
-      doc.fontSize(10).fillColor(NAVY).font('Helvetica-Bold').text(`${i + 1}. ${q.answer}`);
+      doc
+        .fontSize(10)
+        .fillColor(NAVY)
+        .font('Helvetica-Bold')
+        .text(`${i + 1}. ${q.answer}`);
       doc.fontSize(9).fillColor('#555555').font('Helvetica').text(`   ${q.explanation}`);
       doc.moveDown(0.3);
     });
@@ -619,7 +707,11 @@ export function buildPreview(format: string, parsed: unknown): GeneratePreview {
       return { questionCounts: counts, totalQuestions: q.questions.length };
     }
     case 'session-bundle': {
-      const bundle = parsed as { slides: SlideData[]; handoutSections: SectionData[]; worksheetSections: WorksheetSection[] };
+      const bundle = parsed as {
+        slides: SlideData[];
+        handoutSections: SectionData[];
+        worksheetSections: WorksheetSection[];
+      };
       return {
         slideTitles: bundle.slides?.map((s) => s.title),
         sectionHeadings: bundle.handoutSections?.map((s) => s.heading),

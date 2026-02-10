@@ -29,12 +29,16 @@ export default function AdminEmailModal({ email, loading, onClose, onReply, onFo
       if (doc?.body) {
         iframeRef.current!.style.height = doc.body.scrollHeight + 'px';
       }
-    } catch { /* cross-origin fallback: keep min-height */ }
+    } catch {
+      /* cross-origin fallback: keep min-height */
+    }
   }, []);
 
   useEffect(() => {
     if (inline) return;
-    function handleKey(e: KeyboardEvent) { if (e.key === 'Escape') onClose(); }
+    function handleKey(e: KeyboardEvent) {
+      if (e.key === 'Escape') onClose();
+    }
     document.addEventListener('keydown', handleKey);
     return () => document.removeEventListener('keydown', handleKey);
   }, [onClose, inline]);
@@ -65,7 +69,9 @@ export default function AdminEmailModal({ email, loading, onClose, onReply, onFo
               {email.last_event !== undefined && (
                 <div className="admin-modal-meta">
                   <strong>Status:</strong>{' '}
-                  <span className={`admin-email-status admin-email-status-${(email.last_event || 'queued').toLowerCase()}`}>
+                  <span
+                    className={`admin-email-status admin-email-status-${(email.last_event || 'queued').toLowerCase()}`}
+                  >
                     {email.last_event || 'queued'}
                   </span>
                 </div>
@@ -89,7 +95,10 @@ export default function AdminEmailModal({ email, loading, onClose, onReply, onFo
                 {onReply && (
                   <button
                     className="admin-compose-btn"
-                    onClick={() => { onReply(email); onClose(); }}
+                    onClick={() => {
+                      onReply(email);
+                      onClose();
+                    }}
                   >
                     Reply
                   </button>
@@ -97,7 +106,10 @@ export default function AdminEmailModal({ email, loading, onClose, onReply, onFo
                 {onForward && (
                   <button
                     className="admin-refresh-btn"
-                    onClick={() => { onForward(email); onClose(); }}
+                    onClick={() => {
+                      onForward(email);
+                      onClose();
+                    }}
                   >
                     Forward
                   </button>
@@ -150,7 +162,9 @@ export default function AdminEmailModal({ email, loading, onClose, onReply, onFo
               {email.last_event !== undefined && (
                 <div className="admin-modal-meta">
                   <strong>Status:</strong>{' '}
-                  <span className={`admin-email-status admin-email-status-${(email.last_event || 'queued').toLowerCase()}`}>
+                  <span
+                    className={`admin-email-status admin-email-status-${(email.last_event || 'queued').toLowerCase()}`}
+                  >
                     {email.last_event || 'queued'}
                   </span>
                 </div>
@@ -174,7 +188,10 @@ export default function AdminEmailModal({ email, loading, onClose, onReply, onFo
                 {onReply && (
                   <button
                     className="admin-compose-btn"
-                    onClick={() => { onReply(email); onClose(); }}
+                    onClick={() => {
+                      onReply(email);
+                      onClose();
+                    }}
                   >
                     Reply
                   </button>
@@ -182,7 +199,10 @@ export default function AdminEmailModal({ email, loading, onClose, onReply, onFo
                 {onForward && (
                   <button
                     className="admin-refresh-btn"
-                    onClick={() => { onForward(email); onClose(); }}
+                    onClick={() => {
+                      onForward(email);
+                      onClose();
+                    }}
                   >
                     Forward
                   </button>

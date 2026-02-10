@@ -22,9 +22,7 @@ export default function EnrollmentForm() {
   // Auto-select first available section on mount
   useEffect(() => {
     if (selectedSection) return;
-    const first = sections.find(
-      (s) => s.status !== 'FULL' && s.maxCapacity - s.enrolledCount > 0
-    );
+    const first = sections.find((s) => s.status !== 'FULL' && s.maxCapacity - s.enrolledCount > 0);
     if (first) setSelectedSection(first.id);
   }, [sections, selectedSection]);
 
@@ -105,12 +103,8 @@ export default function EnrollmentForm() {
           <circle cx="13" cy="36" r="3.5" fill="currentColor" stroke="none" />
           <circle cx="23" cy="36" r="3.5" fill="currentColor" stroke="none" />
         </svg>
-        <div className="enrollment-sold-out-title">
-          This session is fully enrolled
-        </div>
-        <p>
-          Join the waitlist and we&rsquo;ll notify you if a spot opens.
-        </p>
+        <div className="enrollment-sold-out-title">This session is fully enrolled</div>
+        <p>Join the waitlist and we&rsquo;ll notify you if a spot opens.</p>
 
         {waitlistSuccess ? (
           <div className="enrollment-waitlist-success">
@@ -128,11 +122,7 @@ export default function EnrollmentForm() {
               aria-label="Email address for waitlist"
               disabled={waitlistSubmitting}
             />
-            <button
-              type="submit"
-              className="enrollment-sold-out-cta"
-              disabled={waitlistSubmitting}
-            >
+            <button type="submit" className="enrollment-sold-out-cta" disabled={waitlistSubmitting}>
               {waitlistSubmitting ? 'Joining...' : 'Join the Waitlist'}
               {!waitlistSubmitting && (
                 <svg
@@ -149,7 +139,9 @@ export default function EnrollmentForm() {
               )}
             </button>
             {waitlistError && (
-              <div className="enrollment-error" role="alert">{waitlistError}</div>
+              <div className="enrollment-error" role="alert">
+                {waitlistError}
+              </div>
             )}
           </form>
         )}
@@ -204,9 +196,7 @@ export default function EnrollmentForm() {
                   }}
                 />
                 <div className="enrollment-option-text">
-                  <div className="enrollment-option-title">
-                    {SECTION_SCHEDULES[section.label] || section.label}
-                  </div>
+                  <div className="enrollment-option-title">{SECTION_SCHEDULES[section.label] || section.label}</div>
                   <div className="enrollment-option-sub">
                     {isJustFilled
                       ? 'Just filled'
@@ -222,14 +212,12 @@ export default function EnrollmentForm() {
       </div>
 
       {/* Step 2: Choose Plan */}
-      <div className={`enrollment-step enrollment-step-2${selectedSection ? ' enrollment-step-active' : ''}${selectedPlan ? ' completed' : ''}`}>
+      <div
+        className={`enrollment-step enrollment-step-2${selectedSection ? ' enrollment-step-active' : ''}${selectedPlan ? ' completed' : ''}`}
+      >
         <div className="enrollment-step-label">2. Choose Your Plan</div>
         <div className="enrollment-options">
-          <label
-            className={`enrollment-option${
-              selectedPlan === 'full' ? ' selected' : ''
-            }`}
-          >
+          <label className={`enrollment-option${selectedPlan === 'full' ? ' selected' : ''}`}>
             <input
               type="radio"
               name="plan"
@@ -243,11 +231,7 @@ export default function EnrollmentForm() {
               <div className="enrollment-option-sub">One-time payment</div>
             </div>
           </label>
-          <label
-            className={`enrollment-option${
-              selectedPlan === 'deposit' ? ' selected' : ''
-            }`}
-          >
+          <label className={`enrollment-option${selectedPlan === 'deposit' ? ' selected' : ''}`}>
             <input
               type="radio"
               name="plan"
@@ -257,67 +241,56 @@ export default function EnrollmentForm() {
               onChange={() => setSelectedPlan('deposit')}
             />
             <div className="enrollment-option-text">
-              <div className="enrollment-option-title">
-                Reserve with $150 Deposit
-              </div>
-              <div className="enrollment-option-sub">
-                $350 balance charged May 1st
-              </div>
+              <div className="enrollment-option-title">Reserve with $150 Deposit</div>
+              <div className="enrollment-option-sub">$350 balance charged May 1st</div>
             </div>
           </label>
         </div>
       </div>
 
       {/* Order Summary */}
-      {canSubmit && (() => {
-        const section = sections.find((s) => s.id === selectedSection);
-        const scheduleText = section ? (SECTION_SCHEDULES[section.label] || section.label) : '';
-        const planText = selectedPlan === 'full' ? 'Pay in Full — $500' : '$150 deposit today, $350 on May 1';
-        return (
-          <div className="enrollment-summary">
-            <div className="enrollment-summary-row">
-              <span className="enrollment-summary-label">Schedule</span>
-              <span className="enrollment-summary-value">{scheduleText}</span>
+      {canSubmit &&
+        (() => {
+          const section = sections.find((s) => s.id === selectedSection);
+          const scheduleText = section ? SECTION_SCHEDULES[section.label] || section.label : '';
+          const planText = selectedPlan === 'full' ? 'Pay in Full — $500' : '$150 deposit today, $350 on May 1';
+          return (
+            <div className="enrollment-summary">
+              <div className="enrollment-summary-row">
+                <span className="enrollment-summary-label">Schedule</span>
+                <span className="enrollment-summary-value">{scheduleText}</span>
+              </div>
+              <div className="enrollment-summary-row">
+                <span className="enrollment-summary-label">Plan</span>
+                <span className="enrollment-summary-value">{planText}</span>
+              </div>
             </div>
-            <div className="enrollment-summary-row">
-              <span className="enrollment-summary-label">Plan</span>
-              <span className="enrollment-summary-value">{planText}</span>
-            </div>
-          </div>
-        );
-      })()}
+          );
+        })()}
 
       {/* Step 3: Submit */}
-      <button
-        className="enrollment-submit"
-        disabled={!canSubmit}
-        onClick={handleSubmit}
-      >
-        {loadingStage === 'processing' && (
-          <span className="enrollment-spinner" aria-hidden="true" />
-        )}
+      <button className="enrollment-submit" disabled={!canSubmit} onClick={handleSubmit}>
+        {loadingStage === 'processing' && <span className="enrollment-spinner" aria-hidden="true" />}
         {buttonText}
         {!loading && (
-          <svg
-            viewBox="0 0 24 24"
-            fill="none"
-            stroke="currentColor"
-            strokeWidth="2.5"
-            aria-hidden="true"
-          >
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" aria-hidden="true">
             <line x1="5" y1="12" x2="19" y2="12" />
             <polyline points="12 5 19 12 12 19" />
           </svg>
         )}
       </button>
 
-      {error && <div className="enrollment-error" role="alert">{error}</div>}
+      {error && (
+        <div className="enrollment-error" role="alert">
+          {error}
+        </div>
+      )}
 
       <div className="enrollment-trust-row">
         <span className="enrollment-trust-item">
           <svg className="enrollment-trust-lock" viewBox="0 0 16 16" fill="none" aria-hidden="true">
-            <rect x="3" y="7" width="10" height="7" rx="1.5" stroke="currentColor" strokeWidth="1.3"/>
-            <path d="M5.5 7V5a2.5 2.5 0 015 0v2" stroke="currentColor" strokeWidth="1.3" strokeLinecap="round"/>
+            <rect x="3" y="7" width="10" height="7" rx="1.5" stroke="currentColor" strokeWidth="1.3" />
+            <path d="M5.5 7V5a2.5 2.5 0 015 0v2" stroke="currentColor" strokeWidth="1.3" strokeLinecap="round" />
           </svg>
           Secure payment
         </span>
@@ -328,8 +301,7 @@ export default function EnrollmentForm() {
       </div>
 
       <p className="enrollment-legal">
-        By enrolling, you agree to our{' '}
-        <Link href="/policies#refunds">Refund Policy</Link> and{' '}
+        By enrolling, you agree to our <Link href="/policies#refunds">Refund Policy</Link> and{' '}
         <Link href="/policies#terms">Terms of Service</Link>.
       </p>
     </div>

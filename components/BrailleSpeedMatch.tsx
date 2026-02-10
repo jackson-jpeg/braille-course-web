@@ -17,8 +17,7 @@ function pickRandom<T>(arr: T[], count: number): T[] {
 function getDistractors(correct: string, mode: Mode): string[] {
   const correctPattern = brailleMap[correct];
   // Score all other letters by similarity
-  const scored = LETTERS
-    .filter((l) => l !== correct)
+  const scored = LETTERS.filter((l) => l !== correct)
     .map((l) => ({ letter: l, sim: computeSimilarity(correctPattern, brailleMap[l]) }))
     .sort((a, b) => b.sim - a.sim);
 
@@ -56,8 +55,10 @@ export default function BrailleSpeedMatch() {
     const el = containerRef.current;
     if (!el) return;
     const observer = new IntersectionObserver(
-      ([entry]) => { visibleRef.current = entry.isIntersecting; },
-      { threshold: 0.3 }
+      ([entry]) => {
+        visibleRef.current = entry.isIntersecting;
+      },
+      { threshold: 0.3 },
     );
     observer.observe(el);
     return () => observer.disconnect();
@@ -78,29 +79,32 @@ export default function BrailleSpeedMatch() {
     nextRound();
   }, [nextRound]);
 
-  const handleChoice = useCallback((choice: string) => {
-    if (locked) return;
-    setLocked(true);
-    setSelected(choice);
-    const correct = choice === currentLetter;
-    setIsCorrect(correct);
+  const handleChoice = useCallback(
+    (choice: string) => {
+      if (locked) return;
+      setLocked(true);
+      setSelected(choice);
+      const correct = choice === currentLetter;
+      setIsCorrect(correct);
 
-    if (correct) {
-      setStreak((s) => {
-        const next = s + 1;
-        setBestStreak((b) => Math.max(b, next));
-        // Record each correct answer with current streak as score
-        const achievements = recordResult(true, next);
-        pushAchievements(achievements);
-        return next;
-      });
-      setTimeout(nextRound, 600);
-    } else {
-      setStreak(0);
-      recordResult(false, 0);
-      setTimeout(nextRound, 1500);
-    }
-  }, [locked, currentLetter, nextRound, recordResult]);
+      if (correct) {
+        setStreak((s) => {
+          const next = s + 1;
+          setBestStreak((b) => Math.max(b, next));
+          // Record each correct answer with current streak as score
+          const achievements = recordResult(true, next);
+          pushAchievements(achievements);
+          return next;
+        });
+        setTimeout(nextRound, 600);
+      } else {
+        setStreak(0);
+        recordResult(false, 0);
+        setTimeout(nextRound, 1500);
+      }
+    },
+    [locked, currentLetter, nextRound, recordResult],
+  );
 
   // Keyboard support (1-4)
   useEffect(() => {
@@ -138,7 +142,9 @@ export default function BrailleSpeedMatch() {
         <div className="speedmatch-mode-toggle" role="radiogroup" aria-label="Game mode">
           <button
             className={`speedmatch-mode-pill${mode === 'read' ? ' active' : ''}`}
-            onClick={() => { setMode('read'); }}
+            onClick={() => {
+              setMode('read');
+            }}
             role="radio"
             aria-checked={mode === 'read'}
           >
@@ -146,7 +152,9 @@ export default function BrailleSpeedMatch() {
           </button>
           <button
             className={`speedmatch-mode-pill${mode === 'write' ? ' active' : ''}`}
-            onClick={() => { setMode('write'); }}
+            onClick={() => {
+              setMode('write');
+            }}
             role="radio"
             aria-checked={mode === 'write'}
           >
@@ -171,9 +179,8 @@ export default function BrailleSpeedMatch() {
               className={`speedmatch-choice ${getChoiceClass(choice)}`}
               onClick={() => handleChoice(choice)}
               disabled={locked}
-              aria-label={mode === 'read'
-                ? `Choice ${i + 1}: ${choice}`
-                : `Choice ${i + 1}: braille pattern for ${choice}`
+              aria-label={
+                mode === 'read' ? `Choice ${i + 1}: ${choice}` : `Choice ${i + 1}: braille pattern for ${choice}`
               }
             >
               <span className="speedmatch-choice-number">{i + 1}</span>

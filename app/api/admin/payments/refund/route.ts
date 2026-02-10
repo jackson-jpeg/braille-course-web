@@ -12,20 +12,18 @@ export async function POST(req: NextRequest) {
     const { chargeId, amount, reason, confirm } = await req.json();
 
     if (!chargeId) {
-      return NextResponse.json(
-        { error: 'Missing required field: chargeId' },
-        { status: 400 }
-      );
+      return NextResponse.json({ error: 'Missing required field: chargeId' }, { status: 400 });
     }
 
     if (confirm !== true) {
-      return NextResponse.json(
-        { error: 'Confirmation required. Set confirm: true to proceed.' },
-        { status: 400 }
-      );
+      return NextResponse.json({ error: 'Confirmation required. Set confirm: true to proceed.' }, { status: 400 });
     }
 
-    const refundParams: { charge: string; reason?: 'duplicate' | 'fraudulent' | 'requested_by_customer'; amount?: number } = {
+    const refundParams: {
+      charge: string;
+      reason?: 'duplicate' | 'fraudulent' | 'requested_by_customer';
+      amount?: number;
+    } = {
       charge: chargeId,
     };
 

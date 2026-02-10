@@ -21,7 +21,13 @@ interface Props {
   onSendEmail: (email: string, template?: string) => void;
 }
 
-export default function AdminStudentsTab({ sections, enrollments, leads: initialLeads, scheduleMap, onSendEmail }: Props) {
+export default function AdminStudentsTab({
+  sections,
+  enrollments,
+  leads: initialLeads,
+  scheduleMap,
+  onSendEmail,
+}: Props) {
   const { showToast } = useToast();
   const [subTab, setSubTab] = useState<'enrolled' | 'prospective' | 'attendance' | 'progress'>('enrolled');
   const waitlistedCount = enrollments.filter((e) => e.paymentStatus === 'WAITLISTED').length;
@@ -116,7 +122,9 @@ export default function AdminStudentsTab({ sections, enrollments, leads: initial
           cmp = (a.email || '').localeCompare(b.email || '');
           break;
         case 'schedule':
-          cmp = (scheduleMap[a.section.label] || a.section.label).localeCompare(scheduleMap[b.section.label] || b.section.label);
+          cmp = (scheduleMap[a.section.label] || a.section.label).localeCompare(
+            scheduleMap[b.section.label] || b.section.label,
+          );
           break;
         case 'plan':
           cmp = a.plan.localeCompare(b.plan);
@@ -238,11 +246,7 @@ export default function AdminStudentsTab({ sections, enrollments, leads: initial
     <>
       {/* Waitlist panel (above sub-tabs when there are waitlisted students) */}
       {waitlistedCount > 0 && subTab === 'enrolled' && (
-        <AdminWaitlistPanel
-          sections={sections}
-          scheduleMap={scheduleMap}
-          onSendEmail={(email) => onSendEmail(email)}
-        />
+        <AdminWaitlistPanel sections={sections} scheduleMap={scheduleMap} onSendEmail={(email) => onSendEmail(email)} />
       )}
 
       {/* Sub-tab toggle */}
@@ -286,13 +290,17 @@ export default function AdminStudentsTab({ sections, enrollments, leads: initial
                 className="admin-search"
               />
               {search && (
-                <button className="admin-search-clear" onClick={() => setSearch('')} type="button">&times;</button>
+                <button className="admin-search-clear" onClick={() => setSearch('')} type="button">
+                  &times;
+                </button>
               )}
             </div>
             <select value={filterSection} onChange={(e) => setFilterSection(e.target.value)} className="admin-select">
               <option value="all">All Sections</option>
               {sections.map((s) => (
-                <option key={s.id} value={s.label}>{s.label}</option>
+                <option key={s.id} value={s.label}>
+                  {s.label}
+                </option>
               ))}
             </select>
             <select value={filterStatus} onChange={(e) => setFilterStatus(e.target.value)} className="admin-select">
@@ -325,11 +333,21 @@ export default function AdminStudentsTab({ sections, enrollments, leads: initial
             <table className="admin-table">
               <thead>
                 <tr>
-                  <th className="admin-sortable-th" onClick={() => handleSort('email')}>Email{sortArrowFor('email')}</th>
-                  <th className="admin-sortable-th" onClick={() => handleSort('schedule')}>Schedule{sortArrowFor('schedule')}</th>
-                  <th className="admin-sortable-th" onClick={() => handleSort('plan')}>Plan{sortArrowFor('plan')}</th>
-                  <th className="admin-sortable-th" onClick={() => handleSort('status')}>Status{sortArrowFor('status')}</th>
-                  <th className="admin-sortable-th" onClick={() => handleSort('date')}>Date{sortArrowFor('date')}</th>
+                  <th className="admin-sortable-th" onClick={() => handleSort('email')}>
+                    Email{sortArrowFor('email')}
+                  </th>
+                  <th className="admin-sortable-th" onClick={() => handleSort('schedule')}>
+                    Schedule{sortArrowFor('schedule')}
+                  </th>
+                  <th className="admin-sortable-th" onClick={() => handleSort('plan')}>
+                    Plan{sortArrowFor('plan')}
+                  </th>
+                  <th className="admin-sortable-th" onClick={() => handleSort('status')}>
+                    Status{sortArrowFor('status')}
+                  </th>
+                  <th className="admin-sortable-th" onClick={() => handleSort('date')}>
+                    Date{sortArrowFor('date')}
+                  </th>
                 </tr>
               </thead>
               <tbody>
@@ -339,9 +357,13 @@ export default function AdminStudentsTab({ sections, enrollments, leads: initial
                       {enrollments.length === 0 ? (
                         <div className="admin-empty-state">
                           <p className="admin-empty-state-title">No students yet</p>
-                          <p className="admin-empty-state-sub">Students will appear here once they enroll in a course.</p>
+                          <p className="admin-empty-state-sub">
+                            Students will appear here once they enroll in a course.
+                          </p>
                         </div>
-                      ) : 'No students match your filters.'}
+                      ) : (
+                        'No students match your filters.'
+                      )}
                     </td>
                   </tr>
                 ) : (
@@ -350,7 +372,12 @@ export default function AdminStudentsTab({ sections, enrollments, leads: initial
                       key={e.id}
                       className={`admin-student-row-clickable ${e.paymentStatus === 'WAITLISTED' ? 'admin-row-warning' : ''}`}
                       onClick={() => setSelectedStudent(e)}
-                      onKeyDown={(ev) => { if (ev.key === 'Enter' || ev.key === ' ') { ev.preventDefault(); setSelectedStudent(e); } }}
+                      onKeyDown={(ev) => {
+                        if (ev.key === 'Enter' || ev.key === ' ') {
+                          ev.preventDefault();
+                          setSelectedStudent(e);
+                        }
+                      }}
                       tabIndex={0}
                       role="button"
                       aria-label={`View details for ${e.email || 'student'}`}
@@ -403,21 +430,34 @@ export default function AdminStudentsTab({ sections, enrollments, leads: initial
                 className="admin-search"
               />
               {leadSearch && (
-                <button className="admin-search-clear" onClick={() => setLeadSearch('')} type="button">&times;</button>
+                <button className="admin-search-clear" onClick={() => setLeadSearch('')} type="button">
+                  &times;
+                </button>
               )}
             </div>
-            <select value={leadFilterStatus} onChange={(e) => setLeadFilterStatus(e.target.value)} className="admin-select">
+            <select
+              value={leadFilterStatus}
+              onChange={(e) => setLeadFilterStatus(e.target.value)}
+              className="admin-select"
+            >
               <option value="all">All Statuses</option>
               <option value="NEW">New</option>
               <option value="CONTACTED">Contacted</option>
             </select>
-            <select value={leadFilterSubject} onChange={(e) => setLeadFilterSubject(e.target.value)} className="admin-select">
+            <select
+              value={leadFilterSubject}
+              onChange={(e) => setLeadFilterSubject(e.target.value)}
+              className="admin-select"
+            >
               <option value="all">All Types</option>
               <option value="Appointment Request">Appointments</option>
               <option value="Waitlist Request">Waitlist</option>
             </select>
             <button
-              onClick={() => { setShowAddLead(!showAddLead); setAddError(''); }}
+              onClick={() => {
+                setShowAddLead(!showAddLead);
+                setAddError('');
+              }}
               className="admin-compose-btn"
             >
               {showAddLead ? 'Cancel' : '+ Add Lead'}
@@ -489,9 +529,19 @@ export default function AdminStudentsTab({ sections, enrollments, leads: initial
                         <div className="admin-empty-state">
                           <p className="admin-empty-state-title">No prospective students</p>
                           <p className="admin-empty-state-sub">Add a lead or sync from your inbox to get started.</p>
-                          <button className="admin-empty-state-cta" onClick={() => { setShowAddLead(true); setAddError(''); }}>+ Add Lead</button>
+                          <button
+                            className="admin-empty-state-cta"
+                            onClick={() => {
+                              setShowAddLead(true);
+                              setAddError('');
+                            }}
+                          >
+                            + Add Lead
+                          </button>
                         </div>
-                      ) : 'No leads match your filters.'}
+                      ) : (
+                        'No leads match your filters.'
+                      )}
                     </td>
                   </tr>
                 ) : (
@@ -573,7 +623,10 @@ export default function AdminStudentsTab({ sections, enrollments, leads: initial
                             <button className="admin-send-btn admin-action-btn-sm" onClick={() => saveEdit(l.id)}>
                               Save
                             </button>
-                            <button className="admin-refresh-btn admin-action-btn-sm" onClick={() => setEditingLead(null)}>
+                            <button
+                              className="admin-refresh-btn admin-action-btn-sm"
+                              onClick={() => setEditingLead(null)}
+                            >
                               Cancel
                             </button>
                           </div>
@@ -590,49 +643,65 @@ export default function AdminStudentsTab({ sections, enrollments, leads: initial
                         <td>{l.name || '\u2014'}</td>
                         <td>
                           {l.subject ? (
-                            <span className={`admin-status ${l.subject === 'Appointment Request' ? 'admin-status-new' : 'admin-status-contacted'}`}>
-                              {l.subject === 'Appointment Request' ? 'Appointment' : l.subject === 'Waitlist Request' ? 'Waitlist' : l.subject}
+                            <span
+                              className={`admin-status ${l.subject === 'Appointment Request' ? 'admin-status-new' : 'admin-status-contacted'}`}
+                            >
+                              {l.subject === 'Appointment Request'
+                                ? 'Appointment'
+                                : l.subject === 'Waitlist Request'
+                                  ? 'Waitlist'
+                                  : l.subject}
                             </span>
-                          ) : '\u2014'}
+                          ) : (
+                            '\u2014'
+                          )}
                         </td>
                         <td>
                           {l.phone ? (
                             <a href={`tel:${l.phone}`} style={{ color: 'var(--gold)', textDecoration: 'none' }}>
                               {l.phone}
                             </a>
-                          ) : '\u2014'}
+                          ) : (
+                            '\u2014'
+                          )}
                         </td>
-                        <td style={{ maxWidth: '150px', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }} title={l.preferredCallbackTime || ''}>
+                        <td
+                          style={{
+                            maxWidth: '150px',
+                            overflow: 'hidden',
+                            textOverflow: 'ellipsis',
+                            whiteSpace: 'nowrap',
+                          }}
+                          title={l.preferredCallbackTime || ''}
+                        >
                           {l.preferredCallbackTime || '\u2014'}
                         </td>
                         <td>
-                          <span className={`admin-status admin-status-${l.status.toLowerCase()}`}>
-                            {l.status}
-                          </span>
+                          <span className={`admin-status admin-status-${l.status.toLowerCase()}`}>{l.status}</span>
                         </td>
                         <td
                           className="admin-notes-cell"
                           title={l.notes || ''}
                           style={{ cursor: l.notes && l.notes.length > 40 ? 'pointer' : undefined }}
-                          onClick={() => l.notes && l.notes.length > 40 && setExpandedNoteId(expandedNoteId === l.id ? null : l.id)}
+                          onClick={() =>
+                            l.notes && l.notes.length > 40 && setExpandedNoteId(expandedNoteId === l.id ? null : l.id)
+                          }
                         >
                           {l.notes
-                            ? (expandedNoteId === l.id ? l.notes : (l.notes.length > 40 ? l.notes.slice(0, 40) + '\u2026' : l.notes))
+                            ? expandedNoteId === l.id
+                              ? l.notes
+                              : l.notes.length > 40
+                                ? l.notes.slice(0, 40) + '\u2026'
+                                : l.notes
                             : '\u2014'}
                         </td>
                         <td title={fullDate(l.createdAt)}>{relativeTime(l.createdAt)}</td>
                         <td>
                           <div style={{ display: 'flex', gap: 6 }}>
-                            <button
-                              className="admin-send-btn admin-action-btn-sm"
-                              onClick={() => handleSendToLead(l)}
-                            >
+                            <button className="admin-send-btn admin-action-btn-sm" onClick={() => handleSendToLead(l)}>
                               Send Email
                             </button>
-                            <button
-                              className="admin-refresh-btn admin-action-btn-sm"
-                              onClick={() => startEdit(l)}
-                            >
+                            <button className="admin-refresh-btn admin-action-btn-sm" onClick={() => startEdit(l)}>
                               Edit
                             </button>
                             <button
@@ -644,7 +713,7 @@ export default function AdminStudentsTab({ sections, enrollments, leads: initial
                           </div>
                         </td>
                       </tr>
-                    )
+                    ),
                   )
                 )}
               </tbody>
@@ -668,20 +737,12 @@ export default function AdminStudentsTab({ sections, enrollments, leads: initial
 
       {/* ── ATTENDANCE SUB-TAB ── */}
       {subTab === 'attendance' && (
-        <AdminAttendanceTab
-          sections={sections}
-          enrollments={enrollments}
-          scheduleMap={scheduleMap}
-        />
+        <AdminAttendanceTab sections={sections} enrollments={enrollments} scheduleMap={scheduleMap} />
       )}
 
       {/* ── PROGRESS SUB-TAB ── */}
       {subTab === 'progress' && (
-        <AdminProgressTab
-          sections={sections}
-          enrollments={enrollments}
-          scheduleMap={scheduleMap}
-        />
+        <AdminProgressTab sections={sections} enrollments={enrollments} scheduleMap={scheduleMap} />
       )}
     </>
   );

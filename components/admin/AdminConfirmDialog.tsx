@@ -22,7 +22,9 @@ export default function AdminConfirmDialog({
   loading,
 }: Props) {
   useEffect(() => {
-    function handleKey(e: KeyboardEvent) { if (e.key === 'Escape') onCancel(); }
+    function handleKey(e: KeyboardEvent) {
+      if (e.key === 'Escape') onCancel();
+    }
     document.addEventListener('keydown', handleKey);
     return () => document.removeEventListener('keydown', handleKey);
   }, [onCancel]);
@@ -30,7 +32,9 @@ export default function AdminConfirmDialog({
   return (
     <div className="admin-modal-overlay" onClick={onCancel}>
       <div className="admin-confirm-dialog" onClick={(e) => e.stopPropagation()}>
-        <button className="admin-modal-close" onClick={onCancel}>&times;</button>
+        <button className="admin-modal-close" onClick={onCancel}>
+          &times;
+        </button>
         <h3 className="admin-confirm-title">{title}</h3>
         <p className="admin-confirm-message">{message}</p>
         <div className="admin-confirm-actions">

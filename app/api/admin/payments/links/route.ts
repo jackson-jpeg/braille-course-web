@@ -25,7 +25,7 @@ export async function GET(req: NextRequest) {
             amount_total: li.amount_total,
           })),
         };
-      })
+      }),
     );
 
     return NextResponse.json({ links: linksWithItems });

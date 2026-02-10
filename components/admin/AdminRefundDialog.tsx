@@ -11,7 +11,9 @@ interface Props {
 
 export default function AdminRefundDialog({ charge, onClose, onSuccess }: Props) {
   useEffect(() => {
-    function handleKey(e: KeyboardEvent) { if (e.key === 'Escape') onClose(); }
+    function handleKey(e: KeyboardEvent) {
+      if (e.key === 'Escape') onClose();
+    }
     document.addEventListener('keydown', handleKey);
     return () => document.removeEventListener('keydown', handleKey);
   }, [onClose]);
@@ -63,13 +65,15 @@ export default function AdminRefundDialog({ charge, onClose, onSuccess }: Props)
   return (
     <div className="admin-modal-overlay" onClick={onClose}>
       <div className="admin-refund-dialog" onClick={(e) => e.stopPropagation()}>
-        <button className="admin-modal-close" onClick={onClose}>&times;</button>
+        <button className="admin-modal-close" onClick={onClose}>
+          &times;
+        </button>
 
         <h3 className="admin-refund-title">Issue Refund</h3>
 
         <div className="admin-refund-warning">
-          This action cannot be undone. The refund will be processed through Stripe
-          and may take 5&ndash;10 business days to appear on the student&rsquo;s statement.
+          This action cannot be undone. The refund will be processed through Stripe and may take 5&ndash;10 business
+          days to appear on the student&rsquo;s statement.
         </div>
 
         <div className="admin-refund-details">
@@ -97,12 +101,8 @@ export default function AdminRefundDialog({ charge, onClose, onSuccess }: Props)
 
         <div className="admin-refund-field">
           <label>
-            <input
-              type="checkbox"
-              checked={isPartial}
-              onChange={(e) => setIsPartial(e.target.checked)}
-            />{' '}
-            Partial refund
+            <input type="checkbox" checked={isPartial} onChange={(e) => setIsPartial(e.target.checked)} /> Partial
+            refund
           </label>
           {isPartial && (
             <input
@@ -139,12 +139,10 @@ export default function AdminRefundDialog({ charge, onClose, onSuccess }: Props)
           <button className="admin-refresh-btn" onClick={onClose} disabled={loading}>
             Cancel
           </button>
-          <button
-            className="admin-refund-confirm"
-            onClick={handleRefund}
-            disabled={loading}
-          >
-            {loading ? 'Processing\u2026' : `Refund $${(isPartial && customAmount ? refundAmount : maxRefund).toFixed(2)}`}
+          <button className="admin-refund-confirm" onClick={handleRefund} disabled={loading}>
+            {loading
+              ? 'Processing\u2026'
+              : `Refund $${(isPartial && customAmount ? refundAmount : maxRefund).toFixed(2)}`}
           </button>
         </div>
       </div>

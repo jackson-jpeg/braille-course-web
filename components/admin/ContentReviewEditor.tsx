@@ -53,7 +53,7 @@ function SlideEditor({ slides, onChange }: { slides: SlideData[]; onChange: (s: 
   };
 
   const toggleNotes = (idx: number) => {
-    setCollapsedNotes(prev => {
+    setCollapsedNotes((prev) => {
       const next = new Set(prev);
       if (next.has(idx)) next.delete(idx);
       else next.add(idx);
@@ -88,20 +88,16 @@ function SlideEditor({ slides, onChange }: { slides: SlideData[]; onChange: (s: 
                   className="admin-review-remove-btn"
                   onClick={() => removeBullet(i, bi)}
                   title="Remove bullet"
-                >&times;</button>
+                >
+                  &times;
+                </button>
               </div>
             ))}
-            <button
-              type="button"
-              className="admin-review-add-btn"
-              onClick={() => addBullet(i)}
-            >+ Add bullet</button>
+            <button type="button" className="admin-review-add-btn" onClick={() => addBullet(i)}>
+              + Add bullet
+            </button>
           </div>
-          <button
-            type="button"
-            className="admin-review-toggle-btn"
-            onClick={() => toggleNotes(i)}
-          >
+          <button type="button" className="admin-review-toggle-btn" onClick={() => toggleNotes(i)}>
             {collapsedNotes.has(i) ? 'Show' : 'Hide'} speaker notes
           </button>
           {!collapsedNotes.has(i) && (
@@ -130,7 +126,11 @@ interface SectionData {
   practiceQuestions?: string[];
 }
 
-function SectionEditor({ sections, isStudyGuide, onChange }: {
+function SectionEditor({
+  sections,
+  isStudyGuide,
+  onChange,
+}: {
   sections: SectionData[];
   isStudyGuide: boolean;
   onChange: (s: SectionData[]) => void;
@@ -193,10 +193,18 @@ function SectionEditor({ sections, isStudyGuide, onChange }: {
                     value={b}
                     onChange={(e) => updateListItem(i, 'bullets', bi, e.target.value)}
                   />
-                  <button type="button" className="admin-review-remove-btn" onClick={() => removeListItem(i, 'bullets', bi)}>&times;</button>
+                  <button
+                    type="button"
+                    className="admin-review-remove-btn"
+                    onClick={() => removeListItem(i, 'bullets', bi)}
+                  >
+                    &times;
+                  </button>
                 </div>
               ))}
-              <button type="button" className="admin-review-add-btn" onClick={() => addListItem(i, 'bullets')}>+ Add bullet</button>
+              <button type="button" className="admin-review-add-btn" onClick={() => addListItem(i, 'bullets')}>
+                + Add bullet
+              </button>
             </div>
           )}
           {isStudyGuide && (
@@ -210,10 +218,18 @@ function SectionEditor({ sections, isStudyGuide, onChange }: {
                       value={t}
                       onChange={(e) => updateListItem(i, 'keyTerms', ti, e.target.value)}
                     />
-                    <button type="button" className="admin-review-remove-btn" onClick={() => removeListItem(i, 'keyTerms', ti)}>&times;</button>
+                    <button
+                      type="button"
+                      className="admin-review-remove-btn"
+                      onClick={() => removeListItem(i, 'keyTerms', ti)}
+                    >
+                      &times;
+                    </button>
                   </div>
                 ))}
-                <button type="button" className="admin-review-add-btn" onClick={() => addListItem(i, 'keyTerms')}>+ Add term</button>
+                <button type="button" className="admin-review-add-btn" onClick={() => addListItem(i, 'keyTerms')}>
+                  + Add term
+                </button>
               </div>
               <div className="admin-review-list-section">
                 <span className="admin-review-list-label">Practice Questions</span>
@@ -224,14 +240,28 @@ function SectionEditor({ sections, isStudyGuide, onChange }: {
                       value={q}
                       onChange={(e) => updateListItem(i, 'practiceQuestions', qi, e.target.value)}
                     />
-                    <button type="button" className="admin-review-remove-btn" onClick={() => removeListItem(i, 'practiceQuestions', qi)}>&times;</button>
+                    <button
+                      type="button"
+                      className="admin-review-remove-btn"
+                      onClick={() => removeListItem(i, 'practiceQuestions', qi)}
+                    >
+                      &times;
+                    </button>
                   </div>
                 ))}
-                <button type="button" className="admin-review-add-btn" onClick={() => addListItem(i, 'practiceQuestions')}>+ Add question</button>
+                <button
+                  type="button"
+                  className="admin-review-add-btn"
+                  onClick={() => addListItem(i, 'practiceQuestions')}
+                >
+                  + Add question
+                </button>
               </div>
             </>
           )}
-          <BrailleInlinePreview text={`${section.heading} ${section.content || ''} ${(section.bullets || []).join(' ')} ${(section.keyTerms || []).join(' ')}`} />
+          <BrailleInlinePreview
+            text={`${section.heading} ${section.content || ''} ${(section.bullets || []).join(' ')} ${(section.keyTerms || []).join(' ')}`}
+          />
         </div>
       ))}
     </div>
@@ -253,11 +283,18 @@ interface WorksheetSection {
 }
 
 const WORKSHEET_TYPES = [
-  'fill-in-the-blank', 'matching', 'practice-drill',
-  'braille-to-print', 'print-to-braille', 'dot-identification',
+  'fill-in-the-blank',
+  'matching',
+  'practice-drill',
+  'braille-to-print',
+  'print-to-braille',
+  'dot-identification',
 ];
 
-function WorksheetEditor({ sections, onChange }: {
+function WorksheetEditor({
+  sections,
+  onChange,
+}: {
   sections: WorksheetSection[];
   onChange: (s: WorksheetSection[]) => void;
 }) {
@@ -299,7 +336,9 @@ function WorksheetEditor({ sections, onChange }: {
               onChange={(e) => updateSection(i, 'type', e.target.value)}
             >
               {WORKSHEET_TYPES.map((t) => (
-                <option key={t} value={t}>{t}</option>
+                <option key={t} value={t}>
+                  {t}
+                </option>
               ))}
             </select>
           </div>
@@ -332,12 +371,16 @@ function WorksheetEditor({ sections, onChange }: {
                   onChange={(e) => updateItem(i, ii, 'answer', e.target.value)}
                   placeholder="Answer"
                 />
-                <button type="button" className="admin-review-remove-btn" onClick={() => removeItem(i, ii)}>&times;</button>
+                <button type="button" className="admin-review-remove-btn" onClick={() => removeItem(i, ii)}>
+                  &times;
+                </button>
               </div>
             ))}
-            <button type="button" className="admin-review-add-btn" onClick={() => addItem(i)}>+ Add item</button>
+            <button type="button" className="admin-review-add-btn" onClick={() => addItem(i)}>
+              + Add item
+            </button>
           </div>
-          <BrailleInlinePreview text={section.items.map(it => `${it.prompt} ${it.answer}`).join(' ')} />
+          <BrailleInlinePreview text={section.items.map((it) => `${it.prompt} ${it.answer}`).join(' ')} />
         </div>
       ))}
     </div>
@@ -356,10 +399,7 @@ interface QuizQuestion {
 
 const QUIZ_TYPES = ['multiple-choice', 'true-false', 'short-answer'];
 
-function QuizEditor({ questions, onChange }: {
-  questions: QuizQuestion[];
-  onChange: (q: QuizQuestion[]) => void;
-}) {
+function QuizEditor({ questions, onChange }: { questions: QuizQuestion[]; onChange: (q: QuizQuestion[]) => void }) {
   const updateQuestion = (idx: number, field: string, value: unknown) => {
     const updated = [...questions];
     updated[idx] = { ...updated[idx], [field]: value };
@@ -398,7 +438,9 @@ function QuizEditor({ questions, onChange }: {
               onChange={(e) => updateQuestion(i, 'type', e.target.value)}
             >
               {QUIZ_TYPES.map((t) => (
-                <option key={t} value={t}>{t}</option>
+                <option key={t} value={t}>
+                  {t}
+                </option>
               ))}
             </select>
           </div>
@@ -420,12 +462,16 @@ function QuizEditor({ questions, onChange }: {
                     onChange={(e) => updateOption(i, oi, e.target.value)}
                   />
                   {q.type === 'multiple-choice' && (
-                    <button type="button" className="admin-review-remove-btn" onClick={() => removeOption(i, oi)}>&times;</button>
+                    <button type="button" className="admin-review-remove-btn" onClick={() => removeOption(i, oi)}>
+                      &times;
+                    </button>
                   )}
                 </div>
               ))}
               {q.type === 'multiple-choice' && (
-                <button type="button" className="admin-review-add-btn" onClick={() => addOption(i)}>+ Add option</button>
+                <button type="button" className="admin-review-add-btn" onClick={() => addOption(i)}>
+                  + Add option
+                </button>
               )}
             </div>
           )}
@@ -465,28 +511,31 @@ export default function ContentReviewEditor({
 
   const d = data as Record<string, unknown>;
 
-  const handleChange = useCallback((updated: unknown) => {
-    setData(updated);
-    onSaveDraft(updated);
-  }, [onSaveDraft]);
+  const handleChange = useCallback(
+    (updated: unknown) => {
+      setData(updated);
+      onSaveDraft(updated);
+    },
+    [onSaveDraft],
+  );
 
   // For session-bundle, update only the active sub-section
-  const handleBundleChange = useCallback((key: string, value: unknown) => {
-    setData((prev: unknown) => {
-      const next = { ...(prev as Record<string, unknown>), [key]: value };
-      onSaveDraft(next);
-      return next;
-    });
-  }, [onSaveDraft]);
+  const handleBundleChange = useCallback(
+    (key: string, value: unknown) => {
+      setData((prev: unknown) => {
+        const next = { ...(prev as Record<string, unknown>), [key]: value };
+        onSaveDraft(next);
+        return next;
+      });
+    },
+    [onSaveDraft],
+  );
 
   function renderEditor() {
     switch (format) {
       case 'pptx':
         return (
-          <SlideEditor
-            slides={(d.slides || []) as SlideData[]}
-            onChange={(slides) => handleChange({ ...d, slides })}
-          />
+          <SlideEditor slides={(d.slides || []) as SlideData[]} onChange={(slides) => handleChange({ ...d, slides })} />
         );
 
       case 'pdf':
@@ -553,17 +602,23 @@ export default function ContentReviewEditor({
                 type="button"
                 className={`admin-review-bundle-tab ${bundleTab === 'slides' ? 'admin-review-bundle-tab-active' : ''}`}
                 onClick={() => setBundleTab('slides')}
-              >Slides</button>
+              >
+                Slides
+              </button>
               <button
                 type="button"
                 className={`admin-review-bundle-tab ${bundleTab === 'handout' ? 'admin-review-bundle-tab-active' : ''}`}
                 onClick={() => setBundleTab('handout')}
-              >Handout</button>
+              >
+                Handout
+              </button>
               <button
                 type="button"
                 className={`admin-review-bundle-tab ${bundleTab === 'worksheet' ? 'admin-review-bundle-tab-active' : ''}`}
                 onClick={() => setBundleTab('worksheet')}
-              >Worksheet</button>
+              >
+                Worksheet
+              </button>
             </div>
             {bundleTab === 'slides' && (
               <SlideEditor
@@ -596,8 +651,20 @@ export default function ContentReviewEditor({
     <div className="admin-review-editor">
       <div className="admin-review-editor-header">
         <svg width="22" height="22" viewBox="0 0 24 24" fill="none">
-          <path d="M11 4H4a2 2 0 00-2 2v14a2 2 0 002 2h14a2 2 0 002-2v-7" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
-          <path d="M18.5 2.5a2.121 2.121 0 013 3L12 15l-4 1 1-4 9.5-9.5z" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
+          <path
+            d="M11 4H4a2 2 0 00-2 2v14a2 2 0 002 2h14a2 2 0 002-2v-7"
+            stroke="currentColor"
+            strokeWidth="1.5"
+            strokeLinecap="round"
+            strokeLinejoin="round"
+          />
+          <path
+            d="M18.5 2.5a2.121 2.121 0 013 3L12 15l-4 1 1-4 9.5-9.5z"
+            stroke="currentColor"
+            strokeWidth="1.5"
+            strokeLinecap="round"
+            strokeLinejoin="round"
+          />
         </svg>
         <div>
           <h3>Review &amp; Edit Content</h3>
@@ -609,9 +676,15 @@ export default function ContentReviewEditor({
         <div className="admin-review-corrections">
           <div className="admin-review-corrections-header">
             <svg width="16" height="16" viewBox="0 0 24 24" fill="none">
-              <path d="M12 9v4M12 17h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" stroke="currentColor" strokeWidth="2" strokeLinecap="round"/>
+              <path
+                d="M12 9v4M12 17h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"
+                stroke="currentColor"
+                strokeWidth="2"
+                strokeLinecap="round"
+              />
             </svg>
-            <strong>AI Error Corrected</strong> — {corrections.length} braille dot pattern{corrections.length > 1 ? 's were' : ' was'} automatically fixed
+            <strong>AI Error Corrected</strong> — {corrections.length} braille dot pattern
+            {corrections.length > 1 ? 's were' : ' was'} automatically fixed
           </div>
           <ul className="admin-review-corrections-list">
             {corrections.map((c, i) => (
@@ -626,18 +699,10 @@ export default function ContentReviewEditor({
       {renderEditor()}
 
       <div className="admin-review-actions">
-        <button
-          type="button"
-          className="admin-send-btn"
-          onClick={() => onBuild(data)}
-        >
+        <button type="button" className="admin-send-btn" onClick={() => onBuild(data)}>
           Build Final Document
         </button>
-        <button
-          type="button"
-          className="admin-compose-btn"
-          onClick={onBack}
-        >
+        <button type="button" className="admin-compose-btn" onClick={onBack}>
           Back to Form
         </button>
       </div>

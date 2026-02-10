@@ -44,9 +44,7 @@ function HangmanSvg({ wrongCount }: { wrongCount: number }) {
       <line x1="130" y1="20" x2="130" y2="40" stroke="currentColor" strokeWidth="3" strokeLinecap="round" />
 
       {/* Head */}
-      {wrongCount >= 1 && (
-        <circle cx="130" cy="55" r="15" fill="none" stroke="currentColor" strokeWidth="3" />
-      )}
+      {wrongCount >= 1 && <circle cx="130" cy="55" r="15" fill="none" stroke="currentColor" strokeWidth="3" />}
       {/* Body */}
       {wrongCount >= 2 && (
         <line x1="130" y1="70" x2="130" y2="120" stroke="currentColor" strokeWidth="3" strokeLinecap="round" />
@@ -87,8 +85,10 @@ export default function BrailleHangman() {
     const el = containerRef.current;
     if (!el) return;
     const observer = new IntersectionObserver(
-      ([entry]) => { visibleRef.current = entry.isIntersecting; },
-      { threshold: 0.3 }
+      ([entry]) => {
+        visibleRef.current = entry.isIntersecting;
+      },
+      { threshold: 0.3 },
     );
     observer.observe(el);
     return () => observer.disconnect();
@@ -98,14 +98,10 @@ export default function BrailleHangman() {
     setAnswer(pickWord());
   }, []);
 
-  const wrongGuesses = [...guessedLetters].filter(
-    (l) => !answer.includes(l)
-  );
+  const wrongGuesses = [...guessedLetters].filter((l) => !answer.includes(l));
   const wrongCount = wrongGuesses.length;
 
-  const isWon = answer
-    ? answer.split('').every((l) => guessedLetters.has(l))
-    : false;
+  const isWon = answer ? answer.split('').every((l) => guessedLetters.has(l)) : false;
   const isLost = wrongCount >= MAX_WRONG;
 
   // Check win/loss after render
@@ -131,7 +127,7 @@ export default function BrailleHangman() {
       if (gameOver || !answer || guessedLetters.has(letter)) return;
       setGuessedLetters((prev) => new Set([...prev, letter]));
     },
-    [gameOver, answer, guessedLetters]
+    [gameOver, answer, guessedLetters],
   );
 
   // Physical keyboard support (only when this game section is visible)
@@ -221,11 +217,7 @@ export default function BrailleHangman() {
 
         {gameOver && (
           <div className="hangman-result" aria-live="polite">
-            <div className="hangman-message">
-              {won
-                ? 'You saved the stick figure!'
-                : `The word was ${answer}.`}
-            </div>
+            <div className="hangman-message">{won ? 'You saved the stick figure!' : `The word was ${answer}.`}</div>
             {tip && <p className="hangman-tip">{tip}</p>}
             <button className="hangman-play-again" onClick={resetGame}>
               Play Again

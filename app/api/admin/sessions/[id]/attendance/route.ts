@@ -3,10 +3,7 @@ import { prisma } from '@/lib/prisma';
 import { isAuthorized } from '@/lib/admin-auth';
 
 /* ── POST /api/admin/sessions/[id]/attendance ── bulk-set attendance records ── */
-export async function POST(
-  req: NextRequest,
-  { params }: { params: Promise<{ id: string }> }
-) {
+export async function POST(req: NextRequest, { params }: { params: Promise<{ id: string }> }) {
   if (!isAuthorized(req)) {
     return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
   }

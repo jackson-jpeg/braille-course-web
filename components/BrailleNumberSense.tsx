@@ -25,7 +25,7 @@ function BrailleNumber({ num }: { num: number }) {
     <div className="numsense-braille-number" aria-label={`Braille number ${num}`}>
       <BrailleCell pattern={nemethNumericIndicator} />
       {digits.map((d, i) => (
-        <BrailleCell key={i} pattern={nemethDigits[d] || [0,0,0,0,0,0]} />
+        <BrailleCell key={i} pattern={nemethDigits[d] || [0, 0, 0, 0, 0, 0]} />
       ))}
     </div>
   );
@@ -33,7 +33,7 @@ function BrailleNumber({ num }: { num: number }) {
 
 /** Render operator as a Nemeth braille cell */
 function BrailleOperator({ op }: { op: string }) {
-  const pattern = nemethOperators[op] || [0,0,0,0,0,0];
+  const pattern = nemethOperators[op] || [0, 0, 0, 0, 0, 0];
   return (
     <div className="numsense-operator-cell" aria-label={op}>
       <BrailleCell pattern={pattern} />
@@ -75,8 +75,10 @@ export default function BrailleNumberSense() {
     const el = containerRef.current;
     if (!el) return;
     const observer = new IntersectionObserver(
-      ([entry]) => { visibleRef.current = entry.isIntersecting; },
-      { threshold: 0.3 }
+      ([entry]) => {
+        visibleRef.current = entry.isIntersecting;
+      },
+      { threshold: 0.3 },
     );
     observer.observe(el);
     return () => observer.disconnect();
@@ -109,33 +111,41 @@ export default function BrailleNumberSense() {
     startGame();
   }, []); // eslint-disable-line react-hooks/exhaustive-deps
 
-  const handleChoice = useCallback((choice: number) => {
-    if (locked || !problem) return;
-    setLocked(true);
-    setSelected(choice);
-    const correct = choice === problem.answer;
-    setIsCorrect(correct);
+  const handleChoice = useCallback(
+    (choice: number) => {
+      if (locked || !problem) return;
+      setLocked(true);
+      setSelected(choice);
+      const correct = choice === problem.answer;
+      setIsCorrect(correct);
 
-    if (correct) setScore((s) => s + 1);
+      if (correct) setScore((s) => s + 1);
 
-    roundTimerRef.current = setTimeout(() => {
-      const nextR = round + 1;
-      setRound(nextR);
-      if (nextR >= totalRounds) {
-        const finalScore = correct ? scoreRef.current + 1 : scoreRef.current;
-        setGameOver(true);
-        const achievements = recordResult(finalScore >= totalRounds / 2, finalScore);
-        pushAchievements(achievements);
-        setTip(getRandomTip().fact);
-      } else {
-        nextRound();
-      }
-    }, correct ? 600 : 1200);
-  }, [locked, problem, round, totalRounds, nextRound, recordResult]);
+      roundTimerRef.current = setTimeout(
+        () => {
+          const nextR = round + 1;
+          setRound(nextR);
+          if (nextR >= totalRounds) {
+            const finalScore = correct ? scoreRef.current + 1 : scoreRef.current;
+            setGameOver(true);
+            const achievements = recordResult(finalScore >= totalRounds / 2, finalScore);
+            pushAchievements(achievements);
+            setTip(getRandomTip().fact);
+          } else {
+            nextRound();
+          }
+        },
+        correct ? 600 : 1200,
+      );
+    },
+    [locked, problem, round, totalRounds, nextRound, recordResult],
+  );
 
   // Cleanup timer
   useEffect(() => {
-    return () => { if (roundTimerRef.current) clearTimeout(roundTimerRef.current); };
+    return () => {
+      if (roundTimerRef.current) clearTimeout(roundTimerRef.current);
+    };
   }, []);
 
   // Keyboard support (1-4)
@@ -157,14 +167,19 @@ export default function BrailleNumberSense() {
       <div className="numsense-header">
         <span className="section-label">Numbers</span>
         <h2>Number Sense</h2>
-        <p>Solve math in braille <span className="numsense-badge">Nemeth Code</span> <span className="numsense-kbd-hint">Keys 1–4 to answer</span></p>
+        <p>
+          Solve math in braille <span className="numsense-badge">Nemeth Code</span>{' '}
+          <span className="numsense-kbd-hint">Keys 1–4 to answer</span>
+        </p>
       </div>
 
       <div className="numsense-body">
         {!gameOver && problem && (
           <>
             <div className="numsense-progress">
-              <span>Round {round + 1} / {totalRounds}</span>
+              <span>
+                Round {round + 1} / {totalRounds}
+              </span>
               <span>Score: {score}</span>
             </div>
 
@@ -205,9 +220,17 @@ export default function BrailleNumberSense() {
 
         {gameOver && (
           <div className="numsense-result">
-            <div className="numsense-result-score">{score} / {totalRounds}</div>
+            <div className="numsense-result-score">
+              {score} / {totalRounds}
+            </div>
             <div className="numsense-result-label">
-              {score === totalRounds ? 'Perfect!' : score >= 7 ? 'Great job!' : score >= 5 ? 'Good effort!' : 'Keep practicing!'}
+              {score === totalRounds
+                ? 'Perfect!'
+                : score >= 7
+                  ? 'Great job!'
+                  : score >= 5
+                    ? 'Good effort!'
+                    : 'Keep practicing!'}
             </div>
             {tip && <p className="numsense-tip">{tip}</p>}
             <button className="numsense-play-again" onClick={startGame}>

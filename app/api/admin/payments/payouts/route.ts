@@ -9,10 +9,7 @@ export async function GET(req: NextRequest) {
   }
 
   try {
-    const [payouts, balance] = await Promise.all([
-      stripe.payouts.list({ limit: 50 }),
-      stripe.balance.retrieve(),
-    ]);
+    const [payouts, balance] = await Promise.all([stripe.payouts.list({ limit: 50 }), stripe.balance.retrieve()]);
 
     const availableBalance = balance.available.reduce((sum, b) => sum + b.amount, 0);
     const pendingBalance = balance.pending.reduce((sum, b) => sum + b.amount, 0);

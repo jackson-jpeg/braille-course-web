@@ -164,7 +164,7 @@ export function customEmail(opts: { subject: string; body: string }) {
     .split(/\n{2,}/)
     .map(
       (p) =>
-        `<p style="margin:0 0 16px;font-family:${FONT_BODY};font-size:15px;color:${C.slate};line-height:1.7;">${p.replace(/\n/g, '<br />')}</p>`
+        `<p style="margin:0 0 16px;font-family:${FONT_BODY};font-size:15px;color:${C.slate};line-height:1.7;">${p.replace(/\n/g, '<br />')}</p>`,
     )
     .join('');
 
@@ -180,19 +180,14 @@ export function customEmail(opts: { subject: string; body: string }) {
   return shell(content);
 }
 
-export function enrollmentConfirmation(opts: {
-  isDeposit: boolean;
-  schedule: string;
-}) {
+export function enrollmentConfirmation(opts: { isDeposit: boolean; schedule: string }) {
   const { isDeposit, schedule } = opts;
 
-  const headline = isDeposit
-    ? 'Your $150 Deposit Is&nbsp;Confirmed!'
-    : "You&rsquo;re All Set!";
+  const headline = isDeposit ? 'Your $150 Deposit Is&nbsp;Confirmed!' : 'You&rsquo;re All Set!';
 
   const subtitle = isDeposit
     ? 'Your spot in the Summer Braille Course is reserved.'
-    : "You&rsquo;re fully enrolled in the Summer Braille Course.";
+    : 'You&rsquo;re fully enrolled in the Summer Braille Course.';
 
   const body = `
   ${header(headline, subtitle)}
@@ -211,15 +206,25 @@ export function enrollmentConfirmation(opts: {
   <!-- main copy -->
   <tr>
     <td style="padding:24px 40px 0;font-family:${FONT_BODY};font-size:15px;color:${C.slate};line-height:1.7;">
-      ${isDeposit
-        ? 'Thank you for reserving your spot! Your <strong style="color:' + C.navy + ';">$150 deposit</strong> has been received and your enrollment is&nbsp;confirmed.'
-        : 'Your <strong style="color:' + C.navy + ';">$500 payment</strong> is confirmed &mdash; you&rsquo;re fully enrolled and ready to&nbsp;go!'}
+      ${
+        isDeposit
+          ? 'Thank you for reserving your spot! Your <strong style="color:' +
+            C.navy +
+            ';">$150 deposit</strong> has been received and your enrollment is&nbsp;confirmed.'
+          : 'Your <strong style="color:' +
+            C.navy +
+            ';">$500 payment</strong> is confirmed &mdash; you&rsquo;re fully enrolled and ready to&nbsp;go!'
+      }
     </td>
   </tr>
 
-  ${isDeposit
-    ? goldBanner(`<strong>Remaining balance of $350</strong> will be charged automatically on <strong>May&nbsp;1st</strong> to the card you&nbsp;used.`)
-    : ''}
+  ${
+    isDeposit
+      ? goldBanner(
+          `<strong>Remaining balance of $350</strong> will be charged automatically on <strong>May&nbsp;1st</strong> to the card you&nbsp;used.`,
+        )
+      : ''
+  }
 
   <!-- course details table -->
   <tr>
@@ -418,10 +423,7 @@ export function schoolContactAdminEmail(opts: {
   return shell(body);
 }
 
-export function schoolContactConfirmationEmail(opts: {
-  contactName: string;
-  schoolName: string;
-}) {
+export function schoolContactConfirmationEmail(opts: { contactName: string; schoolName: string }) {
   const { contactName, schoolName } = opts;
 
   const body = `

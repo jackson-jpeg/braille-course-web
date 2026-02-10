@@ -3,10 +3,7 @@ import { prisma } from '@/lib/prisma';
 import { isAuthorized } from '@/lib/admin-auth';
 
 /* ── GET /api/admin/school-inquiries/[id]?key=... — get a single school inquiry ── */
-export async function GET(
-  req: NextRequest,
-  { params }: { params: Promise<{ id: string }> }
-) {
+export async function GET(req: NextRequest, { params }: { params: Promise<{ id: string }> }) {
   if (!isAuthorized(req)) {
     return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
   }
@@ -34,10 +31,7 @@ export async function GET(
 }
 
 /* ── PATCH /api/admin/school-inquiries/[id]?key=... — update a school inquiry ── */
-export async function PATCH(
-  req: NextRequest,
-  { params }: { params: Promise<{ id: string }> }
-) {
+export async function PATCH(req: NextRequest, { params }: { params: Promise<{ id: string }> }) {
   if (!isAuthorized(req)) {
     return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
   }
@@ -123,10 +117,7 @@ export async function PATCH(
 }
 
 /* ── DELETE /api/admin/school-inquiries/[id]?key=... — delete a school inquiry ── */
-export async function DELETE(
-  req: NextRequest,
-  { params }: { params: Promise<{ id: string }> }
-) {
+export async function DELETE(req: NextRequest, { params }: { params: Promise<{ id: string }> }) {
   if (!isAuthorized(req)) {
     return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
   }

@@ -32,8 +32,10 @@ export default function BrailleDotExplorer() {
     const el = containerRef.current;
     if (!el) return;
     const observer = new IntersectionObserver(
-      ([entry]) => { visibleRef.current = entry.isIntersecting; },
-      { threshold: 0.3 }
+      ([entry]) => {
+        visibleRef.current = entry.isIntersecting;
+      },
+      { threshold: 0.3 },
     );
     observer.observe(el);
     return () => observer.disconnect();
@@ -42,7 +44,12 @@ export default function BrailleDotExplorer() {
   // Keyboard: 1-6 to toggle dots, C to clear
   useEffect(() => {
     const dotKeyMap: Record<string, number> = {
-      '1': 0, '4': 1, '2': 2, '5': 3, '3': 4, '6': 5,
+      '1': 0,
+      '4': 1,
+      '2': 2,
+      '5': 3,
+      '3': 4,
+      '6': 5,
     };
     function onKeyDown(e: KeyboardEvent) {
       if (!visibleRef.current) return;
@@ -81,8 +88,8 @@ export default function BrailleDotExplorer() {
   }
 
   const contractionTypeLabels: Record<string, string> = {
-    'wordsign': 'Alphabetic wordsign',
-    'strong': 'Strong contraction',
+    wordsign: 'Alphabetic wordsign',
+    strong: 'Strong contraction',
     'groupsign-strong': 'Strong groupsign',
     'groupsign-lower': 'Lower groupsign',
     'wordsign-lower': 'Lower wordsign',
@@ -99,7 +106,10 @@ export default function BrailleDotExplorer() {
       <div className="explorer-header">
         <span className="section-label">Explore</span>
         <h2>Dot Explorer</h2>
-        <p>Toggle dots to discover braille {mode === 'contracted' ? 'contractions' : 'letters'} <span className="explorer-kbd-hint">Keys 1–6 toggle dots</span></p>
+        <p>
+          Toggle dots to discover braille {mode === 'contracted' ? 'contractions' : 'letters'}{' '}
+          <span className="explorer-kbd-hint">Keys 1–6 toggle dots</span>
+        </p>
       </div>
 
       <div className="explorer-mode-toggle" role="radiogroup" aria-label="Explorer mode">
@@ -142,42 +152,28 @@ export default function BrailleDotExplorer() {
               matchedLetter ? (
                 <>
                   <div className="explorer-letter">{matchedLetter}</div>
-                  <div className="explorer-dots-label">
-                    Dots {raisedDots.join(', ')}
-                  </div>
+                  <div className="explorer-dots-label">Dots {raisedDots.join(', ')}</div>
                 </>
               ) : (
                 <>
                   <div className="explorer-letter explorer-no-match">?</div>
-                  <div className="explorer-dots-label">
-                    Dots {raisedDots.join(', ')} — No match
-                  </div>
+                  <div className="explorer-dots-label">Dots {raisedDots.join(', ')} — No match</div>
                 </>
               )
+            ) : matchedContraction ? (
+              <>
+                <div className="explorer-contraction">{matchedContraction.label}</div>
+                <div className="explorer-contraction-type">{contractionTypeLabels[matchedContraction.type]}</div>
+                <div className="explorer-dots-label">Dots {raisedDots.join(', ')}</div>
+              </>
             ) : (
-              matchedContraction ? (
-                <>
-                  <div className="explorer-contraction">{matchedContraction.label}</div>
-                  <div className="explorer-contraction-type">
-                    {contractionTypeLabels[matchedContraction.type]}
-                  </div>
-                  <div className="explorer-dots-label">
-                    Dots {raisedDots.join(', ')}
-                  </div>
-                </>
-              ) : (
-                <>
-                  <div className="explorer-letter explorer-no-match">?</div>
-                  <div className="explorer-dots-label">
-                    Dots {raisedDots.join(', ')} — No match
-                  </div>
-                </>
-              )
+              <>
+                <div className="explorer-letter explorer-no-match">?</div>
+                <div className="explorer-dots-label">Dots {raisedDots.join(', ')} — No match</div>
+              </>
             )
           ) : (
-            <div className="explorer-prompt">
-              Tap dots to begin
-            </div>
+            <div className="explorer-prompt">Tap dots to begin</div>
           )}
         </div>
 

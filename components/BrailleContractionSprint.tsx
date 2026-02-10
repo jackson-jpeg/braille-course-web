@@ -1,11 +1,7 @@
 'use client';
 
 import { useState, useEffect, useCallback, useRef } from 'react';
-import {
-  contractedBrailleEntries,
-  type ContractionEntry,
-  type ContractionType,
-} from '@/lib/contracted-braille-map';
+import { contractedBrailleEntries, type ContractionEntry, type ContractionType } from '@/lib/contracted-braille-map';
 import { getContractionWords, type ContractionWord } from '@/lib/contraction-words';
 import { computeSimilarity } from '@/lib/braille-map';
 import { useGameProgress } from '@/hooks/useGameProgress';
@@ -112,14 +108,12 @@ function generateApplication(pool: ContractionEntry[], words: ContractionWord[])
   const word = eligible[Math.floor(Math.random() * eligible.length)];
 
   // Find the contraction pieces (not single letters)
-  const contractionPieces = word.pieces.filter(
-    (p) => !(p.length === 1 && /^[A-Z]$/.test(p))
-  );
+  const contractionPieces = word.pieces.filter((p) => !(p.length === 1 && /^[A-Z]$/.test(p)));
   if (contractionPieces.length === 0) return null;
 
   const targetPiece = contractionPieces[Math.floor(Math.random() * contractionPieces.length)];
   const correctEntry = contractedBrailleEntries.find(
-    (e) => cleanLabel(e.label).toLowerCase() === targetPiece.toLowerCase()
+    (e) => cleanLabel(e.label).toLowerCase() === targetPiece.toLowerCase(),
   );
   if (!correctEntry) return null;
 
@@ -148,10 +142,10 @@ function generateQuestion(
     kind = roll < 0.5 ? 'recognition' : 'recall';
   } else if (difficulty === 'intermediate') {
     // 35/35/30
-    kind = roll < 0.35 ? 'recognition' : roll < 0.70 ? 'recall' : 'application';
+    kind = roll < 0.35 ? 'recognition' : roll < 0.7 ? 'recall' : 'application';
   } else {
     // 30/30/40
-    kind = roll < 0.30 ? 'recognition' : roll < 0.60 ? 'recall' : 'application';
+    kind = roll < 0.3 ? 'recognition' : roll < 0.6 ? 'recall' : 'application';
   }
 
   if (kind === 'recognition') return generateRecognition(pool);
@@ -218,7 +212,9 @@ export default function BrailleContractionSprint() {
     const el = containerRef.current;
     if (!el) return;
     const observer = new IntersectionObserver(
-      ([entry]) => { visibleRef.current = entry.isIntersecting; },
+      ([entry]) => {
+        visibleRef.current = entry.isIntersecting;
+      },
       { threshold: 0.3 },
     );
     observer.observe(el);
@@ -241,10 +237,7 @@ export default function BrailleContractionSprint() {
     do {
       q = generateQuestion(pool, words, difficulty);
       attempts++;
-    } while (
-      attempts < 10 &&
-      recentCorrectRef.current.includes(q.choices[q.correctIndex].label)
-    );
+    } while (attempts < 10 && recentCorrectRef.current.includes(q.choices[q.correctIndex].label));
 
     // Track recent to prevent repeats
     recentCorrectRef.current.push(q.choices[q.correctIndex].label);
@@ -303,46 +296,49 @@ export default function BrailleContractionSprint() {
     }
   }, [phase, recordResult]);
 
-  const handleChoice = useCallback((choiceIndex: number) => {
-    if (phase !== 'playing' || !question || feedback) return;
+  const handleChoice = useCallback(
+    (choiceIndex: number) => {
+      if (phase !== 'playing' || !question || feedback) return;
 
-    setSelectedIndex(choiceIndex);
-    const isCorrect = choiceIndex === question.correctIndex;
+      setSelectedIndex(choiceIndex);
+      const isCorrect = choiceIndex === question.correctIndex;
 
-    if (isCorrect) {
-      setFeedback('correct');
-      setScore((s) => s + 1);
-      setStreak((s) => {
-        const next = s + 1;
-        setBestStreak((b) => Math.max(b, next));
-        return next;
-      });
-      // +2s time bonus
-      setTimeLeft((t) => t + 2);
-      setTimeFlash('+2s');
-      setFlashKey((k) => k + 1);
-      flashTimerRef.current = setTimeout(() => setTimeFlash(null), 600);
-      feedbackTimerRef.current = setTimeout(() => nextQuestion(), 300);
-    } else {
-      setFeedback('wrong');
-      setStreak(0);
-      // -3s time penalty
-      setTimeLeft((t) => {
-        const next = t - 3;
-        if (next <= 0) {
-          clearInterval(timerRef.current);
-          // Delay phase transition slightly so user sees the wrong feedback
-          setTimeout(() => setPhase('result'), 600);
-          return 0;
-        }
-        return next;
-      });
-      setTimeFlash('-3s');
-      setFlashKey((k) => k + 1);
-      flashTimerRef.current = setTimeout(() => setTimeFlash(null), 800);
-      feedbackTimerRef.current = setTimeout(() => nextQuestion(), 800);
-    }
-  }, [phase, question, feedback, nextQuestion]);
+      if (isCorrect) {
+        setFeedback('correct');
+        setScore((s) => s + 1);
+        setStreak((s) => {
+          const next = s + 1;
+          setBestStreak((b) => Math.max(b, next));
+          return next;
+        });
+        // +2s time bonus
+        setTimeLeft((t) => t + 2);
+        setTimeFlash('+2s');
+        setFlashKey((k) => k + 1);
+        flashTimerRef.current = setTimeout(() => setTimeFlash(null), 600);
+        feedbackTimerRef.current = setTimeout(() => nextQuestion(), 300);
+      } else {
+        setFeedback('wrong');
+        setStreak(0);
+        // -3s time penalty
+        setTimeLeft((t) => {
+          const next = t - 3;
+          if (next <= 0) {
+            clearInterval(timerRef.current);
+            // Delay phase transition slightly so user sees the wrong feedback
+            setTimeout(() => setPhase('result'), 600);
+            return 0;
+          }
+          return next;
+        });
+        setTimeFlash('-3s');
+        setFlashKey((k) => k + 1);
+        flashTimerRef.current = setTimeout(() => setTimeFlash(null), 800);
+        feedbackTimerRef.current = setTimeout(() => nextQuestion(), 800);
+      }
+    },
+    [phase, question, feedback, nextQuestion],
+  );
 
   // Keyboard support (1-4)
   useEffect(() => {
@@ -382,9 +378,8 @@ export default function BrailleContractionSprint() {
         {phase === 'ready' && (
           <div className="csprint-ready">
             <p className="csprint-instructions">
-              Identify braille contractions as fast as you can.
-              Correct answers add time — wrong answers cost time.
-              Keys 1–4 to choose.
+              Identify braille contractions as fast as you can. Correct answers add time — wrong answers cost time. Keys
+              1–4 to choose.
             </p>
             <button className="csprint-start-btn" onClick={startGame}>
               Start Sprint
@@ -404,9 +399,7 @@ export default function BrailleContractionSprint() {
 
             {/* Status row: timer / score / streak */}
             <div className="csprint-status" aria-live="polite" aria-atomic="true">
-              <span className={`csprint-timer${timerLow ? ' low' : ''}`}>
-                {timeLeft}s
-              </span>
+              <span className={`csprint-timer${timerLow ? ' low' : ''}`}>{timeLeft}s</span>
               {timeFlash && (
                 <span
                   key={flashKey}
@@ -416,9 +409,7 @@ export default function BrailleContractionSprint() {
                 </span>
               )}
               <span className="csprint-score">Score: {score}</span>
-              <span className="csprint-streak-inline">
-                Streak: {streak}
-              </span>
+              <span className="csprint-streak-inline">Streak: {streak}</span>
             </div>
 
             {/* Prompt */}

@@ -10,8 +10,7 @@ export const metadata: Metadata = {
     'Schedule a 1-on-1 braille instruction session with Delaney Costello, Teacher of the Visually Impaired. Personalized lessons at your own pace.',
   openGraph: {
     title: 'Book a Braille Appointment — TeachBraille.org',
-    description:
-      'Personalized 1-on-1 braille instruction with a certified TVI.',
+    description: 'Personalized 1-on-1 braille instruction with a certified TVI.',
   },
 };
 
@@ -29,8 +28,7 @@ export default function AppointmentsPage() {
             Book an <em>Appointment</em>
           </h1>
           <p className="appointments-hero-sub">
-            Personalized braille instruction tailored to your pace, your goals,
-            and your schedule.
+            Personalized braille instruction tailored to your pace, your goals, and your schedule.
           </p>
         </div>
       </section>
@@ -42,14 +40,13 @@ export default function AppointmentsPage() {
           <h2 id="appt-about-heading">Delaney Costello</h2>
           <p className="appointments-about-text">
             Delaney is a <strong>Teacher of the Visually Impaired</strong> with{' '}
-            <strong>9 years of teaching experience</strong> — 6 years in person
-            and 3 years in a hybrid of in-person and remote services.
+            <strong>9 years of teaching experience</strong> — 6 years in person and 3 years in a hybrid of in-person and
+            remote services.
           </p>
           <p className="appointments-about-text">
-            Whether you&apos;re a parent wanting to connect with your child, a
-            family member hoping to read alongside a loved one, or a professional
-            building braille skills, Delaney tailors every session to meet you
-            where you are.
+            Whether you&apos;re a parent wanting to connect with your child, a family member hoping to read alongside a
+            loved one, or a professional building braille skills, Delaney tailors every session to meet you where you
+            are.
           </p>
         </div>
       </section>
@@ -58,22 +55,16 @@ export default function AppointmentsPage() {
       <section className="benefit-callout" aria-labelledby="appt-benefit-heading">
         <div className="benefit-inner reveal">
           <div className="benefit-icon" aria-hidden="true">
-            <svg
-              viewBox="0 0 24 24"
-              fill="none"
-              stroke="currentColor"
-              strokeWidth="2"
-            >
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
               <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z" />
             </svg>
           </div>
           <h2 id="appt-benefit-heading">Why Learn Braille?</h2>
           <p>
-            Learning Braille is a wonderful way to connect with a child, parent,
-            spouse, sibling, or friend who is visually impaired. A strong knowledge
-            of Braille allows you to write a note, assist with homework, or
-            transcribe someone&apos;s written work — bridging the gap between the
-            sighted and visually impaired worlds with understanding and love.
+            Learning Braille is a wonderful way to connect with a child, parent, spouse, sibling, or friend who is
+            visually impaired. A strong knowledge of Braille allows you to write a note, assist with homework, or
+            transcribe someone&apos;s written work — bridging the gap between the sighted and visually impaired worlds
+            with understanding and love.
           </p>
         </div>
       </section>
@@ -92,8 +83,8 @@ export default function AppointmentsPage() {
               </div>
               <h3>Learn at Your Own Pace</h3>
               <p>
-                Every minute is focused on your progress — no need to keep up
-                with a group or wait for others to catch up.
+                Every minute is focused on your progress — no need to keep up with a group or wait for others to catch
+                up.
               </p>
             </div>
             <div className="appointments-why-item">
@@ -105,9 +96,8 @@ export default function AppointmentsPage() {
               </div>
               <h3>Curriculum Built Around You</h3>
               <p>
-                Lessons are tailored to your specific goals — whether that&apos;s
-                reading to your child, writing notes, or building professional
-                skills.
+                Lessons are tailored to your specific goals — whether that&apos;s reading to your child, writing notes,
+                or building professional skills.
               </p>
             </div>
             <div className="appointments-why-item">
@@ -120,10 +110,7 @@ export default function AppointmentsPage() {
                 </svg>
               </div>
               <h3>Flexible Commitment</h3>
-              <p>
-                No 8-week commitment required. Book sessions as you need them,
-                on a schedule that works for you.
-              </p>
+              <p>No 8-week commitment required. Book sessions as you need them, on a schedule that works for you.</p>
             </div>
           </div>
         </div>
@@ -144,8 +131,8 @@ export default function AppointmentsPage() {
               </div>
               <h3>Individualized Lessons</h3>
               <p>
-                Each session is built around your current level and learning goals —
-                whether you&apos;re just starting or building on existing knowledge.
+                Each session is built around your current level and learning goals — whether you&apos;re just starting
+                or building on existing knowledge.
               </p>
             </div>
 
@@ -158,8 +145,8 @@ export default function AppointmentsPage() {
               </div>
               <h3>Flexible Scheduling</h3>
               <p>
-                Choose a time that works for you. Sessions are conducted remotely
-                via video call, so you can learn from anywhere.
+                Choose a time that works for you. Sessions are conducted remotely via video call, so you can learn from
+                anywhere.
               </p>
             </div>
 
@@ -172,8 +159,8 @@ export default function AppointmentsPage() {
               </div>
               <h3>All Skill Levels</h3>
               <p>
-                From learning your first braille letters to mastering contractions
-                and numbers — sessions are designed for beginners and beyond.
+                From learning your first braille letters to mastering contractions and numbers — sessions are designed
+                for beginners and beyond.
               </p>
             </div>
           </div>
@@ -181,9 +168,8 @@ export default function AppointmentsPage() {
           <div className="appointments-who reveal">
             <h3>Who Are Sessions For?</h3>
             <p>
-              Parents, family members, educators, paraprofessionals, and anyone
-              interested in learning Unified English Braille. No prior experience
-              needed.
+              Parents, family members, educators, paraprofessionals, and anyone interested in learning Unified English
+              Braille. No prior experience needed.
             </p>
           </div>
         </div>
@@ -195,25 +181,25 @@ export default function AppointmentsPage() {
           <h2 id="how-heading">How It Works</h2>
           <div className="appointments-steps">
             <div className="appointments-step">
-              <div className="appointments-step-number" aria-hidden="true">1</div>
+              <div className="appointments-step-number" aria-hidden="true">
+                1
+              </div>
               <h3>Reach Out</h3>
-              <p>
-                Send an email with your name, experience level, and goals.
-              </p>
+              <p>Send an email with your name, experience level, and goals.</p>
             </div>
             <div className="appointments-step">
-              <div className="appointments-step-number" aria-hidden="true">2</div>
+              <div className="appointments-step-number" aria-hidden="true">
+                2
+              </div>
               <h3>Plan Your Sessions</h3>
-              <p>
-                Delaney will follow up to discuss scheduling and a plan tailored to you.
-              </p>
+              <p>Delaney will follow up to discuss scheduling and a plan tailored to you.</p>
             </div>
             <div className="appointments-step">
-              <div className="appointments-step-number" aria-hidden="true">3</div>
+              <div className="appointments-step-number" aria-hidden="true">
+                3
+              </div>
               <h3>Start Learning</h3>
-              <p>
-                Meet via video call and begin building your braille skills.
-              </p>
+              <p>Meet via video call and begin building your braille skills.</p>
             </div>
           </div>
         </div>
@@ -244,8 +230,7 @@ export default function AppointmentsPage() {
       <section className="appointments-crosslink">
         <div className="appointments-crosslink-inner reveal">
           <p>
-            Looking for a group course?{' '}
-            <Link href="/summer">View the Summer Braille Course &rarr;</Link>
+            Looking for a group course? <Link href="/summer">View the Summer Braille Course &rarr;</Link>
           </p>
         </div>
       </section>

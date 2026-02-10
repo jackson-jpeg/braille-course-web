@@ -46,7 +46,10 @@ export async function POST(req: NextRequest) {
   }
 
   const parsed = typeof contentJson === 'string' ? JSON.parse(contentJson) : contentJson;
-  const safeTitle = title.replace(/[^a-zA-Z0-9-_ ]/g, '').replace(/\s+/g, '-').toLowerCase();
+  const safeTitle = title
+    .replace(/[^a-zA-Z0-9-_ ]/g, '')
+    .replace(/\s+/g, '-')
+    .toLowerCase();
 
   const stream = new ReadableStream({
     async start(controller) {
@@ -57,7 +60,15 @@ export async function POST(req: NextRequest) {
       try {
         if (format === 'session-bundle') {
           // Build three documents sequentially with progress sub-events
-          const materials: Array<{ id: string; filename: string; contentType: string; size: number; blobUrl: string; category: string; createdAt: string }> = [];
+          const materials: Array<{
+            id: string;
+            filename: string;
+            contentType: string;
+            size: number;
+            blobUrl: string;
+            category: string;
+            createdAt: string;
+          }> = [];
 
           // 1. Slides (PPTX)
           send({ stage: 'building', sub: 'slides', progress: '1/3' });

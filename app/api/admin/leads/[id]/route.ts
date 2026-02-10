@@ -3,10 +3,7 @@ import { prisma } from '@/lib/prisma';
 import { isAuthorized } from '@/lib/admin-auth';
 
 /* ── PATCH /api/admin/leads/[id]?key=... — update a lead ── */
-export async function PATCH(
-  req: NextRequest,
-  { params }: { params: Promise<{ id: string }> }
-) {
+export async function PATCH(req: NextRequest, { params }: { params: Promise<{ id: string }> }) {
   if (!isAuthorized(req)) {
     return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
   }
@@ -25,10 +22,7 @@ export async function PATCH(
     };
 
     if (status && status !== 'NEW' && status !== 'CONTACTED') {
-      return NextResponse.json(
-        { error: 'Status must be NEW or CONTACTED' },
-        { status: 400 }
-      );
+      return NextResponse.json({ error: 'Status must be NEW or CONTACTED' }, { status: 400 });
     }
 
     const data: Record<string, string | null> = {};
@@ -58,10 +52,7 @@ export async function PATCH(
 }
 
 /* ── DELETE /api/admin/leads/[id]?key=... — delete a lead ── */
-export async function DELETE(
-  req: NextRequest,
-  { params }: { params: Promise<{ id: string }> }
-) {
+export async function DELETE(req: NextRequest, { params }: { params: Promise<{ id: string }> }) {
   if (!isAuthorized(req)) {
     return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
   }

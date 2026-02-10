@@ -3,10 +3,7 @@ import { prisma } from '@/lib/prisma';
 import { isAuthorized } from '@/lib/admin-auth';
 
 /* ── GET /api/admin/sessions/[id] ── get session with full attendance roster ── */
-export async function GET(
-  req: NextRequest,
-  { params }: { params: Promise<{ id: string }> }
-) {
+export async function GET(req: NextRequest, { params }: { params: Promise<{ id: string }> }) {
   if (!isAuthorized(req)) {
     return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
   }
@@ -52,10 +49,7 @@ export async function GET(
 }
 
 /* ── PATCH /api/admin/sessions/[id] ── update session title/date ── */
-export async function PATCH(
-  req: NextRequest,
-  { params }: { params: Promise<{ id: string }> }
-) {
+export async function PATCH(req: NextRequest, { params }: { params: Promise<{ id: string }> }) {
   if (!isAuthorized(req)) {
     return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
   }
@@ -89,10 +83,7 @@ export async function PATCH(
 }
 
 /* ── DELETE /api/admin/sessions/[id] ── delete session (cascades attendance) ── */
-export async function DELETE(
-  req: NextRequest,
-  { params }: { params: Promise<{ id: string }> }
-) {
+export async function DELETE(req: NextRequest, { params }: { params: Promise<{ id: string }> }) {
   if (!isAuthorized(req)) {
     return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
   }

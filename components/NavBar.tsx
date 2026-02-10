@@ -75,10 +75,7 @@ export default function NavBar() {
           <Link href="/" className="site-nav-logo" aria-label="TeachBraille home">
             <span className="site-nav-logo-dots" aria-hidden="true">
               {T_DOTS.map((filled, i) => (
-                <span
-                  key={i}
-                  className={`site-nav-logo-dot${filled ? ' filled' : ''}`}
-                />
+                <span key={i} className={`site-nav-logo-dot${filled ? ' filled' : ''}`} />
               ))}
             </span>
             TeachBraille
@@ -95,15 +92,9 @@ export default function NavBar() {
             <span />
           </button>
 
-          <div
-            className={`site-nav-links${menuOpen ? ' open' : ''}`}
-            aria-hidden={!menuOpen || undefined}
-          >
+          <div className={`site-nav-links${menuOpen ? ' open' : ''}`} aria-hidden={!menuOpen || undefined}>
             {NAV_LINKS.map(({ href, label }, index) => {
-              const isActive =
-                href === '/'
-                  ? pathname === '/'
-                  : pathname.startsWith(href);
+              const isActive = href === '/' ? pathname === '/' : pathname.startsWith(href);
               return (
                 <Link
                   key={href}
@@ -117,7 +108,9 @@ export default function NavBar() {
               );
             })}
             <div className="site-nav-mobile-dots" aria-hidden="true">
-              <span /><span /><span />
+              <span />
+              <span />
+              <span />
             </div>
           </div>
         </div>

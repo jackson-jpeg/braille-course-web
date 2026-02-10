@@ -56,28 +56,49 @@ function StatusIcon({ status }: { status: string }) {
   if (s === 'delivered') {
     return (
       <span className="admin-status-icon">
-        <svg width="10" height="10" viewBox="0 0 16 16" fill="none"><path d="M3 8l3.5 3.5L13 5" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/></svg>
+        <svg width="10" height="10" viewBox="0 0 16 16" fill="none">
+          <path
+            d="M3 8l3.5 3.5L13 5"
+            stroke="currentColor"
+            strokeWidth="2"
+            strokeLinecap="round"
+            strokeLinejoin="round"
+          />
+        </svg>
       </span>
     );
   }
   if (s === 'opened' || s === 'clicked') {
     return (
       <span className="admin-status-icon">
-        <svg width="10" height="10" viewBox="0 0 16 16" fill="none"><ellipse cx="8" cy="8" rx="3" ry="2.5" stroke="currentColor" strokeWidth="1.5"/><circle cx="8" cy="8" r="1" fill="currentColor"/><path d="M1 8s3-5 7-5 7 5 7 5-3 5-7 5-7-5-7-5z" stroke="currentColor" strokeWidth="1.2" fill="none"/></svg>
+        <svg width="10" height="10" viewBox="0 0 16 16" fill="none">
+          <ellipse cx="8" cy="8" rx="3" ry="2.5" stroke="currentColor" strokeWidth="1.5" />
+          <circle cx="8" cy="8" r="1" fill="currentColor" />
+          <path d="M1 8s3-5 7-5 7 5 7 5-3 5-7 5-7-5-7-5z" stroke="currentColor" strokeWidth="1.2" fill="none" />
+        </svg>
       </span>
     );
   }
   if (s === 'bounced' || s === 'complained') {
     return (
       <span className="admin-status-icon">
-        <svg width="10" height="10" viewBox="0 0 16 16" fill="none"><path d="M4 4l8 8M12 4l-8 8" stroke="currentColor" strokeWidth="2" strokeLinecap="round"/></svg>
+        <svg width="10" height="10" viewBox="0 0 16 16" fill="none">
+          <path d="M4 4l8 8M12 4l-8 8" stroke="currentColor" strokeWidth="2" strokeLinecap="round" />
+        </svg>
       </span>
     );
   }
   return null;
 }
 
-export default function AdminEmailsTab({ enrollments, initialComposeTo, initialTemplate, pendingAttachmentIds, onClearAttachments, onComposeDirty }: Props) {
+export default function AdminEmailsTab({
+  enrollments,
+  initialComposeTo,
+  initialTemplate,
+  pendingAttachmentIds,
+  onClearAttachments,
+  onComposeDirty,
+}: Props) {
   const { showToast } = useToast();
   const [emailSubTab, setEmailSubTab] = useState<'sent' | 'received' | 'scheduled'>('sent');
   const [sendMode, setSendMode] = useState<'now' | 'schedule'>('now');
@@ -138,7 +159,8 @@ export default function AdminEmailsTab({ enrollments, initialComposeTo, initialT
 
   // Track compose dirty state
   useEffect(() => {
-    const isDirty = showCompose && (composeTo.trim() !== '' || composeSubject.trim() !== '' || composeBody.trim() !== '');
+    const isDirty =
+      showCompose && (composeTo.trim() !== '' || composeSubject.trim() !== '' || composeBody.trim() !== '');
     onComposeDirty?.(isDirty);
   }, [showCompose, composeTo, composeSubject, composeBody, onComposeDirty]);
 
@@ -200,7 +222,9 @@ export default function AdminEmailsTab({ enrollments, initialComposeTo, initialT
       if (res.ok) setAllMaterials(json.materials);
     } catch (err) {
       console.error('Failed to fetch materials:', err);
-    } finally { setMaterialsLoading(false); }
+    } finally {
+      setMaterialsLoading(false);
+    }
   }
 
   function handleTogglePicker() {
@@ -317,7 +341,10 @@ export default function AdminEmailsTab({ enrollments, initialComposeTo, initialT
     setComposeSending(true);
     setComposeResult(null);
     try {
-      const recipients = composeTo.split(',').map((s) => s.trim()).filter(Boolean);
+      const recipients = composeTo
+        .split(',')
+        .map((s) => s.trim())
+        .filter(Boolean);
       const payload: Record<string, unknown> = { to: recipients, subject: composeSubject, body: composeBody };
       if (attachments.length > 0) {
         payload.attachmentIds = attachments.map((a) => a.id);
@@ -356,7 +383,10 @@ export default function AdminEmailsTab({ enrollments, initialComposeTo, initialT
     setComposeSending(true);
     setComposeResult(null);
     try {
-      const recipients = composeTo.split(',').map((s) => s.trim()).filter(Boolean);
+      const recipients = composeTo
+        .split(',')
+        .map((s) => s.trim())
+        .filter(Boolean);
       const payload: Record<string, unknown> = {
         to: recipients,
         subject: composeSubject,
@@ -404,7 +434,10 @@ export default function AdminEmailsTab({ enrollments, initialComposeTo, initialT
       doScheduleEmail();
       return;
     }
-    const recipients = composeTo.split(',').map((s) => s.trim()).filter(Boolean);
+    const recipients = composeTo
+      .split(',')
+      .map((s) => s.trim())
+      .filter(Boolean);
     if (recipients.length >= 3) {
       setShowSendConfirm(true);
     } else {
@@ -438,7 +471,9 @@ export default function AdminEmailsTab({ enrollments, initialComposeTo, initialT
     setComposeTo('');
     setComposeSubject(email.subject.startsWith('Fwd: ') ? email.subject : `Fwd: ${email.subject}`);
     const quotedText = email.text || '';
-    setComposeBody(`\n\n---\nForwarded message:\nFrom: ${email.from}\nDate: ${fullDate(email.created_at)}\nSubject: ${email.subject}\n\n${quotedText}`);
+    setComposeBody(
+      `\n\n---\nForwarded message:\nFrom: ${email.from}\nDate: ${fullDate(email.created_at)}\nSubject: ${email.subject}\n\n${quotedText}`,
+    );
     setShowCompose(true);
     setEmailSubTab('sent');
     setSelectedTemplate('');
@@ -450,7 +485,9 @@ export default function AdminEmailsTab({ enrollments, initialComposeTo, initialT
 
   // Delivery stats
   const sentCount = emails.length;
-  const deliveredCount = emails.filter((e) => e.last_event === 'delivered' || e.last_event === 'opened' || e.last_event === 'clicked').length;
+  const deliveredCount = emails.filter(
+    (e) => e.last_event === 'delivered' || e.last_event === 'opened' || e.last_event === 'clicked',
+  ).length;
   const openedCount = emails.filter((e) => e.last_event === 'opened' || e.last_event === 'clicked').length;
   const bouncedCount = emails.filter((e) => e.last_event === 'bounced' || e.last_event === 'complained').length;
 
@@ -533,10 +570,7 @@ export default function AdminEmailsTab({ enrollments, initialComposeTo, initialT
 
     if (receivedSearch.trim()) {
       const q = receivedSearch.toLowerCase();
-      list = list.filter((e) =>
-        e.from.toLowerCase().includes(q) ||
-        (e.subject || '').toLowerCase().includes(q)
-      );
+      list = list.filter((e) => e.from.toLowerCase().includes(q) || (e.subject || '').toLowerCase().includes(q));
     }
 
     list.sort((a, b) => {
@@ -603,7 +637,10 @@ export default function AdminEmailsTab({ enrollments, initialComposeTo, initialT
         <div className="admin-email-tab-content" key="sent">
           <div className="admin-email-actions">
             <button
-              onClick={() => { setShowCompose(!showCompose); setComposeResult(null); }}
+              onClick={() => {
+                setShowCompose(!showCompose);
+                setComposeResult(null);
+              }}
               className="admin-compose-btn"
             >
               {showCompose ? 'Cancel' : 'Compose Email'}
@@ -611,13 +648,19 @@ export default function AdminEmailsTab({ enrollments, initialComposeTo, initialT
             <button onClick={fetchEmails} className="admin-refresh-btn" disabled={emailsLoading}>
               {emailsLoading ? 'Loading\u2026' : 'Refresh'}
             </button>
-            {lastFetched && (
-              <span className="admin-last-updated">{lastUpdatedText(lastFetched)}</span>
-            )}
+            {lastFetched && <span className="admin-last-updated">{lastUpdatedText(lastFetched)}</span>}
           </div>
 
           {/* Compose backdrop */}
-          {showCompose && <div className="admin-compose-backdrop" onClick={() => { setShowCompose(false); setComposeResult(null); }} />}
+          {showCompose && (
+            <div
+              className="admin-compose-backdrop"
+              onClick={() => {
+                setShowCompose(false);
+                setComposeResult(null);
+              }}
+            />
+          )}
 
           {showCompose && (
             <div className="admin-compose">
@@ -638,7 +681,9 @@ export default function AdminEmailsTab({ enrollments, initialComposeTo, initialT
                         >
                           <option value="">Start from scratch</option>
                           {EMAIL_TEMPLATES.map((t) => (
-                            <option key={t.label} value={t.label}>{t.label}</option>
+                            <option key={t.label} value={t.label}>
+                              {t.label}
+                            </option>
                           ))}
                         </select>
                         <button
@@ -647,7 +692,12 @@ export default function AdminEmailsTab({ enrollments, initialComposeTo, initialT
                           onClick={() => setShowDraftInput(!showDraftInput)}
                         >
                           <svg width="14" height="14" viewBox="0 0 16 16" fill="none">
-                            <path d="M8 1L6 6l-5 .7 3.6 3.5-.9 5L8 13l4.3 2.2-.9-5L15 6.7 10 6 8 1z" stroke="currentColor" strokeWidth="1.2" strokeLinejoin="round"/>
+                            <path
+                              d="M8 1L6 6l-5 .7 3.6 3.5-.9 5L8 13l4.3 2.2-.9-5L15 6.7 10 6 8 1z"
+                              stroke="currentColor"
+                              strokeWidth="1.2"
+                              strokeLinejoin="round"
+                            />
                           </svg>
                           Draft with AI
                         </button>
@@ -665,7 +715,12 @@ export default function AdminEmailsTab({ enrollments, initialComposeTo, initialT
                             onChange={(e) => setDraftBrief(e.target.value)}
                             placeholder="e.g. Remind students about next week's class and what to bring"
                             className="admin-compose-input"
-                            onKeyDown={(e) => { if (e.key === 'Enter') { e.preventDefault(); handleDraftWithAI(); } }}
+                            onKeyDown={(e) => {
+                              if (e.key === 'Enter') {
+                                e.preventDefault();
+                                handleDraftWithAI();
+                              }
+                            }}
                           />
                           <button
                             type="button"
@@ -751,7 +806,13 @@ export default function AdminEmailsTab({ enrollments, initialComposeTo, initialT
                           onClick={handleTogglePicker}
                         >
                           <svg width="14" height="14" viewBox="0 0 24 24" fill="none" style={{ marginRight: 4 }}>
-                            <path d="M21.44 11.05l-9.19 9.19a6 6 0 01-8.49-8.49l9.19-9.19a4 4 0 015.66 5.66l-9.2 9.19a2 2 0 01-2.83-2.83l8.49-8.48" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
+                            <path
+                              d="M21.44 11.05l-9.19 9.19a6 6 0 01-8.49-8.49l9.19-9.19a4 4 0 015.66 5.66l-9.2 9.19a2 2 0 01-2.83-2.83l8.49-8.48"
+                              stroke="currentColor"
+                              strokeWidth="1.5"
+                              strokeLinecap="round"
+                              strokeLinejoin="round"
+                            />
                           </svg>
                           {showMaterialPicker ? 'Hide Materials' : 'Attach Material'}
                         </button>
@@ -775,8 +836,20 @@ export default function AdminEmailsTab({ enrollments, initialComposeTo, initialT
                                 >
                                   <div className="admin-material-card-icon">
                                     <svg width="16" height="16" viewBox="0 0 24 24" fill="none">
-                                      <path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
-                                      <polyline points="14,2 14,8 20,8" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
+                                      <path
+                                        d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"
+                                        stroke="currentColor"
+                                        strokeWidth="1.5"
+                                        strokeLinecap="round"
+                                        strokeLinejoin="round"
+                                      />
+                                      <polyline
+                                        points="14,2 14,8 20,8"
+                                        stroke="currentColor"
+                                        strokeWidth="1.5"
+                                        strokeLinecap="round"
+                                        strokeLinejoin="round"
+                                      />
                                     </svg>
                                   </div>
                                   <div className="admin-material-card-name">{m.filename}</div>
@@ -790,7 +863,13 @@ export default function AdminEmailsTab({ enrollments, initialComposeTo, initialT
                               type="button"
                               className="admin-material-card"
                               onClick={fetchMaterials}
-                              style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', color: 'var(--text-secondary)', fontSize: '0.78rem' }}
+                              style={{
+                                display: 'flex',
+                                alignItems: 'center',
+                                justifyContent: 'center',
+                                color: 'var(--text-secondary)',
+                                fontSize: '0.78rem',
+                              }}
                             >
                               Refresh list
                             </button>
@@ -837,7 +916,9 @@ export default function AdminEmailsTab({ enrollments, initialComposeTo, initialT
                         disabled={composeSending}
                       >
                         {composeSending
-                          ? (sendMode === 'schedule' ? 'Scheduling\u2026' : 'Sending\u2026')
+                          ? sendMode === 'schedule'
+                            ? 'Scheduling\u2026'
+                            : 'Sending\u2026'
                           : sendMode === 'schedule'
                             ? 'Schedule Email'
                             : attachments.length > 0
@@ -845,7 +926,9 @@ export default function AdminEmailsTab({ enrollments, initialComposeTo, initialT
                               : 'Send Email'}
                       </button>
                       {composeResult && (
-                        <span className={`admin-compose-result ${composeResult.ok ? 'admin-compose-success' : 'admin-compose-error'}`}>
+                        <span
+                          className={`admin-compose-result ${composeResult.ok ? 'admin-compose-success' : 'admin-compose-error'}`}
+                        >
                           {composeResult.msg}
                         </span>
                       )}
@@ -864,9 +947,7 @@ export default function AdminEmailsTab({ enrollments, initialComposeTo, initialT
                       sandbox="allow-same-origin"
                     />
                   ) : (
-                    <div className="admin-compose-preview-placeholder">
-                      Start typing to see a live preview&hellip;
-                    </div>
+                    <div className="admin-compose-preview-placeholder">Start typing to see a live preview&hellip;</div>
                   )}
                 </div>
               </div>
@@ -891,7 +972,9 @@ export default function AdminEmailsTab({ enrollments, initialComposeTo, initialT
                 onChange={(e) => setSentStatusFilter(e.target.value)}
               >
                 {sentStatuses.map((s) => (
-                  <option key={s} value={s}>{s === 'all' ? 'All statuses' : s.charAt(0).toUpperCase() + s.slice(1)}</option>
+                  <option key={s} value={s}>
+                    {s === 'all' ? 'All statuses' : s.charAt(0).toUpperCase() + s.slice(1)}
+                  </option>
                 ))}
               </select>
               <span className="admin-result-count">
@@ -915,30 +998,56 @@ export default function AdminEmailsTab({ enrollments, initialComposeTo, initialT
                 <button className="admin-thread-sort-btn" onClick={() => handleSentSort('status')}>
                   Status{sortArrow(sentSortKey === 'status', sentSortDir)}
                 </button>
-                <button className="admin-thread-sort-btn" style={{ marginLeft: 'auto' }} onClick={() => handleSentSort('date')}>
+                <button
+                  className="admin-thread-sort-btn"
+                  style={{ marginLeft: 'auto' }}
+                  onClick={() => handleSentSort('date')}
+                >
                   Date{sortArrow(sentSortKey === 'date', sentSortDir)}
                 </button>
               </div>
 
               {/* Thread items */}
               {emailsLoading && emails.length === 0 ? (
-                <div className="admin-empty"><SkeletonTable rows={4} cols={4} /></div>
+                <div className="admin-empty">
+                  <SkeletonTable rows={4} cols={4} />
+                </div>
               ) : filteredSentEmails.length === 0 ? (
                 <div className="admin-empty-state-calm">
                   <div className="admin-empty-state-calm-icon">
                     <svg width="24" height="24" viewBox="0 0 24 24" fill="none">
-                      <path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
-                      <polyline points="22,6 12,13 2,6" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
+                      <path
+                        d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"
+                        stroke="currentColor"
+                        strokeWidth="1.5"
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                      />
+                      <polyline
+                        points="22,6 12,13 2,6"
+                        stroke="currentColor"
+                        strokeWidth="1.5"
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                      />
                     </svg>
                   </div>
                   <p className="admin-empty-state-calm-title">
                     {sentSearch || sentStatusFilter !== 'all' ? 'No matching emails' : 'Your outbox is clear'}
                   </p>
                   <p className="admin-empty-state-calm-sub">
-                    {sentSearch || sentStatusFilter !== 'all' ? 'Try adjusting your search or filters.' : 'Compose your first email to get started.'}
+                    {sentSearch || sentStatusFilter !== 'all'
+                      ? 'Try adjusting your search or filters.'
+                      : 'Compose your first email to get started.'}
                   </p>
                   {!sentSearch && sentStatusFilter === 'all' && (
-                    <button className="admin-empty-state-calm-cta" onClick={() => { setShowCompose(true); setComposeResult(null); }}>
+                    <button
+                      className="admin-empty-state-calm-cta"
+                      onClick={() => {
+                        setShowCompose(true);
+                        setComposeResult(null);
+                      }}
+                    >
                       Compose Email
                     </button>
                   )}
@@ -949,22 +1058,27 @@ export default function AdminEmailsTab({ enrollments, initialComposeTo, initialT
                     key={em.id}
                     className={`admin-thread-item${selectedEmail?.id === em.id ? ' admin-thread-item-selected' : ''}`}
                     onClick={() => openEmailDetail(em.id)}
-                    onKeyDown={(ev) => { if (ev.key === 'Enter' || ev.key === ' ') { ev.preventDefault(); openEmailDetail(em.id); } }}
+                    onKeyDown={(ev) => {
+                      if (ev.key === 'Enter' || ev.key === ' ') {
+                        ev.preventDefault();
+                        openEmailDetail(em.id);
+                      }
+                    }}
                     tabIndex={0}
                     role="button"
                     aria-label={`View email: ${em.subject || '(no subject)'}`}
                   >
                     <div className="admin-thread-line1">
-                      <span className="admin-thread-recipient">
-                        {Array.isArray(em.to) ? em.to.join(', ') : em.to}
-                      </span>
+                      <span className="admin-thread-recipient">{Array.isArray(em.to) ? em.to.join(', ') : em.to}</span>
                       <span className="admin-thread-date" title={fullDate(em.created_at)}>
                         {relativeTime(em.created_at)}
                       </span>
                     </div>
                     <div className="admin-thread-line2">
                       <span className="admin-thread-subject">{em.subject || '(no subject)'}</span>
-                      <span className={`admin-status-pill admin-status-pill-${(em.last_event || 'queued').toLowerCase()}`}>
+                      <span
+                        className={`admin-status-pill admin-status-pill-${(em.last_event || 'queued').toLowerCase()}`}
+                      >
                         {em.last_event || 'queued'}
                         <StatusIcon status={em.last_event || 'queued'} />
                       </span>
@@ -980,7 +1094,10 @@ export default function AdminEmailsTab({ enrollments, initialComposeTo, initialT
                 <AdminEmailModal
                   email={selectedEmail}
                   loading={emailDetailLoading}
-                  onClose={() => { setSelectedEmail(null); setEmailDetailLoading(false); }}
+                  onClose={() => {
+                    setSelectedEmail(null);
+                    setEmailDetailLoading(false);
+                  }}
                   onReply={handleReply}
                   onForward={handleForward}
                   inline
@@ -1002,9 +1119,7 @@ export default function AdminEmailsTab({ enrollments, initialComposeTo, initialT
             <button onClick={fetchReceivedEmails} className="admin-refresh-btn" disabled={receivedLoading}>
               {receivedLoading ? 'Loading\u2026' : 'Refresh'}
             </button>
-            {receivedLastFetched && (
-              <span className="admin-last-updated">{lastUpdatedText(receivedLastFetched)}</span>
-            )}
+            {receivedLastFetched && <span className="admin-last-updated">{lastUpdatedText(receivedLastFetched)}</span>}
           </div>
 
           {receivedError && (
@@ -1013,7 +1128,10 @@ export default function AdminEmailsTab({ enrollments, initialComposeTo, initialT
               <button
                 className="admin-refresh-btn"
                 style={{ marginLeft: 12, fontSize: '0.82rem', padding: '4px 12px' }}
-                onClick={() => { setReceivedError(''); fetchReceivedEmails(); }}
+                onClick={() => {
+                  setReceivedError('');
+                  fetchReceivedEmails();
+                }}
               >
                 Try again
               </button>
@@ -1047,27 +1165,47 @@ export default function AdminEmailsTab({ enrollments, initialComposeTo, initialT
                 <button className="admin-thread-sort-btn" onClick={() => handleReceivedSort('subject')}>
                   Subject{sortArrow(receivedSortKey === 'subject', receivedSortDir)}
                 </button>
-                <button className="admin-thread-sort-btn" style={{ marginLeft: 'auto' }} onClick={() => handleReceivedSort('date')}>
+                <button
+                  className="admin-thread-sort-btn"
+                  style={{ marginLeft: 'auto' }}
+                  onClick={() => handleReceivedSort('date')}
+                >
                   Date{sortArrow(receivedSortKey === 'date', receivedSortDir)}
                 </button>
               </div>
 
               {/* Thread items */}
               {receivedLoading && receivedEmails.length === 0 ? (
-                <div className="admin-empty"><SkeletonTable rows={4} cols={4} /></div>
+                <div className="admin-empty">
+                  <SkeletonTable rows={4} cols={4} />
+                </div>
               ) : filteredReceivedEmails.length === 0 ? (
                 <div className="admin-empty-state-calm">
                   <div className="admin-empty-state-calm-icon">
                     <svg width="24" height="24" viewBox="0 0 24 24" fill="none">
-                      <path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
-                      <polyline points="22,6 12,13 2,6" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
+                      <path
+                        d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"
+                        stroke="currentColor"
+                        strokeWidth="1.5"
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                      />
+                      <polyline
+                        points="22,6 12,13 2,6"
+                        stroke="currentColor"
+                        strokeWidth="1.5"
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                      />
                     </svg>
                   </div>
                   <p className="admin-empty-state-calm-title">
                     {receivedSearch ? 'No matching emails' : 'No received emails'}
                   </p>
                   <p className="admin-empty-state-calm-sub">
-                    {receivedSearch ? 'Try adjusting your search.' : 'Emails sent to your course address will appear here.'}
+                    {receivedSearch
+                      ? 'Try adjusting your search.'
+                      : 'Emails sent to your course address will appear here.'}
                   </p>
                 </div>
               ) : (
@@ -1076,7 +1214,12 @@ export default function AdminEmailsTab({ enrollments, initialComposeTo, initialT
                     key={em.id}
                     className={`admin-thread-item${selectedEmail?.id === em.id ? ' admin-thread-item-selected' : ''}`}
                     onClick={() => openReceivedEmailDetail(em.id)}
-                    onKeyDown={(ev) => { if (ev.key === 'Enter' || ev.key === ' ') { ev.preventDefault(); openReceivedEmailDetail(em.id); } }}
+                    onKeyDown={(ev) => {
+                      if (ev.key === 'Enter' || ev.key === ' ') {
+                        ev.preventDefault();
+                        openReceivedEmailDetail(em.id);
+                      }
+                    }}
                     tabIndex={0}
                     role="button"
                     aria-label={`View email from ${em.from}: ${em.subject || '(no subject)'}`}
@@ -1092,7 +1235,13 @@ export default function AdminEmailsTab({ enrollments, initialComposeTo, initialT
                       {em.attachments && em.attachments.length > 0 && (
                         <span className="admin-thread-attachment-count">
                           <svg width="12" height="12" viewBox="0 0 24 24" fill="none">
-                            <path d="M21.44 11.05l-9.19 9.19a6 6 0 01-8.49-8.49l9.19-9.19a4 4 0 015.66 5.66l-9.2 9.19a2 2 0 01-2.83-2.83l8.49-8.48" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
+                            <path
+                              d="M21.44 11.05l-9.19 9.19a6 6 0 01-8.49-8.49l9.19-9.19a4 4 0 015.66 5.66l-9.2 9.19a2 2 0 01-2.83-2.83l8.49-8.48"
+                              stroke="currentColor"
+                              strokeWidth="1.5"
+                              strokeLinecap="round"
+                              strokeLinejoin="round"
+                            />
                           </svg>
                           {em.attachments.length}
                         </span>
@@ -1109,7 +1258,10 @@ export default function AdminEmailsTab({ enrollments, initialComposeTo, initialT
                 <AdminEmailModal
                   email={selectedEmail}
                   loading={emailDetailLoading}
-                  onClose={() => { setSelectedEmail(null); setEmailDetailLoading(false); }}
+                  onClose={() => {
+                    setSelectedEmail(null);
+                    setEmailDetailLoading(false);
+                  }}
                   onReply={handleReply}
                   onForward={handleForward}
                   inline
@@ -1135,7 +1287,10 @@ export default function AdminEmailsTab({ enrollments, initialComposeTo, initialT
       <AdminEmailModal
         email={selectedEmail}
         loading={emailDetailLoading}
-        onClose={() => { setSelectedEmail(null); setEmailDetailLoading(false); }}
+        onClose={() => {
+          setSelectedEmail(null);
+          setEmailDetailLoading(false);
+        }}
         onReply={handleReply}
         onForward={handleForward}
         desktopHide
@@ -1145,7 +1300,12 @@ export default function AdminEmailsTab({ enrollments, initialComposeTo, initialT
       {showSendConfirm && (
         <AdminConfirmDialog
           title="Send to Multiple Recipients"
-          message={`You're about to send this email to ${composeTo.split(',').map((s) => s.trim()).filter(Boolean).length} recipients. Continue?`}
+          message={`You're about to send this email to ${
+            composeTo
+              .split(',')
+              .map((s) => s.trim())
+              .filter(Boolean).length
+          } recipients. Continue?`}
           confirmLabel="Send Email"
           confirmVariant="primary"
           loading={composeSending}

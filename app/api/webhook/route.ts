@@ -10,34 +10,21 @@ export async function POST(req: NextRequest) {
   // Env var validation
   if (!process.env.STRIPE_PRICE_BALANCE || !process.env.STRIPE_WEBHOOK_SECRET) {
     console.error('Missing required env var: STRIPE_PRICE_BALANCE or STRIPE_WEBHOOK_SECRET');
-    return NextResponse.json(
-      { error: 'Server configuration error' },
-      { status: 500 }
-    );
+    return NextResponse.json({ error: 'Server configuration error' }, { status: 500 });
   }
 
   const sig = req.headers.get('stripe-signature');
   if (!sig) {
-    return NextResponse.json(
-      { error: 'Missing stripe-signature header' },
-      { status: 400 }
-    );
+    return NextResponse.json({ error: 'Missing stripe-signature header' }, { status: 400 });
   }
 
   const rawBody = await req.text();
 
   let event;
   try {
-    event = stripe.webhooks.constructEvent(
-      rawBody,
-      sig,
-      process.env.STRIPE_WEBHOOK_SECRET
-    );
+    event = stripe.webhooks.constructEvent(rawBody, sig, process.env.STRIPE_WEBHOOK_SECRET);
   } catch (err) {
-    console.error(
-      'Webhook signature verification failed:',
-      (err as Error).message
-    );
+    console.error('Webhook signature verification failed:', (err as Error).message);
     return NextResponse.json({ error: 'Invalid signature' }, { status: 400 });
   }
 
@@ -51,10 +38,7 @@ export async function POST(req: NextRequest) {
     const sectionId = session.metadata?.sectionId;
     const plan = session.metadata?.plan;
     const stripeSessionId = session.id;
-    const stripeCustomerId =
-      typeof session.customer === 'string'
-        ? session.customer
-        : session.customer.id;
+    const stripeCustomerId = typeof session.customer === 'string' ? session.customer : session.customer.id;
     const email = session.customer_details?.email || undefined;
 
     try {
@@ -94,7 +78,7 @@ export async function POST(req: NextRequest) {
               },
             });
             console.log(
-              `WAITLISTED enrollment for session ${stripeSessionId} — section ${sectionId} is full (position ${waitlistCount + 1}). Manual refund needed.`
+              `WAITLISTED enrollment for session ${stripeSessionId} — section ${sectionId} is full (position ${waitlistCount + 1}). Manual refund needed.`,
             );
             return;
           }
@@ -132,8 +116,16 @@ export async function POST(req: NextRequest) {
           const isDeposit = plan === 'deposit';
 
           const settings = await getSettings();
-          const depositSubject = getSetting(settings, 'email.depositSubject', 'Your $150 Deposit Is Confirmed — Summer Braille Course');
-          const fullSubject = getSetting(settings, 'email.fullPaymentSubject', "You're Enrolled — Summer Braille Course");
+          const depositSubject = getSetting(
+            settings,
+            'email.depositSubject',
+            'Your $150 Deposit Is Confirmed — Summer Braille Course',
+          );
+          const fullSubject = getSetting(
+            settings,
+            'email.fullPaymentSubject',
+            "You're Enrolled — Summer Braille Course",
+          );
 
           await resend.emails.send({
             from: 'Delaney Costello <delaney@teachbraille.org>',
@@ -148,18 +140,14 @@ export async function POST(req: NextRequest) {
 
       // Retrieve PaymentIntent to check type
       const paymentIntent = await stripe.paymentIntents.retrieve(
-        typeof session.payment_intent === 'string'
-          ? session.payment_intent
-          : session.payment_intent.id
+        typeof session.payment_intent === 'string' ? session.payment_intent : session.payment_intent.id,
       );
 
       const paymentType = paymentIntent.metadata?.type;
 
       // Full payments: no invoice needed
       if (paymentType === 'full') {
-        console.log(
-          `Full payment completed for customer ${stripeCustomerId} — no invoice needed`
-        );
+        console.log(`Full payment completed for customer ${stripeCustomerId} — no invoice needed`);
         return NextResponse.json({ received: true });
       }
 
@@ -194,9 +182,7 @@ export async function POST(req: NextRequest) {
         },
       });
 
-      console.log(
-        `Draft invoice ${invoice.id} created for customer ${stripeCustomerId}`
-      );
+      console.log(`Draft invoice ${invoice.id} created for customer ${stripeCustomerId}`);
     } catch (err) {
       // Deposit already collected — log for manual follow-up, don't fail the webhook
       console.error('Webhook processing error:', (err as Error).message);

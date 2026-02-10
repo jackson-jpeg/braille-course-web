@@ -35,7 +35,7 @@ export async function GET(req: NextRequest) {
             expires_at: p.expires_at,
           })),
         };
-      })
+      }),
     );
 
     return NextResponse.json({ coupons: couponsWithPromos });

@@ -77,8 +77,8 @@ export async function POST(req: NextRequest) {
             date,
             sessionNum: i + 1,
           },
-        })
-      )
+        }),
+      ),
     );
 
     return NextResponse.json({

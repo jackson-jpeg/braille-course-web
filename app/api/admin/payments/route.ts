@@ -31,9 +31,7 @@ export async function GET(req: NextRequest) {
 
     // Compute fees from balance transactions
     const totalFees = transactions.data.reduce((sum, tx) => sum + tx.fee, 0);
-    const totalCollected = charges.data
-      .filter((c) => c.status === 'succeeded')
-      .reduce((sum, c) => sum + c.amount, 0);
+    const totalCollected = charges.data.filter((c) => c.status === 'succeeded').reduce((sum, c) => sum + c.amount, 0);
     const pendingInvoiceTotal = invoices.data
       .filter((inv) => inv.status === 'open' || inv.status === 'draft')
       .reduce((sum, inv) => sum + inv.amount_due, 0);
@@ -45,9 +43,10 @@ export async function GET(req: NextRequest) {
       status: c.status,
       created: c.created,
       receipt_url: c.receipt_url,
-      customer: c.customer && typeof c.customer === 'object' && 'email' in c.customer
-        ? { id: c.customer.id, email: c.customer.email, name: c.customer.name }
-        : null,
+      customer:
+        c.customer && typeof c.customer === 'object' && 'email' in c.customer
+          ? { id: c.customer.id, email: c.customer.email, name: c.customer.name }
+          : null,
       refunded: c.refunded,
       amount_refunded: c.amount_refunded,
     }));
@@ -62,9 +61,10 @@ export async function GET(req: NextRequest) {
       due_date: inv.due_date,
       created: inv.created,
       hosted_invoice_url: inv.hosted_invoice_url,
-      customer: inv.customer && typeof inv.customer === 'object' && 'email' in inv.customer
-        ? { id: inv.customer.id, email: inv.customer.email, name: inv.customer.name }
-        : null,
+      customer:
+        inv.customer && typeof inv.customer === 'object' && 'email' in inv.customer
+          ? { id: inv.customer.id, email: inv.customer.email, name: inv.customer.name }
+          : null,
     }));
 
     const serializedRefunds = refunds.data.map((r) => ({
@@ -73,7 +73,7 @@ export async function GET(req: NextRequest) {
       currency: r.currency,
       status: r.status,
       created: r.created,
-      charge: typeof r.charge === 'string' ? r.charge : r.charge?.id ?? '',
+      charge: typeof r.charge === 'string' ? r.charge : (r.charge?.id ?? ''),
       reason: r.reason,
     }));
 
@@ -103,9 +103,6 @@ export async function GET(req: NextRequest) {
     });
   } catch (err) {
     console.error('Payments API error:', err);
-    return NextResponse.json(
-      { error: 'Failed to fetch payment data' },
-      { status: 500 }
-    );
+    return NextResponse.json({ error: 'Failed to fetch payment data' }, { status: 500 });
   }
 }

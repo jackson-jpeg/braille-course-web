@@ -5,10 +5,7 @@ import { isAuthorized } from '@/lib/admin-auth';
 import { translateInvoiceStatus } from '@/lib/stripe-utils';
 
 /* ── GET /api/admin/students/[customerId]?key=... ── */
-export async function GET(
-  req: NextRequest,
-  { params }: { params: Promise<{ customerId: string }> }
-) {
+export async function GET(req: NextRequest, { params }: { params: Promise<{ customerId: string }> }) {
   if (!isAuthorized(req)) {
     return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
   }
@@ -82,19 +79,18 @@ export async function GET(
       },
       charges: serializedCharges,
       invoices: serializedInvoices,
-      emails: studentEmails.map((em: { id: string; to: string | string[]; subject: string; created_at: string; last_event?: string }) => ({
-        id: em.id,
-        to: em.to,
-        subject: em.subject,
-        created_at: em.created_at,
-        last_event: em.last_event,
-      })),
+      emails: studentEmails.map(
+        (em: { id: string; to: string | string[]; subject: string; created_at: string; last_event?: string }) => ({
+          id: em.id,
+          to: em.to,
+          subject: em.subject,
+          created_at: em.created_at,
+          last_event: em.last_event,
+        }),
+      ),
     });
   } catch (err) {
     console.error('Student detail API error:', err);
-    return NextResponse.json(
-      { error: 'Failed to fetch student details' },
-      { status: 500 }
-    );
+    return NextResponse.json({ error: 'Failed to fetch student details' }, { status: 500 });
   }
 }

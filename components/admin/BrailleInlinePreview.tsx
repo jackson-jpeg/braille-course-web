@@ -67,7 +67,7 @@ export default function BrailleInlinePreview({ text }: BrailleInlinePreviewProps
   const lowerText = text.toLowerCase();
   for (const entry of contractedBrailleEntries) {
     if (lowerText.includes(`"${entry.label}"`) || lowerText.includes(`'${entry.label}'`)) {
-      if (!cells.find(c => c.label === entry.label)) {
+      if (!cells.find((c) => c.label === entry.label)) {
         cells.push({ label: entry.label, pattern: entry.pattern });
       }
     }

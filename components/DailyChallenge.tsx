@@ -32,13 +32,8 @@ export default function DailyChallengeBanner() {
 
       <div className="daily-challenge-list">
         {challenges.map((challenge, i) => (
-          <div
-            key={challenge.id}
-            className={`daily-challenge-item ${completed[i] ? 'completed' : ''}`}
-          >
-            <span className="daily-challenge-check">
-              {completed[i] ? '✓' : '○'}
-            </span>
+          <div key={challenge.id} className={`daily-challenge-item ${completed[i] ? 'completed' : ''}`}>
+            <span className="daily-challenge-check">{completed[i] ? '✓' : '○'}</span>
             <div className="daily-challenge-info">
               <span className="daily-challenge-name">{challenge.title}</span>
               <span className="daily-challenge-desc">{challenge.description}</span>

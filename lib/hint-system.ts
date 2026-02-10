@@ -55,11 +55,11 @@ export function useHint(): boolean {
 
 /** Game-specific hint types */
 export type HintType =
-  | 'reveal-letter'     // Word Game / Hangman: reveal a random unguessed letter
-  | 'eliminate-choice'  // Speed Match: remove one wrong answer
-  | 'show-category'     // Contraction Sprint: show contraction type
-  | 'show-dot-count'    // Reflex Dots / Sequence: show how many dots are raised
-  | 'reveal-word';      // Sentence Decoder: reveal one word
+  | 'reveal-letter' // Word Game / Hangman: reveal a random unguessed letter
+  | 'eliminate-choice' // Speed Match: remove one wrong answer
+  | 'show-category' // Contraction Sprint: show contraction type
+  | 'show-dot-count' // Reflex Dots / Sequence: show how many dots are raised
+  | 'reveal-word'; // Sentence Decoder: reveal one word
 
 export function getHintTypeForGame(gameId: GameId): HintType {
   switch (gameId) {

@@ -15,7 +15,7 @@ export default function ScrollRevealInit() {
           }
         });
       },
-      { threshold: 0.15, rootMargin: '0px 0px -40px 0px' }
+      { threshold: 0.15, rootMargin: '0px 0px -40px 0px' },
     );
 
     const observeAll = () => {

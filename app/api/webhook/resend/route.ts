@@ -5,10 +5,7 @@ export async function POST(req: NextRequest) {
   const webhookSecret = process.env.RESEND_WEBHOOK_SECRET;
   if (!webhookSecret) {
     console.error('Missing RESEND_WEBHOOK_SECRET env var');
-    return NextResponse.json(
-      { error: 'Server configuration error' },
-      { status: 500 }
-    );
+    return NextResponse.json({ error: 'Server configuration error' }, { status: 500 });
   }
 
   const rawBody = await req.text();
@@ -35,10 +32,7 @@ export async function POST(req: NextRequest) {
 
     return NextResponse.json({ received: true });
   } catch (err) {
-    console.error(
-      'Resend webhook verification failed:',
-      (err as Error).message
-    );
+    console.error('Resend webhook verification failed:', (err as Error).message);
     return NextResponse.json({ error: 'Invalid signature' }, { status: 400 });
   }
 }

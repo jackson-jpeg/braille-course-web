@@ -75,74 +75,67 @@ export default function BrailleMemoryMatch() {
 
   // Cleanup match/mismatch timer on unmount
   useEffect(() => {
-    return () => { if (matchTimerRef.current) clearTimeout(matchTimerRef.current); };
+    return () => {
+      if (matchTimerRef.current) clearTimeout(matchTimerRef.current);
+    };
   }, []);
 
-  const handleFlip = useCallback((cardId: number) => {
-    if (checking) return;
-    if (flippedIds.length >= 2) return;
+  const handleFlip = useCallback(
+    (cardId: number) => {
+      if (checking) return;
+      if (flippedIds.length >= 2) return;
 
-    const card = cards.find((c) => c.id === cardId);
-    if (!card || card.flipped || card.matched) return;
+      const card = cards.find((c) => c.id === cardId);
+      if (!card || card.flipped || card.matched) return;
 
-    const newFlipped = [...flippedIds, cardId];
-    setFlippedIds(newFlipped);
+      const newFlipped = [...flippedIds, cardId];
+      setFlippedIds(newFlipped);
 
-    // Reveal this card
-    setCards((prev) =>
-      prev.map((c) => (c.id === cardId ? { ...c, flipped: true } : c))
-    );
+      // Reveal this card
+      setCards((prev) => prev.map((c) => (c.id === cardId ? { ...c, flipped: true } : c)));
 
-    if (newFlipped.length === 2) {
-      setMoves((m) => m + 1);
-      setChecking(true);
+      if (newFlipped.length === 2) {
+        setMoves((m) => m + 1);
+        setChecking(true);
 
-      const first = cards.find((c) => c.id === newFlipped[0])!;
-      const second = cards.find((c) => c.id === newFlipped[1])!;
+        const first = cards.find((c) => c.id === newFlipped[0])!;
+        const second = cards.find((c) => c.id === newFlipped[1])!;
 
-      const isMatch =
-        first.letter === second.letter &&
-        first.type !== second.type;
+        const isMatch = first.letter === second.letter && first.type !== second.type;
 
-      if (isMatch) {
-        matchTimerRef.current = setTimeout(() => {
-          setCards((prev) =>
-            prev.map((c) =>
-              c.id === first.id || c.id === second.id
-                ? { ...c, matched: true, flipped: true }
-                : c
-            )
-          );
-          setMatchedPairs((p) => {
-            const next = p + 1;
-            if (next === PAIR_COUNT) {
-              setWon(true);
-              setTip(getRandomTip().fact);
-              const finalMoves = movesRef.current + 1; // +1 for this move
-              const score = Math.max(1, PAIR_COUNT * 2 - finalMoves);
-              const achievements = recordResult(true, score);
-              pushAchievements(achievements);
-            }
-            return next;
-          });
-          setFlippedIds([]);
-          setChecking(false);
-        }, 600);
-      } else {
-        matchTimerRef.current = setTimeout(() => {
-          setCards((prev) =>
-            prev.map((c) =>
-              c.id === first.id || c.id === second.id
-                ? { ...c, flipped: false }
-                : c
-            )
-          );
-          setFlippedIds([]);
-          setChecking(false);
-        }, 1000);
+        if (isMatch) {
+          matchTimerRef.current = setTimeout(() => {
+            setCards((prev) =>
+              prev.map((c) => (c.id === first.id || c.id === second.id ? { ...c, matched: true, flipped: true } : c)),
+            );
+            setMatchedPairs((p) => {
+              const next = p + 1;
+              if (next === PAIR_COUNT) {
+                setWon(true);
+                setTip(getRandomTip().fact);
+                const finalMoves = movesRef.current + 1; // +1 for this move
+                const score = Math.max(1, PAIR_COUNT * 2 - finalMoves);
+                const achievements = recordResult(true, score);
+                pushAchievements(achievements);
+              }
+              return next;
+            });
+            setFlippedIds([]);
+            setChecking(false);
+          }, 600);
+        } else {
+          matchTimerRef.current = setTimeout(() => {
+            setCards((prev) =>
+              prev.map((c) => (c.id === first.id || c.id === second.id ? { ...c, flipped: false } : c)),
+            );
+            setFlippedIds([]);
+            setChecking(false);
+          }, 1000);
+        }
       }
-    }
-  }, [cards, flippedIds, checking, recordResult]);
+    },
+    [cards, flippedIds, checking, recordResult],
+  );
 
   return (
     <div className="memorymatch-container" ref={containerRef}>
@@ -154,8 +147,12 @@ export default function BrailleMemoryMatch() {
 
       <div className="memorymatch-body">
         <div className="memorymatch-stats" aria-live="polite" aria-atomic="true">
-          <span>Moves: <strong>{moves}</strong></span>
-          <span>Pairs: <strong>{matchedPairs}</strong> / {PAIR_COUNT}</span>
+          <span>
+            Moves: <strong>{moves}</strong>
+          </span>
+          <span>
+            Pairs: <strong>{matchedPairs}</strong> / {PAIR_COUNT}
+          </span>
         </div>
 
         <div className="memorymatch-grid" role="group" aria-label="Memory game cards">

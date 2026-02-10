@@ -5,10 +5,7 @@ import { customEmail } from '@/lib/email-templates';
 
 export async function GET(req: NextRequest) {
   // Only allow Vercel Cron (or manual trigger with the secret)
-  if (
-    req.headers.get('authorization') !==
-    `Bearer ${process.env.CRON_SECRET}`
-  ) {
+  if (req.headers.get('authorization') !== `Bearer ${process.env.CRON_SECRET}`) {
     return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
   }
 
@@ -95,9 +92,6 @@ export async function GET(req: NextRequest) {
     return NextResponse.json({ ok: true, processed: due.length, sent, failed });
   } catch (err) {
     console.error('Cron send-scheduled-emails failed:', (err as Error).message);
-    return NextResponse.json(
-      { error: (err as Error).message },
-      { status: 500 }
-    );
+    return NextResponse.json({ error: (err as Error).message }, { status: 500 });
   }
 }

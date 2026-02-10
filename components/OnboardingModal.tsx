@@ -11,7 +11,8 @@ const STEPS = [
   },
   {
     title: 'Track Your Progress',
-    description: 'Your scores, streaks, and achievements are saved locally on your device. Nothing is sent to any server.',
+    description:
+      'Your scores, streaks, and achievements are saved locally on your device. Nothing is sent to any server.',
     icon: '📊',
   },
   {
@@ -46,7 +47,7 @@ export default function OnboardingModal() {
       if (e.key === 'Escape') handleClose(true);
       if (e.key === 'Tab' && modalRef.current) {
         const focusable = modalRef.current.querySelectorAll<HTMLElement>(
-          'button, [href], input, [tabindex]:not([tabindex="-1"])'
+          'button, [href], input, [tabindex]:not([tabindex="-1"])',
         );
         if (focusable.length === 0) return;
         const first = focusable[0];
@@ -87,25 +88,20 @@ export default function OnboardingModal() {
   return (
     <div className="onboarding-overlay" role="dialog" aria-modal="true" aria-labelledby="onboarding-title">
       <div className="onboarding-modal" ref={modalRef}>
-        <button
-          className="onboarding-close"
-          onClick={() => handleClose(true)}
-          aria-label="Close"
-        >
+        <button className="onboarding-close" onClick={() => handleClose(true)} aria-label="Close">
           ×
         </button>
 
         <div className="onboarding-icon">{current.icon}</div>
-        <h3 id="onboarding-title" className="onboarding-title">{current.title}</h3>
+        <h3 id="onboarding-title" className="onboarding-title">
+          {current.title}
+        </h3>
         <p className="onboarding-desc">{current.description}</p>
 
         {/* Step dots */}
         <div className="onboarding-dots" aria-label={`Step ${step + 1} of ${STEPS.length}`}>
           {STEPS.map((_, i) => (
-            <span
-              key={i}
-              className={`onboarding-dot ${i === step ? 'active' : i < step ? 'done' : ''}`}
-            />
+            <span key={i} className={`onboarding-dot ${i === step ? 'active' : i < step ? 'done' : ''}`} />
           ))}
         </div>
 
@@ -123,10 +119,7 @@ export default function OnboardingModal() {
         {isLast && (
           <p className="onboarding-privacy">
             All progress data stays on your device.{' '}
-            <button
-              className="onboarding-privacy-link"
-              onClick={() => handleClose(false)}
-            >
+            <button className="onboarding-privacy-link" onClick={() => handleClose(false)}>
               Skip tracking
             </button>
           </p>

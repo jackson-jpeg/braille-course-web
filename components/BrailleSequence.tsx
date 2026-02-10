@@ -20,8 +20,7 @@ interface SequenceCard {
 function pickLetters(count: number, difficulty: string): string[] {
   if (difficulty === 'advanced') {
     const anchor = ALL_LETTERS[Math.floor(Math.random() * ALL_LETTERS.length)];
-    const scored = ALL_LETTERS
-      .filter((l) => l !== anchor)
+    const scored = ALL_LETTERS.filter((l) => l !== anchor)
       .map((l) => ({ letter: l, sim: computeSimilarity(brailleMap[anchor], brailleMap[l]) }))
       .sort((a, b) => b.sim - a.sim);
     const pool = scored.slice(0, count * 2);
@@ -80,10 +79,12 @@ export default function BrailleSequence() {
       attempts++;
     }
 
-    setCards(scrambled.map((letter) => ({
-      letter,
-      pattern: brailleMap[letter],
-    })));
+    setCards(
+      scrambled.map((letter) => ({
+        letter,
+        pattern: brailleMap[letter],
+      })),
+    );
     setSelectedIdx(null);
     setFeedback(null);
     setCardResults([]);
@@ -103,29 +104,34 @@ export default function BrailleSequence() {
 
   // Cleanup timer
   useEffect(() => {
-    return () => { if (roundTimerRef.current) clearTimeout(roundTimerRef.current); };
+    return () => {
+      if (roundTimerRef.current) clearTimeout(roundTimerRef.current);
+    };
   }, []);
 
-  const handleCardClick = useCallback((index: number) => {
-    if (phase !== 'playing') return;
+  const handleCardClick = useCallback(
+    (index: number) => {
+      if (phase !== 'playing') return;
 
-    if (selectedIdx === null) {
-      setSelectedIdx(index);
-    } else if (selectedIdx === index) {
-      setSelectedIdx(null);
-    } else {
-      // Swap cards
-      const si = selectedIdx;
-      setCards((prev) => {
-        const next = [...prev];
-        const temp = next[si];
-        next[si] = next[index];
-        next[index] = temp;
-        return next;
-      });
-      setSelectedIdx(null);
-    }
-  }, [phase, selectedIdx]);
+      if (selectedIdx === null) {
+        setSelectedIdx(index);
+      } else if (selectedIdx === index) {
+        setSelectedIdx(null);
+      } else {
+        // Swap cards
+        const si = selectedIdx;
+        setCards((prev) => {
+          const next = [...prev];
+          const temp = next[si];
+          next[si] = next[index];
+          next[index] = temp;
+          return next;
+        });
+        setSelectedIdx(null);
+      }
+    },
+    [phase, selectedIdx],
+  );
 
   const checkOrder = useCallback(() => {
     if (phase !== 'playing') return;
@@ -153,19 +159,22 @@ export default function BrailleSequence() {
     setFeedback(isCorrect);
     if (isCorrect) setScore((s) => s + 1);
 
-    roundTimerRef.current = setTimeout(() => {
-      const nextR = round + 1;
-      setRound(nextR);
-      if (nextR >= totalRounds) {
-        const finalScore = isCorrect ? scoreRef.current + 1 : scoreRef.current;
-        setPhase('result');
-        const achievements = recordResult(finalScore >= totalRounds / 2, finalScore);
-        pushAchievements(achievements);
-        setTip(getRandomTip().fact);
-      } else {
-        startRound();
-      }
-    }, isCorrect ? 800 : 2000);
+    roundTimerRef.current = setTimeout(
+      () => {
+        const nextR = round + 1;
+        setRound(nextR);
+        if (nextR >= totalRounds) {
+          const finalScore = isCorrect ? scoreRef.current + 1 : scoreRef.current;
+          setPhase('result');
+          const achievements = recordResult(finalScore >= totalRounds / 2, finalScore);
+          pushAchievements(achievements);
+          setTip(getRandomTip().fact);
+        } else {
+          startRound();
+        }
+      },
+      isCorrect ? 800 : 2000,
+    );
   }, [phase, round, totalRounds, score, startRound, recordResult]);
 
   return (
@@ -180,33 +189,27 @@ export default function BrailleSequence() {
         {phase !== 'result' && (
           <>
             <div className="seq-status" aria-live="polite" aria-atomic="true">
-              <span>Round {round + 1} / {totalRounds}</span>
+              <span>
+                Round {round + 1} / {totalRounds}
+              </span>
               <span>Score: {score}</span>
             </div>
 
-            <p className="seq-instruction">
-              Tap two cards to swap them. Arrange in A→Z order.
-            </p>
+            <p className="seq-instruction">Tap two cards to swap them. Arrange in A→Z order.</p>
 
             <div className="seq-cards" role="group" aria-label="Braille sequence cards">
               {cards.map((card, i) => (
                 <button
                   key={card.letter}
-                  className={`seq-card ${
-                    selectedIdx === i ? 'selected' : ''
-                  } ${
-                    cardResults.length > 0
-                      ? cardResults[i] ? 'correct' : 'wrong'
-                      : ''
+                  className={`seq-card ${selectedIdx === i ? 'selected' : ''} ${
+                    cardResults.length > 0 ? (cardResults[i] ? 'correct' : 'wrong') : ''
                   }`}
                   onClick={() => handleCardClick(i)}
                   disabled={phase !== 'playing'}
                   aria-label={`Position ${i + 1}${feedback !== null ? `: letter ${card.letter}` : ''}`}
                 >
                   <BrailleCell pattern={card.pattern} />
-                  {feedback !== null && (
-                    <span className="seq-card-letter">{card.letter}</span>
-                  )}
+                  {feedback !== null && <span className="seq-card-letter">{card.letter}</span>}
                   {cardResults.length > 0 && (
                     <span className={`seq-card-mark ${cardResults[i] ? 'correct' : 'wrong'}`}>
                       {cardResults[i] ? '✓' : '✗'}
@@ -224,9 +227,7 @@ export default function BrailleSequence() {
 
             {feedback !== null && (
               <div className={`seq-feedback ${feedback ? 'correct' : 'wrong'}`} aria-live="assertive">
-                {feedback
-                  ? 'Correct order!'
-                  : `Correct: ${correctOrder.join(' → ')}`}
+                {feedback ? 'Correct order!' : `Correct: ${correctOrder.join(' → ')}`}
               </div>
             )}
           </>
@@ -234,7 +235,9 @@ export default function BrailleSequence() {
 
         {phase === 'result' && (
           <div className="seq-result">
-            <div className="seq-result-score">{score} / {totalRounds}</div>
+            <div className="seq-result-score">
+              {score} / {totalRounds}
+            </div>
             <div className="seq-result-label">
               {score === totalRounds ? 'Perfect sequence!' : score >= 3 ? 'Well done!' : 'Keep practicing!'}
             </div>

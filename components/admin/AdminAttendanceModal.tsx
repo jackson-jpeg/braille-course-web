@@ -34,7 +34,9 @@ export default function AdminAttendanceModal({ sessionId, sectionEnrollments, on
   const [sessionTitle, setSessionTitle] = useState('');
 
   useEffect(() => {
-    function handleKey(e: KeyboardEvent) { if (e.key === 'Escape') onClose(); }
+    function handleKey(e: KeyboardEvent) {
+      if (e.key === 'Escape') onClose();
+    }
     document.addEventListener('keydown', handleKey);
     return () => document.removeEventListener('keydown', handleKey);
   }, [onClose]);
@@ -75,11 +77,7 @@ export default function AdminAttendanceModal({ sessionId, sectionEnrollments, on
   }, [sessionId, sectionEnrollments, showToast]);
 
   function updateRow(enrollmentId: string, field: 'status' | 'note', value: string) {
-    setRows((prev) =>
-      prev.map((r) =>
-        r.enrollmentId === enrollmentId ? { ...r, [field]: value } : r
-      )
-    );
+    setRows((prev) => prev.map((r) => (r.enrollmentId === enrollmentId ? { ...r, [field]: value } : r)));
   }
 
   function markAll(status: string) {
@@ -113,7 +111,9 @@ export default function AdminAttendanceModal({ sessionId, sectionEnrollments, on
   return (
     <div className="admin-modal-overlay" onClick={onClose}>
       <div className="admin-student-modal admin-attendance-modal" onClick={(e) => e.stopPropagation()}>
-        <button className="admin-modal-close" onClick={onClose}>&times;</button>
+        <button className="admin-modal-close" onClick={onClose}>
+          &times;
+        </button>
 
         <div className="admin-student-modal-content" style={{ padding: 24 }}>
           <h3 style={{ marginBottom: 4 }}>Take Attendance</h3>
@@ -160,11 +160,15 @@ export default function AdminAttendanceModal({ sessionId, sectionEnrollments, on
                           key={s}
                           type="button"
                           className={`admin-attendance-status-btn ${row.status === s ? 'admin-attendance-status-active' : ''}`}
-                          style={row.status === s ? {
-                            background: STATUS_COLORS[s].bg,
-                            color: STATUS_COLORS[s].text,
-                            borderColor: STATUS_COLORS[s].text,
-                          } : undefined}
+                          style={
+                            row.status === s
+                              ? {
+                                  background: STATUS_COLORS[s].bg,
+                                  color: STATUS_COLORS[s].text,
+                                  borderColor: STATUS_COLORS[s].text,
+                                }
+                              : undefined
+                          }
                           onClick={() => updateRow(row.enrollmentId, 'status', s)}
                         >
                           {s.charAt(0)}
@@ -183,7 +187,9 @@ export default function AdminAttendanceModal({ sessionId, sectionEnrollments, on
               </div>
 
               <div style={{ display: 'flex', gap: 12, marginTop: 20, justifyContent: 'flex-end' }}>
-                <button className="admin-refresh-btn" onClick={onClose}>Cancel</button>
+                <button className="admin-refresh-btn" onClick={onClose}>
+                  Cancel
+                </button>
                 <button className="admin-send-btn" onClick={handleSave} disabled={saving}>
                   {saving ? 'Saving\u2026' : 'Save Attendance'}
                 </button>

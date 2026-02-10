@@ -39,7 +39,9 @@ export default function AdminSchoolPanel({ inquiry, onClose, onUpdate, onDelete 
 
   const handleEmailContact = () => {
     const subject = encodeURIComponent(`Re: TVI Services for ${inquiry.schoolName}`);
-    const body = encodeURIComponent(`Hi ${inquiry.contactName},\n\nThank you for your interest in TVI services for ${inquiry.schoolName}.\n\n`);
+    const body = encodeURIComponent(
+      `Hi ${inquiry.contactName},\n\nThank you for your interest in TVI services for ${inquiry.schoolName}.\n\n`,
+    );
     window.location.href = `mailto:${inquiry.contactEmail}?subject=${subject}&body=${body}`;
   };
 
@@ -51,26 +53,22 @@ export default function AdminSchoolPanel({ inquiry, onClose, onUpdate, onDelete 
         <div className="admin-school-panel-header">
           <div>
             <h2 className="admin-school-panel-title">{inquiry.schoolName}</h2>
-            {inquiry.districtName && (
-              <p className="admin-school-panel-subtitle">{inquiry.districtName}</p>
-            )}
+            {inquiry.districtName && <p className="admin-school-panel-subtitle">{inquiry.districtName}</p>}
           </div>
           <div className="admin-school-panel-actions">
-            <button
-              className="admin-school-panel-action"
-              onClick={handleEmailContact}
-              title="Email contact"
-            >
+            <button className="admin-school-panel-action" onClick={handleEmailContact} title="Email contact">
               <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
                 <rect x="1.5" y="3" width="13" height="10" rx="1.5" stroke="currentColor" strokeWidth="1.5" />
-                <path d="M1.5 5l6.5 4 6.5-4" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
+                <path
+                  d="M1.5 5l6.5 4 6.5-4"
+                  stroke="currentColor"
+                  strokeWidth="1.5"
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                />
               </svg>
             </button>
-            <button
-              className="admin-school-panel-close"
-              onClick={onClose}
-              title="Close"
-            >
+            <button className="admin-school-panel-close" onClick={onClose} title="Close">
               <svg width="18" height="18" viewBox="0 0 24 24" fill="none">
                 <path d="M6 6l12 12M18 6L6 18" stroke="currentColor" strokeWidth="2" strokeLinecap="round" />
               </svg>
@@ -96,9 +94,7 @@ export default function AdminSchoolPanel({ inquiry, onClose, onUpdate, onDelete 
             </select>
             <div className="admin-school-panel-meta">
               <span>Created {relativeTime(inquiry.createdAt)}</span>
-              {inquiry.updatedAt !== inquiry.createdAt && (
-                <span> · Updated {relativeTime(inquiry.updatedAt)}</span>
-              )}
+              {inquiry.updatedAt !== inquiry.createdAt && <span> · Updated {relativeTime(inquiry.updatedAt)}</span>}
             </div>
           </div>
 
@@ -175,18 +171,13 @@ export default function AdminSchoolPanel({ inquiry, onClose, onUpdate, onDelete 
               placeholder="Add private notes about this inquiry..."
               rows={5}
             />
-            {isSavingNotes && (
-              <div className="admin-school-panel-saving">Saving...</div>
-            )}
+            {isSavingNotes && <div className="admin-school-panel-saving">Saving...</div>}
           </div>
 
           {/* Danger Zone */}
           <div className="admin-school-panel-section admin-school-panel-danger">
             <h3 className="admin-school-panel-section-title">Danger Zone</h3>
-            <button
-              className="admin-school-panel-delete"
-              onClick={() => onDelete(inquiry.id)}
-            >
+            <button className="admin-school-panel-delete" onClick={() => onDelete(inquiry.id)}>
               Delete Inquiry
             </button>
           </div>

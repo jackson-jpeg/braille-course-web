@@ -5,10 +5,7 @@ import { isAuthorized } from '@/lib/admin-auth';
 export const maxDuration = 60;
 
 /* ── GET /api/admin/emails/received/[id]?key=...  ── get single received email via iCloud IMAP ── */
-export async function GET(
-  req: NextRequest,
-  { params }: { params: Promise<{ id: string }> }
-) {
+export async function GET(req: NextRequest, { params }: { params: Promise<{ id: string }> }) {
   if (!isAuthorized(req)) {
     return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
   }
@@ -19,10 +16,7 @@ export async function GET(
     const email = await getReceivedEmail(id);
 
     if (!email) {
-      return NextResponse.json(
-        { error: 'Email not found' },
-        { status: 404 }
-      );
+      return NextResponse.json({ error: 'Email not found' }, { status: 404 });
     }
 
     return NextResponse.json({ email });
@@ -33,9 +27,6 @@ export async function GET(
       responseStatus: e.responseStatus,
       responseText: e.responseText,
     });
-    return NextResponse.json(
-      { error: `Failed to fetch received email: ${e.message}` },
-      { status: 500 }
-    );
+    return NextResponse.json({ error: `Failed to fetch received email: ${e.message}` }, { status: 500 });
   }
 }

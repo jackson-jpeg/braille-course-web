@@ -11,7 +11,9 @@ export function relativeTime(dateStr: string): string {
 
   if (days > 30) {
     return new Date(dateStr).toLocaleDateString('en-US', {
-      month: 'short', day: 'numeric', year: 'numeric',
+      month: 'short',
+      day: 'numeric',
+      year: 'numeric',
     });
   }
   if (days > 0) return `${days}d ago`;
@@ -22,14 +24,20 @@ export function relativeTime(dateStr: string): string {
 
 export function fullDate(dateStr: string): string {
   return new Date(dateStr).toLocaleString('en-US', {
-    weekday: 'short', month: 'short', day: 'numeric', year: 'numeric',
-    hour: 'numeric', minute: '2-digit',
+    weekday: 'short',
+    month: 'short',
+    day: 'numeric',
+    year: 'numeric',
+    hour: 'numeric',
+    minute: '2-digit',
   });
 }
 
 export function formatDate(ts: number): string {
   return new Date(ts * 1000).toLocaleDateString('en-US', {
-    month: 'short', day: 'numeric', year: 'numeric',
+    month: 'short',
+    day: 'numeric',
+    year: 'numeric',
   });
 }
 
@@ -57,7 +65,14 @@ export function lastUpdatedText(lastFetched: Date | null): string {
 }
 
 export function downloadCsv(
-  enrollments: { email: string | null; section: { label: string }; plan: string; paymentStatus: string; stripeCustomerId: string | null; createdAt: string; }[],
+  enrollments: {
+    email: string | null;
+    section: { label: string };
+    plan: string;
+    paymentStatus: string;
+    stripeCustomerId: string | null;
+    createdAt: string;
+  }[],
   scheduleMap: Record<string, string>,
 ) {
   const headers = ['Email', 'Section', 'Schedule', 'Plan', 'Status', 'Stripe Customer', 'Date'];

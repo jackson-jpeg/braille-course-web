@@ -33,14 +33,10 @@ export default function BrailleHero({
   const longPressTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
   // Unique letters in the word (excluding spaces)
-  const uniqueLettersRef = useRef<Set<string>>(
-    new Set(word.split('').filter((c) => c !== ' '))
-  );
+  const uniqueLettersRef = useRef<Set<string>>(new Set(word.split('').filter((c) => c !== ' ')));
 
   useEffect(() => {
-    setIsTouchDevice(
-      'ontouchstart' in window || navigator.maxTouchPoints > 0
-    );
+    setIsTouchDevice('ontouchstart' in window || navigator.maxTouchPoints > 0);
   }, []);
 
   useEffect(() => {
@@ -70,7 +66,7 @@ export default function BrailleHero({
         }
       }
     },
-    [easterEggs, allDiscovered]
+    [easterEggs, allDiscovered],
   );
 
   const deactivate = useCallback(() => {
@@ -85,7 +81,7 @@ export default function BrailleHero({
       setPopKey(key);
       popTimerRef.current = setTimeout(() => setPopKey(null), 400);
     },
-    [easterEggs]
+    [easterEggs],
   );
 
   // Easter egg 3: long-press to reveal dot numbers
@@ -97,7 +93,7 @@ export default function BrailleHero({
         setLongPressKey(key);
       }, 800);
     },
-    [easterEggs]
+    [easterEggs],
   );
 
   const handlePressEnd = useCallback(() => {
@@ -109,10 +105,7 @@ export default function BrailleHero({
   let letterIndex = 0;
 
   return (
-    <div
-      className="braille-interactive-area"
-      aria-label={`Interactive braille cells spelling ${word}`}
-    >
+    <div className="braille-interactive-area" aria-label={`Interactive braille cells spelling ${word}`}>
       <div
         className={`braille-decoration${allDiscovered ? ' celebration' : ''}`}
         role="group"
@@ -165,13 +158,13 @@ export default function BrailleHero({
             >
               <div className="braille-cell">
                 {dots[groupKey].map((filled, di) => (
-                    <span
-                      key={di}
-                      className={`braille-dot ${filled ? 'filled' : 'empty'}`}
-                      style={filled ? { animationDelay: `${currentLetterIndex * 0.15 + 0.2}s` } : undefined}
-                      aria-hidden="true"
-                    />
-                  ))}
+                  <span
+                    key={di}
+                    className={`braille-dot ${filled ? 'filled' : 'empty'}`}
+                    style={filled ? { animationDelay: `${currentLetterIndex * 0.15 + 0.2}s` } : undefined}
+                    aria-hidden="true"
+                  />
+                ))}
               </div>
               <span className={`braille-letter-label${isLongPress ? ' dot-desc' : ''}`}>
                 {isLongPress ? dotDescription(char) : char}
@@ -181,11 +174,7 @@ export default function BrailleHero({
         })}
       </div>
       <div className={`braille-hint${hintVisible ? ' visible' : ''}`}>
-        {allDiscovered
-          ? 'you can read braille!'
-          : isTouchDevice
-            ? 'tap each letter'
-            : 'hover over each letter'}
+        {allDiscovered ? 'you can read braille!' : isTouchDevice ? 'tap each letter' : 'hover over each letter'}
       </div>
     </div>
   );

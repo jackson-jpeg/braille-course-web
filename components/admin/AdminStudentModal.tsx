@@ -27,7 +27,9 @@ export default function AdminStudentModal({ enrollment, scheduleMap, onClose, on
   const [studentGrades, setStudentGrades] = useState<Grade[]>([]);
 
   useEffect(() => {
-    function handleKey(e: KeyboardEvent) { if (e.key === 'Escape') onClose(); }
+    function handleKey(e: KeyboardEvent) {
+      if (e.key === 'Escape') onClose();
+    }
     document.addEventListener('keydown', handleKey);
     return () => document.removeEventListener('keydown', handleKey);
   }, [onClose]);
@@ -63,7 +65,9 @@ export default function AdminStudentModal({ enrollment, scheduleMap, onClose, on
         const res = await fetch(`/api/admin/notes?email=${encodeURIComponent(enrollment.email!)}`);
         const json = await res.json();
         if (res.ok) setNotes(json.notes);
-      } catch (err) { console.error('Failed to fetch notes:', err); }
+      } catch (err) {
+        console.error('Failed to fetch notes:', err);
+      }
     }
     fetchNotes();
   }, [enrollment.email]);
@@ -75,7 +79,9 @@ export default function AdminStudentModal({ enrollment, scheduleMap, onClose, on
         const res = await fetch(`/api/admin/attendance/student/${enrollment.id}`);
         const json = await res.json();
         if (res.ok) setAttendanceStats(json.stats);
-      } catch (err) { console.error('Failed to fetch attendance:', err); }
+      } catch (err) {
+        console.error('Failed to fetch attendance:', err);
+      }
     }
     fetchAttendance();
   }, [enrollment.id]);
@@ -89,7 +95,9 @@ export default function AdminStudentModal({ enrollment, scheduleMap, onClose, on
         const data = await res.json();
         setStudentAssignments(data.assignments || []);
         setStudentGrades(data.grades || []);
-      } catch (err) { console.error('Failed to fetch grades:', err); }
+      } catch (err) {
+        console.error('Failed to fetch grades:', err);
+      }
     }
     fetchGrades();
   }, [enrollment.id]);
@@ -108,7 +116,9 @@ export default function AdminStudentModal({ enrollment, scheduleMap, onClose, on
         setNotes((prev) => [json.note, ...prev]);
         setNewNote('');
       }
-    } catch (err) { console.error('Failed to add note:', err); }
+    } catch (err) {
+      console.error('Failed to add note:', err);
+    }
     setNoteLoading(false);
   }
 
@@ -116,7 +126,9 @@ export default function AdminStudentModal({ enrollment, scheduleMap, onClose, on
     try {
       const res = await fetch(`/api/admin/notes/${id}`, { method: 'DELETE' });
       if (res.ok) setNotes((prev) => prev.filter((n) => n.id !== id));
-    } catch (err) { console.error('Failed to delete note:', err); }
+    } catch (err) {
+      console.error('Failed to delete note:', err);
+    }
   }
 
   async function saveNoteEdit(id: string) {
@@ -129,25 +141,33 @@ export default function AdminStudentModal({ enrollment, scheduleMap, onClose, on
       });
       const json = await res.json();
       if (res.ok) {
-        setNotes((prev) => prev.map((n) => n.id === id ? { ...n, content: json.note.content } : n));
+        setNotes((prev) => prev.map((n) => (n.id === id ? { ...n, content: json.note.content } : n)));
         setEditingNoteId(null);
       }
-    } catch (err) { console.error('Failed to save note edit:', err); }
+    } catch (err) {
+      console.error('Failed to save note edit:', err);
+    }
   }
 
   return (
     <div className="admin-modal-overlay" onClick={onClose}>
       <div className="admin-student-modal" onClick={(e) => e.stopPropagation()}>
-        <button className="admin-modal-close" onClick={onClose}>&times;</button>
+        <button className="admin-modal-close" onClick={onClose}>
+          &times;
+        </button>
 
         {loading ? (
-          <div className="admin-modal-loading"><SkeletonText lines={6} /></div>
+          <div className="admin-modal-loading">
+            <SkeletonText lines={6} />
+          </div>
         ) : error ? (
           <div className="admin-student-modal-content">
             <div className="admin-student-header">
               <h3>{enrollment.email || 'Unknown Student'}</h3>
             </div>
-            <div className="admin-email-error" style={{ margin: 24 }}>{error}</div>
+            <div className="admin-email-error" style={{ margin: 24 }}>
+              {error}
+            </div>
           </div>
         ) : (
           <div className="admin-student-modal-content">
@@ -196,10 +216,7 @@ export default function AdminStudentModal({ enrollment, scheduleMap, onClose, on
 
                 <div className="admin-student-actions">
                   {enrollment.email && (
-                    <button
-                      className="admin-compose-btn"
-                      onClick={() => onSendEmail(enrollment.email!)}
-                    >
+                    <button className="admin-compose-btn" onClick={() => onSendEmail(enrollment.email!)}>
                       Send Email
                     </button>
                   )}
@@ -220,7 +237,9 @@ export default function AdminStudentModal({ enrollment, scheduleMap, onClose, on
                             <span className="admin-student-payment-date">{formatDate(c.created)}</span>
                           </div>
                           <div className="admin-student-payment-actions">
-                            <span className={`admin-status admin-status-${c.status === 'succeeded' ? 'completed' : 'pending'}`}>
+                            <span
+                              className={`admin-status admin-status-${c.status === 'succeeded' ? 'completed' : 'pending'}`}
+                            >
                               {c.status === 'succeeded' ? 'Successful' : c.status}
                             </span>
                             <a
@@ -316,7 +335,10 @@ export default function AdminStudentModal({ enrollment, scheduleMap, onClose, on
                   <div className="admin-student-info-section">
                     <h4>Attendance</h4>
                     <p style={{ fontSize: '0.88rem', color: '#4a5568', marginBottom: 8 }}>
-                      <strong>{attendanceStats.attended}/{attendanceStats.total}</strong> sessions &mdash; {attendanceStats.rate}% attendance
+                      <strong>
+                        {attendanceStats.attended}/{attendanceStats.total}
+                      </strong>{' '}
+                      sessions &mdash; {attendanceStats.rate}% attendance
                     </p>
                     <div className="admin-student-attendance-list">
                       {attendanceStats.records.map((r) => (
@@ -388,13 +410,28 @@ export default function AdminStudentModal({ enrollment, scheduleMap, onClose, on
                               style={{ resize: 'vertical', fontSize: '0.85rem' }}
                               autoFocus
                               onKeyDown={(e) => {
-                                if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); saveNoteEdit(n.id); }
+                                if (e.key === 'Enter' && !e.shiftKey) {
+                                  e.preventDefault();
+                                  saveNoteEdit(n.id);
+                                }
                                 if (e.key === 'Escape') setEditingNoteId(null);
                               }}
                             />
                             <div style={{ display: 'flex', gap: 6, marginTop: 4 }}>
-                              <button className="admin-send-btn" style={{ fontSize: '0.75rem', padding: '3px 10px' }} onClick={() => saveNoteEdit(n.id)}>Save</button>
-                              <button className="admin-refresh-btn" style={{ fontSize: '0.75rem', padding: '3px 10px' }} onClick={() => setEditingNoteId(null)}>Cancel</button>
+                              <button
+                                className="admin-send-btn"
+                                style={{ fontSize: '0.75rem', padding: '3px 10px' }}
+                                onClick={() => saveNoteEdit(n.id)}
+                              >
+                                Save
+                              </button>
+                              <button
+                                className="admin-refresh-btn"
+                                style={{ fontSize: '0.75rem', padding: '3px 10px' }}
+                                onClick={() => setEditingNoteId(null)}
+                              >
+                                Cancel
+                              </button>
                             </div>
                           </div>
                         ) : (
@@ -404,12 +441,23 @@ export default function AdminStudentModal({ enrollment, scheduleMap, onClose, on
                               <span title={fullDate(n.createdAt)}>{relativeTime(n.createdAt)}</span>
                               <button
                                 className="admin-stripe-link"
-                                style={{ fontSize: '0.75rem', background: 'none', border: 'none', cursor: 'pointer', padding: 0 }}
-                                onClick={() => { setEditingNoteId(n.id); setEditingNoteContent(n.content); }}
+                                style={{
+                                  fontSize: '0.75rem',
+                                  background: 'none',
+                                  border: 'none',
+                                  cursor: 'pointer',
+                                  padding: 0,
+                                }}
+                                onClick={() => {
+                                  setEditingNoteId(n.id);
+                                  setEditingNoteContent(n.content);
+                                }}
                               >
                                 Edit
                               </button>
-                              <button className="admin-note-delete" onClick={() => deleteNote(n.id)}>&times;</button>
+                              <button className="admin-note-delete" onClick={() => deleteNote(n.id)}>
+                                &times;
+                              </button>
                             </div>
                           </>
                         )}

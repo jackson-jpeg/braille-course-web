@@ -21,36 +21,197 @@ export interface Achievement {
 /** All achievement definitions */
 export const ACHIEVEMENTS: Achievement[] = [
   // === BEGINNER (Bronze) ===
-  { id: 'first-steps', name: 'First Steps', description: 'Play your first game', tier: 'bronze', category: 'beginner', icon: '👣' },
-  { id: 'explorer', name: 'Explorer', description: 'Try 3 different games', tier: 'bronze', category: 'beginner', icon: '🧭' },
-  { id: 'first-win', name: 'First Victory', description: 'Win your first game', tier: 'bronze', category: 'beginner', icon: '⭐' },
-  { id: 'daily-player', name: 'Daily Player', description: 'Complete a daily challenge', tier: 'bronze', category: 'beginner', icon: '📅' },
-  { id: 'five-games', name: 'Getting Started', description: 'Play 5 games total', tier: 'bronze', category: 'beginner', icon: '🎯' },
+  {
+    id: 'first-steps',
+    name: 'First Steps',
+    description: 'Play your first game',
+    tier: 'bronze',
+    category: 'beginner',
+    icon: '👣',
+  },
+  {
+    id: 'explorer',
+    name: 'Explorer',
+    description: 'Try 3 different games',
+    tier: 'bronze',
+    category: 'beginner',
+    icon: '🧭',
+  },
+  {
+    id: 'first-win',
+    name: 'First Victory',
+    description: 'Win your first game',
+    tier: 'bronze',
+    category: 'beginner',
+    icon: '⭐',
+  },
+  {
+    id: 'daily-player',
+    name: 'Daily Player',
+    description: 'Complete a daily challenge',
+    tier: 'bronze',
+    category: 'beginner',
+    icon: '📅',
+  },
+  {
+    id: 'five-games',
+    name: 'Getting Started',
+    description: 'Play 5 games total',
+    tier: 'bronze',
+    category: 'beginner',
+    icon: '🎯',
+  },
 
   // === SKILL (Silver) ===
   { id: 'ten-wins', name: 'Double Digits', description: 'Win 10 games', tier: 'silver', category: 'skill', icon: '🏅' },
-  { id: 'speed-demon', name: 'Speed Demon', description: 'Get a 10-streak in Speed Match', tier: 'silver', category: 'skill', icon: '⚡' },
-  { id: 'word-smith', name: 'Word Smith', description: 'Win Word Game in 3 guesses or fewer', tier: 'silver', category: 'skill', icon: '📝' },
-  { id: 'perfect-memory', name: 'Perfect Memory', description: 'Complete Memory Match in under 10 moves', tier: 'silver', category: 'skill', icon: '🧠' },
-  { id: 'hangman-hero', name: 'Hangman Hero', description: 'Win Hangman with 0 wrong guesses', tier: 'silver', category: 'skill', icon: '🦸' },
-  { id: 'contraction-pro', name: 'Contraction Pro', description: 'Score 10+ in Contraction Sprint', tier: 'silver', category: 'skill', icon: '📖' },
-  { id: 'math-whiz', name: 'Math Whiz', description: 'Score 10+ in Number Sense', tier: 'silver', category: 'skill', icon: '🔢' },
-  { id: 'quick-reflexes', name: 'Quick Reflexes', description: 'Score 15+ in Reflex Dots', tier: 'silver', category: 'skill', icon: '👆' },
-  { id: 'week-warrior', name: 'Week Warrior', description: 'Maintain a 7-day streak', tier: 'silver', category: 'skill', icon: '🗓️' },
-  { id: 'all-games', name: 'Renaissance Player', description: 'Play all 9 games', tier: 'silver', category: 'skill', icon: '🎪' },
+  {
+    id: 'speed-demon',
+    name: 'Speed Demon',
+    description: 'Get a 10-streak in Speed Match',
+    tier: 'silver',
+    category: 'skill',
+    icon: '⚡',
+  },
+  {
+    id: 'word-smith',
+    name: 'Word Smith',
+    description: 'Win Word Game in 3 guesses or fewer',
+    tier: 'silver',
+    category: 'skill',
+    icon: '📝',
+  },
+  {
+    id: 'perfect-memory',
+    name: 'Perfect Memory',
+    description: 'Complete Memory Match in under 10 moves',
+    tier: 'silver',
+    category: 'skill',
+    icon: '🧠',
+  },
+  {
+    id: 'hangman-hero',
+    name: 'Hangman Hero',
+    description: 'Win Hangman with 0 wrong guesses',
+    tier: 'silver',
+    category: 'skill',
+    icon: '🦸',
+  },
+  {
+    id: 'contraction-pro',
+    name: 'Contraction Pro',
+    description: 'Score 10+ in Contraction Sprint',
+    tier: 'silver',
+    category: 'skill',
+    icon: '📖',
+  },
+  {
+    id: 'math-whiz',
+    name: 'Math Whiz',
+    description: 'Score 10+ in Number Sense',
+    tier: 'silver',
+    category: 'skill',
+    icon: '🔢',
+  },
+  {
+    id: 'quick-reflexes',
+    name: 'Quick Reflexes',
+    description: 'Score 15+ in Reflex Dots',
+    tier: 'silver',
+    category: 'skill',
+    icon: '👆',
+  },
+  {
+    id: 'week-warrior',
+    name: 'Week Warrior',
+    description: 'Maintain a 7-day streak',
+    tier: 'silver',
+    category: 'skill',
+    icon: '🗓️',
+  },
+  {
+    id: 'all-games',
+    name: 'Renaissance Player',
+    description: 'Play all 9 games',
+    tier: 'silver',
+    category: 'skill',
+    icon: '🎪',
+  },
 
   // === MASTERY (Gold) ===
-  { id: 'fifty-wins', name: 'Half Century', description: 'Win 50 games', tier: 'gold', category: 'mastery', icon: '🏆' },
-  { id: 'speed-master', name: 'Speed Master', description: 'Get a 20-streak in Speed Match', tier: 'gold', category: 'mastery', icon: '🌟' },
-  { id: 'month-streak', name: 'Dedicated Learner', description: 'Maintain a 30-day streak', tier: 'gold', category: 'mastery', icon: '🔥' },
-  { id: 'hundred-games', name: 'Centurion', description: 'Play 100 games total', tier: 'gold', category: 'mastery', icon: '💯' },
-  { id: 'advanced-player', name: 'Advanced Player', description: 'Win on Advanced difficulty', tier: 'gold', category: 'mastery', icon: '🎓' },
-  { id: 'daily-sweep', name: 'Daily Sweep', description: 'Complete all 3 daily challenges in one day', tier: 'gold', category: 'mastery', icon: '🧹' },
+  {
+    id: 'fifty-wins',
+    name: 'Half Century',
+    description: 'Win 50 games',
+    tier: 'gold',
+    category: 'mastery',
+    icon: '🏆',
+  },
+  {
+    id: 'speed-master',
+    name: 'Speed Master',
+    description: 'Get a 20-streak in Speed Match',
+    tier: 'gold',
+    category: 'mastery',
+    icon: '🌟',
+  },
+  {
+    id: 'month-streak',
+    name: 'Dedicated Learner',
+    description: 'Maintain a 30-day streak',
+    tier: 'gold',
+    category: 'mastery',
+    icon: '🔥',
+  },
+  {
+    id: 'hundred-games',
+    name: 'Centurion',
+    description: 'Play 100 games total',
+    tier: 'gold',
+    category: 'mastery',
+    icon: '💯',
+  },
+  {
+    id: 'advanced-player',
+    name: 'Advanced Player',
+    description: 'Win on Advanced difficulty',
+    tier: 'gold',
+    category: 'mastery',
+    icon: '🎓',
+  },
+  {
+    id: 'daily-sweep',
+    name: 'Daily Sweep',
+    description: 'Complete all 3 daily challenges in one day',
+    tier: 'gold',
+    category: 'mastery',
+    icon: '🧹',
+  },
 
   // === EXPERT (Platinum) ===
-  { id: 'hundred-wins', name: 'Century Champion', description: 'Win 100 games', tier: 'platinum', category: 'mastery', icon: '👑' },
-  { id: 'braille-master', name: 'Braille Master', description: 'Unlock 20 other achievements', tier: 'platinum', category: 'special', icon: '🌠' },
-  { id: 'speed-legend', name: 'Speed Legend', description: 'Get a 30-streak in Speed Match', tier: 'platinum', category: 'mastery', icon: '💎' },
+  {
+    id: 'hundred-wins',
+    name: 'Century Champion',
+    description: 'Win 100 games',
+    tier: 'platinum',
+    category: 'mastery',
+    icon: '👑',
+  },
+  {
+    id: 'braille-master',
+    name: 'Braille Master',
+    description: 'Unlock 20 other achievements',
+    tier: 'platinum',
+    category: 'special',
+    icon: '🌠',
+  },
+  {
+    id: 'speed-legend',
+    name: 'Speed Legend',
+    description: 'Get a 30-streak in Speed Match',
+    tier: 'platinum',
+    category: 'mastery',
+    icon: '💎',
+  },
 ];
 
 /** Check for newly unlocked achievements. Returns newly unlocked ones. */
@@ -58,17 +219,11 @@ export function checkAchievements(progress: ProgressData): Achievement[] {
   const already = new Set(progress.achievements.unlocked);
   const newlyUnlocked: Achievement[] = [];
 
-  const totalPlayed = Object.values(progress.games).reduce(
-    (s, g) => s + (g?.gamesPlayed || 0), 0
-  );
-  const totalWins = Object.values(progress.games).reduce(
-    (s, g) => s + (g?.gamesWon || 0), 0
-  );
-  const allGamesTriedCount = Object.values(progress.games).filter(
-    (g) => g && g.gamesPlayed > 0
-  ).length;
+  const totalPlayed = Object.values(progress.games).reduce((s, g) => s + (g?.gamesPlayed || 0), 0);
+  const totalWins = Object.values(progress.games).reduce((s, g) => s + (g?.gamesWon || 0), 0);
+  const allGamesTriedCount = Object.values(progress.games).filter((g) => g && g.gamesPlayed > 0).length;
   const scoredGamesTriedCount = Object.entries(progress.games).filter(
-    ([id, g]) => g && g.gamesPlayed > 0 && id !== 'explorer'
+    ([id, g]) => g && g.gamesPlayed > 0 && id !== 'explorer',
   ).length;
 
   function unlock(id: string) {
@@ -131,9 +286,7 @@ export function checkAchievements(progress: ProgressData): Achievement[] {
   if (totalPlayed >= 100) unlock('hundred-games');
 
   // Advanced difficulty win
-  const hasAdvancedWin = Object.values(progress.games).some(
-    (g) => g && g.difficultyStats.advanced.won > 0
-  );
+  const hasAdvancedWin = Object.values(progress.games).some((g) => g && g.difficultyStats.advanced.won > 0);
   if (hasAdvancedWin) unlock('advanced-player');
 
   // Meta: braille master
@@ -149,9 +302,13 @@ export function checkAchievements(progress: ProgressData): Achievement[] {
 /** Get tier color */
 export function getTierColor(tier: AchievementTier): string {
   switch (tier) {
-    case 'bronze': return '#CD7F32';
-    case 'silver': return '#C0C0C0';
-    case 'gold': return '#D4A853';
-    case 'platinum': return '#E5E4E2';
+    case 'bronze':
+      return '#CD7F32';
+    case 'silver':
+      return '#C0C0C0';
+    case 'gold':
+      return '#D4A853';
+    case 'platinum':
+      return '#E5E4E2';
   }
 }

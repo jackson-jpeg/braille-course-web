@@ -46,18 +46,12 @@ export async function POST(req: NextRequest) {
     const { to, subject, body, scheduledFor, attachmentIds } = await req.json();
 
     if (!to || !subject || !body || !scheduledFor) {
-      return NextResponse.json(
-        { error: 'Missing required fields: to, subject, body, scheduledFor' },
-        { status: 400 }
-      );
+      return NextResponse.json({ error: 'Missing required fields: to, subject, body, scheduledFor' }, { status: 400 });
     }
 
     const scheduledDate = new Date(scheduledFor);
     if (scheduledDate <= new Date()) {
-      return NextResponse.json(
-        { error: 'Scheduled time must be in the future' },
-        { status: 400 }
-      );
+      return NextResponse.json({ error: 'Scheduled time must be in the future' }, { status: 400 });
     }
 
     const recipients = Array.isArray(to) ? to : [to];

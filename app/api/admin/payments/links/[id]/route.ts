@@ -3,10 +3,7 @@ import { stripe } from '@/lib/stripe';
 import { isAuthorized } from '@/lib/admin-auth';
 
 /* PATCH /api/admin/payments/links/[id] — toggle active status */
-export async function PATCH(
-  req: NextRequest,
-  { params }: { params: Promise<{ id: string }> }
-) {
+export async function PATCH(req: NextRequest, { params }: { params: Promise<{ id: string }> }) {
   if (!isAuthorized(req)) {
     return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
   }

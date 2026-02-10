@@ -26,9 +26,7 @@ export async function GET(req: NextRequest) {
       ];
     });
 
-    const csv = [headers, ...rows]
-      .map((r) => r.map((c) => `"${String(c).replace(/"/g, '""')}"`).join(','))
-      .join('\n');
+    const csv = [headers, ...rows].map((r) => r.map((c) => `"${String(c).replace(/"/g, '""')}"`).join(',')).join('\n');
 
     return new NextResponse(csv, {
       headers: {

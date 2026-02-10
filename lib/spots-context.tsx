@@ -21,23 +21,14 @@ interface SpotsContextValue {
 
 const SpotsContext = createContext<SpotsContextValue | null>(null);
 
-export function SpotsProvider({
-  initialSections,
-  children,
-}: {
-  initialSections: Section[];
-  children: ReactNode;
-}) {
+export function SpotsProvider({ initialSections, children }: { initialSections: Section[]; children: ReactNode }) {
   const [sections, setSections] = useState<Section[]>(initialSections);
   const [stale, setStale] = useState(false);
   const [lastUpdated, setLastUpdated] = useState<Date | null>(null);
   const mountedRef = useRef(true);
 
   const totalSpots = sections.reduce((sum, s) => sum + s.maxCapacity, 0);
-  const totalRemaining = sections.reduce(
-    (sum, s) => sum + Math.max(0, s.maxCapacity - s.enrolledCount),
-    0
-  );
+  const totalRemaining = sections.reduce((sum, s) => sum + Math.max(0, s.maxCapacity - s.enrolledCount), 0);
 
   const refreshSections = useCallback(async () => {
     try {

@@ -6,9 +6,7 @@ export default function Footer() {
       <div className="footer-grid">
         <div className="footer-col">
           <div className="footer-heading">TeachBraille.org</div>
-          <p className="footer-description">
-            Specialized TVI services and braille instruction by Delaney Costello.
-          </p>
+          <p className="footer-description">Specialized TVI services and braille instruction by Delaney Costello.</p>
           <a href="mailto:Delaney@TeachBraille.org" className="footer-email">
             Delaney@TeachBraille.org
           </a>
@@ -35,22 +33,13 @@ export default function Footer() {
       </div>
 
       <a className="back-to-top" href="#top" aria-label="Back to top">
-        <svg
-          viewBox="0 0 24 24"
-          fill="none"
-          stroke="currentColor"
-          strokeWidth="2.5"
-          aria-hidden="true"
-        >
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" aria-hidden="true">
           <line x1="12" y1="19" x2="12" y2="5" />
           <polyline points="5 12 12 5 19 12" />
         </svg>
         Back to top
       </a>
-      <p>
-        &copy; 2026 Frankly the Best Education, LLC &middot;
-        Delaney Costello, Teacher of the Visually Impaired
-      </p>
+      <p>&copy; 2026 Frankly the Best Education, LLC &middot; Delaney Costello, Teacher of the Visually Impaired</p>
     </footer>
   );
 }

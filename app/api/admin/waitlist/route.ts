@@ -25,8 +25,7 @@ export async function GET(req: NextRequest) {
     const updates: Promise<unknown>[] = [];
     for (const sectionEntries of Object.values(bySection)) {
       sectionEntries.sort((a, b) => {
-        if (a.waitlistPosition != null && b.waitlistPosition != null)
-          return a.waitlistPosition - b.waitlistPosition;
+        if (a.waitlistPosition != null && b.waitlistPosition != null) return a.waitlistPosition - b.waitlistPosition;
         if (a.waitlistPosition != null) return -1;
         if (b.waitlistPosition != null) return 1;
         return new Date(a.createdAt).getTime() - new Date(b.createdAt).getTime();
@@ -40,7 +39,7 @@ export async function GET(req: NextRequest) {
             prisma.enrollment.update({
               where: { id: sectionEntries[i].id },
               data: { waitlistPosition: expected },
-            })
+            }),
           );
         }
       }

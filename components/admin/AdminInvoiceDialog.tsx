@@ -19,7 +19,9 @@ const TERMS_OPTIONS = [
 
 export default function AdminInvoiceDialog({ enrollments, onClose, onSuccess }: Props) {
   useEffect(() => {
-    function handleKey(e: KeyboardEvent) { if (e.key === 'Escape') onClose(); }
+    function handleKey(e: KeyboardEvent) {
+      if (e.key === 'Escape') onClose();
+    }
     document.addEventListener('keydown', handleKey);
     return () => document.removeEventListener('keydown', handleKey);
   }, [onClose]);
@@ -38,19 +40,10 @@ export default function AdminInvoiceDialog({ enrollments, onClose, onSuccess }: 
   const autocompleteRef = useRef<HTMLDivElement>(null);
 
   // Deduplicate enrolled emails for autocomplete
-  const uniqueStudents = Array.from(
-    new Map(
-      enrollments
-        .filter((e) => e.email)
-        .map((e) => [e.email!, e])
-    ).values()
-  );
+  const uniqueStudents = Array.from(new Map(enrollments.filter((e) => e.email).map((e) => [e.email!, e])).values());
 
-  const filtered = email.length > 0
-    ? uniqueStudents.filter((e) =>
-        e.email!.toLowerCase().includes(email.toLowerCase())
-      )
-    : [];
+  const filtered =
+    email.length > 0 ? uniqueStudents.filter((e) => e.email!.toLowerCase().includes(email.toLowerCase())) : [];
 
   // Close autocomplete when clicking outside
   useEffect(() => {
@@ -111,7 +104,9 @@ export default function AdminInvoiceDialog({ enrollments, onClose, onSuccess }: 
   return (
     <div className="admin-modal-overlay" onClick={onClose}>
       <div className="admin-invoice-dialog" onClick={(e) => e.stopPropagation()}>
-        <button className="admin-modal-close" onClick={onClose}>&times;</button>
+        <button className="admin-modal-close" onClick={onClose}>
+          &times;
+        </button>
 
         <h3 className="admin-invoice-title">Create Invoice</h3>
 
@@ -122,7 +117,10 @@ export default function AdminInvoiceDialog({ enrollments, onClose, onSuccess }: 
             <input
               type="email"
               value={email}
-              onChange={(e) => { setEmail(e.target.value); setShowAutocomplete(true); }}
+              onChange={(e) => {
+                setEmail(e.target.value);
+                setShowAutocomplete(true);
+              }}
               onFocus={() => setShowAutocomplete(true)}
               placeholder="client@example.com"
               className="admin-compose-input"
@@ -130,11 +128,7 @@ export default function AdminInvoiceDialog({ enrollments, onClose, onSuccess }: 
             {showAutocomplete && filtered.length > 0 && (
               <ul className="admin-invoice-autocomplete-list">
                 {filtered.slice(0, 6).map((s) => (
-                  <li
-                    key={s.id}
-                    className="admin-invoice-autocomplete-item"
-                    onClick={() => handleSelectStudent(s)}
-                  >
+                  <li key={s.id} className="admin-invoice-autocomplete-item" onClick={() => handleSelectStudent(s)}>
                     <span>{s.email}</span>
                   </li>
                 ))}
@@ -171,10 +165,19 @@ export default function AdminInvoiceDialog({ enrollments, onClose, onSuccess }: 
         <div className="admin-refund-field">
           <label>Amount *</label>
           <div style={{ position: 'relative' }}>
-            <span style={{
-              position: 'absolute', left: 14, top: '50%', transform: 'translateY(-50%)',
-              color: 'var(--text-secondary)', fontWeight: 500, fontSize: '0.88rem',
-            }}>$</span>
+            <span
+              style={{
+                position: 'absolute',
+                left: 14,
+                top: '50%',
+                transform: 'translateY(-50%)',
+                color: 'var(--text-secondary)',
+                fontWeight: 500,
+                fontSize: '0.88rem',
+              }}
+            >
+              $
+            </span>
             <input
               type="number"
               step="0.01"
@@ -198,7 +201,9 @@ export default function AdminInvoiceDialog({ enrollments, onClose, onSuccess }: 
             style={{ width: '100%' }}
           >
             {TERMS_OPTIONS.map((opt) => (
-              <option key={opt.days} value={opt.days}>{opt.label}</option>
+              <option key={opt.days} value={opt.days}>
+                {opt.label}
+              </option>
             ))}
           </select>
         </div>
@@ -219,11 +224,7 @@ export default function AdminInvoiceDialog({ enrollments, onClose, onSuccess }: 
         {/* Send Now */}
         <div className="admin-refund-field">
           <label style={{ display: 'flex', alignItems: 'center', gap: 6, cursor: 'pointer' }}>
-            <input
-              type="checkbox"
-              checked={sendNow}
-              onChange={(e) => setSendNow(e.target.checked)}
-            />
+            <input type="checkbox" checked={sendNow} onChange={(e) => setSendNow(e.target.checked)} />
             Send immediately
           </label>
           {!sendNow && (
@@ -239,11 +240,7 @@ export default function AdminInvoiceDialog({ enrollments, onClose, onSuccess }: 
           <button className="admin-refresh-btn" onClick={onClose} disabled={loading}>
             Cancel
           </button>
-          <button
-            className="admin-invoice-create-btn"
-            onClick={handleCreate}
-            disabled={loading}
-          >
+          <button className="admin-invoice-create-btn" onClick={handleCreate} disabled={loading}>
             {loading ? 'Creating\u2026' : sendNow ? 'Create & Send Invoice' : 'Create Draft Invoice'}
           </button>
         </div>

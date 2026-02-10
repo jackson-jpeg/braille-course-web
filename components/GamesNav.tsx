@@ -19,9 +19,7 @@ const SECTIONS: { id: string; gameId: GameId; label: string }[] = [
 
 function MasteryDot({ mastery }: { mastery: number }) {
   const level = mastery === 0 ? 'none' : mastery < 50 ? 'low' : mastery < 80 ? 'mid' : 'high';
-  return (
-    <span className={`games-nav-mastery games-nav-mastery-${level}`} aria-hidden="true" />
-  );
+  return <span className={`games-nav-mastery games-nav-mastery-${level}`} aria-hidden="true" />;
 }
 
 export default function GamesNav() {
@@ -38,7 +36,7 @@ export default function GamesNav() {
           }
         }
       },
-      { rootMargin: '-50% 0px -50% 0px' }
+      { rootMargin: '-50% 0px -50% 0px' },
     );
 
     for (const { id } of SECTIONS) {
@@ -67,11 +65,7 @@ export default function GamesNav() {
   return (
     <nav ref={navRef} className="games-nav" aria-label="Game navigation">
       {SECTIONS.map(({ id, gameId, label }) => (
-        <a
-          key={id}
-          href={`#${id}`}
-          className={`games-nav-link${activeId === id ? ' active' : ''}`}
-        >
+        <a key={id} href={`#${id}`} className={`games-nav-link${activeId === id ? ' active' : ''}`}>
           {label}
           <MasteryDot mastery={masteries[gameId] || 0} />
         </a>

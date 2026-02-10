@@ -11,6 +11,7 @@ Reviewed all 35 components, 38 API routes, 14 lib files, and global CSS. The cod
 ### 1. [High/Low] DRY: Extract Duplicated Utilities into `admin-utils.ts`
 
 **Problem:** Three helper functions are copy-pasted across multiple files:
+
 - `formatFileSize` — duplicated in `AdminCreateTab.tsx:7`, `AdminEmailsTab.tsx:40`, `AdminMaterialsTab.tsx:11`
 - `sortArrow` — duplicated in `AdminPaymentsTab.tsx:400`, `AdminEmailsTab.tsx:447`, `AdminStudentsTab.tsx:46`, `AdminMaterialsTab.tsx:144`
 - `lastUpdatedText` — duplicated in `AdminPaymentsTab.tsx:494`, `AdminMaterialsTab.tsx:148`, plus inline IIFEs in `AdminEmailsTab.tsx:592-596`
@@ -31,12 +32,13 @@ Promise.all(
   pendingAttachmentIds.map((id) =>
     fetch('/api/admin/materials')
       .then((r) => r.json())
-      .then((json) => (json.materials as Material[]).find((m) => m.id === id))
-  )
-)
+      .then((json) => (json.materials as Material[]).find((m) => m.id === id)),
+  ),
+);
 ```
 
 **Fix:** Fetch once, then filter locally:
+
 ```typescript
 fetch('/api/admin/materials')
   .then((r) => r.json())
@@ -63,6 +65,7 @@ fetch('/api/admin/materials')
 ### 4. [High/Medium] Type Safety: Narrow String Unions for Enums
 
 **Problem:** Several types in `admin-types.ts` use `string` where specific union types exist in the Prisma schema:
+
 - `Enrollment.plan` — should be `'FULL' | 'DEPOSIT'`
 - `Enrollment.paymentStatus` — should be `'PENDING' | 'COMPLETED' | 'WAITLISTED'`
 - `Section.status` — should be `'OPEN' | 'FULL'`
@@ -79,6 +82,7 @@ Using `string` means TypeScript won't catch typos like `e.paymentStatus === 'com
 ### 5. [Medium/Low] Resilience: Add Error Feedback for Silenced Catches
 
 **Problem:** 12+ catch blocks across the admin silently swallow errors with `catch { /* silent */ }` or `.catch(() => {})`. Examples:
+
 - `AdminStudentsTab.tsx:76,87,180,192,205` — lead fetching, editing, deleting
 - `AdminPaymentsTab.tsx:123,134,147` — payouts, coupons, links fetching
 - `AdminAttendanceTab.tsx:38` — session fetching
@@ -95,12 +99,14 @@ When these fail, the user sees empty states with no explanation. Debugging is im
 ### 6. [Medium/Low] Cleanup: Unused Parameter in AdminOverviewTab
 
 **Problem:** `AdminOverviewTab.tsx:57-60`:
+
 ```typescript
 function handleSendEmail(email: string) {
   setSelectedStudent(null);
   onNavigate('emails');
 }
 ```
+
 The `email` parameter is accepted but never used. The function navigates to emails tab but doesn't pre-fill the recipient.
 
 **Fix:** Wire `email` into the navigation so clicking "Send Email" from the overview actually pre-fills the recipient, matching behavior in other tabs. Pass `email` up through `onNavigate` or via a dedicated `onSendEmail` callback.
@@ -114,6 +120,7 @@ The `email` parameter is accepted but never used. The function navigates to emai
 ### 7. [High/Medium] Accessibility: Keyboard Navigation for Clickable Table Rows
 
 **Problem:** Multiple table rows use `onClick` but are not keyboard-accessible:
+
 - `AdminStudentsTab.tsx:312` — `.admin-student-row-clickable` on `<tr>`
 - `AdminEmailsTab.tsx:874` — `.admin-email-row` on `<tr>`
 
@@ -128,6 +135,7 @@ Screen reader users and keyboard navigators cannot interact with these rows. No 
 ### 8. [Medium/Medium] UX: Replace Inline Styles with CSS Classes for Action Buttons
 
 **Problem:** ~30+ instances of inline `style={{ fontSize: '0.75rem', padding: '4px 10px' }}` scattered across admin components for small action buttons (Edit, Delete, Save, Email, etc.). Examples:
+
 - `AdminStudentsTab.tsx:494,497,540,543,548`
 - `AdminMaterialsTab.tsx:346,349,372,380,387`
 - `AdminAttendanceTab.tsx:188,246,253`
@@ -143,15 +151,15 @@ This creates visual inconsistency (some buttons get the style, some don't) and m
 
 ## Implementation Order
 
-| # | Item | Files | Est. Lines |
-|---|------|-------|-----------|
-| 1 | Extract duplicated utilities | `admin-utils.ts`, 4 components | ~-60 |
-| 2 | Fix N+1 materials fetch | `AdminEmailsTab.tsx` | ~-8 |
-| 3 | AbortController cleanup | `AdminCreateTab.tsx` | ~+6 |
-| 4 | Narrow string unions | `admin-types.ts` | ~+8 |
-| 5 | Error feedback for silenced catches | 5 components | ~+30 |
-| 6 | Fix unused email param | `AdminOverviewTab.tsx`, `AdminDashboard.tsx` | ~+5 |
-| 7 | Keyboard a11y for table rows | 2 components, `globals.css` | ~+30 |
-| 8 | CSS classes for action buttons | `globals.css`, 4 components | ~+10, -60 inline |
+| #   | Item                                | Files                                        | Est. Lines       |
+| --- | ----------------------------------- | -------------------------------------------- | ---------------- |
+| 1   | Extract duplicated utilities        | `admin-utils.ts`, 4 components               | ~-60             |
+| 2   | Fix N+1 materials fetch             | `AdminEmailsTab.tsx`                         | ~-8              |
+| 3   | AbortController cleanup             | `AdminCreateTab.tsx`                         | ~+6              |
+| 4   | Narrow string unions                | `admin-types.ts`                             | ~+8              |
+| 5   | Error feedback for silenced catches | 5 components                                 | ~+30             |
+| 6   | Fix unused email param              | `AdminOverviewTab.tsx`, `AdminDashboard.tsx` | ~+5              |
+| 7   | Keyboard a11y for table rows        | 2 components, `globals.css`                  | ~+30             |
+| 8   | CSS classes for action buttons      | `globals.css`, 4 components                  | ~+10, -60 inline |
 
 **Total estimated impact:** ~-50 lines net (removing duplication), stronger types, better a11y, fewer bugs.

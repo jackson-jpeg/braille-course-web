@@ -31,10 +31,7 @@ function BrailleCell({ pattern }: { pattern: number[] }) {
   return (
     <div style={{ display: 'flex', flexDirection: 'row', gap: DOT_GAP }}>
       {[col0, col1].map((col, ci) => (
-        <div
-          key={ci}
-          style={{ display: 'flex', flexDirection: 'column', gap: DOT_GAP }}
-        >
+        <div key={ci} style={{ display: 'flex', flexDirection: 'column', gap: DOT_GAP }}>
           {col.map((filled, ri) => (
             <div
               key={ri}
@@ -53,72 +50,70 @@ function BrailleCell({ pattern }: { pattern: number[] }) {
 }
 
 export default async function OGImage() {
-  const fontData = await fetch(
-    'https://fonts.gstatic.com/s/dmseriftext/v12/rnCu-xZa_krGOkCWldXRa15pvF2OQFP-.ttf'
-  ).then((res) => res.arrayBuffer());
+  const fontData = await fetch('https://fonts.gstatic.com/s/dmseriftext/v12/rnCu-xZa_krGOkCWldXRa15pvF2OQFP-.ttf').then(
+    (res) => res.arrayBuffer(),
+  );
 
   return new ImageResponse(
-    (
+    <div
+      style={{
+        width: '100%',
+        height: '100%',
+        display: 'flex',
+        flexDirection: 'column',
+        alignItems: 'center',
+        justifyContent: 'center',
+        backgroundColor: NAVY,
+        padding: '60px',
+      }}
+    >
+      {/* Braille cells spelling TEACH */}
       <div
         style={{
-          width: '100%',
-          height: '100%',
           display: 'flex',
-          flexDirection: 'column',
-          alignItems: 'center',
-          justifyContent: 'center',
-          backgroundColor: NAVY,
-          padding: '60px',
+          flexDirection: 'row',
+          gap: CELL_GAP,
+          marginBottom: 48,
         }}
       >
-        {/* Braille cells spelling TEACH */}
-        <div
-          style={{
-            display: 'flex',
-            flexDirection: 'row',
-            gap: CELL_GAP,
-            marginBottom: 48,
-          }}
-        >
-          {'TEACH'.split('').map((letter) => (
-            <BrailleCell key={letter} pattern={patterns[letter]} />
-          ))}
-        </div>
-
-        {/* Title */}
-        <div
-          style={{
-            fontFamily: '"DM Serif Text"',
-            fontSize: 64,
-            color: GOLD,
-            marginBottom: 24,
-          }}
-        >
-          TeachBraille.org
-        </div>
-
-        {/* Divider */}
-        <div
-          style={{
-            width: 120,
-            height: 2,
-            backgroundColor: GOLD,
-            marginBottom: 24,
-          }}
-        />
-
-        {/* Subtitle */}
-        <div
-          style={{
-            fontSize: 28,
-            color: CREAM,
-            fontFamily: 'sans-serif',
-          }}
-        >
-          Delaney Costello, Teacher of the Visually Impaired
-        </div>
+        {'TEACH'.split('').map((letter) => (
+          <BrailleCell key={letter} pattern={patterns[letter]} />
+        ))}
       </div>
-    ),
+
+      {/* Title */}
+      <div
+        style={{
+          fontFamily: '"DM Serif Text"',
+          fontSize: 64,
+          color: GOLD,
+          marginBottom: 24,
+        }}
+      >
+        TeachBraille.org
+      </div>
+
+      {/* Divider */}
+      <div
+        style={{
+          width: 120,
+          height: 2,
+          backgroundColor: GOLD,
+          marginBottom: 24,
+        }}
+      />
+
+      {/* Subtitle */}
+      <div
+        style={{
+          fontSize: 28,
+          color: CREAM,
+          fontFamily: 'sans-serif',
+        }}
+      >
+        Delaney Costello, Teacher of the Visually Impaired
+      </div>
+    </div>,
     {
       ...size,
       fonts: [
@@ -129,6 +124,6 @@ export default async function OGImage() {
           weight: 400,
         },
       ],
-    }
+    },
   );
 }

@@ -44,11 +44,7 @@ export const metadata: Metadata = {
   robots: { index: true, follow: true },
 };
 
-export default function RootLayout({
-  children,
-}: {
-  children: React.ReactNode;
-}) {
+export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
     <html lang="en" className={`${outfit.variable} ${dmSerif.variable} ${caveat.variable}`}>
       <body>
@@ -58,9 +54,7 @@ export default function RootLayout({
         <div className="braille-bg" aria-hidden="true"></div>
         <NavBar />
         <ScrollRevealInit />
-        <main id="main-content">
-          {children}
-        </main>
+        <main id="main-content">{children}</main>
         <Analytics />
       </body>
     </html>

@@ -50,7 +50,7 @@ export function recordGameResult(
   gameId: GameId,
   won: boolean,
   score: number,
-  difficulty: Difficulty = 'beginner'
+  difficulty: Difficulty = 'beginner',
 ): ProgressData {
   const progress = loadProgress();
   if (!progress.settings.trackingEnabled) return progress;
@@ -179,19 +179,13 @@ export function clearProgress(): void {
 /** Calculate total games played across all games */
 export function getTotalGamesPlayed(): number {
   const progress = loadProgress();
-  return Object.values(progress.games).reduce(
-    (sum, stats) => sum + (stats?.gamesPlayed || 0),
-    0
-  );
+  return Object.values(progress.games).reduce((sum, stats) => sum + (stats?.gamesPlayed || 0), 0);
 }
 
 /** Calculate total wins across all games */
 export function getTotalWins(): number {
   const progress = loadProgress();
-  return Object.values(progress.games).reduce(
-    (sum, stats) => sum + (stats?.gamesWon || 0),
-    0
-  );
+  return Object.values(progress.games).reduce((sum, stats) => sum + (stats?.gamesWon || 0), 0);
 }
 
 /** Get mastery percentage for a game (0-100) */

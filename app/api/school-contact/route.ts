@@ -32,15 +32,30 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ error: 'Please enter a valid email address' }, { status: 400 });
     }
 
-    if (!contactName || typeof contactName !== 'string' || contactName.trim().length < 2 || contactName.trim().length > 100) {
+    if (
+      !contactName ||
+      typeof contactName !== 'string' ||
+      contactName.trim().length < 2 ||
+      contactName.trim().length > 100
+    ) {
       return NextResponse.json({ error: 'Please enter a valid contact name (2-100 characters)' }, { status: 400 });
     }
 
-    if (!schoolName || typeof schoolName !== 'string' || schoolName.trim().length < 3 || schoolName.trim().length > 200) {
+    if (
+      !schoolName ||
+      typeof schoolName !== 'string' ||
+      schoolName.trim().length < 3 ||
+      schoolName.trim().length > 200
+    ) {
       return NextResponse.json({ error: 'Please enter a valid school name (3-200 characters)' }, { status: 400 });
     }
 
-    if (!servicesNeeded || typeof servicesNeeded !== 'string' || servicesNeeded.trim().length < 10 || servicesNeeded.trim().length > 2000) {
+    if (
+      !servicesNeeded ||
+      typeof servicesNeeded !== 'string' ||
+      servicesNeeded.trim().length < 10 ||
+      servicesNeeded.trim().length > 2000
+    ) {
       return NextResponse.json({ error: 'Please describe the services needed (10-2000 characters)' }, { status: 400 });
     }
 
@@ -53,7 +68,10 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ error: 'Contact title must be less than 100 characters' }, { status: 400 });
     }
 
-    if (districtName && (typeof districtName !== 'string' || districtName.trim().length < 2 || districtName.trim().length > 150)) {
+    if (
+      districtName &&
+      (typeof districtName !== 'string' || districtName.trim().length < 2 || districtName.trim().length > 150)
+    ) {
       return NextResponse.json({ error: 'District name must be between 2-150 characters' }, { status: 400 });
     }
 
@@ -158,7 +176,7 @@ export async function POST(req: NextRequest) {
     });
     return NextResponse.json(
       { error: 'Unable to process your request. Please try again or email Delaney@TeachBraille.org directly.' },
-      { status: 500 }
+      { status: 500 },
     );
   }
 }

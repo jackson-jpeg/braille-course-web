@@ -21,13 +21,13 @@ export default function SpotsBadge({ variant }: { variant: 'hero-chip' | 'cta-ba
   return (
     <>
       {!soldOut && <span className="pulse-dot" aria-hidden="true"></span>}
-      {soldOut
-        ? 'All spots have been filled'
-        : `${totalRemaining} of ${totalSpots} spots available`}
+      {soldOut ? 'All spots have been filled' : `${totalRemaining} of ${totalSpots} spots available`}
       {stale && lastUpdated && (
         <div className="spots-stale-note">
           Updated {timeSince(lastUpdated)}.
-          <button onClick={refreshSections} type="button">Refresh</button>
+          <button onClick={refreshSections} type="button">
+            Refresh
+          </button>
         </div>
       )}
     </>

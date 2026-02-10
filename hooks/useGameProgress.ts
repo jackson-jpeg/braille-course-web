@@ -1,13 +1,7 @@
 'use client';
 
 import { useState, useCallback, useEffect } from 'react';
-import {
-  GameId,
-  Difficulty,
-  GameStats,
-  ProgressData,
-  createDefaultGameStats,
-} from '@/lib/progress-types';
+import { GameId, Difficulty, GameStats, ProgressData, createDefaultGameStats } from '@/lib/progress-types';
 import {
   loadProgress,
   recordGameResult,
@@ -60,7 +54,7 @@ export function useGameProgress(gameId: GameId): UseGameProgressReturn {
       refresh();
       return newAchievements;
     },
-    [gameId, difficulty, refresh]
+    [gameId, difficulty, refresh],
   );
 
   const setDifficulty = useCallback(
@@ -68,7 +62,7 @@ export function useGameProgress(gameId: GameId): UseGameProgressReturn {
       setGameDifficulty(gameId, d);
       setDiffState(d);
     },
-    [gameId]
+    [gameId],
   );
 
   return {

@@ -52,19 +52,46 @@ interface FieldGroup {
 
 const GROUP_ICONS = {
   'book-open': (
-    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+    <svg
+      width="18"
+      height="18"
+      viewBox="0 0 24 24"
+      fill="none"
+      stroke="currentColor"
+      strokeWidth="2"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+    >
       <path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z" />
       <path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z" />
     </svg>
   ),
   dollar: (
-    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+    <svg
+      width="18"
+      height="18"
+      viewBox="0 0 24 24"
+      fill="none"
+      stroke="currentColor"
+      strokeWidth="2"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+    >
       <line x1="12" y1="1" x2="12" y2="23" />
       <path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6" />
     </svg>
   ),
   calendar: (
-    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+    <svg
+      width="18"
+      height="18"
+      viewBox="0 0 24 24"
+      fill="none"
+      stroke="currentColor"
+      strokeWidth="2"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+    >
       <rect x="3" y="4" width="18" height="18" rx="2" ry="2" />
       <line x1="16" y1="2" x2="16" y2="6" />
       <line x1="8" y1="2" x2="8" y2="6" />
@@ -72,7 +99,16 @@ const GROUP_ICONS = {
     </svg>
   ),
   users: (
-    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+    <svg
+      width="18"
+      height="18"
+      viewBox="0 0 24 24"
+      fill="none"
+      stroke="currentColor"
+      strokeWidth="2"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+    >
       <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2" />
       <circle cx="9" cy="7" r="4" />
       <path d="M23 21v-2a4 4 0 0 0-3-3.87" />
@@ -80,7 +116,16 @@ const GROUP_ICONS = {
     </svg>
   ),
   mail: (
-    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+    <svg
+      width="18"
+      height="18"
+      viewBox="0 0 24 24"
+      fill="none"
+      stroke="currentColor"
+      strokeWidth="2"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+    >
       <rect x="2" y="4" width="20" height="16" rx="2" />
       <path d="m22 7-8.97 5.7a1.94 1.94 0 0 1-2.06 0L2 7" />
     </svg>
@@ -101,7 +146,13 @@ const FIELD_GROUPS: FieldGroup[] = [
       { key: 'course.startDate', label: 'Start Date', type: 'date', width: 'medium' },
       { key: 'course.endDate', label: 'End Date', type: 'date', width: 'medium' },
       { key: 'course.balanceDueDate', label: 'Balance Due Date', type: 'date', width: 'medium' },
-      { key: 'course.sessionCount', label: 'Sessions per Section', type: 'number', hint: 'Number of class sessions to generate', width: 'short' },
+      {
+        key: 'course.sessionCount',
+        label: 'Sessions per Section',
+        type: 'number',
+        hint: 'Number of class sessions to generate',
+        width: 'short',
+      },
     ],
   },
   {
@@ -139,8 +190,19 @@ const FIELD_GROUPS: FieldGroup[] = [
     layout: 'stack',
     fields: [
       { key: 'enrollment.enabled', label: 'Enrollment Open', type: 'boolean', hint: 'Whether new students can enroll' },
-      { key: 'enrollment.waitlistEnabled', label: 'Waitlist Enabled', type: 'boolean', hint: 'Allow waitlist when sections are full' },
-      { key: 'enrollment.maxWaitlist', label: 'Max Waitlist Size', type: 'number', hint: 'Maximum waitlist slots per section', width: 'short' },
+      {
+        key: 'enrollment.waitlistEnabled',
+        label: 'Waitlist Enabled',
+        type: 'boolean',
+        hint: 'Allow waitlist when sections are full',
+      },
+      {
+        key: 'enrollment.maxWaitlist',
+        label: 'Max Waitlist Size',
+        type: 'number',
+        hint: 'Maximum waitlist slots per section',
+        width: 'short',
+      },
     ],
   },
   {
@@ -150,9 +212,27 @@ const FIELD_GROUPS: FieldGroup[] = [
     icon: 'mail',
     layout: 'stack',
     fields: [
-      { key: 'email.depositSubject', label: 'Deposit Confirmation Subject', type: 'text', hint: 'Subject line for deposit confirmation emails', width: 'full' },
-      { key: 'email.fullPaymentSubject', label: 'Full Payment Subject', type: 'text', hint: 'Subject line for full payment confirmation emails', width: 'full' },
-      { key: 'email.balanceReminderSubject', label: 'Balance Reminder Subject', type: 'text', hint: 'Subject line for balance reminder emails', width: 'full' },
+      {
+        key: 'email.depositSubject',
+        label: 'Deposit Confirmation Subject',
+        type: 'text',
+        hint: 'Subject line for deposit confirmation emails',
+        width: 'full',
+      },
+      {
+        key: 'email.fullPaymentSubject',
+        label: 'Full Payment Subject',
+        type: 'text',
+        hint: 'Subject line for full payment confirmation emails',
+        width: 'full',
+      },
+      {
+        key: 'email.balanceReminderSubject',
+        label: 'Balance Reminder Subject',
+        type: 'text',
+        hint: 'Subject line for balance reminder emails',
+        width: 'full',
+      },
     ],
   },
 ];
@@ -226,7 +306,7 @@ function DayPicker({ value, onChange }: { value: string; onChange: (v: string) =
       .map((s) => s.trim())
       .filter(Boolean)
       .map(Number)
-      .filter((n) => !isNaN(n))
+      .filter((n) => !isNaN(n)),
   );
 
   function toggleDay(day: number) {
@@ -236,7 +316,7 @@ function DayPicker({ value, onChange }: { value: string; onChange: (v: string) =
     onChange(
       Array.from(next)
         .sort((a, b) => a - b)
-        .join(',')
+        .join(','),
     );
   }
 
@@ -342,7 +422,9 @@ export default function AdminSettingsTab() {
     }
   }, []);
 
-  useEffect(() => { fetchSettings(); }, [fetchSettings]);
+  useEffect(() => {
+    fetchSettings();
+  }, [fetchSettings]);
 
   // Validate all fields when settings change
   useEffect(() => {
@@ -375,7 +457,7 @@ export default function AdminSettingsTab() {
     }
     document.addEventListener('keydown', handleKeyDown);
     return () => document.removeEventListener('keydown', handleKeyDown);
-  // eslint-disable-next-line react-hooks/exhaustive-deps
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [isDirty, hasErrors, saving, settings]);
 
   async function handleSave() {
@@ -437,12 +519,7 @@ export default function AdminSettingsTab() {
     }
 
     if (field.type === 'days') {
-      return (
-        <DayPicker
-          value={settings[field.key] || ''}
-          onChange={(v) => handleChange(field.key, v)}
-        />
-      );
+      return <DayPicker value={settings[field.key] || ''} onChange={(v) => handleChange(field.key, v)} />;
     }
 
     const inputEl = (
@@ -468,28 +545,31 @@ export default function AdminSettingsTab() {
 
   function renderField(field: FieldDef) {
     const widthClass =
-      field.width === 'short' ? 'admin-settings-field-short' :
-      field.width === 'full' ? 'admin-settings-field-full' :
-      '';
+      field.width === 'short'
+        ? 'admin-settings-field-short'
+        : field.width === 'full'
+          ? 'admin-settings-field-full'
+          : '';
     const fieldDirty = settings[field.key] !== original[field.key];
-    const isDefault = !fieldDirty && field.type !== 'boolean' && field.type !== 'days' && settings[field.key] === DEFAULT_SETTINGS[field.key];
+    const isDefault =
+      !fieldDirty &&
+      field.type !== 'boolean' &&
+      field.type !== 'days' &&
+      settings[field.key] === DEFAULT_SETTINGS[field.key];
 
     return (
-      <div key={field.key} className={`admin-settings-field ${widthClass}${fieldDirty ? ' admin-settings-field-dirty' : ''}`}>
+      <div
+        key={field.key}
+        className={`admin-settings-field ${widthClass}${fieldDirty ? ' admin-settings-field-dirty' : ''}`}
+      >
         <label className="admin-settings-label">
           {field.label}
           {fieldDirty && <span className="admin-settings-dirty-dot" aria-label="Modified" />}
         </label>
         {renderInput(field)}
-        {field.hint && field.type !== 'days' && (
-          <span className="admin-settings-hint">{field.hint}</span>
-        )}
-        {isDefault && (
-          <span className="admin-settings-default-hint">Using default</span>
-        )}
-        {errors[field.key] && (
-          <span className="admin-settings-error">{errors[field.key]}</span>
-        )}
+        {field.hint && field.type !== 'days' && <span className="admin-settings-hint">{field.hint}</span>}
+        {isDefault && <span className="admin-settings-default-hint">Using default</span>}
+        {errors[field.key] && <span className="admin-settings-error">{errors[field.key]}</span>}
       </div>
     );
   }
@@ -504,14 +584,15 @@ export default function AdminSettingsTab() {
           { label: 'Section A', variant: 'A' as const, fields: sectionAFields },
           { label: 'Section B', variant: 'B' as const, fields: sectionBFields },
         ].map((section) => (
-          <div key={section.label} className={`admin-settings-section-panel admin-settings-section-panel-${section.variant}`}>
+          <div
+            key={section.label}
+            className={`admin-settings-section-panel admin-settings-section-panel-${section.variant}`}
+          >
             <div className="admin-settings-section-badge">
               <span className={`admin-settings-section-dot admin-settings-section-dot-${section.variant}`} />
               {section.label}
             </div>
-            <div className="admin-settings-fields-stack">
-              {section.fields.map((field) => renderField(field))}
-            </div>
+            <div className="admin-settings-fields-stack">{section.fields.map((field) => renderField(field))}</div>
           </div>
         ))}
       </div>
@@ -525,11 +606,7 @@ export default function AdminSettingsTab() {
 
     const fieldsClass = group.layout === 'stack' ? 'admin-settings-fields-stack' : 'admin-settings-fields';
 
-    return (
-      <div className={fieldsClass}>
-        {group.fields.map((field) => renderField(field))}
-      </div>
-    );
+    return <div className={fieldsClass}>{group.fields.map((field) => renderField(field))}</div>;
   }
 
   if (loading) {
@@ -548,7 +625,17 @@ export default function AdminSettingsTab() {
         </div>
         {lastSaved && (
           <div className="admin-settings-lastsaved">
-            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" style={{ opacity: 0.6 }}>
+            <svg
+              width="12"
+              height="12"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              strokeWidth="2"
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              style={{ opacity: 0.6 }}
+            >
               <circle cx="12" cy="12" r="10" />
               <polyline points="12 6 12 12 16 14" />
             </svg>
@@ -561,9 +648,7 @@ export default function AdminSettingsTab() {
       {FIELD_GROUPS.map((group) => (
         <div key={group.id} className="admin-settings-group">
           <div className="admin-settings-group-header">
-            <div className="admin-settings-group-icon">
-              {GROUP_ICONS[group.icon]}
-            </div>
+            <div className="admin-settings-group-icon">{GROUP_ICONS[group.icon]}</div>
             <div>
               <h3 className="admin-settings-group-title">{group.label}</h3>
               <p className="admin-settings-group-desc">{group.description}</p>
@@ -580,7 +665,16 @@ export default function AdminSettingsTab() {
         className={`admin-settings-danger-trigger${dangerOpen ? ' admin-settings-danger-trigger-open' : ''}`}
         onClick={() => setDangerOpen((o) => !o)}
       >
-        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+        <svg
+          width="16"
+          height="16"
+          viewBox="0 0 24 24"
+          fill="none"
+          stroke="currentColor"
+          strokeWidth="2"
+          strokeLinecap="round"
+          strokeLinejoin="round"
+        >
           <path d="m21.73 18-8-14a2 2 0 0 0-3.48 0l-8 14A2 2 0 0 0 4 21h16a2 2 0 0 0 1.73-3Z" />
           <line x1="12" y1="9" x2="12" y2="13" />
           <line x1="12" y1="17" x2="12.01" y2="17" />
@@ -604,17 +698,16 @@ export default function AdminSettingsTab() {
       {dangerOpen && (
         <div className="admin-danger-zone" style={{ animation: 'adminSlideOpen 0.25s var(--ease-out)' }}>
           <p>Resetting will delete all saved settings and restore defaults. This cannot be undone.</p>
-          <button
-            className="admin-danger-btn"
-            onClick={() => setShowResetConfirm(true)}
-          >
+          <button className="admin-danger-btn" onClick={() => setShowResetConfirm(true)}>
             Reset All Settings
           </button>
         </div>
       )}
 
       {/* Sticky save bar */}
-      <div className={`admin-settings-savebar ${isDirty || justSaved ? 'admin-settings-savebar-visible' : ''}${justSaved ? ' admin-settings-savebar-success' : ''}`}>
+      <div
+        className={`admin-settings-savebar ${isDirty || justSaved ? 'admin-settings-savebar-visible' : ''}${justSaved ? ' admin-settings-savebar-success' : ''}`}
+      >
         <div className="admin-settings-savebar-inner">
           <div>
             <span className={`admin-settings-savebar-text ${hasErrors ? 'admin-settings-savebar-error' : ''}`}>
@@ -626,23 +719,17 @@ export default function AdminSettingsTab() {
             </span>
             {!hasErrors && !justSaved && (
               <div className="admin-settings-savebar-kbd">
-                <kbd>{typeof navigator !== 'undefined' && /Mac/.test(navigator.userAgent) ? '\u2318' : 'Ctrl+'}S</kbd> to save
+                <kbd>{typeof navigator !== 'undefined' && /Mac/.test(navigator.userAgent) ? '\u2318' : 'Ctrl+'}S</kbd>{' '}
+                to save
               </div>
             )}
           </div>
           {!justSaved && (
             <div className="admin-settings-savebar-actions">
-              <button
-                className="admin-settings-discard-btn"
-                onClick={() => setSettings({ ...original })}
-              >
+              <button className="admin-settings-discard-btn" onClick={() => setSettings({ ...original })}>
                 Discard
               </button>
-              <button
-                className="admin-send-btn"
-                onClick={handleSave}
-                disabled={saving || hasErrors}
-              >
+              <button className="admin-send-btn" onClick={handleSave} disabled={saving || hasErrors}>
                 {saving ? 'Saving\u2026' : 'Save Changes'}
               </button>
             </div>

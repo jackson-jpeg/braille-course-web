@@ -8,8 +8,13 @@ import CopyButton from './CopyButton';
 import { useToast } from './AdminToast';
 import { SkeletonCards, SkeletonTable } from './AdminSkeleton';
 import type {
-  PaymentsData, StripeCharge, StripeInvoice, Enrollment,
-  PayoutsData, StripeCoupon, StripePaymentLink,
+  PaymentsData,
+  StripeCharge,
+  StripeInvoice,
+  Enrollment,
+  PayoutsData,
+  StripeCoupon,
+  StripePaymentLink,
 } from './admin-types';
 import { formatDate, formatCurrency, sortArrow, lastUpdatedText } from './admin-utils';
 
@@ -152,16 +157,18 @@ export default function AdminPaymentsTab({ enrollments }: Props) {
     if (!data || !data.pagination?.hasMoreCharges || !data.pagination.lastChargeId) return;
     setLoadingMoreCharges(true);
     try {
-      const res = await fetch(
-        `/api/admin/payments?charges_after=${data.pagination.lastChargeId}`
-      );
+      const res = await fetch(`/api/admin/payments?charges_after=${data.pagination.lastChargeId}`);
       const json = await res.json();
       if (!res.ok) throw new Error(json.error || 'Failed to fetch');
-      setData((prev) => prev ? {
-        ...prev,
-        charges: [...prev.charges, ...json.charges],
-        pagination: json.pagination,
-      } : json);
+      setData((prev) =>
+        prev
+          ? {
+              ...prev,
+              charges: [...prev.charges, ...json.charges],
+              pagination: json.pagination,
+            }
+          : json,
+      );
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Failed to load more charges');
     } finally {
@@ -173,21 +180,23 @@ export default function AdminPaymentsTab({ enrollments }: Props) {
     if (!data || !data.pagination?.hasMoreInvoices || !data.pagination.lastInvoiceId) return;
     setLoadingMoreInvoices(true);
     try {
-      const res = await fetch(
-        `/api/admin/payments?invoices_after=${data.pagination.lastInvoiceId}`
-      );
+      const res = await fetch(`/api/admin/payments?invoices_after=${data.pagination.lastInvoiceId}`);
       const json = await res.json();
       if (!res.ok) throw new Error(json.error || 'Failed to fetch');
-      setData((prev) => prev ? {
-        ...prev,
-        invoices: [...prev.invoices, ...json.invoices],
-        pagination: {
-          ...prev.pagination,
-          ...json.pagination,
-          hasMoreCharges: prev.pagination?.hasMoreCharges ?? false,
-          lastChargeId: prev.pagination?.lastChargeId,
-        },
-      } : json);
+      setData((prev) =>
+        prev
+          ? {
+              ...prev,
+              invoices: [...prev.invoices, ...json.invoices],
+              pagination: {
+                ...prev.pagination,
+                ...json.pagination,
+                hasMoreCharges: prev.pagination?.hasMoreCharges ?? false,
+                lastChargeId: prev.pagination?.lastChargeId,
+              },
+            }
+          : json,
+      );
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Failed to load more invoices');
     } finally {
@@ -383,19 +392,31 @@ export default function AdminPaymentsTab({ enrollments }: Props) {
   // ── Sort helpers ──
   function handleChargeSort(key: ChargeSortKey) {
     if (chargeSortKey === key) setChargeSortDir(chargeSortDir === 'asc' ? 'desc' : 'asc');
-    else { setChargeSortKey(key); setChargeSortDir(key === 'date' ? 'desc' : 'asc'); }
+    else {
+      setChargeSortKey(key);
+      setChargeSortDir(key === 'date' ? 'desc' : 'asc');
+    }
   }
   function handleInvoiceSort(key: InvoiceSortKey) {
     if (invoiceSortKey === key) setInvoiceSortDir(invoiceSortDir === 'asc' ? 'desc' : 'asc');
-    else { setInvoiceSortKey(key); setInvoiceSortDir(key === 'date' ? 'desc' : 'asc'); }
+    else {
+      setInvoiceSortKey(key);
+      setInvoiceSortDir(key === 'date' ? 'desc' : 'asc');
+    }
   }
   function handleCouponSort(key: CouponSortKey) {
     if (couponSortKey === key) setCouponSortDir(couponSortDir === 'asc' ? 'desc' : 'asc');
-    else { setCouponSortKey(key); setCouponSortDir('asc'); }
+    else {
+      setCouponSortKey(key);
+      setCouponSortDir('asc');
+    }
   }
   function handleLinkSort(key: LinkSortKey) {
     if (linkSortKey === key) setLinkSortDir(linkSortDir === 'asc' ? 'desc' : 'asc');
-    else { setLinkSortKey(key); setLinkSortDir('asc'); }
+    else {
+      setLinkSortKey(key);
+      setLinkSortDir('asc');
+    }
   }
   // ── Filtered + sorted charges ──
   const filteredCharges = useMemo(() => {
@@ -407,16 +428,29 @@ export default function AdminPaymentsTab({ enrollments }: Props) {
         const email = c.customer?.email || '';
         const name = c.customer?.name || '';
         const amt = (c.amount / 100).toFixed(2);
-        return email.toLowerCase().includes(q) || name.toLowerCase().includes(q) || amt.includes(q) || c.status.toLowerCase().includes(q);
+        return (
+          email.toLowerCase().includes(q) ||
+          name.toLowerCase().includes(q) ||
+          amt.includes(q) ||
+          c.status.toLowerCase().includes(q)
+        );
       });
     }
     list.sort((a, b) => {
       let cmp = 0;
       switch (chargeSortKey) {
-        case 'date': cmp = a.created - b.created; break;
-        case 'student': cmp = (a.customer?.email || '').localeCompare(b.customer?.email || ''); break;
-        case 'amount': cmp = a.amount - b.amount; break;
-        case 'status': cmp = a.status.localeCompare(b.status); break;
+        case 'date':
+          cmp = a.created - b.created;
+          break;
+        case 'student':
+          cmp = (a.customer?.email || '').localeCompare(b.customer?.email || '');
+          break;
+        case 'amount':
+          cmp = a.amount - b.amount;
+          break;
+        case 'status':
+          cmp = a.status.localeCompare(b.status);
+          break;
       }
       return chargeSortDir === 'asc' ? cmp : -cmp;
     });
@@ -433,16 +467,29 @@ export default function AdminPaymentsTab({ enrollments }: Props) {
         const email = inv.customer?.email || '';
         const name = inv.customer?.name || '';
         const amt = (inv.amount_due / 100).toFixed(2);
-        return email.toLowerCase().includes(q) || name.toLowerCase().includes(q) || amt.includes(q) || inv.status.toLowerCase().includes(q);
+        return (
+          email.toLowerCase().includes(q) ||
+          name.toLowerCase().includes(q) ||
+          amt.includes(q) ||
+          inv.status.toLowerCase().includes(q)
+        );
       });
     }
     list.sort((a, b) => {
       let cmp = 0;
       switch (invoiceSortKey) {
-        case 'student': cmp = (a.customer?.email || '').localeCompare(b.customer?.email || ''); break;
-        case 'amount': cmp = a.amount_due - b.amount_due; break;
-        case 'status': cmp = a.status.localeCompare(b.status); break;
-        case 'date': cmp = a.created - b.created; break;
+        case 'student':
+          cmp = (a.customer?.email || '').localeCompare(b.customer?.email || '');
+          break;
+        case 'amount':
+          cmp = a.amount_due - b.amount_due;
+          break;
+        case 'status':
+          cmp = a.status.localeCompare(b.status);
+          break;
+        case 'date':
+          cmp = a.created - b.created;
+          break;
       }
       return invoiceSortDir === 'asc' ? cmp : -cmp;
     });
@@ -455,10 +502,18 @@ export default function AdminPaymentsTab({ enrollments }: Props) {
     list.sort((a, b) => {
       let cmp = 0;
       switch (couponSortKey) {
-        case 'name': cmp = (a.name || a.id).localeCompare(b.name || b.id); break;
-        case 'discount': cmp = (a.percent_off || 0) - (b.percent_off || 0) || (a.amount_off || 0) - (b.amount_off || 0); break;
-        case 'redeemed': cmp = a.times_redeemed - b.times_redeemed; break;
-        case 'status': cmp = Number(b.valid) - Number(a.valid); break;
+        case 'name':
+          cmp = (a.name || a.id).localeCompare(b.name || b.id);
+          break;
+        case 'discount':
+          cmp = (a.percent_off || 0) - (b.percent_off || 0) || (a.amount_off || 0) - (b.amount_off || 0);
+          break;
+        case 'redeemed':
+          cmp = a.times_redeemed - b.times_redeemed;
+          break;
+        case 'status':
+          cmp = Number(b.valid) - Number(a.valid);
+          break;
       }
       return couponSortDir === 'asc' ? cmp : -cmp;
     });
@@ -471,14 +526,18 @@ export default function AdminPaymentsTab({ enrollments }: Props) {
     list.sort((a, b) => {
       let cmp = 0;
       switch (linkSortKey) {
-        case 'name': cmp = (a.name || '').localeCompare(b.name || ''); break;
+        case 'name':
+          cmp = (a.name || '').localeCompare(b.name || '');
+          break;
         case 'amount': {
           const aAmt = a.line_items.reduce((s, li) => s + li.amount_total, 0);
           const bAmt = b.line_items.reduce((s, li) => s + li.amount_total, 0);
           cmp = aAmt - bAmt;
           break;
         }
-        case 'status': cmp = Number(b.active) - Number(a.active); break;
+        case 'status':
+          cmp = Number(b.active) - Number(a.active);
+          break;
       }
       return linkSortDir === 'asc' ? cmp : -cmp;
     });
@@ -498,7 +557,9 @@ export default function AdminPaymentsTab({ enrollments }: Props) {
     return (
       <div>
         <div className="admin-email-error">{error}</div>
-        <button className="admin-refresh-btn" onClick={fetchPayments}>Retry</button>
+        <button className="admin-refresh-btn" onClick={fetchPayments}>
+          Retry
+        </button>
       </div>
     );
   }
@@ -515,7 +576,13 @@ export default function AdminPaymentsTab({ enrollments }: Props) {
             className={`admin-email-subtab ${paymentSubTab === t ? 'admin-email-subtab-active' : ''}`}
             onClick={() => setPaymentSubTab(t)}
           >
-            {t === 'overview' ? 'Overview' : t === 'payouts' ? 'Payouts' : t === 'coupons' ? 'Coupons' : 'Payment Links'}
+            {t === 'overview'
+              ? 'Overview'
+              : t === 'payouts'
+                ? 'Payouts'
+                : t === 'coupons'
+                  ? 'Coupons'
+                  : 'Payment Links'}
           </button>
         ))}
       </div>
@@ -526,19 +593,27 @@ export default function AdminPaymentsTab({ enrollments }: Props) {
           {/* Summary Cards */}
           <div className="admin-payments-cards">
             <div className="admin-payments-card admin-payments-card-green">
-              <div className="admin-payments-card-value">${data.summary.totalCollected.toLocaleString(undefined, { minimumFractionDigits: 2 })}</div>
+              <div className="admin-payments-card-value">
+                ${data.summary.totalCollected.toLocaleString(undefined, { minimumFractionDigits: 2 })}
+              </div>
               <div className="admin-payments-card-label">Revenue Collected</div>
             </div>
             <div className="admin-payments-card admin-payments-card-gold">
-              <div className="admin-payments-card-value">${data.summary.pendingInvoices.toLocaleString(undefined, { minimumFractionDigits: 2 })}</div>
+              <div className="admin-payments-card-value">
+                ${data.summary.pendingInvoices.toLocaleString(undefined, { minimumFractionDigits: 2 })}
+              </div>
               <div className="admin-payments-card-label">Upcoming Charges</div>
             </div>
             <div className="admin-payments-card">
-              <div className="admin-payments-card-value">${data.summary.stripeFees.toLocaleString(undefined, { minimumFractionDigits: 2 })}</div>
+              <div className="admin-payments-card-value">
+                ${data.summary.stripeFees.toLocaleString(undefined, { minimumFractionDigits: 2 })}
+              </div>
               <div className="admin-payments-card-label">Processing Fees</div>
             </div>
             <div className="admin-payments-card admin-payments-card-navy">
-              <div className="admin-payments-card-value">${data.summary.netRevenue.toLocaleString(undefined, { minimumFractionDigits: 2 })}</div>
+              <div className="admin-payments-card-value">
+                ${data.summary.netRevenue.toLocaleString(undefined, { minimumFractionDigits: 2 })}
+              </div>
               <div className="admin-payments-card-label">Take-Home Revenue</div>
             </div>
           </div>
@@ -567,7 +642,8 @@ export default function AdminPaymentsTab({ enrollments }: Props) {
             />
             {chargeSearch && (
               <span className="admin-result-count">
-                {filteredCharges.length} payment{filteredCharges.length !== 1 ? 's' : ''}, {filteredInvoices.length} invoice{filteredInvoices.length !== 1 ? 's' : ''}
+                {filteredCharges.length} payment{filteredCharges.length !== 1 ? 's' : ''}, {filteredInvoices.length}{' '}
+                invoice{filteredInvoices.length !== 1 ? 's' : ''}
               </span>
             )}
           </div>
@@ -581,16 +657,37 @@ export default function AdminPaymentsTab({ enrollments }: Props) {
               <table className="admin-table">
                 <thead>
                   <tr>
-                    <th className="admin-sortable-th" onClick={() => handleChargeSort('date')}>Date{sortArrow(chargeSortKey === 'date', chargeSortDir)}</th>
-                    <th className="admin-sortable-th" onClick={() => handleChargeSort('student')}>Student{sortArrow(chargeSortKey === 'student', chargeSortDir)}</th>
-                    <th className="admin-sortable-th" onClick={() => handleChargeSort('amount')}>Amount{sortArrow(chargeSortKey === 'amount', chargeSortDir)}</th>
-                    <th className="admin-sortable-th" onClick={() => handleChargeSort('status')}>Status{sortArrow(chargeSortKey === 'status', chargeSortDir)}</th>
+                    <th className="admin-sortable-th" onClick={() => handleChargeSort('date')}>
+                      Date{sortArrow(chargeSortKey === 'date', chargeSortDir)}
+                    </th>
+                    <th className="admin-sortable-th" onClick={() => handleChargeSort('student')}>
+                      Student{sortArrow(chargeSortKey === 'student', chargeSortDir)}
+                    </th>
+                    <th className="admin-sortable-th" onClick={() => handleChargeSort('amount')}>
+                      Amount{sortArrow(chargeSortKey === 'amount', chargeSortDir)}
+                    </th>
+                    <th className="admin-sortable-th" onClick={() => handleChargeSort('status')}>
+                      Status{sortArrow(chargeSortKey === 'status', chargeSortDir)}
+                    </th>
                     <th>Actions</th>
                   </tr>
                 </thead>
                 <tbody>
                   {filteredCharges.length === 0 ? (
-                    <tr><td colSpan={5} className="admin-empty"><div className="admin-empty-state"><p className="admin-empty-state-title">{chargeSearch ? 'No matching payments' : 'No payments yet'}</p><p className="admin-empty-state-sub">{chargeSearch ? 'Try adjusting your search.' : 'Payments will appear here once students complete checkout.'}</p></div></td></tr>
+                    <tr>
+                      <td colSpan={5} className="admin-empty">
+                        <div className="admin-empty-state">
+                          <p className="admin-empty-state-title">
+                            {chargeSearch ? 'No matching payments' : 'No payments yet'}
+                          </p>
+                          <p className="admin-empty-state-sub">
+                            {chargeSearch
+                              ? 'Try adjusting your search.'
+                              : 'Payments will appear here once students complete checkout.'}
+                          </p>
+                        </div>
+                      </td>
+                    </tr>
                   ) : (
                     filteredCharges.map((c) => (
                       <tr key={c.id}>
@@ -598,7 +695,9 @@ export default function AdminPaymentsTab({ enrollments }: Props) {
                         <td>{c.customer?.email || c.customer?.name || '\u2014'}</td>
                         <td>{formatCurrency(c.amount)}</td>
                         <td>
-                          <span className={`admin-status admin-status-${c.status === 'succeeded' ? 'completed' : c.status === 'pending' ? 'pending' : 'waitlisted'}`}>
+                          <span
+                            className={`admin-status admin-status-${c.status === 'succeeded' ? 'completed' : c.status === 'pending' ? 'pending' : 'waitlisted'}`}
+                          >
                             {c.status === 'succeeded' ? 'Successful' : c.status === 'pending' ? 'Processing' : 'Failed'}
                           </span>
                           {c.refunded && (
@@ -628,10 +727,7 @@ export default function AdminPaymentsTab({ enrollments }: Props) {
                               </a>
                             )}
                             {c.status === 'succeeded' && !c.refunded && (
-                              <button
-                                className="admin-refund-btn"
-                                onClick={() => setRefundCharge(c)}
-                              >
+                              <button className="admin-refund-btn" onClick={() => setRefundCharge(c)}>
                                 Refund
                               </button>
                             )}
@@ -645,11 +741,7 @@ export default function AdminPaymentsTab({ enrollments }: Props) {
                   <tfoot>
                     <tr>
                       <td colSpan={5} style={{ textAlign: 'center' }}>
-                        <button
-                          className="admin-refresh-btn"
-                          onClick={loadMoreCharges}
-                          disabled={loadingMoreCharges}
-                        >
+                        <button className="admin-refresh-btn" onClick={loadMoreCharges} disabled={loadingMoreCharges}>
                           {loadingMoreCharges ? 'Loading\u2026' : 'Load More Payments'}
                         </button>
                       </td>
@@ -668,10 +760,18 @@ export default function AdminPaymentsTab({ enrollments }: Props) {
                 <table className="admin-table">
                   <thead>
                     <tr>
-                      <th className="admin-sortable-th" onClick={() => handleInvoiceSort('student')}>Student{sortArrow(invoiceSortKey === 'student', invoiceSortDir)}</th>
-                      <th className="admin-sortable-th" onClick={() => handleInvoiceSort('amount')}>Amount{sortArrow(invoiceSortKey === 'amount', invoiceSortDir)}</th>
-                      <th className="admin-sortable-th" onClick={() => handleInvoiceSort('status')}>Status{sortArrow(invoiceSortKey === 'status', invoiceSortDir)}</th>
-                      <th className="admin-sortable-th" onClick={() => handleInvoiceSort('date')}>Date{sortArrow(invoiceSortKey === 'date', invoiceSortDir)}</th>
+                      <th className="admin-sortable-th" onClick={() => handleInvoiceSort('student')}>
+                        Student{sortArrow(invoiceSortKey === 'student', invoiceSortDir)}
+                      </th>
+                      <th className="admin-sortable-th" onClick={() => handleInvoiceSort('amount')}>
+                        Amount{sortArrow(invoiceSortKey === 'amount', invoiceSortDir)}
+                      </th>
+                      <th className="admin-sortable-th" onClick={() => handleInvoiceSort('status')}>
+                        Status{sortArrow(invoiceSortKey === 'status', invoiceSortDir)}
+                      </th>
+                      <th className="admin-sortable-th" onClick={() => handleInvoiceSort('date')}>
+                        Date{sortArrow(invoiceSortKey === 'date', invoiceSortDir)}
+                      </th>
                       <th>Actions</th>
                     </tr>
                   </thead>
@@ -681,9 +781,7 @@ export default function AdminPaymentsTab({ enrollments }: Props) {
                         <td>{inv.customer?.email || inv.customer?.name || '\u2014'}</td>
                         <td>{formatCurrency(inv.amount_due)}</td>
                         <td>
-                          <span className={`admin-invoice-badge admin-invoice-${inv.status}`}>
-                            {inv.status_label}
-                          </span>
+                          <span className={`admin-invoice-badge admin-invoice-${inv.status}`}>{inv.status_label}</span>
                         </td>
                         <td>{formatDate(inv.created)}</td>
                         <td>
@@ -707,18 +805,12 @@ export default function AdminPaymentsTab({ enrollments }: Props) {
                               </a>
                             )}
                             {inv.status === 'draft' && (
-                              <button
-                                className="admin-send-invoice-btn"
-                                onClick={() => handleSendInvoice(inv)}
-                              >
+                              <button className="admin-send-invoice-btn" onClick={() => handleSendInvoice(inv)}>
                                 Send
                               </button>
                             )}
                             {(inv.status === 'draft' || inv.status === 'open') && (
-                              <button
-                                className="admin-void-btn"
-                                onClick={() => handleVoidInvoice(inv)}
-                              >
+                              <button className="admin-void-btn" onClick={() => handleVoidInvoice(inv)}>
                                 Void
                               </button>
                             )}
@@ -753,16 +845,23 @@ export default function AdminPaymentsTab({ enrollments }: Props) {
       {paymentSubTab === 'payouts' && (
         <div className="admin-overview-section">
           {payoutsLoading ? (
-            <><SkeletonCards count={2} /><SkeletonTable rows={4} cols={4} /></>
+            <>
+              <SkeletonCards count={2} />
+              <SkeletonTable rows={4} cols={4} />
+            </>
           ) : payoutsData ? (
             <>
               <div className="admin-payments-cards" style={{ marginBottom: 16 }}>
                 <div className="admin-payments-card admin-payments-card-green">
-                  <div className="admin-payments-card-value">${payoutsData.balance.available.toLocaleString(undefined, { minimumFractionDigits: 2 })}</div>
+                  <div className="admin-payments-card-value">
+                    ${payoutsData.balance.available.toLocaleString(undefined, { minimumFractionDigits: 2 })}
+                  </div>
                   <div className="admin-payments-card-label">Available Balance</div>
                 </div>
                 <div className="admin-payments-card admin-payments-card-gold">
-                  <div className="admin-payments-card-value">${payoutsData.balance.pending.toLocaleString(undefined, { minimumFractionDigits: 2 })}</div>
+                  <div className="admin-payments-card-value">
+                    ${payoutsData.balance.pending.toLocaleString(undefined, { minimumFractionDigits: 2 })}
+                  </div>
                   <div className="admin-payments-card-label">Pending Balance</div>
                 </div>
               </div>
@@ -779,15 +878,32 @@ export default function AdminPaymentsTab({ enrollments }: Props) {
                   </thead>
                   <tbody>
                     {payoutsData.payouts.length === 0 ? (
-                      <tr><td colSpan={4} className="admin-empty"><div className="admin-empty-state"><p className="admin-empty-state-title">No payouts yet</p><p className="admin-empty-state-sub">Stripe will deposit funds to your bank account automatically.</p></div></td></tr>
+                      <tr>
+                        <td colSpan={4} className="admin-empty">
+                          <div className="admin-empty-state">
+                            <p className="admin-empty-state-title">No payouts yet</p>
+                            <p className="admin-empty-state-sub">
+                              Stripe will deposit funds to your bank account automatically.
+                            </p>
+                          </div>
+                        </td>
+                      </tr>
                     ) : (
                       payoutsData.payouts.map((p) => (
                         <tr key={p.id}>
                           <td>{formatDate(p.created)}</td>
                           <td>{formatCurrency(p.amount)}</td>
                           <td>
-                            <span className={`admin-status admin-status-${p.status === 'paid' ? 'completed' : p.status === 'pending' || p.status === 'in_transit' ? 'pending' : 'waitlisted'}`}>
-                              {p.status === 'paid' ? 'Paid' : p.status === 'in_transit' ? 'In Transit' : p.status === 'pending' ? 'Pending' : p.status}
+                            <span
+                              className={`admin-status admin-status-${p.status === 'paid' ? 'completed' : p.status === 'pending' || p.status === 'in_transit' ? 'pending' : 'waitlisted'}`}
+                            >
+                              {p.status === 'paid'
+                                ? 'Paid'
+                                : p.status === 'in_transit'
+                                  ? 'In Transit'
+                                  : p.status === 'pending'
+                                    ? 'Pending'
+                                    : p.status}
                             </span>
                           </td>
                           <td>{formatDate(p.arrival_date)}</td>
@@ -828,7 +944,11 @@ export default function AdminPaymentsTab({ enrollments }: Props) {
                 </div>
                 <div className="admin-compose-field">
                   <label>Discount Type</label>
-                  <select value={couponType} onChange={(e) => setCouponType(e.target.value as 'percent' | 'amount')} className="admin-select">
+                  <select
+                    value={couponType}
+                    onChange={(e) => setCouponType(e.target.value as 'percent' | 'amount')}
+                    className="admin-select"
+                  >
                     <option value="percent">Percentage Off</option>
                     <option value="amount">Fixed Amount Off</option>
                   </select>
@@ -872,17 +992,35 @@ export default function AdminPaymentsTab({ enrollments }: Props) {
               <table className="admin-table">
                 <thead>
                   <tr>
-                    <th className="admin-sortable-th" onClick={() => handleCouponSort('name')}>Name{sortArrow(couponSortKey === 'name', couponSortDir)}</th>
-                    <th className="admin-sortable-th" onClick={() => handleCouponSort('discount')}>Discount{sortArrow(couponSortKey === 'discount', couponSortDir)}</th>
+                    <th className="admin-sortable-th" onClick={() => handleCouponSort('name')}>
+                      Name{sortArrow(couponSortKey === 'name', couponSortDir)}
+                    </th>
+                    <th className="admin-sortable-th" onClick={() => handleCouponSort('discount')}>
+                      Discount{sortArrow(couponSortKey === 'discount', couponSortDir)}
+                    </th>
                     <th>Promo Code</th>
-                    <th className="admin-sortable-th" onClick={() => handleCouponSort('redeemed')}>Redeemed{sortArrow(couponSortKey === 'redeemed', couponSortDir)}</th>
-                    <th className="admin-sortable-th" onClick={() => handleCouponSort('status')}>Status{sortArrow(couponSortKey === 'status', couponSortDir)}</th>
+                    <th className="admin-sortable-th" onClick={() => handleCouponSort('redeemed')}>
+                      Redeemed{sortArrow(couponSortKey === 'redeemed', couponSortDir)}
+                    </th>
+                    <th className="admin-sortable-th" onClick={() => handleCouponSort('status')}>
+                      Status{sortArrow(couponSortKey === 'status', couponSortDir)}
+                    </th>
                     <th>Actions</th>
                   </tr>
                 </thead>
                 <tbody>
                   {coupons.length === 0 ? (
-                    <tr><td colSpan={6} className="admin-empty"><div className="admin-empty-state"><p className="admin-empty-state-title">No coupons yet</p><p className="admin-empty-state-sub">Create a coupon to offer discounts on your courses.</p><button className="admin-empty-state-cta" onClick={() => setShowCreateCoupon(true)}>Create Coupon</button></div></td></tr>
+                    <tr>
+                      <td colSpan={6} className="admin-empty">
+                        <div className="admin-empty-state">
+                          <p className="admin-empty-state-title">No coupons yet</p>
+                          <p className="admin-empty-state-sub">Create a coupon to offer discounts on your courses.</p>
+                          <button className="admin-empty-state-cta" onClick={() => setShowCreateCoupon(true)}>
+                            Create Coupon
+                          </button>
+                        </div>
+                      </td>
+                    </tr>
                   ) : (
                     sortedCoupons.map((c) => (
                       <tr key={c.id}>
@@ -901,15 +1039,23 @@ export default function AdminPaymentsTab({ enrollments }: Props) {
                                 }}
                                 autoFocus
                               />
-                              <button className="admin-send-invoice-btn" onClick={() => handleUpdateCouponName(c.id)}>Save</button>
-                              <button className="admin-stripe-link" onClick={() => setEditingCouponId(null)}>Cancel</button>
+                              <button className="admin-send-invoice-btn" onClick={() => handleUpdateCouponName(c.id)}>
+                                Save
+                              </button>
+                              <button className="admin-stripe-link" onClick={() => setEditingCouponId(null)}>
+                                Cancel
+                              </button>
                             </span>
                           ) : (
                             c.name || c.id
                           )}
                         </td>
                         <td>
-                          {c.percent_off ? `${c.percent_off}% off` : c.amount_off ? `$${(c.amount_off / 100).toFixed(2)} off` : '\u2014'}
+                          {c.percent_off
+                            ? `${c.percent_off}% off`
+                            : c.amount_off
+                              ? `$${(c.amount_off / 100).toFixed(2)} off`
+                              : '\u2014'}
                         </td>
                         <td>
                           {c.promotion_codes.length > 0 ? (
@@ -917,9 +1063,14 @@ export default function AdminPaymentsTab({ enrollments }: Props) {
                               {c.promotion_codes.map((p) => p.code).join(', ')}
                               <CopyButton text={c.promotion_codes.map((p) => p.code).join(', ')} label="Copy code" />
                             </span>
-                          ) : '\u2014'}
+                          ) : (
+                            '\u2014'
+                          )}
                         </td>
-                        <td>{c.times_redeemed}{c.max_redemptions ? ` / ${c.max_redemptions}` : ''}</td>
+                        <td>
+                          {c.times_redeemed}
+                          {c.max_redemptions ? ` / ${c.max_redemptions}` : ''}
+                        </td>
                         <td>
                           <span className={`admin-status admin-status-${c.valid ? 'completed' : 'waitlisted'}`}>
                             {c.valid ? 'Active' : 'Expired'}
@@ -938,10 +1089,7 @@ export default function AdminPaymentsTab({ enrollments }: Props) {
                                 Edit
                               </button>
                             )}
-                            <button
-                              className="admin-void-btn"
-                              onClick={() => handleDeleteCoupon(c)}
-                            >
+                            <button className="admin-void-btn" onClick={() => handleDeleteCoupon(c)}>
                               Delete
                             </button>
                           </div>
@@ -1018,16 +1166,32 @@ export default function AdminPaymentsTab({ enrollments }: Props) {
               <table className="admin-table">
                 <thead>
                   <tr>
-                    <th className="admin-sortable-th" onClick={() => handleLinkSort('name')}>Name{sortArrow(linkSortKey === 'name', linkSortDir)}</th>
+                    <th className="admin-sortable-th" onClick={() => handleLinkSort('name')}>
+                      Name{sortArrow(linkSortKey === 'name', linkSortDir)}
+                    </th>
                     <th>Link</th>
-                    <th className="admin-sortable-th" onClick={() => handleLinkSort('amount')}>Items{sortArrow(linkSortKey === 'amount', linkSortDir)}</th>
-                    <th className="admin-sortable-th" onClick={() => handleLinkSort('status')}>Status{sortArrow(linkSortKey === 'status', linkSortDir)}</th>
+                    <th className="admin-sortable-th" onClick={() => handleLinkSort('amount')}>
+                      Items{sortArrow(linkSortKey === 'amount', linkSortDir)}
+                    </th>
+                    <th className="admin-sortable-th" onClick={() => handleLinkSort('status')}>
+                      Status{sortArrow(linkSortKey === 'status', linkSortDir)}
+                    </th>
                     <th>Actions</th>
                   </tr>
                 </thead>
                 <tbody>
                   {paymentLinks.length === 0 ? (
-                    <tr><td colSpan={5} className="admin-empty"><div className="admin-empty-state"><p className="admin-empty-state-title">No payment links</p><p className="admin-empty-state-sub">Create a payment link to share with students.</p><button className="admin-empty-state-cta" onClick={() => setShowCreateLink(true)}>Create Payment Link</button></div></td></tr>
+                    <tr>
+                      <td colSpan={5} className="admin-empty">
+                        <div className="admin-empty-state">
+                          <p className="admin-empty-state-title">No payment links</p>
+                          <p className="admin-empty-state-sub">Create a payment link to share with students.</p>
+                          <button className="admin-empty-state-cta" onClick={() => setShowCreateLink(true)}>
+                            Create Payment Link
+                          </button>
+                        </div>
+                      </td>
+                    </tr>
                   ) : (
                     sortedLinks.map((link) => (
                       <tr key={link.id}>
@@ -1042,9 +1206,9 @@ export default function AdminPaymentsTab({ enrollments }: Props) {
                         </td>
                         <td>
                           {link.line_items.length > 0
-                            ? link.line_items.map((li) =>
-                                `${li.description || 'Item'} (${formatCurrency(li.amount_total)})`
-                              ).join(', ')
+                            ? link.line_items
+                                .map((li) => `${li.description || 'Item'} (${formatCurrency(li.amount_total)})`)
+                                .join(', ')
                             : '\u2014'}
                         </td>
                         <td>

@@ -1,7 +1,12 @@
 'use client';
 
 import { useState, useEffect, useCallback, useRef } from 'react';
-import { getRandomSentence, resetSentenceHistory, type SentenceData, type BrailleToken } from '@/lib/sentence-generator';
+import {
+  getRandomSentence,
+  resetSentenceHistory,
+  type SentenceData,
+  type BrailleToken,
+} from '@/lib/sentence-generator';
 import { useGameProgress } from '@/hooks/useGameProgress';
 import { pushAchievements } from '@/components/AchievementToast';
 import { getRandomTip } from '@/lib/learning-tips';
@@ -21,9 +26,7 @@ function BrailleTokenCell({ token }: { token: BrailleToken }) {
           <span key={i} className={`decoder-dot ${v ? 'filled' : 'empty'}`} />
         ))}
       </div>
-      {token.type === 'contraction' && (
-        <span className="decoder-contraction-marker">◆</span>
-      )}
+      {token.type === 'contraction' && <span className="decoder-contraction-marker">◆</span>}
     </div>
   );
 }
@@ -88,32 +91,40 @@ export default function BrailleSentenceDecoder() {
     setIsCorrect(correct);
     if (correct) setScore((s) => s + 1);
 
-    roundTimerRef.current = setTimeout(() => {
-      const nextR = round + 1;
-      setRound(nextR);
-      if (nextR >= totalRounds) {
-        const finalScore = correct ? scoreRef.current + 1 : scoreRef.current;
-        setGameOver(true);
-        const achievements = recordResult(finalScore >= totalRounds / 2, finalScore);
-        pushAchievements(achievements);
-        setTip(getRandomTip().fact);
-      } else {
-        loadSentence();
-      }
-    }, correct ? 1000 : 2500);
+    roundTimerRef.current = setTimeout(
+      () => {
+        const nextR = round + 1;
+        setRound(nextR);
+        if (nextR >= totalRounds) {
+          const finalScore = correct ? scoreRef.current + 1 : scoreRef.current;
+          setGameOver(true);
+          const achievements = recordResult(finalScore >= totalRounds / 2, finalScore);
+          pushAchievements(achievements);
+          setTip(getRandomTip().fact);
+        } else {
+          loadSentence();
+        }
+      },
+      correct ? 1000 : 2500,
+    );
   }, [sentence, submitted, userInput, round, totalRounds, loadSentence, recordResult]);
 
   // Cleanup timer
   useEffect(() => {
-    return () => { if (roundTimerRef.current) clearTimeout(roundTimerRef.current); };
+    return () => {
+      if (roundTimerRef.current) clearTimeout(roundTimerRef.current);
+    };
   }, []);
 
-  const handleKeyDown = useCallback((e: React.KeyboardEvent) => {
-    if (e.key === 'Enter') {
-      e.preventDefault();
-      handleSubmit();
-    }
-  }, [handleSubmit]);
+  const handleKeyDown = useCallback(
+    (e: React.KeyboardEvent) => {
+      if (e.key === 'Enter') {
+        e.preventDefault();
+        handleSubmit();
+      }
+    },
+    [handleSubmit],
+  );
 
   return (
     <div className="decoder-container" ref={containerRef}>
@@ -127,7 +138,9 @@ export default function BrailleSentenceDecoder() {
         {!gameOver && sentence && (
           <>
             <div className="decoder-status" aria-live="polite" aria-atomic="true">
-              <span>Sentence {round + 1} / {totalRounds}</span>
+              <span>
+                Sentence {round + 1} / {totalRounds}
+              </span>
               <span>Score: {score}</span>
             </div>
 
@@ -138,18 +151,14 @@ export default function BrailleSentenceDecoder() {
               ))}
             </div>
 
-            <div className="decoder-hint-text">
-              ◆ = contraction (one cell = whole word or syllable)
-            </div>
+            <div className="decoder-hint-text">◆ = contraction (one cell = whole word or syllable)</div>
 
             {/* User input */}
             <div className="decoder-input-wrap">
               <input
                 ref={inputRef}
                 type="text"
-                className={`decoder-input ${
-                  submitted ? (isCorrect ? 'correct' : 'wrong') : ''
-                }`}
+                className={`decoder-input ${submitted ? (isCorrect ? 'correct' : 'wrong') : ''}`}
                 value={userInput}
                 onChange={(e) => setUserInput(e.target.value)}
                 onKeyDown={handleKeyDown}
@@ -161,11 +170,7 @@ export default function BrailleSentenceDecoder() {
                 spellCheck={false}
               />
               {!submitted && (
-                <button
-                  className="decoder-submit-btn"
-                  onClick={handleSubmit}
-                  disabled={!userInput.trim()}
-                >
+                <button className="decoder-submit-btn" onClick={handleSubmit} disabled={!userInput.trim()}>
                   Check
                 </button>
               )}
@@ -188,7 +193,9 @@ export default function BrailleSentenceDecoder() {
 
         {gameOver && (
           <div className="decoder-result">
-            <div className="decoder-result-score">{score} / {totalRounds}</div>
+            <div className="decoder-result-score">
+              {score} / {totalRounds}
+            </div>
             <div className="decoder-result-label">
               {score === totalRounds ? 'Perfect reading!' : score >= 3 ? 'Good decoding!' : 'Keep practicing!'}
             </div>

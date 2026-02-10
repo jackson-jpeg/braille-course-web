@@ -20,7 +20,7 @@ export async function POST(req: NextRequest) {
     if (invoice.status !== 'draft') {
       return NextResponse.json(
         { error: `Invoice is not in draft status (current: ${invoice.status})` },
-        { status: 400 }
+        { status: 400 },
       );
     }
 

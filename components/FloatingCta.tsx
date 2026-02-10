@@ -15,7 +15,7 @@ export default function FloatingCta() {
           setVisible(!entry.isIntersecting);
         });
       },
-      { threshold: 0.1 }
+      { threshold: 0.1 },
     );
 
     observer.observe(hero);
@@ -23,16 +23,9 @@ export default function FloatingCta() {
   }, []);
 
   return (
-    <div
-      className={`floating-cta${visible ? ' visible' : ''}`}
-    >
+    <div className={`floating-cta${visible ? ' visible' : ''}`}>
       <a href="#cta">
-        <svg
-          viewBox="0 0 24 24"
-          fill="none"
-          stroke="currentColor"
-          strokeWidth="2.5"
-        >
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5">
           <line x1="5" y1="12" x2="19" y2="12" />
           <polyline points="12 5 19 12 12 19" />
         </svg>

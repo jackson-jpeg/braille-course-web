@@ -59,12 +59,19 @@ export default function AppointmentRequestForm() {
         <div className="appointment-success-icon" aria-hidden="true">
           <svg viewBox="0 0 64 64" fill="none">
             <circle cx="32" cy="32" r="30" stroke="currentColor" strokeWidth="3" />
-            <path d="M20 32L28 40L44 24" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round" />
+            <path
+              d="M20 32L28 40L44 24"
+              stroke="currentColor"
+              strokeWidth="3"
+              strokeLinecap="round"
+              strokeLinejoin="round"
+            />
           </svg>
         </div>
         <h3 className="appointment-success-title">Request Received!</h3>
         <p className="appointment-success-message">
-          Thank you for your interest in braille instruction. Delaney will reach out within 24 hours to discuss your goals and schedule a session.
+          Thank you for your interest in braille instruction. Delaney will reach out within 24 hours to discuss your
+          goals and schedule a session.
         </p>
         <p className="appointment-success-note">
           Check your email at <strong>{email}</strong> for confirmation.
@@ -77,7 +84,8 @@ export default function AppointmentRequestForm() {
     <form className="appointment-form" onSubmit={handleSubmit}>
       <div className="appointment-form-intro">
         <p>
-          Fill out the form below and Delaney will reach out within 24 hours to discuss your goals and schedule your first session.
+          Fill out the form below and Delaney will reach out within 24 hours to discuss your goals and schedule your
+          first session.
         </p>
       </div>
 
@@ -155,9 +163,7 @@ export default function AppointmentRequestForm() {
             maxLength={200}
             disabled={loading}
           />
-          <p className="appointment-form-hint">
-            Let us know when you're typically available for a call
-          </p>
+          <p className="appointment-form-hint">Let us know when you're typically available for a call</p>
         </div>
 
         <div className="appointment-form-field appointment-form-field-full">
@@ -192,11 +198,7 @@ export default function AppointmentRequestForm() {
         />
       </div>
 
-      <button
-        type="submit"
-        className="appointment-form-submit"
-        disabled={loading}
-      >
+      <button type="submit" className="appointment-form-submit" disabled={loading}>
         {loading ? (
           <>
             <span className="appointment-form-spinner" aria-hidden="true" />
@@ -205,13 +207,7 @@ export default function AppointmentRequestForm() {
         ) : (
           <>
             Send Request
-            <svg
-              viewBox="0 0 24 24"
-              fill="none"
-              stroke="currentColor"
-              strokeWidth="2.5"
-              aria-hidden="true"
-            >
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" aria-hidden="true">
               <line x1="5" y1="12" x2="19" y2="12" />
               <polyline points="12 5 19 12 12 19" />
             </svg>
@@ -219,9 +215,7 @@ export default function AppointmentRequestForm() {
         )}
       </button>
 
-      <p className="appointment-form-note">
-        Delaney typically responds within 24 hours
-      </p>
+      <p className="appointment-form-note">Delaney typically responds within 24 hours</p>
     </form>
   );
 }

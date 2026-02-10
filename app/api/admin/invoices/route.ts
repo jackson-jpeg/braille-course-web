@@ -12,10 +12,7 @@ export async function POST(req: NextRequest) {
     const { email, name, description, amount, dueInDays, memo, sendNow } = await req.json();
 
     if (!email || !description || !amount) {
-      return NextResponse.json(
-        { error: 'Missing required fields: email, description, amount' },
-        { status: 400 }
-      );
+      return NextResponse.json({ error: 'Missing required fields: email, description, amount' }, { status: 400 });
     }
 
     const cents = Math.round(Number(amount) * 100);

@@ -33,11 +33,7 @@ export function SkeletonText({ lines = 3 }: { lines?: number }) {
   return (
     <div className="admin-skeleton-text">
       {Array.from({ length: lines }).map((_, i) => (
-        <div
-          key={i}
-          className="admin-skeleton-line"
-          style={{ width: i === lines - 1 ? '60%' : '100%' }}
-        />
+        <div key={i} className="admin-skeleton-line" style={{ width: i === lines - 1 ? '60%' : '100%' }} />
       ))}
     </div>
   );

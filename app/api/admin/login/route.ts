@@ -14,7 +14,7 @@ export async function POST(req: NextRequest) {
         {
           status: 429,
           headers: { 'Retry-After': String(retryAfter) },
-        }
+        },
       );
     }
 

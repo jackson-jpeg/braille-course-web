@@ -18,10 +18,7 @@ export async function POST(req: NextRequest) {
     const invoice = await stripe.invoices.retrieve(invoiceId);
 
     if (invoice.status === 'paid' || invoice.status === 'void') {
-      return NextResponse.json(
-        { error: `Cannot void invoice with status: ${invoice.status}` },
-        { status: 400 }
-      );
+      return NextResponse.json({ error: `Cannot void invoice with status: ${invoice.status}` }, { status: 400 });
     }
 
     await stripe.invoices.voidInvoice(invoiceId);

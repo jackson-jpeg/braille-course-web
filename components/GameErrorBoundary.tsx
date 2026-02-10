@@ -36,10 +36,7 @@ export default class GameErrorBoundary extends React.Component<Props, State> {
           <p>
             <strong>{this.props.gameName}</strong> couldn&apos;t load.
           </p>
-          <button
-            className="game-error-retry"
-            onClick={() => this.setState({ hasError: false })}
-          >
+          <button className="game-error-retry" onClick={() => this.setState({ hasError: false })}>
             Retry
           </button>
         </div>

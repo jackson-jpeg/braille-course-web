@@ -69,12 +69,19 @@ export default function SchoolContactForm() {
         <div className="school-contact-success-icon" aria-hidden="true">
           <svg viewBox="0 0 64 64" fill="none">
             <circle cx="32" cy="32" r="30" stroke="currentColor" strokeWidth="3" />
-            <path d="M20 32L28 40L44 24" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round" />
+            <path
+              d="M20 32L28 40L44 24"
+              stroke="currentColor"
+              strokeWidth="3"
+              strokeLinecap="round"
+              strokeLinejoin="round"
+            />
           </svg>
         </div>
         <h3 className="school-contact-success-title">Inquiry Received!</h3>
         <p className="school-contact-success-message">
-          Thank you for your interest in TVI services for {schoolName}. Delaney will reach out within 2 business days to discuss your vision service needs and schedule a consultation.
+          Thank you for your interest in TVI services for {schoolName}. Delaney will reach out within 2 business days to
+          discuss your vision service needs and schedule a consultation.
         </p>
         <p className="school-contact-success-note">
           Check your email at <strong>{email}</strong> for confirmation.
@@ -218,7 +225,8 @@ export default function SchoolContactForm() {
             disabled={loading}
           />
           <p className="school-contact-form-hint">
-            Be as specific as possible to help us prepare for our conversation {servicesNeeded.length > 0 && `(${servicesNeeded.length}/2000)`}
+            Be as specific as possible to help us prepare for our conversation{' '}
+            {servicesNeeded.length > 0 && `(${servicesNeeded.length}/2000)`}
           </p>
         </div>
 
@@ -326,11 +334,7 @@ export default function SchoolContactForm() {
         />
       </div>
 
-      <button
-        type="submit"
-        className="school-contact-form-submit"
-        disabled={loading}
-      >
+      <button type="submit" className="school-contact-form-submit" disabled={loading}>
         {loading ? (
           <>
             <span className="school-contact-form-spinner" aria-hidden="true" />
@@ -339,13 +343,7 @@ export default function SchoolContactForm() {
         ) : (
           <>
             Send Inquiry
-            <svg
-              viewBox="0 0 24 24"
-              fill="none"
-              stroke="currentColor"
-              strokeWidth="2.5"
-              aria-hidden="true"
-            >
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" aria-hidden="true">
               <line x1="5" y1="12" x2="19" y2="12" />
               <polyline points="12 5 19 12 12 19" />
             </svg>
@@ -353,9 +351,7 @@ export default function SchoolContactForm() {
         )}
       </button>
 
-      <p className="school-contact-form-note">
-        Delaney typically responds within 2 business days
-      </p>
+      <p className="school-contact-form-note">Delaney typically responds within 2 business days</p>
     </form>
   );
 }

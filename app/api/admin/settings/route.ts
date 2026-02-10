@@ -22,7 +22,7 @@ export async function PUT(req: NextRequest) {
   }
 
   try {
-    const { settings } = await req.json() as { settings: Record<string, string> };
+    const { settings } = (await req.json()) as { settings: Record<string, string> };
     if (!settings || typeof settings !== 'object') {
       return NextResponse.json({ error: 'settings object is required' }, { status: 400 });
     }
@@ -34,8 +34,8 @@ export async function PUT(req: NextRequest) {
           where: { key },
           create: { key, value: String(value) },
           update: { value: String(value) },
-        })
-      )
+        }),
+      ),
     );
 
     // Return updated settings

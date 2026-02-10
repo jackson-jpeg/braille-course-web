@@ -30,11 +30,15 @@ export default function AdminWaitlistPanel({ sections, scheduleMap, onSendEmail,
       const res = await fetch('/api/admin/waitlist');
       const data = await res.json();
       if (res.ok) setWaitlisted(data.waitlisted);
-    } catch (err) { console.error('Failed to fetch waitlist:', err); }
+    } catch (err) {
+      console.error('Failed to fetch waitlist:', err);
+    }
     setLoading(false);
   }, []);
 
-  useEffect(() => { fetchWaitlist(); }, [fetchWaitlist]);
+  useEffect(() => {
+    fetchWaitlist();
+  }, [fetchWaitlist]);
 
   async function handlePromote(enrollmentId: string) {
     setPromotingId(enrollmentId);
@@ -88,7 +92,9 @@ export default function AdminWaitlistPanel({ sections, scheduleMap, onSendEmail,
         body: JSON.stringify({ orderedIds: newOrder.map((e) => e.id) }),
       });
       await fetchWaitlist();
-    } catch (err) { console.error('Failed to reorder waitlist:', err); }
+    } catch (err) {
+      console.error('Failed to reorder waitlist:', err);
+    }
   }
 
   async function handleMoveDown(entry: WaitlistEntry, sectionEntries: WaitlistEntry[]) {
@@ -103,7 +109,9 @@ export default function AdminWaitlistPanel({ sections, scheduleMap, onSendEmail,
         body: JSON.stringify({ orderedIds: newOrder.map((e) => e.id) }),
       });
       await fetchWaitlist();
-    } catch (err) { console.error('Failed to reorder waitlist:', err); }
+    } catch (err) {
+      console.error('Failed to reorder waitlist:', err);
+    }
   }
 
   if (loading) return null;
@@ -119,10 +127,7 @@ export default function AdminWaitlistPanel({ sections, scheduleMap, onSendEmail,
 
   return (
     <div className="admin-waitlist-panel">
-      <button
-        className="admin-waitlist-header"
-        onClick={() => setCollapsed(!collapsed)}
-      >
+      <button className="admin-waitlist-header" onClick={() => setCollapsed(!collapsed)}>
         <span className="admin-waitlist-title">
           Waitlist
           <span className="admin-waitlist-badge">{waitlisted.length}</span>

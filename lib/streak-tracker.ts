@@ -29,8 +29,8 @@ export function getStreakMilestone(streakCount: number): string | null {
   const milestones: Record<number, string> = {
     3: 'Three-day streak! Keep it up!',
     7: 'One week streak! Amazing dedication!',
-    14: 'Two weeks strong! You\'re on fire!',
-    30: 'Monthly streak! You\'re a braille champion!',
+    14: "Two weeks strong! You're on fire!",
+    30: "Monthly streak! You're a braille champion!",
     50: 'Fifty days! Incredible commitment!',
     100: 'One hundred days! Legendary learner!',
   };

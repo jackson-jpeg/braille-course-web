@@ -10,10 +10,7 @@ export interface MathProblem {
 }
 
 /** Generate a math problem based on difficulty params */
-export function generateProblem(
-  maxNumber: number,
-  operations: string[]
-): MathProblem {
+export function generateProblem(maxNumber: number, operations: string[]): MathProblem {
   const op = operations[Math.floor(Math.random() * operations.length)];
   let a: number, b: number, answer: number;
 
@@ -51,9 +48,7 @@ export function generateChoices(correctAnswer: number, count: number = 3): numbe
 
   while (choices.size < count + 1) {
     const offset = 1 + Math.floor(Math.random() * range);
-    const wrong = Math.random() > 0.5
-      ? correctAnswer + offset
-      : Math.max(0, correctAnswer - offset);
+    const wrong = Math.random() > 0.5 ? correctAnswer + offset : Math.max(0, correctAnswer - offset);
     if (wrong !== correctAnswer) choices.add(wrong);
   }
 

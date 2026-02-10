@@ -54,7 +54,12 @@ export default function ProgressDashboard() {
   const [mounted, setMounted] = useState(false);
   const [totalPlayed, setTotalPlayed] = useState(0);
   const [totalWins, setTotalWins] = useState(0);
-  const [streakInfo, setStreakInfo] = useState({ currentStreak: 0, longestStreak: 0, isActiveToday: false, freezesAvailable: 0 });
+  const [streakInfo, setStreakInfo] = useState({
+    currentStreak: 0,
+    longestStreak: 0,
+    isActiveToday: false,
+    freezesAvailable: 0,
+  });
   const [masteries, setMasteries] = useState<Record<GameId, number>>({} as Record<GameId, number>);
   const [expanded, setExpanded] = useState(false);
 
@@ -73,9 +78,7 @@ export default function ProgressDashboard() {
 
   if (!mounted || totalPlayed === 0) return null;
 
-  const overallMastery = Math.round(
-    Object.values(masteries).reduce((s, v) => s + v, 0) / GAME_INFO.length
-  );
+  const overallMastery = Math.round(Object.values(masteries).reduce((s, v) => s + v, 0) / GAME_INFO.length);
 
   return (
     <div className="progress-dashboard">
@@ -88,7 +91,10 @@ export default function ProgressDashboard() {
             <span className="progress-dashboard-numbers">
               {totalWins} wins · {totalPlayed} played
               {streakInfo.currentStreak > 0 && (
-                <> · <span className="progress-streak-badge">{streakInfo.currentStreak} day streak</span></>
+                <>
+                  {' '}
+                  · <span className="progress-streak-badge">{streakInfo.currentStreak} day streak</span>
+                </>
               )}
             </span>
           </div>
@@ -110,10 +116,14 @@ export default function ProgressDashboard() {
             return (
               <a key={game.id} href={game.anchor} className="progress-game-card">
                 <ProgressRing progress={m} size={40} />
-                <span className="sr-only">{game.label}: {m}% mastered</span>
+                <span className="sr-only">
+                  {game.label}: {m}% mastered
+                </span>
                 <div className="progress-game-info">
                   <span className="progress-game-name">{game.label}</span>
-                  <span className="progress-game-pct" aria-hidden="true">{m}%</span>
+                  <span className="progress-game-pct" aria-hidden="true">
+                    {m}%
+                  </span>
                 </div>
               </a>
             );

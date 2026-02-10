@@ -17,9 +17,9 @@ export type Difficulty = 'beginner' | 'intermediate' | 'advanced';
 export interface GameStats {
   gamesPlayed: number;
   gamesWon: number;
-  bestScore: number;        // game-specific (e.g., best streak, fewest moves)
-  totalScore: number;       // cumulative score
-  lastPlayed: string;       // ISO date
+  bestScore: number; // game-specific (e.g., best streak, fewest moves)
+  totalScore: number; // cumulative score
+  lastPlayed: string; // ISO date
   /** Per-difficulty stats */
   difficultyStats: Record<Difficulty, { played: number; won: number }>;
 }
@@ -27,18 +27,18 @@ export interface GameStats {
 export interface StreakData {
   currentStreak: number;
   longestStreak: number;
-  lastPlayedDate: string;   // YYYY-MM-DD
+  lastPlayedDate: string; // YYYY-MM-DD
   freezesAvailable: number;
 }
 
 export interface AchievementProgress {
-  unlocked: string[];       // achievement IDs
+  unlocked: string[]; // achievement IDs
   progress: Record<string, number>; // partial progress towards achievements
-  lastChecked: string;      // ISO date
+  lastChecked: string; // ISO date
 }
 
 export interface DailyChallengeState {
-  date: string;             // YYYY-MM-DD
+  date: string; // YYYY-MM-DD
   challenges: {
     id: string;
     completed: boolean;

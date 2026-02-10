@@ -30,13 +30,15 @@ export default function AdminProgressTab({ sections, enrollments, scheduleMap }:
   const [deleteLoading, setDeleteLoading] = useState(false);
 
   // Pending saves (debounced)
-  const pendingRef = useRef<Map<string, { assignmentId: string; enrollmentId: string; score: number | null }>>(new Map());
+  const pendingRef = useRef<Map<string, { assignmentId: string; enrollmentId: string; score: number | null }>>(
+    new Map(),
+  );
   const saveTimerRef = useRef<NodeJS.Timeout | null>(null);
 
   const selectedSection = sections.find((s) => s.id === selectedSectionId);
   const sectionEnrollments = useMemo(
     () => enrollments.filter((e) => e.section.label === selectedSection?.label && e.paymentStatus === 'COMPLETED'),
-    [enrollments, selectedSection]
+    [enrollments, selectedSection],
   );
 
   const fetchGrades = useCallback(async () => {
@@ -55,7 +57,9 @@ export default function AdminProgressTab({ sections, enrollments, scheduleMap }:
     setLoading(false);
   }, [selectedSectionId]);
 
-  useEffect(() => { fetchGrades(); }, [fetchGrades]);
+  useEffect(() => {
+    fetchGrades();
+  }, [fetchGrades]);
 
   function getGrade(assignmentId: string, enrollmentId: string): number | null {
     const g = grades.find((g) => g.assignmentId === assignmentId && g.enrollmentId === enrollmentId);
@@ -194,10 +198,7 @@ export default function AdminProgressTab({ sections, enrollments, scheduleMap }:
             </option>
           ))}
         </select>
-        <button
-          className="admin-compose-btn"
-          onClick={() => setShowAdd(!showAdd)}
-        >
+        <button className="admin-compose-btn" onClick={() => setShowAdd(!showAdd)}>
           {showAdd ? 'Cancel' : '+ Add Assignment'}
         </button>
         {assignments.length > 0 && (
@@ -268,7 +269,9 @@ export default function AdminProgressTab({ sections, enrollments, scheduleMap }:
                 {assignments.map((a) => (
                   <th key={a.id} className="admin-grade-header">
                     <div className="admin-grade-header-inner">
-                      <span className="admin-grade-header-title" title={a.title}>{a.title}</span>
+                      <span className="admin-grade-header-title" title={a.title}>
+                        {a.title}
+                      </span>
                       <span className="admin-grade-header-max">/{a.maxScore}</span>
                       <button
                         className="admin-grade-header-delete"
@@ -309,9 +312,13 @@ export default function AdminProgressTab({ sections, enrollments, scheduleMap }:
                 </tr>
               ))}
               <tr className="admin-grade-summary-row">
-                <td className="admin-grade-student-cell" style={{ fontWeight: 600 }}>Class Average</td>
+                <td className="admin-grade-student-cell" style={{ fontWeight: 600 }}>
+                  Class Average
+                </td>
                 {assignments.map((a) => (
-                  <td key={a.id} className="admin-grade-avg">{assignmentAverage(a.id)}</td>
+                  <td key={a.id} className="admin-grade-avg">
+                    {assignmentAverage(a.id)}
+                  </td>
                 ))}
                 <td></td>
               </tr>

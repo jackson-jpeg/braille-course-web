@@ -14,8 +14,8 @@ const FORMAT_OPTIONS = [
     description: 'Slide deck with title, bullets, and speaker notes',
     icon: (
       <svg width="20" height="20" viewBox="0 0 24 24" fill="none">
-        <rect x="3" y="3" width="18" height="18" rx="2" stroke="currentColor" strokeWidth="1.5"/>
-        <path d="M8 7h8M8 11h5M8 15h6" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round"/>
+        <rect x="3" y="3" width="18" height="18" rx="2" stroke="currentColor" strokeWidth="1.5" />
+        <path d="M8 7h8M8 11h5M8 15h6" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" />
       </svg>
     ),
   },
@@ -25,9 +25,9 @@ const FORMAT_OPTIONS = [
     description: 'Formatted document with sections and bullet points',
     icon: (
       <svg width="20" height="20" viewBox="0 0 24 24" fill="none">
-        <path d="M6 2h8l6 6v14H6a2 2 0 01-2-2V4a2 2 0 012-2z" stroke="currentColor" strokeWidth="1.5"/>
-        <path d="M14 2v6h6" stroke="currentColor" strokeWidth="1.5" strokeLinejoin="round"/>
-        <path d="M8 13h8M8 17h5" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round"/>
+        <path d="M6 2h8l6 6v14H6a2 2 0 01-2-2V4a2 2 0 012-2z" stroke="currentColor" strokeWidth="1.5" />
+        <path d="M14 2v6h6" stroke="currentColor" strokeWidth="1.5" strokeLinejoin="round" />
+        <path d="M8 13h8M8 17h5" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" />
       </svg>
     ),
   },
@@ -37,9 +37,15 @@ const FORMAT_OPTIONS = [
     description: 'Objectives, key terms, and practice questions',
     icon: (
       <svg width="20" height="20" viewBox="0 0 24 24" fill="none">
-        <path d="M4 19.5A2.5 2.5 0 016.5 17H20" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
-        <path d="M6.5 2H20v20H6.5A2.5 2.5 0 014 19.5v-15A2.5 2.5 0 016.5 2z" stroke="currentColor" strokeWidth="1.5"/>
-        <path d="M8 7h8M8 11h5" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round"/>
+        <path
+          d="M4 19.5A2.5 2.5 0 016.5 17H20"
+          stroke="currentColor"
+          strokeWidth="1.5"
+          strokeLinecap="round"
+          strokeLinejoin="round"
+        />
+        <path d="M6.5 2H20v20H6.5A2.5 2.5 0 014 19.5v-15A2.5 2.5 0 016.5 2z" stroke="currentColor" strokeWidth="1.5" />
+        <path d="M8 7h8M8 11h5" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" />
       </svg>
     ),
   },
@@ -49,9 +55,9 @@ const FORMAT_OPTIONS = [
     description: 'Fill-in-the-blank, matching, and practice drills',
     icon: (
       <svg width="20" height="20" viewBox="0 0 24 24" fill="none">
-        <rect x="3" y="3" width="18" height="18" rx="2" stroke="currentColor" strokeWidth="1.5"/>
-        <path d="M7 8h3M7 12h5M7 16h4" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round"/>
-        <path d="M15 8h2M15 12h2M15 16h2" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round"/>
+        <rect x="3" y="3" width="18" height="18" rx="2" stroke="currentColor" strokeWidth="1.5" />
+        <path d="M7 8h3M7 12h5M7 16h4" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" />
+        <path d="M15 8h2M15 12h2M15 16h2" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" />
       </svg>
     ),
   },
@@ -61,9 +67,14 @@ const FORMAT_OPTIONS = [
     description: 'Multiple choice, true/false, and short answer assessment',
     icon: (
       <svg width="20" height="20" viewBox="0 0 24 24" fill="none">
-        <circle cx="12" cy="12" r="9" stroke="currentColor" strokeWidth="1.5"/>
-        <path d="M9 9.5a3 3 0 015.12 1.5c0 1.5-2.12 2-2.12 2" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round"/>
-        <circle cx="12" cy="16" r="0.5" fill="currentColor" stroke="currentColor" strokeWidth="0.5"/>
+        <circle cx="12" cy="12" r="9" stroke="currentColor" strokeWidth="1.5" />
+        <path
+          d="M9 9.5a3 3 0 015.12 1.5c0 1.5-2.12 2-2.12 2"
+          stroke="currentColor"
+          strokeWidth="1.5"
+          strokeLinecap="round"
+        />
+        <circle cx="12" cy="16" r="0.5" fill="currentColor" stroke="currentColor" strokeWidth="0.5" />
       </svg>
     ),
   },
@@ -73,9 +84,9 @@ const FORMAT_OPTIONS = [
     description: 'Slides + handout + worksheet — complete session package',
     icon: (
       <svg width="20" height="20" viewBox="0 0 24 24" fill="none">
-        <rect x="2" y="4" width="8" height="7" rx="1" stroke="currentColor" strokeWidth="1.5"/>
-        <rect x="14" y="4" width="8" height="7" rx="1" stroke="currentColor" strokeWidth="1.5"/>
-        <rect x="8" y="13" width="8" height="7" rx="1" stroke="currentColor" strokeWidth="1.5"/>
+        <rect x="2" y="4" width="8" height="7" rx="1" stroke="currentColor" strokeWidth="1.5" />
+        <rect x="14" y="4" width="8" height="7" rx="1" stroke="currentColor" strokeWidth="1.5" />
+        <rect x="8" y="13" width="8" height="7" rx="1" stroke="currentColor" strokeWidth="1.5" />
       </svg>
     ),
   },
@@ -85,22 +96,26 @@ const BUILTIN_PRESETS = [
   {
     label: 'Grade 1 Introduction',
     title: 'Introduction to Grade 1 Braille',
-    notes: 'Cover the braille alphabet (a-z), numbers (using number indicator #), and basic punctuation (period, comma, question mark, exclamation mark). Include how each letter maps to a braille cell configuration. Explain the 6-dot cell layout (dots 1-6). Provide examples of simple words spelled out letter by letter.',
+    notes:
+      'Cover the braille alphabet (a-z), numbers (using number indicator #), and basic punctuation (period, comma, question mark, exclamation mark). Include how each letter maps to a braille cell configuration. Explain the 6-dot cell layout (dots 1-6). Provide examples of simple words spelled out letter by letter.',
   },
   {
     label: 'Contractions Practice',
     title: 'Grade 2 Braille Contractions',
-    notes: 'Focus on the most common Grade 2 braille contractions: "and", "for", "of", "the", "with", "ch", "sh", "th", "wh", "ed", "er", "ou", "ow", "st", "ing". Include whole-word contractions like "but", "can", "do", "every", "from", "go", "have", "just", "knowledge", "like", "more", "not". Provide exercises pairing print text with contracted braille representations.',
+    notes:
+      'Focus on the most common Grade 2 braille contractions: "and", "for", "of", "the", "with", "ch", "sh", "th", "wh", "ed", "er", "ou", "ow", "st", "ing". Include whole-word contractions like "but", "can", "do", "every", "from", "go", "have", "just", "knowledge", "like", "more", "not". Provide exercises pairing print text with contracted braille representations.',
   },
   {
     label: 'Number Signs',
     title: 'Numbers and Math in Braille',
-    notes: 'Explain the number indicator (dots 3-4-5-6) and how letters a-j become numbers 1-0. Cover the Nemeth code basics for math: plus, minus, multiplication, division, equals sign. Include real-world examples: phone numbers, addresses, prices, dates. Practice reading and writing multi-digit numbers.',
+    notes:
+      'Explain the number indicator (dots 3-4-5-6) and how letters a-j become numbers 1-0. Cover the Nemeth code basics for math: plus, minus, multiplication, division, equals sign. Include real-world examples: phone numbers, addresses, prices, dates. Practice reading and writing multi-digit numbers.',
   },
   {
     label: 'Formatting Indicators',
     title: 'Braille Formatting Indicators',
-    notes: 'Cover capital letter indicator (dot 6), double capital for all-caps (dot 6, dot 6), letter indicator (dots 5-6), italic indicator (dots 4-6), bold indicator (dots 4-5-6), and termination indicator. Explain when and how each is used. Include examples of proper nouns, acronyms, and emphasized text in braille.',
+    notes:
+      'Cover capital letter indicator (dot 6), double capital for all-caps (dot 6, dot 6), letter indicator (dots 5-6), italic indicator (dots 4-6), bold indicator (dots 4-5-6), and termination indicator. Explain when and how each is used. Include examples of proper nouns, acronyms, and emphasized text in braille.',
   },
 ];
 
@@ -159,7 +174,9 @@ export default function AdminCreateTab({ onEmailMaterial }: Props) {
         const data = await res.json();
         setRecentMaterials((data.materials || []).slice(0, 10));
       }
-    } catch { /* ignore */ }
+    } catch {
+      /* ignore */
+    }
   }, []);
 
   // Fetch saved templates
@@ -170,7 +187,9 @@ export default function AdminCreateTab({ onEmailMaterial }: Props) {
         const data = await res.json();
         setTemplates(data.templates || []);
       }
-    } catch { /* ignore */ }
+    } catch {
+      /* ignore */
+    }
   }, []);
 
   // Fetch next upcoming session for quick-generate
@@ -194,10 +213,16 @@ export default function AdminCreateTab({ onEmailMaterial }: Props) {
       if (upcoming.length > 0) {
         setNextSession({
           title: upcoming[0].title,
-          date: new Date(upcoming[0].date).toLocaleDateString('en-US', { weekday: 'short', month: 'short', day: 'numeric' }),
+          date: new Date(upcoming[0].date).toLocaleDateString('en-US', {
+            weekday: 'short',
+            month: 'short',
+            day: 'numeric',
+          }),
         });
       }
-    } catch { /* ignore */ }
+    } catch {
+      /* ignore */
+    }
   }, []);
 
   useEffect(() => {
@@ -215,33 +240,38 @@ export default function AdminCreateTab({ onEmailMaterial }: Props) {
   }, []);
 
   // Autosave draft when in review stage
-  const saveDraft = useCallback(async (json: unknown) => {
-    if (autosaveTimerRef.current) clearTimeout(autosaveTimerRef.current);
-    autosaveTimerRef.current = setTimeout(async () => {
-      setDraftSaveStatus('saving');
-      try {
-        const res = await fetch('/api/admin/drafts', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({
-            id: draftId || undefined,
-            title,
-            notes,
-            format,
-            difficulty,
-            instructions: instructions || undefined,
-            contentJson: json,
-            wasCorrected,
-          }),
-        });
-        if (res.ok) {
-          const data = await res.json();
-          if (!draftId) setDraftId(data.draft.id);
-          setDraftSaveStatus('saved');
+  const saveDraft = useCallback(
+    async (json: unknown) => {
+      if (autosaveTimerRef.current) clearTimeout(autosaveTimerRef.current);
+      autosaveTimerRef.current = setTimeout(async () => {
+        setDraftSaveStatus('saving');
+        try {
+          const res = await fetch('/api/admin/drafts', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+              id: draftId || undefined,
+              title,
+              notes,
+              format,
+              difficulty,
+              instructions: instructions || undefined,
+              contentJson: json,
+              wasCorrected,
+            }),
+          });
+          if (res.ok) {
+            const data = await res.json();
+            if (!draftId) setDraftId(data.draft.id);
+            setDraftSaveStatus('saved');
+          }
+        } catch {
+          /* ignore */
         }
-      } catch { /* ignore */ }
-    }, 3000);
-  }, [draftId, title, notes, format, difficulty, instructions, wasCorrected]);
+      }, 3000);
+    },
+    [draftId, title, notes, format, difficulty, instructions, wasCorrected],
+  );
 
   async function checkDuplicate(): Promise<boolean> {
     if (!title.trim()) return false;
@@ -250,15 +280,18 @@ export default function AdminCreateTab({ onEmailMaterial }: Props) {
       if (!res.ok) return false;
       const data = await res.json();
       const materials = data.materials || [];
-      const safeTitle = title.replace(/[^a-zA-Z0-9-_ ]/g, '').replace(/\s+/g, '-').toLowerCase();
-      const match = materials.find((m: Material) =>
-        m.filename.toLowerCase().includes(safeTitle)
-      );
+      const safeTitle = title
+        .replace(/[^a-zA-Z0-9-_ ]/g, '')
+        .replace(/\s+/g, '-')
+        .toLowerCase();
+      const match = materials.find((m: Material) => m.filename.toLowerCase().includes(safeTitle));
       if (match) {
         setDuplicateWarning(match.filename);
         return true;
       }
-    } catch { /* ignore */ }
+    } catch {
+      /* ignore */
+    }
     return false;
   }
 
@@ -601,16 +634,28 @@ export default function AdminCreateTab({ onEmailMaterial }: Props) {
               {i > 0 && (
                 <div className={`admin-gen-step-line ${isComplete || isActive ? 'admin-gen-step-line-active' : ''}`} />
               )}
-              <div className={`admin-gen-step-dot ${isActive ? 'admin-gen-step-dot-active' : ''} ${isComplete ? 'admin-gen-step-dot-done' : ''}`}>
+              <div
+                className={`admin-gen-step-dot ${isActive ? 'admin-gen-step-dot-active' : ''} ${isComplete ? 'admin-gen-step-dot-done' : ''}`}
+              >
                 {isComplete ? (
                   <svg width="12" height="12" viewBox="0 0 24 24" fill="none">
-                    <path d="M5 13l4 4L19 7" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round"/>
+                    <path
+                      d="M5 13l4 4L19 7"
+                      stroke="currentColor"
+                      strokeWidth="3"
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                    />
                   </svg>
                 ) : isActive ? (
-                  step.key === 'review' ? null : <span className="admin-gen-step-spinner" />
+                  step.key === 'review' ? null : (
+                    <span className="admin-gen-step-spinner" />
+                  )
                 ) : null}
               </div>
-              <span className={`admin-gen-step-label ${isActive ? 'admin-gen-step-label-active' : ''} ${isComplete ? 'admin-gen-step-label-done' : ''}`}>
+              <span
+                className={`admin-gen-step-label ${isActive ? 'admin-gen-step-label-active' : ''} ${isComplete ? 'admin-gen-step-label-done' : ''}`}
+              >
                 {step.label}
               </span>
             </div>
@@ -629,7 +674,9 @@ export default function AdminCreateTab({ onEmailMaterial }: Props) {
           <div className="admin-gen-preview-list">
             <span className="admin-gen-preview-label">{preview.slideTitles.length} slides:</span>
             <ul>
-              {preview.slideTitles.map((t, i) => <li key={i}>{t}</li>)}
+              {preview.slideTitles.map((t, i) => (
+                <li key={i}>{t}</li>
+              ))}
             </ul>
           </div>
         )}
@@ -637,7 +684,9 @@ export default function AdminCreateTab({ onEmailMaterial }: Props) {
           <div className="admin-gen-preview-list">
             <span className="admin-gen-preview-label">Objectives:</span>
             <ul>
-              {preview.objectives.map((o, i) => <li key={i}>{o}</li>)}
+              {preview.objectives.map((o, i) => (
+                <li key={i}>{o}</li>
+              ))}
             </ul>
           </div>
         )}
@@ -645,7 +694,9 @@ export default function AdminCreateTab({ onEmailMaterial }: Props) {
           <div className="admin-gen-preview-list">
             <span className="admin-gen-preview-label">{preview.sectionHeadings.length} sections:</span>
             <ul>
-              {preview.sectionHeadings.map((h, i) => <li key={i}>{h}</li>)}
+              {preview.sectionHeadings.map((h, i) => (
+                <li key={i}>{h}</li>
+              ))}
             </ul>
           </div>
         )}
@@ -653,18 +704,26 @@ export default function AdminCreateTab({ onEmailMaterial }: Props) {
           <div className="admin-gen-preview-list">
             <span className="admin-gen-preview-label">{preview.totalQuestions} questions:</span>
             <ul>
-              {preview.questionCounts['multiple-choice'] > 0 && <li>{preview.questionCounts['multiple-choice']} multiple choice</li>}
+              {preview.questionCounts['multiple-choice'] > 0 && (
+                <li>{preview.questionCounts['multiple-choice']} multiple choice</li>
+              )}
               {preview.questionCounts['true-false'] > 0 && <li>{preview.questionCounts['true-false']} true/false</li>}
-              {preview.questionCounts['short-answer'] > 0 && <li>{preview.questionCounts['short-answer']} short answer</li>}
+              {preview.questionCounts['short-answer'] > 0 && (
+                <li>{preview.questionCounts['short-answer']} short answer</li>
+              )}
             </ul>
           </div>
         )}
         {preview.worksheetSections && (
           <div className="admin-gen-preview-list">
-            <span className="admin-gen-preview-label">{preview.totalItems} items across {preview.worksheetSections.length} sections:</span>
+            <span className="admin-gen-preview-label">
+              {preview.totalItems} items across {preview.worksheetSections.length} sections:
+            </span>
             <ul>
               {preview.worksheetSections.map((s, i) => (
-                <li key={i}>{s.heading} ({s.type}, {s.itemCount} items)</li>
+                <li key={i}>
+                  {s.heading} ({s.type}, {s.itemCount} items)
+                </li>
               ))}
             </ul>
           </div>
@@ -682,18 +741,10 @@ export default function AdminCreateTab({ onEmailMaterial }: Props) {
           <span className="admin-create-result-size">{formatFileSize(m.size)}</span>
         </div>
         <div className="admin-create-result-actions">
-          <a
-            href={m.blobUrl}
-            target="_blank"
-            rel="noopener noreferrer"
-            className="admin-compose-btn"
-          >
+          <a href={m.blobUrl} target="_blank" rel="noopener noreferrer" className="admin-compose-btn">
             Download
           </a>
-          <button
-            className="admin-send-btn"
-            onClick={() => onEmailMaterial(m.id)}
-          >
+          <button className="admin-send-btn" onClick={() => onEmailMaterial(m.id)}>
             Email to Students
           </button>
         </div>
@@ -707,7 +758,12 @@ export default function AdminCreateTab({ onEmailMaterial }: Props) {
         <form ref={formRef} onSubmit={handleGenerate} className="admin-create-form">
           <div className="admin-create-header">
             <svg width="24" height="24" viewBox="0 0 24 24" fill="none">
-              <path d="M12 2L9 9l-7 1 5 5-1.5 7L12 18l6.5 4L17 15l5-5-7-1-3-7z" stroke="currentColor" strokeWidth="1.5" strokeLinejoin="round"/>
+              <path
+                d="M12 2L9 9l-7 1 5 5-1.5 7L12 18l6.5 4L17 15l5-5-7-1-3-7z"
+                stroke="currentColor"
+                strokeWidth="1.5"
+                strokeLinejoin="round"
+              />
             </svg>
             <div>
               <h3>AI Material Generator</h3>
@@ -738,14 +794,21 @@ export default function AdminCreateTab({ onEmailMaterial }: Props) {
                   className="admin-template-chip"
                   role="button"
                   tabIndex={0}
-                  onClick={() => { if (!isGenerating) applyTemplate(tmpl); }}
-                  onKeyDown={(e) => { if (e.key === 'Enter' && !isGenerating) applyTemplate(tmpl); }}
+                  onClick={() => {
+                    if (!isGenerating) applyTemplate(tmpl);
+                  }}
+                  onKeyDown={(e) => {
+                    if (e.key === 'Enter' && !isGenerating) applyTemplate(tmpl);
+                  }}
                 >
                   {tmpl.label}
                   <button
                     type="button"
                     className="admin-template-delete"
-                    onClick={(e) => { e.stopPropagation(); handleDeleteTemplate(tmpl.id); }}
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      handleDeleteTemplate(tmpl.id);
+                    }}
                     title="Delete template"
                   >
                     &times;
@@ -786,8 +849,13 @@ export default function AdminCreateTab({ onEmailMaterial }: Props) {
                   disabled={polishing}
                 >
                   {polishing ? (
-                    <><span className="admin-create-spinner" style={{ width: 10, height: 10, marginRight: 4 }} />Polishing&hellip;</>
-                  ) : 'Polish Notes'}
+                    <>
+                      <span className="admin-create-spinner" style={{ width: 10, height: 10, marginRight: 4 }} />
+                      Polishing&hellip;
+                    </>
+                  ) : (
+                    'Polish Notes'
+                  )}
                 </button>
               )}
               {title.trim() && notes.trim() && !isGenerating && (
@@ -841,12 +909,15 @@ export default function AdminCreateTab({ onEmailMaterial }: Props) {
             <span className="admin-difficulty-hint">
               {difficulty === 'beginner' && 'Grade 1 only — dot numbers, simple words, 3-5 new characters per section'}
               {difficulty === 'intermediate' && 'Grade 1 + common Grade 2 contractions, 5-8 concepts per section'}
-              {difficulty === 'advanced' && 'Grade 2 emphasis — context rules, exceptions, full sentences, 8-12 concepts per section'}
+              {difficulty === 'advanced' &&
+                'Grade 2 emphasis — context rules, exceptions, full sentences, 8-12 concepts per section'}
             </span>
           </div>
 
           <div className="admin-compose-field">
-            <label>Additional Instructions <span style={{ fontWeight: 400, opacity: 0.6 }}>(optional)</span></label>
+            <label>
+              Additional Instructions <span style={{ fontWeight: 400, opacity: 0.6 }}>(optional)</span>
+            </label>
             <input
               type="text"
               value={instructions}
@@ -860,7 +931,9 @@ export default function AdminCreateTab({ onEmailMaterial }: Props) {
           {renderProgressStepper()}
 
           {genError && (
-            <div className="admin-compose-error" style={{ marginBottom: 8 }}>{genError}</div>
+            <div className="admin-compose-error" style={{ marginBottom: 8 }}>
+              {genError}
+            </div>
           )}
 
           <div className="admin-compose-actions">
@@ -904,7 +977,9 @@ export default function AdminCreateTab({ onEmailMaterial }: Props) {
           {renderProgressStepper()}
           <div className="admin-review-draft-status">
             {draftSaveStatus === 'saving' && <span className="admin-review-save-indicator">Saving draft&hellip;</span>}
-            {draftSaveStatus === 'saved' && <span className="admin-review-save-indicator admin-review-save-done">Draft saved</span>}
+            {draftSaveStatus === 'saved' && (
+              <span className="admin-review-save-indicator admin-review-save-done">Draft saved</span>
+            )}
           </div>
           <ContentReviewEditor
             format={format}
@@ -933,29 +1008,29 @@ export default function AdminCreateTab({ onEmailMaterial }: Props) {
         <div className="admin-create-result">
           <div className="admin-create-result-header">
             <svg width="24" height="24" viewBox="0 0 24 24" fill="none">
-              <circle cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="1.5"/>
-              <path d="M8 12l3 3 5-5" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+              <circle cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="1.5" />
+              <path
+                d="M8 12l3 3 5-5"
+                stroke="currentColor"
+                strokeWidth="2"
+                strokeLinecap="round"
+                strokeLinejoin="round"
+              />
             </svg>
             <h3>{bundleResults.length > 0 ? 'Session Bundle Generated' : 'Material Generated'}</h3>
           </div>
 
-          {bundleResults.length > 0 ? (
-            bundleResults.map((m) => renderResultCard(m))
-          ) : result ? (
-            renderResultCard(result)
-          ) : null}
+          {bundleResults.length > 0
+            ? bundleResults.map((m) => renderResultCard(m))
+            : result
+              ? renderResultCard(result)
+              : null}
 
           <div className="admin-create-result-actions" style={{ marginTop: 12 }}>
-            <button
-              className="admin-refresh-btn"
-              onClick={handleRegenerate}
-            >
+            <button className="admin-refresh-btn" onClick={handleRegenerate}>
               Regenerate
             </button>
-            <button
-              className="admin-compose-btn"
-              onClick={handleStartFresh}
-            >
+            <button className="admin-compose-btn" onClick={handleStartFresh}>
               Start Fresh
             </button>
           </div>
@@ -968,38 +1043,38 @@ export default function AdminCreateTab({ onEmailMaterial }: Props) {
       {genStage === 'idle' && (
         <div className="admin-quickgen-panel">
           <h4>Quick Generate</h4>
-          <p>One-click generation for common tasks{nextSession ? ` — next class: ${nextSession.title} (${nextSession.date})` : ''}.</p>
+          <p>
+            One-click generation for common tasks
+            {nextSession ? ` — next class: ${nextSession.title} (${nextSession.date})` : ''}.
+          </p>
           <div className="admin-quickgen-btns">
-            <button
-              type="button"
-              className="admin-quickgen-btn"
-              onClick={() => handleQuickGenerate('worksheet')}
-            >
+            <button type="button" className="admin-quickgen-btn" onClick={() => handleQuickGenerate('worksheet')}>
               <svg viewBox="0 0 24 24" fill="none">
-                <rect x="3" y="3" width="18" height="18" rx="2" stroke="currentColor" strokeWidth="1.5"/>
-                <path d="M7 8h3M7 12h5M7 16h4" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round"/>
+                <rect x="3" y="3" width="18" height="18" rx="2" stroke="currentColor" strokeWidth="1.5" />
+                <path d="M7 8h3M7 12h5M7 16h4" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" />
               </svg>
               Worksheet for next class
             </button>
-            <button
-              type="button"
-              className="admin-quickgen-btn"
-              onClick={() => handleQuickGenerate('quiz')}
-            >
+            <button type="button" className="admin-quickgen-btn" onClick={() => handleQuickGenerate('quiz')}>
               <svg viewBox="0 0 24 24" fill="none">
-                <circle cx="12" cy="12" r="9" stroke="currentColor" strokeWidth="1.5"/>
-                <path d="M9 9.5a3 3 0 015.12 1.5c0 1.5-2.12 2-2.12 2" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round"/>
+                <circle cx="12" cy="12" r="9" stroke="currentColor" strokeWidth="1.5" />
+                <path
+                  d="M9 9.5a3 3 0 015.12 1.5c0 1.5-2.12 2-2.12 2"
+                  stroke="currentColor"
+                  strokeWidth="1.5"
+                  strokeLinecap="round"
+                />
               </svg>
               Quiz for next class
             </button>
-            <button
-              type="button"
-              className="admin-quickgen-btn"
-              onClick={() => handleQuickGenerate('study-guide')}
-            >
+            <button type="button" className="admin-quickgen-btn" onClick={() => handleQuickGenerate('study-guide')}>
               <svg viewBox="0 0 24 24" fill="none">
-                <path d="M4 19.5A2.5 2.5 0 016.5 17H20" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round"/>
-                <path d="M6.5 2H20v20H6.5A2.5 2.5 0 014 19.5v-15A2.5 2.5 0 016.5 2z" stroke="currentColor" strokeWidth="1.5"/>
+                <path d="M4 19.5A2.5 2.5 0 016.5 17H20" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" />
+                <path
+                  d="M6.5 2H20v20H6.5A2.5 2.5 0 014 19.5v-15A2.5 2.5 0 016.5 2z"
+                  stroke="currentColor"
+                  strokeWidth="1.5"
+                />
               </svg>
               Study guide for this week
             </button>
@@ -1029,7 +1104,9 @@ export default function AdminCreateTab({ onEmailMaterial }: Props) {
                         {m.filename}
                       </a>
                     </td>
-                    <td><span className="admin-category-badge">{m.category}</span></td>
+                    <td>
+                      <span className="admin-category-badge">{m.category}</span>
+                    </td>
                     <td>{formatFileSize(m.size)}</td>
                     <td>
                       <div style={{ display: 'flex', gap: 6 }}>

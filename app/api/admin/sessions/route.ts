@@ -55,7 +55,7 @@ export async function POST(req: NextRequest) {
     if (!sectionId || !title || !date || !sessionNum) {
       return NextResponse.json(
         { error: 'Missing required fields: sectionId, title, date, sessionNum' },
-        { status: 400 }
+        { status: 400 },
       );
     }
 

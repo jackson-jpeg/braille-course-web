@@ -29,10 +29,7 @@ export async function POST(req: NextRequest) {
     const { label, title, notes, format, difficulty, instructions } = body;
 
     if (!label || !title || !notes) {
-      return NextResponse.json(
-        { error: 'label, title, and notes are required' },
-        { status: 400 }
-      );
+      return NextResponse.json({ error: 'label, title, and notes are required' }, { status: 400 });
     }
 
     const template = await prisma.contentTemplate.create({

@@ -61,7 +61,7 @@ export async function POST(req: NextRequest) {
   }
 
   try {
-    const { grades } = await req.json() as {
+    const { grades } = (await req.json()) as {
       grades: { assignmentId: string; enrollmentId: string; score: number | null }[];
     };
 
@@ -86,8 +86,8 @@ export async function POST(req: NextRequest) {
           update: {
             score: g.score,
           },
-        })
-      )
+        }),
+      ),
     );
 
     return NextResponse.json({

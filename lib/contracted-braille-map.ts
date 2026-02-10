@@ -5,12 +5,7 @@
 
 import { brailleMap } from './braille-map';
 
-export type ContractionType =
-  | 'wordsign'
-  | 'strong'
-  | 'groupsign-strong'
-  | 'groupsign-lower'
-  | 'wordsign-lower';
+export type ContractionType = 'wordsign' | 'strong' | 'groupsign-strong' | 'groupsign-lower' | 'wordsign-lower';
 
 export interface ContractionEntry {
   label: string;
@@ -56,34 +51,34 @@ const strongContractions: ContractionEntry[] = [
 
 /** Strong groupsigns — can appear within words */
 const strongGroupsigns: ContractionEntry[] = [
-  { label: 'ch', pattern: [1, 0, 0, 0, 0, 1], type: 'groupsign-strong' },   // dots 1,6
-  { label: 'gh', pattern: [1, 0, 1, 0, 0, 1], type: 'groupsign-strong' },   // dots 1,2,6
-  { label: 'sh', pattern: [1, 1, 0, 0, 0, 1], type: 'groupsign-strong' },   // dots 1,4,6
-  { label: 'th', pattern: [1, 1, 0, 1, 0, 1], type: 'groupsign-strong' },   // dots 1,4,5,6
-  { label: 'wh', pattern: [1, 0, 0, 1, 0, 1], type: 'groupsign-strong' },   // dots 1,5,6
-  { label: 'ed', pattern: [1, 1, 1, 0, 0, 1], type: 'groupsign-strong' },   // dots 1,2,4,6
-  { label: 'er', pattern: [1, 1, 1, 1, 0, 1], type: 'groupsign-strong' },   // dots 1,2,4,5,6
-  { label: 'ou', pattern: [1, 0, 1, 1, 0, 1], type: 'groupsign-strong' },   // dots 1,2,5,6
-  { label: 'ow', pattern: [0, 1, 1, 0, 0, 1], type: 'groupsign-strong' },   // dots 2,4,6
-  { label: 'st', pattern: [0, 1, 0, 0, 1, 0], type: 'groupsign-strong' },   // dots 3,4
-  { label: 'ar', pattern: [0, 1, 0, 1, 1, 0], type: 'groupsign-strong' },   // dots 3,4,5
-  { label: 'ing', pattern: [0, 1, 0, 0, 1, 1], type: 'groupsign-strong' },  // dots 3,4,6
+  { label: 'ch', pattern: [1, 0, 0, 0, 0, 1], type: 'groupsign-strong' }, // dots 1,6
+  { label: 'gh', pattern: [1, 0, 1, 0, 0, 1], type: 'groupsign-strong' }, // dots 1,2,6
+  { label: 'sh', pattern: [1, 1, 0, 0, 0, 1], type: 'groupsign-strong' }, // dots 1,4,6
+  { label: 'th', pattern: [1, 1, 0, 1, 0, 1], type: 'groupsign-strong' }, // dots 1,4,5,6
+  { label: 'wh', pattern: [1, 0, 0, 1, 0, 1], type: 'groupsign-strong' }, // dots 1,5,6
+  { label: 'ed', pattern: [1, 1, 1, 0, 0, 1], type: 'groupsign-strong' }, // dots 1,2,4,6
+  { label: 'er', pattern: [1, 1, 1, 1, 0, 1], type: 'groupsign-strong' }, // dots 1,2,4,5,6
+  { label: 'ou', pattern: [1, 0, 1, 1, 0, 1], type: 'groupsign-strong' }, // dots 1,2,5,6
+  { label: 'ow', pattern: [0, 1, 1, 0, 0, 1], type: 'groupsign-strong' }, // dots 2,4,6
+  { label: 'st', pattern: [0, 1, 0, 0, 1, 0], type: 'groupsign-strong' }, // dots 3,4
+  { label: 'ar', pattern: [0, 1, 0, 1, 1, 0], type: 'groupsign-strong' }, // dots 3,4,5
+  { label: 'ing', pattern: [0, 1, 0, 0, 1, 1], type: 'groupsign-strong' }, // dots 3,4,6
 ];
 
 /** Lower groupsigns — dots 2,3,5,6 region */
 const lowerGroupsigns: ContractionEntry[] = [
-  { label: 'be', pattern: [0, 0, 1, 0, 1, 0], type: 'groupsign-lower' },     // dots 2,3
-  { label: 'con', pattern: [0, 0, 1, 1, 0, 0], type: 'groupsign-lower' },    // dots 2,5
-  { label: 'dis', pattern: [0, 0, 1, 1, 0, 1], type: 'groupsign-lower' },    // dots 2,5,6
-  { label: 'en (enough)', pattern: [0, 0, 1, 0, 0, 1], type: 'groupsign-lower' },  // dots 2,6
-  { label: 'in', pattern: [0, 0, 0, 1, 1, 0], type: 'groupsign-lower' },     // dots 3,5
+  { label: 'be', pattern: [0, 0, 1, 0, 1, 0], type: 'groupsign-lower' }, // dots 2,3
+  { label: 'con', pattern: [0, 0, 1, 1, 0, 0], type: 'groupsign-lower' }, // dots 2,5
+  { label: 'dis', pattern: [0, 0, 1, 1, 0, 1], type: 'groupsign-lower' }, // dots 2,5,6
+  { label: 'en (enough)', pattern: [0, 0, 1, 0, 0, 1], type: 'groupsign-lower' }, // dots 2,6
+  { label: 'in', pattern: [0, 0, 0, 1, 1, 0], type: 'groupsign-lower' }, // dots 3,5
 ];
 
 /** Lower wordsigns — standalone words using lower cell region */
 const lowerWordsigns: ContractionEntry[] = [
-  { label: 'his', pattern: [0, 0, 1, 0, 1, 1], type: 'wordsign-lower' },     // dots 2,3,6
-  { label: 'was', pattern: [0, 0, 0, 1, 1, 1], type: 'wordsign-lower' },     // dots 3,5,6
-  { label: 'were', pattern: [0, 0, 1, 1, 1, 1], type: 'wordsign-lower' },    // dots 2,3,5,6
+  { label: 'his', pattern: [0, 0, 1, 0, 1, 1], type: 'wordsign-lower' }, // dots 2,3,6
+  { label: 'was', pattern: [0, 0, 0, 1, 1, 1], type: 'wordsign-lower' }, // dots 3,5,6
+  { label: 'were', pattern: [0, 0, 1, 1, 1, 1], type: 'wordsign-lower' }, // dots 2,3,5,6
 ];
 
 /** All contracted braille entries */
