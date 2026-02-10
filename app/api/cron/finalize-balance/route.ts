@@ -2,7 +2,6 @@ import { NextRequest, NextResponse } from 'next/server';
 import { stripe } from '@/lib/stripe';
 
 export async function GET(req: NextRequest) {
-  // Only allow Vercel Cron (or manual trigger with the secret)
   if (
     req.headers.get('authorization') !==
     `Bearer ${process.env.CRON_SECRET}`
@@ -11,19 +10,24 @@ export async function GET(req: NextRequest) {
   }
 
   try {
-    const invoices = await stripe.invoices.list({
+    const allInvoices = await stripe.invoices.list({
       status: 'draft',
       limit: 100,
-    });
+    }).autoPagingToArray({ limit: 10000 });
 
-    const balanceInvoices = invoices.data.filter(
+    const today = new Date().toISOString().slice(0, 10);
+
+    const balanceInvoices = allInvoices.filter(
       (inv) =>
         inv.metadata?.type === 'balance' &&
-        inv.metadata?.course === 'braille-summer-2026'
+        inv.metadata?.scheduled_date != null &&
+        inv.metadata.scheduled_date <= today
     );
 
     let finalized = 0;
     let failed = 0;
+    const failedIds: string[] = [];
+
     for (const invoice of balanceInvoices) {
       try {
         await stripe.invoices.finalizeInvoice(invoice.id);
@@ -36,11 +40,25 @@ export async function GET(req: NextRequest) {
           `Failed to finalize invoice ${invoice.id}:`,
           (err as Error).message
         );
+        failedIds.push(invoice.id);
         failed++;
       }
     }
 
-    return NextResponse.json({ ok: true, finalized, failed });
+    if (failedIds.length > 0) {
+      console.error(
+        `ACTION REQUIRED: ${failedIds.length} invoice(s) failed to finalize:`,
+        failedIds.join(', ')
+      );
+    }
+
+    return NextResponse.json({
+      ok: true,
+      found: balanceInvoices.length,
+      finalized,
+      failed,
+      failedIds,
+    });
   } catch (err) {
     console.error('Cron finalize-balance failed:', (err as Error).message);
     return NextResponse.json(
