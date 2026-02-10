@@ -56,7 +56,12 @@ export default function BrailleSentenceDecoder() {
     setUserInput('');
     setSubmitted(false);
     setIsCorrect(false);
-    setTimeout(() => inputRef.current?.focus(), 100);
+    // Focus input only if the game section is visible (prevent page scroll-jump)
+    setTimeout(() => {
+      if (inputRef.current) {
+        inputRef.current.focus({ preventScroll: true });
+      }
+    }, 100);
   }, [params.maxWords]);
 
   const startGame = useCallback(() => {

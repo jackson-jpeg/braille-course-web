@@ -108,7 +108,6 @@ export default function SchoolContactForm() {
             minLength={3}
             maxLength={200}
             disabled={loading}
-            autoFocus
           />
         </div>
 

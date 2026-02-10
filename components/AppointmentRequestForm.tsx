@@ -103,7 +103,6 @@ export default function AppointmentRequestForm() {
             minLength={2}
             maxLength={100}
             disabled={loading}
-            autoFocus
           />
         </div>
 
