@@ -7,6 +7,7 @@
   --gold: #d4a853;
   --gold-light: #f0deb4;
   --gold-soft: #f7edd5;
+  --gold-text: #9b7a2e; /* WCAG AA on cream/white (4.5:1+) */
   --gold-glow: rgba(212, 168, 83, 0.35);
   --navy: #1b2a4a;
   --navy-deep: #141f35;
@@ -273,7 +274,7 @@ body::after {
   font-family: var(--font-body), 'Outfit', sans-serif;
   font-size: 0;
   font-weight: 600;
-  color: var(--gold);
+  color: var(--gold-text);
   margin-top: 4px;
   transition: all 0.35s var(--ease-out);
   opacity: 0;
@@ -497,7 +498,7 @@ body::after {
 .meta-chip svg {
   width: 16px;
   height: 16px;
-  color: var(--gold);
+  color: var(--gold-text);
   flex-shrink: 0;
 }
 
@@ -546,7 +547,7 @@ body::after {
   font-weight: 600;
   letter-spacing: 3px;
   text-transform: uppercase;
-  color: var(--gold);
+  color: var(--gold-text);
   margin-bottom: 20px;
   position: relative;
 }
@@ -644,7 +645,7 @@ body::after {
   content: '\201C';
   font-family: var(--font-heading), 'DM Serif Display', serif;
   font-size: 4rem;
-  color: var(--gold);
+  color: var(--gold-text);
   opacity: 0.25;
   position: absolute;
   top: 8px;
@@ -655,7 +656,7 @@ body::after {
   content: '\201D';
   font-family: var(--font-heading), 'DM Serif Display', serif;
   font-size: 4rem;
-  color: var(--gold);
+  color: var(--gold-text);
   opacity: 0.25;
   position: absolute;
   bottom: 2px;
@@ -664,7 +665,7 @@ body::after {
 }
 .pullquote em {
   font-style: italic;
-  color: var(--gold);
+  color: var(--gold-text);
 }
 
 /* ===== BENEFIT CALLOUT ===== */
@@ -716,7 +717,7 @@ body::after {
 .benefit-icon svg {
   width: 28px;
   height: 28px;
-  color: var(--gold);
+  color: var(--gold-text);
 }
 .benefit-callout h2 {
   font-family: var(--font-heading), 'DM Serif Display', serif;
@@ -908,7 +909,7 @@ body::after {
 .glance-icon svg {
   width: 22px;
   height: 22px;
-  color: var(--gold);
+  color: var(--gold-text);
   transition: color 0.4s ease;
 }
 .glance-card .label {
@@ -1042,7 +1043,7 @@ body::after {
 .mat-tag svg {
   width: 16px;
   height: 16px;
-  color: var(--gold);
+  color: var(--gold-text);
 }
 
 .materials-note {
@@ -1694,7 +1695,7 @@ details.faq-item.reveal:nth-child(6) {
 .balance-banner .balance-amount {
   font-family: var(--font-heading), 'DM Serif Display', serif;
   font-size: 1.1rem;
-  color: var(--gold);
+  color: var(--gold-text);
 }
 
 .course-details {
@@ -1715,7 +1716,7 @@ details.faq-item.reveal:nth-child(6) {
 .detail-row svg {
   width: 16px;
   height: 16px;
-  color: var(--gold);
+  color: var(--gold-text);
   flex-shrink: 0;
 }
 .detail-row strong {
@@ -1731,7 +1732,7 @@ details.faq-item.reveal:nth-child(6) {
   margin-bottom: 28px;
 }
 .contact-note a {
-  color: var(--gold);
+  color: var(--gold-text);
   text-decoration: none;
   border-bottom: 1px solid var(--gold-light);
   transition: all 0.2s ease;
@@ -2008,7 +2009,7 @@ details.faq-item.reveal:nth-child(6) {
   align-items: center;
   justify-content: center;
   background: var(--gold-soft);
-  color: var(--gold);
+  color: var(--gold-text);
 }
 .checkout-card-icon svg {
   width: 28px;
@@ -3054,7 +3055,7 @@ details.faq-item.reveal:nth-child(6) {
   font-size: 1.2rem;
 }
 .site-nav-logo:hover {
-  color: var(--gold);
+  color: var(--gold-text);
 }
 
 /* Braille "T" dot cell — 2×3 grid */
@@ -3453,7 +3454,7 @@ details.faq-item.reveal:nth-child(6) {
 .hub-card-icon svg {
   width: 24px;
   height: 24px;
-  color: var(--gold);
+  color: var(--gold-text);
   transition: color 0.4s ease;
 }
 .hub-card:hover .hub-card-icon svg {
@@ -3483,7 +3484,7 @@ details.faq-item.reveal:nth-child(6) {
   margin-top: 20px;
   font-size: 0.85rem;
   font-weight: 600;
-  color: var(--gold);
+  color: var(--gold-text);
   transition: gap 0.3s ease;
 }
 .hub-card:hover .hub-card-cta {
@@ -3658,7 +3659,7 @@ details.faq-item.reveal:nth-child(6) {
 .appointments-feature-icon svg {
   width: 24px;
   height: 24px;
-  color: var(--gold);
+  color: var(--gold-text);
 }
 .appointments-feature h3 {
   font-family: var(--font-heading), 'DM Serif Display', serif;
@@ -3744,7 +3745,7 @@ details.faq-item.reveal:nth-child(6) {
 .appointments-placeholder-icon svg {
   width: 26px;
   height: 26px;
-  color: var(--gold);
+  color: var(--gold-text);
 }
 .appointments-placeholder p {
   font-size: 1rem;
@@ -3753,7 +3754,7 @@ details.faq-item.reveal:nth-child(6) {
   font-weight: 300;
 }
 .appointments-placeholder a {
-  color: var(--gold);
+  color: var(--gold-text);
   text-decoration: none;
   border-bottom: 1px solid var(--gold-light);
   font-weight: 500;
@@ -3796,7 +3797,7 @@ details.faq-item.reveal:nth-child(6) {
   height: 48px;
   border-radius: 50%;
   background: var(--gold-soft);
-  color: var(--gold);
+  color: var(--gold-text);
   font-family: var(--font-heading), 'DM Serif Display', serif;
   font-size: 1.3rem;
   font-weight: 700;
@@ -3883,7 +3884,7 @@ details.faq-item.reveal:nth-child(6) {
   font-weight: 300;
 }
 .appointments-crosslink a {
-  color: var(--gold);
+  color: var(--gold-text);
   text-decoration: none;
   font-weight: 500;
   border-bottom: 1px solid var(--gold-light);
@@ -3993,7 +3994,7 @@ details.faq-item.reveal:nth-child(6) {
 .appointments-why-icon svg {
   width: 24px;
   height: 24px;
-  color: var(--gold);
+  color: var(--gold-text);
 }
 
 @media (max-width: 768px) {
@@ -4171,7 +4172,7 @@ details.faq-item.reveal:nth-child(6) {
   flex-shrink: 0;
   font-family: var(--font-heading), 'DM Serif Display', serif;
   font-size: 0.95rem;
-  color: var(--gold);
+  color: var(--gold-text);
   background: white;
   border: 1px solid rgba(212, 168, 83, 0.25);
   border-radius: var(--radius-full);
@@ -4249,7 +4250,7 @@ details.faq-item.reveal:nth-child(6) {
 .services-card-icon svg {
   width: 24px;
   height: 24px;
-  color: var(--gold);
+  color: var(--gold-text);
   transition: color 0.4s ease;
 }
 .services-card:hover .services-card-icon svg {
@@ -4270,7 +4271,7 @@ details.faq-item.reveal:nth-child(6) {
   flex: 1;
 }
 .services-card a {
-  color: var(--gold);
+  color: var(--gold-text);
   text-decoration: none;
   font-weight: 500;
   border-bottom: 1px solid var(--gold-light);
@@ -4339,7 +4340,7 @@ details.faq-item.reveal:nth-child(6) {
 .services-ecc-icon svg {
   width: 24px;
   height: 24px;
-  color: var(--gold);
+  color: var(--gold-text);
 }
 .services-ecc-item h3 {
   font-family: var(--font-heading), 'DM Serif Display', serif;
@@ -4386,7 +4387,7 @@ details.faq-item.reveal:nth-child(6) {
   height: 48px;
   border-radius: 50%;
   background: var(--gold-soft);
-  color: var(--gold);
+  color: var(--gold-text);
   font-family: var(--font-heading), 'DM Serif Display', serif;
   font-size: 1.3rem;
   font-weight: 700;
@@ -4490,7 +4491,7 @@ details.faq-item.reveal:nth-child(6) {
   margin-top: 12px;
 }
 .services-crosslink a {
-  color: var(--gold);
+  color: var(--gold-text);
   text-decoration: none;
   font-weight: 500;
   border-bottom: 1px solid var(--gold-light);
@@ -4846,7 +4847,7 @@ details.faq-item.reveal:nth-child(6) {
   font-weight: 700;
   text-transform: uppercase;
   letter-spacing: 0.08em;
-  color: var(--gold);
+  color: var(--gold-text);
   background: rgba(212, 168, 83, 0.12);
   border-radius: var(--radius-full);
 }
@@ -5600,7 +5601,7 @@ details.faq-item.reveal:nth-child(6) {
   font-family: inherit;
   font-size: 0.72rem;
   font-weight: 600;
-  color: var(--gold);
+  color: var(--gold-text);
   line-height: 1;
 }
 .admin-signout-link {
@@ -5632,7 +5633,7 @@ details.faq-item.reveal:nth-child(6) {
 }
 .admin-login-icon {
   font-size: 3.2rem;
-  color: var(--gold);
+  color: var(--gold-text);
   margin-bottom: 8px;
   text-shadow: 0 2px 12px rgba(212, 168, 83, 0.25);
 }
@@ -5640,7 +5641,7 @@ details.faq-item.reveal:nth-child(6) {
   font-size: 0.72rem;
   letter-spacing: 2px;
   text-transform: uppercase;
-  color: var(--gold);
+  color: var(--gold-text);
   font-weight: 600;
   margin-bottom: 20px;
 }
@@ -5751,7 +5752,7 @@ details.faq-item.reveal:nth-child(6) {
 }
 .admin-tab-active .admin-tab-icon {
   opacity: 1;
-  color: var(--gold);
+  color: var(--gold-text);
 }
 .admin-tab-badge {
   position: absolute;
@@ -6026,7 +6027,7 @@ details.faq-item.reveal:nth-child(6) {
 .admin-stripe-link {
   font-size: 0.8rem;
   font-weight: 500;
-  color: var(--gold);
+  color: var(--gold-text);
   text-decoration: none;
   border-bottom: 1px solid var(--gold-light);
   transition: color 0.2s;
@@ -7195,7 +7196,7 @@ details.faq-item.reveal:nth-child(6) {
   color: #e53e3e;
 }
 .admin-toast-info .admin-toast-icon {
-  color: var(--gold);
+  color: var(--gold-text);
 }
 .admin-toast-message {
   flex: 1;
@@ -7325,7 +7326,7 @@ details.faq-item.reveal:nth-child(6) {
   cursor: default;
 }
 .admin-drop-zone-icon {
-  color: var(--gold);
+  color: var(--gold-text);
   margin-bottom: 8px;
   opacity: 0.6;
 }
@@ -7744,7 +7745,7 @@ details.faq-item.reveal:nth-child(6) {
   font-size: 3rem;
   letter-spacing: 4px;
   margin-bottom: 20px;
-  color: var(--gold);
+  color: var(--gold-text);
   line-height: 1;
 }
 
@@ -7870,7 +7871,7 @@ details.faq-item.reveal:nth-child(6) {
 }
 
 .policy-section a {
-  color: var(--gold);
+  color: var(--gold-text);
   text-decoration: none;
   border-bottom: 1px solid var(--gold-light);
   transition: all 0.2s ease;
@@ -7908,7 +7909,7 @@ details.faq-item.reveal:nth-child(6) {
 }
 
 .footer-links a:hover {
-  color: var(--gold);
+  color: var(--gold-text);
 }
 
 /* ===== ENROLLMENT LEGAL ===== */
@@ -8098,7 +8099,7 @@ details.faq-item.reveal:nth-child(6) {
 .intro-stat-number {
   font-family: var(--font-heading), 'DM Serif Display', serif;
   font-size: 3.5rem;
-  color: var(--gold);
+  color: var(--gold-text);
   line-height: 1;
   margin-bottom: 4px;
 }
@@ -8129,7 +8130,7 @@ details.faq-item.reveal:nth-child(6) {
   flex-shrink: 0;
   width: 24px;
   height: 24px;
-  color: var(--gold);
+  color: var(--gold-text);
   margin-top: 2px;
 }
 .intro-history-highlight p {
@@ -8429,7 +8430,7 @@ details.faq-item.reveal:nth-child(6) {
   justify-content: center;
   border-radius: var(--radius-md);
   background: var(--gold-soft);
-  color: var(--gold);
+  color: var(--gold-text);
   margin-bottom: 20px;
   transition:
     background 0.3s ease,
@@ -8465,7 +8466,7 @@ details.faq-item.reveal:nth-child(6) {
   justify-content: center;
   border-radius: 50%;
   background: var(--section-bg);
-  color: var(--gold);
+  color: var(--gold-text);
   transition:
     transform 0.3s var(--ease-out),
     background 0.3s ease;
@@ -9090,7 +9091,7 @@ details.faq-item.reveal:nth-child(6) {
 }
 .admin-review-add-btn:hover {
   border-color: var(--gold);
-  color: var(--gold);
+  color: var(--gold-text);
 }
 .admin-review-toggle-btn {
   background: none;
@@ -9275,7 +9276,7 @@ details.faq-item.reveal:nth-child(6) {
   white-space: nowrap;
 }
 .admin-sortable-th:hover {
-  color: var(--gold);
+  color: var(--gold-text);
 }
 
 /* ── Last Updated indicator ── */
@@ -9990,7 +9991,7 @@ details.faq-item.reveal:nth-child(6) {
 }
 .admin-attention-action {
   font-size: 0.82rem;
-  color: var(--gold);
+  color: var(--gold-text);
   font-weight: 500;
   white-space: nowrap;
   flex-shrink: 0;
@@ -10452,7 +10453,7 @@ details.faq-item.reveal:nth-child(6) {
   color: var(--text-secondary);
 }
 .admin-calendar-cell-today .admin-calendar-day-num {
-  color: var(--gold);
+  color: var(--gold-text);
   font-weight: 700;
 }
 .admin-calendar-dots {
@@ -10478,7 +10479,7 @@ details.faq-item.reveal:nth-child(6) {
   height: 14px;
   border-radius: 3px;
   background: rgba(212, 168, 83, 0.2);
-  color: var(--gold);
+  color: var(--gold-text);
   display: flex;
   align-items: center;
   justify-content: center;
@@ -10772,7 +10773,7 @@ details.faq-item.reveal:nth-child(6) {
   height: 38px;
   border-radius: 11px;
   background: var(--gold-soft);
-  color: var(--gold);
+  color: var(--gold-text);
   display: flex;
   align-items: center;
   justify-content: center;
@@ -11241,7 +11242,7 @@ details.faq-item.reveal:nth-child(6) {
 .admin-quickgen-btn svg {
   width: 16px;
   height: 16px;
-  color: var(--gold);
+  color: var(--gold-text);
 }
 
 /* Template management */
@@ -11447,7 +11448,7 @@ details.faq-item.reveal:nth-child(6) {
   background: rgba(212, 168, 83, 0.1);
   border-radius: var(--radius-sm);
   margin-bottom: var(--space-xs);
-  color: var(--gold);
+  color: var(--gold-text);
 }
 .admin-material-card-name {
   font-size: 0.78rem;
@@ -11499,7 +11500,7 @@ details.faq-item.reveal:nth-child(6) {
   white-space: nowrap;
 }
 .admin-thread-sort-btn:hover {
-  color: var(--gold);
+  color: var(--gold-text);
 }
 .admin-thread-sort-btn:focus-visible {
   outline: 2px solid var(--gold);
@@ -11642,7 +11643,7 @@ details.faq-item.reveal:nth-child(6) {
   height: 56px;
   border-radius: var(--radius-md);
   background: rgba(212, 168, 83, 0.1);
-  color: var(--gold);
+  color: var(--gold-text);
   margin-bottom: var(--space-md);
 }
 .admin-empty-state-calm-title {
@@ -12117,7 +12118,7 @@ details.faq-item.reveal:nth-child(6) {
 }
 
 .appointment-form-required {
-  color: var(--gold);
+  color: var(--gold-text);
 }
 
 .appointment-form-input,
@@ -12340,7 +12341,7 @@ details.faq-item.reveal:nth-child(6) {
 }
 
 .school-contact-form-required {
-  color: var(--gold);
+  color: var(--gold-text);
 }
 
 .school-contact-form-input,
@@ -12592,7 +12593,7 @@ details.faq-item.reveal:nth-child(6) {
 }
 
 .services-fallback-email a {
-  color: var(--gold);
+  color: var(--gold-text);
   text-decoration: none;
   border-bottom: 1px solid var(--gold-light);
   transition: all var(--transition-micro);
@@ -12688,7 +12689,7 @@ details.faq-item.reveal:nth-child(6) {
 .admin-schools-sync:hover {
   background: white;
   border-color: var(--gold);
-  color: var(--gold);
+  color: var(--gold-text);
 }
 
 /* Kanban Board */
@@ -13119,7 +13120,7 @@ details.faq-item.reveal:nth-child(6) {
 }
 
 .admin-school-panel-link {
-  color: var(--gold);
+  color: var(--gold-text);
   text-decoration: none;
   border-bottom: 1px solid var(--gold-light);
   transition: all var(--transition-micro);
@@ -13385,7 +13386,7 @@ details.faq-item.reveal:nth-child(6) {
 .onboarding-privacy-link {
   background: none;
   border: none;
-  color: var(--gold);
+  color: var(--gold-text);
   cursor: pointer;
   text-decoration: underline;
   font-size: inherit;
@@ -13430,7 +13431,7 @@ details.faq-item.reveal:nth-child(6) {
   color: var(--text-secondary);
 }
 .progress-streak-badge {
-  color: var(--gold);
+  color: var(--gold-text);
   font-weight: 600;
 }
 .progress-dashboard-toggle {
@@ -13510,7 +13511,7 @@ details.faq-item.reveal:nth-child(6) {
 .daily-challenge-count {
   font-size: 0.8rem;
   font-weight: 600;
-  color: var(--gold);
+  color: var(--gold-text);
 }
 .daily-challenge-list {
   display: flex;
@@ -13562,7 +13563,7 @@ details.faq-item.reveal:nth-child(6) {
 .daily-challenge-xp {
   font-size: 0.75rem;
   font-weight: 700;
-  color: var(--gold);
+  color: var(--gold-text);
   flex-shrink: 0;
 }
 
@@ -13627,7 +13628,7 @@ details.faq-item.reveal:nth-child(6) {
   background: rgba(212, 168, 83, 0.12);
   font-size: 0.82rem;
   font-weight: 700;
-  color: var(--gold);
+  color: var(--gold-text);
 }
 .streak-badge-fire {
   font-size: 0.9rem;
@@ -13642,7 +13643,7 @@ details.faq-item.reveal:nth-child(6) {
   border-radius: var(--radius-full);
   border: 1px solid rgba(212, 168, 83, 0.3);
   background: rgba(212, 168, 83, 0.06);
-  color: var(--gold);
+  color: var(--gold-text);
   font-weight: 600;
   font-size: 0.82rem;
   cursor: pointer;
@@ -13763,7 +13764,7 @@ details.faq-item.reveal:nth-child(6) {
   text-decoration: none;
 }
 .quickstart-fab-go:hover {
-  color: var(--gold);
+  color: var(--gold-text);
 }
 
 /* ---------- Success Celebration ---------- */
@@ -13952,7 +13953,7 @@ details.faq-item.reveal:nth-child(6) {
   color: var(--game-wrong);
 }
 .csprint-score {
-  color: var(--gold);
+  color: var(--gold-text);
   margin-left: auto;
   font-variant-numeric: tabular-nums;
 }
@@ -14141,7 +14142,7 @@ details.faq-item.reveal:nth-child(6) {
 .csprint-result-score {
   font-family: var(--font-heading), 'DM Serif Display', serif;
   font-size: 3.5rem;
-  color: var(--gold);
+  color: var(--gold-text);
   line-height: 1;
   margin-bottom: 8px;
 }
@@ -14340,7 +14341,7 @@ details.faq-item.reveal:nth-child(6) {
 .numsense-result-score {
   font-family: var(--font-heading), 'DM Serif Display', serif;
   font-size: 2.5rem;
-  color: var(--gold);
+  color: var(--gold-text);
   margin-bottom: 8px;
 }
 .numsense-result-label {
@@ -14444,7 +14445,7 @@ details.faq-item.reveal:nth-child(6) {
 .reflex-flash-label {
   font-family: var(--font-heading), 'DM Serif Display', serif;
   font-size: 1.2rem;
-  color: var(--gold);
+  color: var(--gold-text);
   margin-bottom: 16px;
   animation: reflex-pulse 0.8s ease infinite;
 }
@@ -14599,7 +14600,7 @@ details.faq-item.reveal:nth-child(6) {
 .reflex-result-score {
   font-family: var(--font-heading), 'DM Serif Display', serif;
   font-size: 2.5rem;
-  color: var(--gold);
+  color: var(--gold-text);
   margin-bottom: 8px;
 }
 .reflex-result-label {
@@ -14771,7 +14772,7 @@ details.faq-item.reveal:nth-child(6) {
 .seq-result-score {
   font-family: var(--font-heading), 'DM Serif Display', serif;
   font-size: 2.5rem;
-  color: var(--gold);
+  color: var(--gold-text);
   margin-bottom: 8px;
 }
 .seq-result-label {
@@ -14883,7 +14884,7 @@ details.faq-item.reveal:nth-child(6) {
 }
 .decoder-contraction-marker {
   font-size: 0.5rem;
-  color: var(--gold);
+  color: var(--gold-text);
   line-height: 1;
 }
 .decoder-space {
@@ -14963,7 +14964,7 @@ details.faq-item.reveal:nth-child(6) {
 .decoder-result-score {
   font-family: var(--font-heading), 'DM Serif Display', serif;
   font-size: 2.5rem;
-  color: var(--gold);
+  color: var(--gold-text);
   margin-bottom: 8px;
 }
 .decoder-result-label {
