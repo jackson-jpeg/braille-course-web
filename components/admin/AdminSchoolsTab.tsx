@@ -2,6 +2,7 @@
 
 import { useState, useMemo } from 'react';
 import AdminSchoolPanel from './AdminSchoolPanel';
+import AdminAddSchoolModal from './AdminAddSchoolModal';
 import type { SchoolInquiry, SchoolInquiryStatus } from './admin-types';
 import { relativeTime } from './admin-utils';
 
@@ -39,6 +40,7 @@ export default function AdminSchoolsTab({ schoolInquiries, onSync, onNavigate: _
   const [contractSearch, setContractSearch] = useState('');
   const [sortColumn, setSortColumn] = useState<string>('updatedAt');
   const [sortDir, setSortDir] = useState<'asc' | 'desc'>('desc');
+  const [showAddModal, setShowAddModal] = useState(false);
 
   // Filter inquiries by search query
   const filteredInquiries = useMemo(() => {
@@ -292,6 +294,9 @@ export default function AdminSchoolsTab({ schoolInquiries, onSync, onNavigate: _
           <p className="admin-section-subtext">Manage school and district partnerships</p>
         </div>
         <div className="admin-schools-actions">
+          <button className="admin-add-school-btn" onClick={() => setShowAddModal(true)}>
+            + Add School
+          </button>
           <button className="admin-schools-sync" onClick={onSync} title="Refresh">
             <svg width="16" height="16" viewBox="0 0 24 24" fill="none">
               <path
@@ -615,6 +620,14 @@ export default function AdminSchoolsTab({ schoolInquiries, onSync, onNavigate: _
           onClose={() => setSelectedSchool(null)}
           onUpdate={handleUpdateInquiry}
           onDelete={handleDeleteInquiry}
+        />
+      )}
+
+      {/* Add School Modal */}
+      {showAddModal && (
+        <AdminAddSchoolModal
+          onClose={() => setShowAddModal(false)}
+          onAdded={(inquiry) => setInquiries((prev) => [inquiry, ...prev])}
         />
       )}
     </>

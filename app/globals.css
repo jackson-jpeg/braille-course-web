@@ -12868,6 +12868,136 @@ details.faq-item.reveal:nth-child(6) {
   color: var(--gold-text);
 }
 
+/* Add School Button */
+.admin-add-school-btn {
+  padding: 8px 16px;
+  background: var(--gold);
+  color: white;
+  border: none;
+  border-radius: var(--radius-sm);
+  font-size: 0.85rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all var(--transition-micro);
+}
+.admin-add-school-btn:hover {
+  background: var(--gold-text);
+}
+
+/* Add School Modal */
+.admin-add-school-modal {
+  max-width: 640px;
+  overflow-y: auto;
+  padding: 28px 32px 24px;
+}
+.admin-modal-title {
+  font-size: 1.15rem;
+  font-weight: 700;
+  color: var(--navy);
+  margin: 0 0 16px;
+}
+.admin-add-school-error {
+  background: #fef2f2;
+  color: #991b1b;
+  border: 1px solid #fecaca;
+  border-radius: var(--radius-sm);
+  padding: 10px 14px;
+  font-size: 0.85rem;
+  margin-bottom: 16px;
+}
+.admin-add-school-form {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+.admin-add-school-section-title {
+  font-size: 0.8rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: var(--text-secondary);
+  margin: 0 0 10px;
+}
+.admin-add-school-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 12px;
+}
+.admin-add-school-field {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+.admin-add-school-field label {
+  font-size: 0.8rem;
+  font-weight: 600;
+  color: var(--slate);
+}
+.admin-add-school-field input,
+.admin-add-school-field select,
+.admin-add-school-field textarea {
+  padding: 8px 10px;
+  border: 1.5px solid rgba(212, 168, 83, 0.25);
+  border-radius: var(--radius-sm);
+  font-size: 0.85rem;
+  color: var(--navy);
+  background: white;
+  font-family: inherit;
+  transition: border-color var(--transition-micro);
+}
+.admin-add-school-field input:focus,
+.admin-add-school-field select:focus,
+.admin-add-school-field textarea:focus {
+  outline: none;
+  border-color: var(--gold);
+}
+.admin-add-school-field textarea {
+  resize: vertical;
+}
+.admin-add-school-field-full {
+  grid-column: 1 / -1;
+}
+.admin-add-school-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 10px;
+  padding-top: 8px;
+  border-top: 1px solid rgba(212, 168, 83, 0.12);
+}
+.admin-add-school-cancel {
+  padding: 8px 18px;
+  background: var(--cream);
+  border: 1.5px solid rgba(212, 168, 83, 0.25);
+  border-radius: var(--radius-sm);
+  color: var(--slate);
+  font-size: 0.85rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all var(--transition-micro);
+}
+.admin-add-school-cancel:hover {
+  border-color: var(--gold-soft);
+  background: white;
+}
+.admin-add-school-submit {
+  padding: 8px 22px;
+  background: var(--gold);
+  color: white;
+  border: none;
+  border-radius: var(--radius-sm);
+  font-size: 0.85rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all var(--transition-micro);
+}
+.admin-add-school-submit:hover {
+  background: var(--gold-text);
+}
+.admin-add-school-submit:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
 .admin-pipeline-search {
   margin-bottom: var(--space-lg);
 }
