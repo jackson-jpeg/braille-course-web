@@ -22,17 +22,22 @@ export default function AdminConfirmDialog({
   loading,
 }: Props) {
   useEffect(() => {
+    const prevOverflow = document.body.style.overflow;
+    document.body.style.overflow = 'hidden';
     function handleKey(e: KeyboardEvent) {
       if (e.key === 'Escape') onCancel();
     }
     document.addEventListener('keydown', handleKey);
-    return () => document.removeEventListener('keydown', handleKey);
+    return () => {
+      document.body.style.overflow = prevOverflow;
+      document.removeEventListener('keydown', handleKey);
+    };
   }, [onCancel]);
 
   return (
-    <div className="admin-modal-overlay" onClick={onCancel}>
+    <div className="admin-modal-overlay" onClick={onCancel} role="alertdialog" aria-modal="true" aria-label={title}>
       <div className="admin-confirm-dialog" onClick={(e) => e.stopPropagation()}>
-        <button className="admin-modal-close" onClick={onCancel}>
+        <button className="admin-modal-close" onClick={onCancel} aria-label="Close">
           &times;
         </button>
         <h3 className="admin-confirm-title">{title}</h3>

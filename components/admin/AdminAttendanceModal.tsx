@@ -34,11 +34,16 @@ export default function AdminAttendanceModal({ sessionId, sectionEnrollments, on
   const [sessionTitle, setSessionTitle] = useState('');
 
   useEffect(() => {
+    const prevOverflow = document.body.style.overflow;
+    document.body.style.overflow = 'hidden';
     function handleKey(e: KeyboardEvent) {
       if (e.key === 'Escape') onClose();
     }
     document.addEventListener('keydown', handleKey);
-    return () => document.removeEventListener('keydown', handleKey);
+    return () => {
+      document.body.style.overflow = prevOverflow;
+      document.removeEventListener('keydown', handleKey);
+    };
   }, [onClose]);
 
   useEffect(() => {
@@ -109,7 +114,7 @@ export default function AdminAttendanceModal({ sessionId, sectionEnrollments, on
   }
 
   return (
-    <div className="admin-modal-overlay" onClick={onClose}>
+    <div className="admin-modal-overlay" onClick={onClose} role="dialog" aria-modal="true" aria-label="Take attendance">
       <div className="admin-student-modal admin-attendance-modal" onClick={(e) => e.stopPropagation()}>
         <button className="admin-modal-close" onClick={onClose}>
           &times;

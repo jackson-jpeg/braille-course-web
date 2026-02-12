@@ -730,7 +730,7 @@ export default function AdminSettingsTab() {
                 Discard
               </button>
               <button className="admin-send-btn" onClick={handleSave} disabled={saving || hasErrors}>
-                {saving ? 'Saving\u2026' : 'Save Changes'}
+                {saving ? <><span className="admin-btn-spinner" />Saving&hellip;</> : 'Save Changes'}
               </button>
             </div>
           )}

@@ -26,12 +26,18 @@ export default function AdminStudentModal({ enrollment, scheduleMap, onClose, on
   const [studentAssignments, setStudentAssignments] = useState<Assignment[]>([]);
   const [studentGrades, setStudentGrades] = useState<Grade[]>([]);
 
+  // Body scroll lock + Escape key
   useEffect(() => {
+    const prevOverflow = document.body.style.overflow;
+    document.body.style.overflow = 'hidden';
     function handleKey(e: KeyboardEvent) {
       if (e.key === 'Escape') onClose();
     }
     document.addEventListener('keydown', handleKey);
-    return () => document.removeEventListener('keydown', handleKey);
+    return () => {
+      document.body.style.overflow = prevOverflow;
+      document.removeEventListener('keydown', handleKey);
+    };
   }, [onClose]);
 
   useEffect(() => {
@@ -150,9 +156,9 @@ export default function AdminStudentModal({ enrollment, scheduleMap, onClose, on
   }
 
   return (
-    <div className="admin-modal-overlay" onClick={onClose}>
+    <div className="admin-modal-overlay" onClick={onClose} role="dialog" aria-modal="true" aria-label="Student details">
       <div className="admin-student-modal" onClick={(e) => e.stopPropagation()}>
-        <button className="admin-modal-close" onClick={onClose}>
+        <button className="admin-modal-close" onClick={onClose} aria-label="Close">
           &times;
         </button>
 
@@ -203,7 +209,7 @@ export default function AdminStudentModal({ enrollment, scheduleMap, onClose, on
                   </div>
                   <div className="admin-student-detail-row">
                     <span>Enrolled</span>
-                    <span>{relativeTime(enrollment.createdAt)}</span>
+                    <span title={fullDate(enrollment.createdAt)}>{relativeTime(enrollment.createdAt)}</span>
                   </div>
                 </div>
 
@@ -315,7 +321,7 @@ export default function AdminStudentModal({ enrollment, scheduleMap, onClose, on
                         <div key={em.id} className="admin-student-email-row">
                           <span className="admin-student-email-subject">{em.subject || '(no subject)'}</span>
                           <span className="admin-student-email-meta">
-                            {relativeTime(em.created_at)}
+                            <span title={fullDate(em.created_at)}>{relativeTime(em.created_at)}</span>
                             {em.last_event && (
                               <span className={`admin-email-status admin-email-status-${em.last_event.toLowerCase()}`}>
                                 {em.last_event}

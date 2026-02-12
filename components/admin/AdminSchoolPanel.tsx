@@ -1,8 +1,9 @@
 'use client';
 
 import { useState, useEffect, useCallback } from 'react';
+import AdminConfirmDialog from './AdminConfirmDialog';
 import type { SchoolInquiry, SchoolInquiryStatus, SchoolActivity } from './admin-types';
-import { relativeTime } from './admin-utils';
+import { relativeTime, fullDate } from './admin-utils';
 
 interface Props {
   inquiry: SchoolInquiry;
@@ -60,16 +61,23 @@ export default function AdminSchoolPanel({ inquiry, onClose, onUpdate, onDelete 
   const [newActivityDate, setNewActivityDate] = useState(new Date().toISOString().substring(0, 10));
   const [newActivityContent, setNewActivityContent] = useState('');
   const [savingActivity, setSavingActivity] = useState(false);
+  const [deletingActivityId, setDeletingActivityId] = useState<string | null>(null);
+  const [deleteActivityLoading, setDeleteActivityLoading] = useState(false);
 
   const showContractSection = inquiry.status === 'CONTRACTED' || inquiry.status === 'CLOSED_WON';
 
-  // Close on Escape key
+  // Body scroll lock + Escape key
   useEffect(() => {
+    const prevOverflow = document.body.style.overflow;
+    document.body.style.overflow = 'hidden';
     const handleKeyDown = (e: KeyboardEvent) => {
       if (e.key === 'Escape') onClose();
     };
     document.addEventListener('keydown', handleKeyDown);
-    return () => document.removeEventListener('keydown', handleKeyDown);
+    return () => {
+      document.body.style.overflow = prevOverflow;
+      document.removeEventListener('keydown', handleKeyDown);
+    };
   }, [onClose]);
 
   // Fetch activities
@@ -157,18 +165,26 @@ export default function AdminSchoolPanel({ inquiry, onClose, onUpdate, onDelete 
     setSavingActivity(false);
   };
 
-  const handleDeleteActivity = async (activityId: string) => {
-    if (!confirm('Delete this activity?')) return;
+  const handleDeleteActivity = (activityId: string) => {
+    setDeletingActivityId(activityId);
+  };
+
+  const confirmDeleteActivity = async () => {
+    if (!deletingActivityId) return;
+    setDeleteActivityLoading(true);
     try {
       const res = await fetch(
-        `/api/admin/school-activities?id=${activityId}&key=${encodeURIComponent(localStorage.getItem('adminKey') || '')}`,
+        `/api/admin/school-activities?id=${deletingActivityId}&key=${encodeURIComponent(localStorage.getItem('adminKey') || '')}`,
         { method: 'DELETE' },
       );
       if (res.ok) {
-        setActivities((prev) => prev.filter((a) => a.id !== activityId));
+        setActivities((prev) => prev.filter((a) => a.id !== deletingActivityId));
       }
     } catch (err) {
       console.error('Failed to delete activity:', err);
+    } finally {
+      setDeleteActivityLoading(false);
+      setDeletingActivityId(null);
     }
   };
 
@@ -183,7 +199,7 @@ export default function AdminSchoolPanel({ inquiry, onClose, onUpdate, onDelete 
   return (
     <>
       <div className="admin-school-panel-overlay" onClick={onClose} />
-      <div className="admin-school-panel">
+      <div className="admin-school-panel" role="dialog" aria-modal="true" aria-label={`${inquiry.schoolName} details`}>
         {/* Header */}
         <div className="admin-school-panel-header">
           <div>
@@ -232,9 +248,9 @@ export default function AdminSchoolPanel({ inquiry, onClose, onUpdate, onDelete 
               ))}
             </select>
             <div className="admin-school-panel-meta">
-              <span>Created {relativeTime(inquiry.createdAt)}</span>
+              <span title={fullDate(inquiry.createdAt)}>Created {relativeTime(inquiry.createdAt)}</span>
               {inquiry.updatedAt !== inquiry.createdAt && (
-                <span> &middot; Updated {relativeTime(inquiry.updatedAt)}</span>
+                <span title={fullDate(inquiry.updatedAt)}> &middot; Updated {relativeTime(inquiry.updatedAt)}</span>
               )}
             </div>
           </div>
@@ -394,7 +410,7 @@ export default function AdminSchoolPanel({ inquiry, onClose, onUpdate, onDelete 
                   onClick={handleAddActivity}
                   disabled={savingActivity || !newActivityContent.trim()}
                 >
-                  {savingActivity ? 'Saving...' : 'Add Activity'}
+                  {savingActivity ? <><span className="admin-btn-spinner" />Saving&hellip;</> : 'Add Activity'}
                 </button>
               </div>
 
@@ -473,6 +489,19 @@ export default function AdminSchoolPanel({ inquiry, onClose, onUpdate, onDelete 
           </div>
         </div>
       </div>
+
+      {/* Delete Activity Confirmation */}
+      {deletingActivityId && (
+        <AdminConfirmDialog
+          title="Delete Activity"
+          message="Delete this activity entry? This cannot be undone."
+          confirmLabel="Delete"
+          confirmVariant="danger"
+          loading={deleteActivityLoading}
+          onConfirm={confirmDeleteActivity}
+          onCancel={() => setDeletingActivityId(null)}
+        />
+      )}
     </>
   );
 }

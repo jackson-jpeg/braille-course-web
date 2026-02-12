@@ -19,11 +19,16 @@ const TERMS_OPTIONS = [
 
 export default function AdminInvoiceDialog({ enrollments, onClose, onSuccess }: Props) {
   useEffect(() => {
+    const prevOverflow = document.body.style.overflow;
+    document.body.style.overflow = 'hidden';
     function handleKey(e: KeyboardEvent) {
       if (e.key === 'Escape') onClose();
     }
     document.addEventListener('keydown', handleKey);
-    return () => document.removeEventListener('keydown', handleKey);
+    return () => {
+      document.body.style.overflow = prevOverflow;
+      document.removeEventListener('keydown', handleKey);
+    };
   }, [onClose]);
 
   const [email, setEmail] = useState('');
@@ -102,7 +107,7 @@ export default function AdminInvoiceDialog({ enrollments, onClose, onSuccess }: 
   }
 
   return (
-    <div className="admin-modal-overlay" onClick={onClose}>
+    <div className="admin-modal-overlay" onClick={onClose} role="dialog" aria-modal="true" aria-label="Send invoice">
       <div className="admin-invoice-dialog" onClick={(e) => e.stopPropagation()}>
         <button className="admin-modal-close" onClick={onClose}>
           &times;

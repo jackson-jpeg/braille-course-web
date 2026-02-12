@@ -626,7 +626,7 @@ export default function AdminPaymentsTab({ enrollments }: Props) {
               Export CSV
             </button>
             <button className="admin-refresh-btn" onClick={fetchPayments} disabled={loading}>
-              {loading ? 'Refreshing\u2026' : 'Refresh'}
+              {loading ? <><span className="admin-btn-spinner admin-btn-spinner-dark" />Refreshing&hellip;</> : 'Refresh'}
             </button>
             {lastFetched && <span className="admin-last-updated">{lastUpdatedText(lastFetched)}</span>}
           </div>

@@ -40,11 +40,16 @@ export default function AdminAddSchoolModal({ onClose, onAdded }: Props) {
   const [deliveryPreference, setDeliveryPreference] = useState('');
 
   useEffect(() => {
+    const prevOverflow = document.body.style.overflow;
+    document.body.style.overflow = 'hidden';
     function handleKey(e: KeyboardEvent) {
       if (e.key === 'Escape') onClose();
     }
     document.addEventListener('keydown', handleKey);
-    return () => document.removeEventListener('keydown', handleKey);
+    return () => {
+      document.body.style.overflow = prevOverflow;
+      document.removeEventListener('keydown', handleKey);
+    };
   }, [onClose]);
 
   async function handleSubmit(e: React.FormEvent) {
@@ -102,7 +107,7 @@ export default function AdminAddSchoolModal({ onClose, onAdded }: Props) {
   }
 
   return (
-    <div className="admin-modal-overlay" onClick={onClose}>
+    <div className="admin-modal-overlay" onClick={onClose} role="dialog" aria-modal="true" aria-label="Add school">
       <div className="admin-modal admin-add-school-modal" onClick={(e) => e.stopPropagation()}>
         <button className="admin-modal-close" onClick={onClose}>
           &times;

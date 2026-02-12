@@ -5765,10 +5765,15 @@ details.faq-item.reveal:nth-child(6) {
 .admin-tab-badge-red {
   background: #e53e3e;
   box-shadow: 0 0 0 2px var(--cream);
+  animation: adminBadgePulse 2s ease-in-out infinite;
 }
 .admin-tab-badge-gold {
   background: #d69e2e;
   box-shadow: 0 0 0 2px var(--cream);
+}
+@keyframes adminBadgePulse {
+  0%, 100% { opacity: 1; transform: scale(1); }
+  50% { opacity: 0.7; transform: scale(1.15); }
 }
 
 /* ── Tab content fade ── */
@@ -6085,10 +6090,18 @@ details.faq-item.reveal:nth-child(6) {
   font-size: 0.88rem;
   font-weight: 600;
   cursor: pointer;
-  transition: background 0.2s;
+  transition: background 0.2s, transform 0.15s, opacity 0.2s;
 }
-.admin-compose-btn:hover {
+.admin-compose-btn:hover:not(:disabled) {
   background: #c49940;
+  transform: translateY(-1px);
+}
+.admin-compose-btn:active:not(:disabled) {
+  transform: translateY(0) scale(0.97);
+}
+.admin-compose-btn:disabled {
+  opacity: 0.5;
+  cursor: default;
 }
 .admin-refresh-btn {
   padding: 10px 20px;
@@ -6100,10 +6113,11 @@ details.faq-item.reveal:nth-child(6) {
   font-size: 0.85rem;
   font-weight: 500;
   cursor: pointer;
-  transition: border-color 0.2s;
+  transition: border-color 0.2s, transform 0.15s, background 0.2s;
 }
-.admin-refresh-btn:hover {
+.admin-refresh-btn:hover:not(:disabled) {
   border-color: var(--gold);
+  background: rgba(212, 168, 83, 0.04);
 }
 .admin-refresh-btn:disabled {
   opacity: 0.5;
@@ -6225,10 +6239,14 @@ details.faq-item.reveal:nth-child(6) {
   font-size: 0.88rem;
   font-weight: 600;
   cursor: pointer;
-  transition: background 0.2s;
+  transition: background 0.2s, transform 0.15s, opacity 0.2s;
 }
-.admin-send-btn:hover {
+.admin-send-btn:hover:not(:disabled) {
   background: #c49940;
+  transform: translateY(-1px);
+}
+.admin-send-btn:active:not(:disabled) {
+  transform: translateY(0) scale(0.97);
 }
 .admin-send-btn:disabled {
   opacity: 0.5;
@@ -8961,6 +8979,21 @@ details.faq-item.reveal:nth-child(6) {
   to {
     transform: rotate(360deg);
   }
+}
+.admin-btn-spinner {
+  display: inline-block;
+  width: 14px;
+  height: 14px;
+  border: 2px solid rgba(255,255,255,0.3);
+  border-top-color: white;
+  border-radius: 50%;
+  animation: admin-spin 0.6s linear infinite;
+  vertical-align: middle;
+  margin-right: 6px;
+}
+.admin-btn-spinner-dark {
+  border-color: rgba(27,42,74,0.2);
+  border-top-color: var(--navy);
 }
 .admin-create-result {
   text-align: center;

@@ -671,7 +671,7 @@ export default function AdminEmailsTab({
               {showTemplatePreview ? 'Hide Templates' : 'Preview Templates'}
             </button>
             <button onClick={fetchEmails} className="admin-refresh-btn" disabled={emailsLoading}>
-              {emailsLoading ? 'Loading\u2026' : 'Refresh'}
+              {emailsLoading ? <><span className="admin-btn-spinner admin-btn-spinner-dark" />Loading&hellip;</> : 'Refresh'}
             </button>
             {lastFetched && <span className="admin-last-updated">{lastUpdatedText(lastFetched)}</span>}
           </div>
@@ -802,7 +802,7 @@ export default function AdminEmailsTab({
                             onClick={handleDraftWithAI}
                             disabled={draftLoading || !draftBrief.trim()}
                           >
-                            {draftLoading ? 'Drafting\u2026' : 'Generate'}
+                            {draftLoading ? <><span className="admin-btn-spinner" />Drafting&hellip;</> : 'Generate'}
                           </button>
                         </div>
                       </div>
@@ -1002,8 +1002,8 @@ export default function AdminEmailsTab({
                       >
                         {composeSending
                           ? sendMode === 'schedule'
-                            ? 'Scheduling\u2026'
-                            : 'Sending\u2026'
+                            ? <><span className="admin-btn-spinner" />Scheduling&hellip;</>
+                            : <><span className="admin-btn-spinner" />Sending&hellip;</>
                           : sendMode === 'schedule'
                             ? 'Schedule Email'
                             : attachments.length > 0
@@ -1202,7 +1202,7 @@ export default function AdminEmailsTab({
         <div className="admin-email-tab-content" key="received">
           <div className="admin-email-actions">
             <button onClick={fetchReceivedEmails} className="admin-refresh-btn" disabled={receivedLoading}>
-              {receivedLoading ? 'Loading\u2026' : 'Refresh'}
+              {receivedLoading ? <><span className="admin-btn-spinner admin-btn-spinner-dark" />Loading&hellip;</> : 'Refresh'}
             </button>
             {receivedLastFetched && <span className="admin-last-updated">{lastUpdatedText(receivedLastFetched)}</span>}
           </div>
