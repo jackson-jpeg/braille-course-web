@@ -78,6 +78,7 @@ export default function AdminStudentsTab({
   const [deleteLoading, setDeleteLoading] = useState(false);
   const [expandedNoteId, setExpandedNoteId] = useState<string | null>(null);
   const hasSynced = useRef(false);
+  const [syncing, setSyncing] = useState(false);
 
   // Fetch leads from API
   const fetchLeads = useCallback(async () => {
@@ -90,20 +91,26 @@ export default function AdminStudentsTab({
     }
   }, []);
 
+  // Sync leads from inbox
+  const syncLeads = useCallback(async () => {
+    setSyncing(true);
+    try {
+      await fetch('/api/admin/leads/sync', { method: 'POST' });
+      await fetchLeads();
+    } catch (err) {
+      console.error('Failed to sync leads:', err);
+    } finally {
+      setSyncing(false);
+    }
+  }, [fetchLeads]);
+
   // Auto-sync on first Prospective open
   useEffect(() => {
     if (subTab === 'prospective' && !hasSynced.current) {
       hasSynced.current = true;
-      (async () => {
-        try {
-          await fetch('/api/admin/leads/sync', { method: 'POST' });
-          await fetchLeads();
-        } catch (err) {
-          console.error('Failed to sync leads:', err);
-        }
-      })();
+      syncLeads();
     }
-  }, [subTab, fetchLeads]);
+  }, [subTab, syncLeads]);
 
   // ── Enrolled filters + sort ──
   const filtered = useMemo(() => {
@@ -453,6 +460,13 @@ export default function AdminStudentsTab({
               <option value="Appointment Request">Appointments</option>
               <option value="Waitlist Request">Waitlist</option>
             </select>
+            <button
+              onClick={syncLeads}
+              className="admin-refresh-btn"
+              disabled={syncing}
+            >
+              {syncing ? <><span className="admin-btn-spinner admin-btn-spinner-dark" />Syncing&hellip;</> : 'Sync Inbox'}
+            </button>
             <button
               onClick={() => {
                 setShowAddLead(!showAddLead);

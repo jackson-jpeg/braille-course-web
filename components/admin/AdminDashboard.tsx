@@ -12,6 +12,7 @@ import AdminSchoolsTab from './AdminSchoolsTab';
 import AdminCreateTab from './AdminCreateTab';
 import AdminMaterialsTab from './AdminMaterialsTab';
 import AdminSettingsTab from './AdminSettingsTab';
+import AdminConfirmDialog from './AdminConfirmDialog';
 import type { AdminProps } from './admin-types';
 
 type Tab = 'overview' | 'students' | 'payments' | 'emails' | 'schools' | 'create' | 'materials' | 'settings';
@@ -167,6 +168,7 @@ export default function AdminDashboard({ sections, enrollments, leads, schoolInq
   );
   const [pendingInvoiceCount, setPendingInvoiceCount] = useState(0);
   const [hasUnsavedCompose, setHasUnsavedCompose] = useState(false);
+  const [pendingTabSwitch, setPendingTabSwitch] = useState<Tab | null>(null);
 
   // Fetch pending invoice count for badge
   useEffect(() => {
@@ -496,7 +498,8 @@ export default function AdminDashboard({ sections, enrollments, leads, schoolInq
                 className={`admin-tab ${tab === t ? 'admin-tab-active' : ''}`}
                 onClick={() => {
                   if (tab === 'emails' && t !== 'emails' && hasUnsavedCompose) {
-                    if (!window.confirm('You have an unsaved email draft. Leave anyway?')) return;
+                    setPendingTabSwitch(t);
+                    return;
                   }
                   setTab(t);
                   if (t !== 'emails') {
@@ -573,6 +576,28 @@ export default function AdminDashboard({ sections, enrollments, leads, schoolInq
           {tab === 'settings' && <AdminSettingsTab />}
         </div>
       </div>
+
+      {pendingTabSwitch && (
+        <AdminConfirmDialog
+          title="Unsaved Draft"
+          message="You have an unsaved email draft. Leave anyway?"
+          confirmLabel="Leave"
+          confirmVariant="danger"
+          loading={false}
+          onConfirm={() => {
+            const t = pendingTabSwitch;
+            setPendingTabSwitch(null);
+            setHasUnsavedCompose(false);
+            setTab(t);
+            if (t !== 'emails') {
+              setEmailComposeTo('');
+              setEmailInitialTemplate('');
+              setPendingAttachmentIds([]);
+            }
+          }}
+          onCancel={() => setPendingTabSwitch(null)}
+        />
+      )}
     </ToastProvider>
   );
 }

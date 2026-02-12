@@ -129,6 +129,7 @@ export default function AdminInvoiceDialog({ enrollments, onClose, onSuccess }: 
               onFocus={() => setShowAutocomplete(true)}
               placeholder="client@example.com"
               className="admin-compose-input"
+              autoFocus
             />
             {showAutocomplete && filtered.length > 0 && (
               <ul className="admin-invoice-autocomplete-list">

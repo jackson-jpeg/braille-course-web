@@ -43,7 +43,7 @@ export default function AdminConfirmDialog({
         <h3 className="admin-confirm-title">{title}</h3>
         <p className="admin-confirm-message">{message}</p>
         <div className="admin-confirm-actions">
-          <button className="admin-refresh-btn" onClick={onCancel} disabled={loading}>
+          <button className="admin-refresh-btn" onClick={onCancel} disabled={loading} autoFocus>
             Cancel
           </button>
           <button

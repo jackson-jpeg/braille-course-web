@@ -130,6 +130,7 @@ export default function AdminAddSchoolModal({ onClose, onAdded }: Props) {
                   onChange={(e) => setSchoolName(e.target.value)}
                   placeholder="e.g., Lincoln Elementary"
                   required
+                  autoFocus
                 />
               </div>
               <div className="admin-add-school-field">
