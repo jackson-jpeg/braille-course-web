@@ -210,6 +210,19 @@ export default function AdminDashboard({ sections, enrollments, leads, schoolInq
     if (showPalette) paletteInputRef.current?.focus();
   }, [showPalette]);
 
+  const handleNavigate = useCallback(
+    (target: string) => {
+      if (target === 'emails-compose') {
+        const allEmails = enrollments.map((e) => e.email).filter((e): e is string => !!e);
+        setEmailComposeTo([...new Set(allEmails)].join(', '));
+        setTab('emails');
+      } else {
+        setTab(target as Tab);
+      }
+    },
+    [enrollments],
+  );
+
   interface PaletteResult {
     id: string;
     label: string;
@@ -376,7 +389,7 @@ export default function AdminDashboard({ sections, enrollments, leads, schoolInq
     results.push(...matchedStudents, ...matchedLeads, ...matchedActions);
 
     return results.slice(0, 8);
-  }, [paletteQuery, enrollments, leads, scheduleMap]);
+  }, [paletteQuery, enrollments, leads, scheduleMap, handleNavigate]);
 
   useEffect(() => {
     setPaletteIndex(0);
@@ -394,16 +407,6 @@ export default function AdminDashboard({ sections, enrollments, leads, schoolInq
       paletteResults[paletteIndex].action();
     } else if (e.key === 'Escape') {
       setShowPalette(false);
-    }
-  }
-
-  function handleNavigate(target: string) {
-    if (target === 'emails-compose') {
-      const allEmails = enrollments.map((e) => e.email).filter((e): e is string => !!e);
-      setEmailComposeTo([...new Set(allEmails)].join(', '));
-      setTab('emails');
-    } else {
-      setTab(target as Tab);
     }
   }
 

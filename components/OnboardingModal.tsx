@@ -34,8 +34,13 @@ export default function OnboardingModal() {
   }, []);
 
   useEffect(() => {
-    const progress = loadProgress();
-    if (!progress.settings.hasSeenOnboarding) {
+    try {
+      const progress = loadProgress();
+      if (!progress.settings.hasSeenOnboarding) {
+        setVisible(true);
+      }
+    } catch {
+      // localStorage may be unavailable (private browsing, quota exceeded)
       setVisible(true);
     }
   }, []);

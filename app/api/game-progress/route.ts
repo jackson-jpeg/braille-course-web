@@ -29,10 +29,14 @@ export async function GET(req: NextRequest) {
     return NextResponse.json({ progress: null });
   }
 
-  return NextResponse.json({
-    progress: JSON.parse(progress.progressJson),
-    lastSyncedAt: progress.lastSyncedAt,
-  });
+  try {
+    return NextResponse.json({
+      progress: JSON.parse(progress.progressJson),
+      lastSyncedAt: progress.lastSyncedAt,
+    });
+  } catch {
+    return NextResponse.json({ error: 'Corrupted progress data' }, { status: 500 });
+  }
 }
 
 /**

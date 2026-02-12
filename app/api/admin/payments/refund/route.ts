@@ -48,7 +48,6 @@ export async function POST(req: NextRequest) {
     });
   } catch (err) {
     console.error('Refund API error:', err);
-    const message = err instanceof Error ? err.message : 'Failed to issue refund';
-    return NextResponse.json({ error: message }, { status: 500 });
+    return NextResponse.json({ error: 'Failed to issue refund' }, { status: 500 });
   }
 }

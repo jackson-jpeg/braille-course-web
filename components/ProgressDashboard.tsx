@@ -1,7 +1,7 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import { loadProgress, getGameMastery, getTotalGamesPlayed, getTotalWins } from '@/lib/progress-storage';
+import { getGameMastery, getTotalGamesPlayed, getTotalWins } from '@/lib/progress-storage';
 import { getStreakInfo } from '@/lib/streak-tracker';
 import type { GameId } from '@/lib/progress-types';
 

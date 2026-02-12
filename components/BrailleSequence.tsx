@@ -2,6 +2,7 @@
 
 import { useState, useEffect, useCallback, useRef } from 'react';
 import { brailleMap, computeSimilarity } from '@/lib/braille-map';
+import SharedBrailleCell from '@/components/BrailleCell';
 import { useGameProgress } from '@/hooks/useGameProgress';
 import { pushAchievements } from '@/components/AchievementToast';
 import { getRandomTip } from '@/lib/learning-tips';
@@ -31,14 +32,8 @@ function pickLetters(count: number, difficulty: string): string[] {
   return shuffled.slice(0, count);
 }
 
-function BrailleCell({ pattern }: { pattern: number[] }) {
-  return (
-    <div className="seq-cell" aria-hidden="true">
-      {pattern.map((v, i) => (
-        <span key={i} className={`seq-dot ${v ? 'filled' : 'empty'}`} />
-      ))}
-    </div>
-  );
+function SeqBrailleCell({ pattern }: { pattern: number[] }) {
+  return <SharedBrailleCell pattern={pattern} className="seq-cell" dotClassName="seq-dot" />;
 }
 
 export default function BrailleSequence() {
@@ -175,7 +170,7 @@ export default function BrailleSequence() {
       },
       isCorrect ? 800 : 2000,
     );
-  }, [phase, round, totalRounds, score, startRound, recordResult]);
+  }, [phase, round, totalRounds, startRound, recordResult]);
 
   return (
     <div className="seq-container" ref={containerRef}>
@@ -208,7 +203,7 @@ export default function BrailleSequence() {
                   disabled={phase !== 'playing'}
                   aria-label={`Position ${i + 1}${feedback !== null ? `: letter ${card.letter}` : ''}`}
                 >
-                  <BrailleCell pattern={card.pattern} />
+                  <SeqBrailleCell pattern={card.pattern} />
                   {feedback !== null && <span className="seq-card-letter">{card.letter}</span>}
                   {cardResults.length > 0 && (
                     <span className={`seq-card-mark ${cardResults[i] ? 'correct' : 'wrong'}`}>

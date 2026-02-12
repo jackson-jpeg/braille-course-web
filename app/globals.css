@@ -7,7 +7,7 @@
   --gold: #d4a853;
   --gold-light: #f0deb4;
   --gold-soft: #f7edd5;
-  --gold-text: #9b7a2e; /* WCAG AA on cream/white (4.5:1+) */
+  --gold-text: #7a5f1a; /* WCAG AA on cream/white (4.5:1+) */
   --gold-glow: rgba(212, 168, 83, 0.35);
   --navy: #1b2a4a;
   --navy-deep: #141f35;
@@ -374,10 +374,10 @@ body::after {
 }
 
 .braille-letter-group.pop .braille-cell {
-  animation: dotPop 0.4s var(--ease-out);
+  animation: dotPopSubtle 0.4s var(--ease-out);
 }
 
-@keyframes dotPop {
+@keyframes dotPopSubtle {
   0% {
     transform: scale(1);
   }

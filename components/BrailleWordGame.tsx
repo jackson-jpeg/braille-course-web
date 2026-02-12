@@ -1,7 +1,8 @@
 'use client';
 
 import { useState, useEffect, useCallback, useRef } from 'react';
-import { brailleMap, dotDescription } from '@/lib/braille-map';
+import { dotDescription } from '@/lib/braille-map';
+import BrailleCell from '@/components/BrailleCell';
 import { answerWords, validGuesses } from '@/lib/game-words';
 import { useGameProgress } from '@/hooks/useGameProgress';
 import { pushAchievements } from '@/components/AchievementToast';
@@ -47,16 +48,9 @@ function computeStatuses(guess: string, answer: string): TileStatus[] {
   return statuses;
 }
 
-function BrailleCell({ letter, small = false }: { letter: string; small?: boolean }) {
-  const pattern = brailleMap[letter.toUpperCase()] || [0, 0, 0, 0, 0, 0];
+function WordGameBrailleCell({ letter, small = false }: { letter: string; small?: boolean }) {
   const prefix = small ? 'key' : 'tile';
-  return (
-    <div className={`${prefix}-braille`}>
-      {pattern.map((v, i) => (
-        <span key={i} className={`${prefix}-dot ${v ? 'filled' : 'empty'}`} />
-      ))}
-    </div>
-  );
+  return <BrailleCell letter={letter} className={`${prefix}-braille`} dotClassName={`${prefix}-dot`} />;
 }
 
 const KEY_STATUS_PRIORITY: Record<KeyStatus, number> = {
@@ -114,8 +108,9 @@ export default function BrailleWordGame() {
 
   // Cleanup all scheduled timers on unmount
   useEffect(() => {
+    const timers = timersRef.current;
     return () => {
-      timersRef.current.forEach(clearTimeout);
+      timers.forEach(clearTimeout);
     };
   }, []);
 
@@ -332,7 +327,7 @@ export default function BrailleWordGame() {
                 <div key={col} className={tileClasses} data-status={revealing ? status : undefined} style={style}>
                   {letter ? (
                     <>
-                      <BrailleCell letter={letter} />
+                      <WordGameBrailleCell letter={letter} />
                       <span className="tile-letter">{letter}</span>
                     </>
                   ) : null}
@@ -366,7 +361,7 @@ export default function BrailleWordGame() {
                   disabled={gameOver}
                   aria-label={ariaLabel}
                 >
-                  {!isSpecial && <BrailleCell letter={key} small />}
+                  {!isSpecial && <WordGameBrailleCell letter={key} small />}
                   <span className="key-letter">{key === 'BACK' ? '⌫' : key}</span>
                 </button>
               );

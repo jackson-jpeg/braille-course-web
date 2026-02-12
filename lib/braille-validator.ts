@@ -5,7 +5,7 @@
  * against the canonical braille mappings. Corrects any incorrect dot patterns.
  */
 
-import { brailleMap, dotDescription } from '@/lib/braille-map';
+import { dotDescription } from '@/lib/braille-map';
 import { contractedBrailleEntries } from '@/lib/contracted-braille-map';
 
 export interface CorrectionEntry {
@@ -49,19 +49,6 @@ function buildReverseLookup(): Map<string, LookupEntry> {
 }
 
 const reverseLookup = buildReverseLookup();
-
-// Build a quick lookup from dots string -> all labels that match
-function buildDotsToLabels(): Map<string, string[]> {
-  const map = new Map<string, string[]>();
-  for (const [, entry] of reverseLookup) {
-    const existing = map.get(entry.dotsString) || [];
-    existing.push(entry.label);
-    map.set(entry.dotsString, existing);
-  }
-  return map;
-}
-
-const dotsToLabels = buildDotsToLabels();
 
 /**
  * Normalize a dots pattern string: "dots 2, 1, 4" → "dots 1 2 4"

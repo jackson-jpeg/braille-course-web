@@ -101,6 +101,7 @@ export async function POST(req: NextRequest) {
       })),
     });
   } catch (err) {
-    return NextResponse.json({ error: (err as Error).message }, { status: 500 });
+    console.error('Grades save error:', err);
+    return NextResponse.json({ error: 'Failed to save grades' }, { status: 500 });
   }
 }

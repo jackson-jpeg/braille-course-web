@@ -2,6 +2,7 @@
 
 import { useState, useEffect, useCallback, useRef } from 'react';
 import { brailleMap, dotDescription } from '@/lib/braille-map';
+import BrailleCell from '@/components/BrailleCell';
 import { hangmanWords } from '@/lib/hangman-words';
 import { useGameProgress } from '@/hooks/useGameProgress';
 import { pushAchievements } from '@/components/AchievementToast';
@@ -19,15 +20,8 @@ function pickWord(): string {
   return hangmanWords[Math.floor(Math.random() * hangmanWords.length)];
 }
 
-function BrailleCell({ letter }: { letter: string }) {
-  const pattern = brailleMap[letter.toUpperCase()] || [0, 0, 0, 0, 0, 0];
-  return (
-    <div className="hangman-key-braille">
-      {pattern.map((v, i) => (
-        <span key={i} className={`hangman-key-dot ${v ? 'filled' : 'empty'}`} />
-      ))}
-    </div>
-  );
+function HangmanBrailleCell({ letter }: { letter: string }) {
+  return <BrailleCell letter={letter} className="hangman-key-braille" dotClassName="hangman-key-dot" />;
 }
 
 function HangmanSvg({ wrongCount }: { wrongCount: number }) {
@@ -206,7 +200,7 @@ export default function BrailleHangman() {
                     disabled={status !== 'unused' || gameOver}
                     aria-label={`Letter ${key}, Braille ${dotDescription(key)}`}
                   >
-                    <BrailleCell letter={key} />
+                    <HangmanBrailleCell letter={key} />
                     <span className="hangman-key-letter">{key}</span>
                   </button>
                 );

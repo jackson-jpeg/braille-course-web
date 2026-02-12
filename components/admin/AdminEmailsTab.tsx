@@ -197,7 +197,7 @@ export default function AdminEmailsTab({
         })
         .catch(() => showToast('Failed to load attachment details', 'error'));
     }
-  }, [pendingAttachmentIds]);
+  }, [pendingAttachmentIds, showToast]);
 
   // Auto-select template when initialTemplate is passed (from prospective leads)
   useEffect(() => {

@@ -78,8 +78,9 @@ export default function EnrollmentForm() {
       }
     } catch {
       setWaitlistError('Network error. Please try again.');
+    } finally {
+      setWaitlistSubmitting(false);
     }
-    setWaitlistSubmitting(false);
   };
 
   if (totalRemaining <= 0) {

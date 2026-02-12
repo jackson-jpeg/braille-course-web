@@ -3,7 +3,7 @@
  * Runs client-side after each game completion.
  */
 
-import { ProgressData, GameId } from './progress-types';
+import { ProgressData } from './progress-types';
 import { saveProgress } from './progress-storage';
 
 export type AchievementTier = 'bronze' | 'silver' | 'gold' | 'platinum';

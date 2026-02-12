@@ -2,7 +2,7 @@
  * Difficulty system: unlock conditions and per-game settings.
  */
 
-import { GameId, Difficulty, GameStats } from './progress-types';
+import { GameId, Difficulty } from './progress-types';
 import { getGameStats } from './progress-storage';
 
 export interface DifficultyConfig {

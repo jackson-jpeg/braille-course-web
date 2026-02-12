@@ -39,7 +39,17 @@ export default async function AdminPage() {
   ]);
   } catch (err) {
     console.error('Admin data load failed:', err);
-    return <AdminLogin />;
+    return (
+      <div className="admin-page">
+        <div style={{ maxWidth: 480, margin: '80px auto', textAlign: 'center', padding: 24 }}>
+          <h2>Unable to load dashboard data</h2>
+          <p style={{ color: 'var(--text-secondary)', margin: '12px 0 24px' }}>
+            The database may be temporarily unavailable. Please try refreshing.
+          </p>
+          <a href="/admin" style={{ color: 'var(--gold)' }}>Refresh page</a>
+        </div>
+      </div>
+    );
   }
 
   // Serialize for the client component (dates → strings)
