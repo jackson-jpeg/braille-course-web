@@ -151,6 +151,7 @@ export default function AdminTodoWidget() {
                 <span className="admin-todo-text">{t.text}</span>
                 {t.dueDate && (
                   <span className={`admin-todo-due ${isOverdue(t.dueDate) && !t.done ? 'admin-todo-due-overdue' : ''}`}>
+                    {isOverdue(t.dueDate) && !t.done && <span className="admin-todo-overdue-badge" title="Overdue">!</span>}
                     {formatDueDate(t.dueDate)}
                   </span>
                 )}

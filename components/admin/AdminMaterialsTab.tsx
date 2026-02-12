@@ -47,6 +47,7 @@ export default function AdminMaterialsTab({ onEmailMaterial }: Props) {
 
   // Last fetched
   const [lastFetched, setLastFetched] = useState<Date | null>(null);
+  const [uploadSuccess, setUploadSuccess] = useState(false);
 
   // Inline edit
   const [editingId, setEditingId] = useState<string | null>(null);
@@ -91,6 +92,8 @@ export default function AdminMaterialsTab({ onEmailMaterial }: Props) {
         if (!res.ok) throw new Error(json.error || 'Failed to upload');
         setMaterials((prev) => [json.material, ...prev]);
         showToast(`Uploaded "${file.name}"`);
+        setUploadSuccess(true);
+        setTimeout(() => setUploadSuccess(false), 2000);
       } catch (err) {
         const msg = err instanceof Error ? err.message : 'Failed to upload file';
         showToast(msg, 'error');
@@ -221,7 +224,7 @@ export default function AdminMaterialsTab({ onEmailMaterial }: Props) {
       {/* Upload zone with category selector */}
       <div className="admin-materials-upload-row">
         <div
-          className={`admin-drop-zone ${dragOver ? 'admin-drop-zone-active' : ''} ${uploading ? 'admin-drop-zone-uploading' : ''}`}
+          className={`admin-drop-zone ${dragOver ? 'admin-drop-zone-active' : ''} ${uploading ? 'admin-drop-zone-uploading' : ''} ${uploadSuccess ? 'admin-drop-zone-success' : ''}`}
           onClick={() => !uploading && fileInputRef.current?.click()}
           onDrop={handleDrop}
           onDragOver={handleDragOver}
@@ -245,7 +248,7 @@ export default function AdminMaterialsTab({ onEmailMaterial }: Props) {
               strokeLinejoin="round"
             />
           </svg>
-          <p className="admin-drop-zone-text">{uploading ? 'Uploading\u2026' : 'Drop files here or click to upload'}</p>
+          <p className="admin-drop-zone-text">{uploading ? 'Uploading\u2026' : uploadSuccess ? 'Upload complete!' : 'Drop files here or click to upload'}</p>
         </div>
         <div className="admin-upload-category-select">
           <label>Category</label>
@@ -345,7 +348,7 @@ export default function AdminMaterialsTab({ onEmailMaterial }: Props) {
             ) : (
               filteredMaterials.map((m) =>
                 editingId === m.id ? (
-                  <tr key={m.id}>
+                  <tr key={m.id} className="admin-table-row-editing">
                     <td>
                       <input
                         type="text"

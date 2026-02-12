@@ -5985,6 +5985,10 @@ details.faq-item.reveal:nth-child(6) {
 .admin-table tbody tr:hover {
   background: rgba(212, 168, 83, 0.04);
 }
+.admin-table-row-editing {
+  background: rgba(212, 168, 83, 0.06);
+  box-shadow: inset 3px 0 0 var(--gold);
+}
 .admin-row-warning {
   background: #fffbf0;
 }
@@ -6261,6 +6265,12 @@ details.faq-item.reveal:nth-child(6) {
 }
 .admin-compose-error {
   color: #c44;
+}
+.admin-compose-shortcut-hint {
+  font-size: 0.72rem;
+  color: var(--text-secondary);
+  opacity: 0.6;
+  margin-left: 8px;
 }
 
 /* Email status badges */
@@ -7364,6 +7374,14 @@ details.faq-item.reveal:nth-child(6) {
 .admin-drop-zone-uploading {
   opacity: 0.6;
   cursor: default;
+}
+.admin-drop-zone-success {
+  border-color: var(--sage-dark);
+  background: rgba(122, 155, 109, 0.06);
+}
+.admin-drop-zone-success .admin-drop-zone-text {
+  color: var(--sage-dark);
+  font-weight: 500;
 }
 .admin-drop-zone-icon {
   color: var(--gold-text);
@@ -10360,6 +10378,20 @@ details.faq-item.reveal:nth-child(6) {
 .admin-todo-due-overdue {
   color: #e53e3e;
   font-weight: 600;
+}
+.admin-todo-overdue-badge {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 16px;
+  height: 16px;
+  background: #e53e3e;
+  color: white;
+  border-radius: 50%;
+  font-size: 0.65rem;
+  font-weight: 800;
+  margin-right: 4px;
+  flex-shrink: 0;
 }
 .admin-todo-delete {
   background: none;

@@ -741,7 +741,15 @@ export default function AdminEmailsTab({
               <div className="admin-compose-split">
                 {/* Left pane: form */}
                 <div>
-                  <form onSubmit={handleSendEmail}>
+                  <form
+                    onSubmit={handleSendEmail}
+                    onKeyDown={(e) => {
+                      if ((e.metaKey || e.ctrlKey) && e.key === 'Enter' && !composeSending) {
+                        e.preventDefault();
+                        handleSendEmail(e as unknown as React.FormEvent);
+                      }
+                    }}
+                  >
                     {/* Template + AI Draft row */}
                     <div className="admin-compose-field">
                       <label>Template</label>
@@ -1015,6 +1023,11 @@ export default function AdminEmailsTab({
                           className={`admin-compose-result ${composeResult.ok ? 'admin-compose-success' : 'admin-compose-error'}`}
                         >
                           {composeResult.msg}
+                        </span>
+                      )}
+                      {!composeSending && !composeResult && (
+                        <span className="admin-compose-shortcut-hint">
+                          {navigator.platform?.includes('Mac') ? '\u2318' : 'Ctrl'}+Enter
                         </span>
                       )}
                     </div>
