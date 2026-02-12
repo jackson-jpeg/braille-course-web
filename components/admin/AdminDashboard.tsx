@@ -562,6 +562,7 @@ export default function AdminDashboard({ sections, enrollments, leads, schoolInq
           {tab === 'emails' && (
             <AdminEmailsTab
               enrollments={enrollments}
+              leads={leads}
               initialComposeTo={emailComposeTo}
               initialTemplate={emailInitialTemplate}
               pendingAttachmentIds={pendingAttachmentIds}

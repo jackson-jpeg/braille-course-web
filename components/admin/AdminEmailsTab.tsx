@@ -4,9 +4,11 @@ import { useState, useCallback, useEffect, useRef, useMemo } from 'react';
 import AdminEmailModal from './AdminEmailModal';
 import AdminConfirmDialog from './AdminConfirmDialog';
 import AdminScheduledEmailsPanel from './AdminScheduledEmailsPanel';
+import EmailRecipientInput from './EmailRecipientInput';
+import EmailDeliveryStats from './EmailDeliveryStats';
 import { useToast } from './AdminToast';
 import { SkeletonTable } from './AdminSkeleton';
-import type { ResendEmail, ReceivedEmail, EmailDetail, Enrollment, Material } from './admin-types';
+import type { ResendEmail, ReceivedEmail, EmailDetail, Enrollment, Lead, Material } from './admin-types';
 import { relativeTime, fullDate, formatFileSize, sortArrow, lastUpdatedText } from './admin-utils';
 import { customEmail } from '@/lib/email-templates';
 
@@ -42,8 +44,12 @@ type SentSortKey = 'date' | 'to' | 'subject' | 'status';
 type ReceivedSortKey = 'date' | 'from' | 'subject';
 type SortDir = 'asc' | 'desc';
 
+const DRAFT_STORAGE_KEY = 'admin-email-draft';
+const READ_EMAILS_KEY = 'admin-read-emails';
+
 interface Props {
   enrollments: Enrollment[];
+  leads: Lead[];
   initialComposeTo?: string;
   initialTemplate?: string;
   pendingAttachmentIds?: string[];
@@ -93,6 +99,7 @@ function StatusIcon({ status }: { status: string }) {
 
 export default function AdminEmailsTab({
   enrollments,
+  leads,
   initialComposeTo,
   initialTemplate,
   pendingAttachmentIds,
@@ -109,7 +116,14 @@ export default function AdminEmailsTab({
   const [selectedEmail, setSelectedEmail] = useState<EmailDetail | null>(null);
   const [emailDetailLoading, setEmailDetailLoading] = useState(false);
   const [showCompose, setShowCompose] = useState(!!initialComposeTo);
-  const [composeTo, setComposeTo] = useState(initialComposeTo || '');
+  const [composeRecipients, setComposeRecipients] = useState<string[]>(
+    initialComposeTo
+      ? initialComposeTo
+          .split(',')
+          .map((s) => s.trim())
+          .filter(Boolean)
+      : [],
+  );
   const [composeSubject, setComposeSubject] = useState('');
   const [composeBody, setComposeBody] = useState('');
   const [composeSending, setComposeSending] = useState(false);
@@ -155,6 +169,103 @@ export default function AdminEmailsTab({
   const [receivedSortKey, setReceivedSortKey] = useState<ReceivedSortKey>('date');
   const [receivedSortDir, setReceivedSortDir] = useState<SortDir>('desc');
 
+  // Unread received email tracking
+  const [readEmailIds, setReadEmailIds] = useState<Set<string>>(() => {
+    try {
+      const stored = localStorage.getItem(READ_EMAILS_KEY);
+      return stored ? new Set(JSON.parse(stored) as string[]) : new Set();
+    } catch {
+      return new Set();
+    }
+  });
+
+  // Draft auto-save tracking
+  const draftDirtyRef = useRef(false);
+  const [draftRestored, setDraftRestored] = useState(false);
+
+  // Restore draft on mount
+  useEffect(() => {
+    // Don't restore if initial values were passed from outside
+    if (initialComposeTo || initialTemplate) return;
+    try {
+      const stored = localStorage.getItem(DRAFT_STORAGE_KEY);
+      if (stored) {
+        const draft = JSON.parse(stored) as {
+          recipients?: string[];
+          subject?: string;
+          body?: string;
+        };
+        if (draft.recipients?.length || draft.subject?.trim() || draft.body?.trim()) {
+          setComposeRecipients(draft.recipients || []);
+          setComposeSubject(draft.subject || '');
+          setComposeBody(draft.body || '');
+          setShowCompose(true);
+          setDraftRestored(true);
+          showToast('Draft restored');
+        }
+      }
+    } catch {
+      // ignore
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
+  // Auto-save draft every 5s when dirty
+  useEffect(() => {
+    const hasContent =
+      composeRecipients.length > 0 || composeSubject.trim() !== '' || composeBody.trim() !== '';
+    if (showCompose && hasContent) {
+      draftDirtyRef.current = true;
+    }
+
+    const interval = setInterval(() => {
+      if (draftDirtyRef.current && showCompose) {
+        try {
+          localStorage.setItem(
+            DRAFT_STORAGE_KEY,
+            JSON.stringify({
+              recipients: composeRecipients,
+              subject: composeSubject,
+              body: composeBody,
+            }),
+          );
+        } catch {
+          // ignore quota errors
+        }
+        draftDirtyRef.current = false;
+      }
+    }, 5000);
+
+    return () => clearInterval(interval);
+  }, [showCompose, composeRecipients, composeSubject, composeBody]);
+
+  function clearDraft() {
+    try {
+      localStorage.removeItem(DRAFT_STORAGE_KEY);
+    } catch {
+      // ignore
+    }
+    setDraftRestored(false);
+  }
+
+  function markEmailRead(id: string) {
+    setReadEmailIds((prev) => {
+      const next = new Set(prev);
+      next.add(id);
+      try {
+        localStorage.setItem(READ_EMAILS_KEY, JSON.stringify(Array.from(next)));
+      } catch {
+        // ignore
+      }
+      return next;
+    });
+  }
+
+  // Unread count for received emails
+  const unreadCount = useMemo(() => {
+    return receivedEmails.filter((e) => !readEmailIds.has(e.id)).length;
+  }, [receivedEmails, readEmailIds]);
+
   // Live preview HTML
   const previewHtml = useMemo(() => {
     if (!composeSubject.trim() && !composeBody.trim()) return '';
@@ -172,14 +283,19 @@ export default function AdminEmailsTab({
   // Track compose dirty state
   useEffect(() => {
     const isDirty =
-      showCompose && (composeTo.trim() !== '' || composeSubject.trim() !== '' || composeBody.trim() !== '');
+      showCompose &&
+      (composeRecipients.length > 0 || composeSubject.trim() !== '' || composeBody.trim() !== '');
     onComposeDirty?.(isDirty);
-  }, [showCompose, composeTo, composeSubject, composeBody, onComposeDirty]);
+  }, [showCompose, composeRecipients, composeSubject, composeBody, onComposeDirty]);
 
-  // Update composeTo when initialComposeTo changes (from student modal)
+  // Update composeRecipients when initialComposeTo changes (from student modal)
   useEffect(() => {
     if (initialComposeTo) {
-      setComposeTo(initialComposeTo);
+      const parsed = initialComposeTo
+        .split(',')
+        .map((s) => s.trim())
+        .filter(Boolean);
+      setComposeRecipients(parsed);
       setShowCompose(true);
     }
   }, [initialComposeTo]);
@@ -337,6 +453,7 @@ export default function AdminEmailsTab({
   async function openReceivedEmailDetail(id: string) {
     setEmailDetailLoading(true);
     setSelectedEmail(null);
+    markEmailRead(id);
     try {
       const res = await fetch(`/api/admin/emails/received/${id}`);
       const data = await res.json();
@@ -349,15 +466,28 @@ export default function AdminEmailsTab({
     }
   }
 
+  function resetComposeForm() {
+    setComposeRecipients([]);
+    setComposeSubject('');
+    setComposeBody('');
+    setSelectedTemplate('');
+    setAttachments([]);
+    setShowMaterialPicker(false);
+    setShowDraftInput(false);
+    setDraftBrief('');
+    clearDraft();
+    onClearAttachments?.();
+  }
+
   async function doSendEmail() {
     setComposeSending(true);
     setComposeResult(null);
     try {
-      const recipients = composeTo
-        .split(',')
-        .map((s) => s.trim())
-        .filter(Boolean);
-      const payload: Record<string, unknown> = { to: recipients, subject: composeSubject, body: composeBody };
+      const payload: Record<string, unknown> = {
+        to: composeRecipients,
+        subject: composeSubject,
+        body: composeBody,
+      };
       if (attachments.length > 0) {
         payload.attachmentIds = attachments.map((a) => a.id);
       }
@@ -372,15 +502,7 @@ export default function AdminEmailsTab({
       setTimeout(() => setSendSuccess(false), 1200);
       showToast('Email sent successfully');
       setComposeResult(null);
-      setComposeTo('');
-      setComposeSubject('');
-      setComposeBody('');
-      setSelectedTemplate('');
-      setAttachments([]);
-      setShowMaterialPicker(false);
-      setShowDraftInput(false);
-      setDraftBrief('');
-      onClearAttachments?.();
+      resetComposeForm();
       setShowCompose(false);
       fetchEmails();
     } catch (err: unknown) {
@@ -395,12 +517,8 @@ export default function AdminEmailsTab({
     setComposeSending(true);
     setComposeResult(null);
     try {
-      const recipients = composeTo
-        .split(',')
-        .map((s) => s.trim())
-        .filter(Boolean);
       const payload: Record<string, unknown> = {
-        to: recipients,
+        to: composeRecipients,
         subject: composeSubject,
         body: composeBody,
         scheduledFor: new Date(scheduleDateTime).toISOString(),
@@ -416,17 +534,9 @@ export default function AdminEmailsTab({
       const data = await res.json();
       if (!res.ok) throw new Error(data.error || 'Failed to schedule');
       showToast('Email scheduled successfully');
-      setComposeTo('');
-      setComposeSubject('');
-      setComposeBody('');
-      setSelectedTemplate('');
-      setAttachments([]);
-      setShowMaterialPicker(false);
-      setShowDraftInput(false);
-      setDraftBrief('');
+      resetComposeForm();
       setSendMode('now');
       setScheduleDateTime('');
-      onClearAttachments?.();
       setShowCompose(false);
       setEmailSubTab('scheduled');
     } catch (err: unknown) {
@@ -438,6 +548,10 @@ export default function AdminEmailsTab({
 
   function handleSendEmail(e: React.FormEvent) {
     e.preventDefault();
+    if (composeRecipients.length === 0) {
+      showToast('Please add at least one recipient', 'error');
+      return;
+    }
     if (sendMode === 'schedule') {
       if (!scheduleDateTime) {
         showToast('Please select a date and time for scheduling', 'error');
@@ -446,11 +560,7 @@ export default function AdminEmailsTab({
       doScheduleEmail();
       return;
     }
-    const recipients = composeTo
-      .split(',')
-      .map((s) => s.trim())
-      .filter(Boolean);
-    if (recipients.length >= 3) {
+    if (composeRecipients.length >= 3) {
       setShowSendConfirm(true);
     } else {
       doSendEmail();
@@ -470,7 +580,7 @@ export default function AdminEmailsTab({
 
   function handleReply(email: EmailDetail) {
     const sender = email.from;
-    setComposeTo(sender);
+    setComposeRecipients([sender]);
     setComposeSubject(email.subject.startsWith('Re: ') ? email.subject : `Re: ${email.subject}`);
     const quotedText = email.text || '';
     setComposeBody(`\n\n---\nOn ${fullDate(email.created_at)}, ${sender} wrote:\n\n${quotedText}`);
@@ -480,7 +590,7 @@ export default function AdminEmailsTab({
   }
 
   function handleForward(email: EmailDetail) {
-    setComposeTo('');
+    setComposeRecipients([]);
     setComposeSubject(email.subject.startsWith('Fwd: ') ? email.subject : `Fwd: ${email.subject}`);
     const quotedText = email.text || '';
     setComposeBody(
@@ -491,17 +601,21 @@ export default function AdminEmailsTab({
     setSelectedTemplate('');
   }
 
-  // Only course students (from enrollment DB), not 1-1 invoice-only customers
-  const courseStudentEmails = enrollments.map((e) => e.email).filter((e): e is string => !!e);
-  const uniqueEmails = [...new Set(courseStudentEmails)];
-
   // Delivery stats
-  const sentCount = emails.length;
-  const deliveredCount = emails.filter(
-    (e) => e.last_event === 'delivered' || e.last_event === 'opened' || e.last_event === 'clicked',
-  ).length;
-  const openedCount = emails.filter((e) => e.last_event === 'opened' || e.last_event === 'clicked').length;
-  const bouncedCount = emails.filter((e) => e.last_event === 'bounced' || e.last_event === 'complained').length;
+  const deliveryStats = useMemo(() => {
+    const sent = emails.length;
+    const delivered = emails.filter(
+      (e) => e.last_event === 'delivered' || e.last_event === 'opened' || e.last_event === 'clicked',
+    ).length;
+    const opened = emails.filter((e) => e.last_event === 'opened' || e.last_event === 'clicked').length;
+    const clicked = emails.filter((e) => e.last_event === 'clicked').length;
+    return { sent, delivered, opened, clicked };
+  }, [emails]);
+
+  function handleDeliveryStatsFilter(status: string) {
+    setSentStatusFilter(status);
+    setEmailSubTab('sent');
+  }
 
   // Sort helpers
   function handleSentSort(key: SentSortKey) {
@@ -610,18 +724,13 @@ export default function AdminEmailsTab({
 
   return (
     <>
-      {/* Delivery Stats Bar */}
+      {/* Delivery Stats */}
       {emails.length > 0 && (
-        <div className="admin-delivery-stats">
-          <span className="admin-delivery-pill">{sentCount} Sent</span>
-          <span className="admin-delivery-pill admin-delivery-delivered">{deliveredCount} Delivered</span>
-          <span className="admin-delivery-pill admin-delivery-opened">
-            {openedCount} Opened{deliveredCount > 0 && ` (${Math.round((openedCount / deliveredCount) * 100)}%)`}
-          </span>
-          {bouncedCount > 0 && (
-            <span className="admin-delivery-pill admin-delivery-bounced">{bouncedCount} Bounced</span>
-          )}
-        </div>
+        <EmailDeliveryStats
+          stats={deliveryStats}
+          activeFilter={sentStatusFilter}
+          onFilterByStatus={handleDeliveryStatsFilter}
+        />
       )}
 
       {/* Sub-toggle: Sent / Received / Scheduled */}
@@ -637,6 +746,7 @@ export default function AdminEmailsTab({
           onClick={() => setEmailSubTab('received')}
         >
           Received{receivedEmails.length > 0 && ` (${receivedEmails.length})`}
+          {unreadCount > 0 && <span className="email-unread-badge">{unreadCount}</span>}
         </button>
         <button
           className={`admin-email-subtab ${emailSubTab === 'scheduled' ? 'admin-email-subtab-active' : ''}`}
@@ -737,7 +847,24 @@ export default function AdminEmailsTab({
 
           {showCompose && (
             <div className="admin-compose">
-              <h3 className="admin-compose-heading">Compose Message</h3>
+              <h3 className="admin-compose-heading">
+                Compose Message
+                {draftRestored && (
+                  <span className="email-draft-indicator">
+                    Draft restored
+                    <button
+                      type="button"
+                      className="email-draft-discard"
+                      onClick={() => {
+                        resetComposeForm();
+                        setShowCompose(false);
+                      }}
+                    >
+                      Discard
+                    </button>
+                  </span>
+                )}
+              </h3>
               <div className="admin-compose-split">
                 {/* Left pane: form */}
                 <div>
@@ -818,23 +945,12 @@ export default function AdminEmailsTab({
 
                     <div className="admin-compose-field">
                       <label>To</label>
-                      <div className="admin-compose-to-row">
-                        <input
-                          type="text"
-                          value={composeTo}
-                          onChange={(e) => setComposeTo(e.target.value)}
-                          placeholder="email@example.com, email2@example.com"
-                          className="admin-compose-input"
-                          required
-                        />
-                        <button
-                          type="button"
-                          onClick={() => setComposeTo(uniqueEmails.join(', '))}
-                          className="admin-fill-all-btn"
-                        >
-                          All Course Students ({uniqueEmails.length})
-                        </button>
-                      </div>
+                      <EmailRecipientInput
+                        recipients={composeRecipients}
+                        onChange={setComposeRecipients}
+                        enrollments={enrollments}
+                        leads={leads}
+                      />
                     </div>
                     <div className="admin-compose-field">
                       <label>Subject</label>
@@ -852,7 +968,7 @@ export default function AdminEmailsTab({
                       <textarea
                         value={composeBody}
                         onChange={(e) => setComposeBody(e.target.value)}
-                        placeholder="Write your email here\u2026"
+                        placeholder="Write your email here&#x2026;"
                         className="admin-compose-textarea"
                         rows={8}
                         required
@@ -1307,46 +1423,52 @@ export default function AdminEmailsTab({
                   </p>
                 </div>
               ) : (
-                filteredReceivedEmails.map((em) => (
-                  <div
-                    key={em.id}
-                    className={`admin-thread-item${selectedEmail?.id === em.id ? ' admin-thread-item-selected' : ''}`}
-                    onClick={() => openReceivedEmailDetail(em.id)}
-                    onKeyDown={(ev) => {
-                      if (ev.key === 'Enter' || ev.key === ' ') {
-                        ev.preventDefault();
-                        openReceivedEmailDetail(em.id);
-                      }
-                    }}
-                    tabIndex={0}
-                    role="button"
-                    aria-label={`View email from ${em.from}: ${em.subject || '(no subject)'}`}
-                  >
-                    <div className="admin-thread-line1">
-                      <span className="admin-thread-recipient">{em.from}</span>
-                      <span className="admin-thread-date" title={fullDate(em.created_at)}>
-                        {relativeTime(em.created_at)}
-                      </span>
-                    </div>
-                    <div className="admin-thread-line2">
-                      <span className="admin-thread-subject">{em.subject || '(no subject)'}</span>
-                      {em.attachments && em.attachments.length > 0 && (
-                        <span className="admin-thread-attachment-count">
-                          <svg width="12" height="12" viewBox="0 0 24 24" fill="none">
-                            <path
-                              d="M21.44 11.05l-9.19 9.19a6 6 0 01-8.49-8.49l9.19-9.19a4 4 0 015.66 5.66l-9.2 9.19a2 2 0 01-2.83-2.83l8.49-8.48"
-                              stroke="currentColor"
-                              strokeWidth="1.5"
-                              strokeLinecap="round"
-                              strokeLinejoin="round"
-                            />
-                          </svg>
-                          {em.attachments.length}
+                filteredReceivedEmails.map((em) => {
+                  const isUnread = !readEmailIds.has(em.id);
+                  return (
+                    <div
+                      key={em.id}
+                      className={`admin-thread-item${selectedEmail?.id === em.id ? ' admin-thread-item-selected' : ''}${isUnread ? ' admin-thread-item-unread' : ''}`}
+                      onClick={() => openReceivedEmailDetail(em.id)}
+                      onKeyDown={(ev) => {
+                        if (ev.key === 'Enter' || ev.key === ' ') {
+                          ev.preventDefault();
+                          openReceivedEmailDetail(em.id);
+                        }
+                      }}
+                      tabIndex={0}
+                      role="button"
+                      aria-label={`View email from ${em.from}: ${em.subject || '(no subject)'}`}
+                    >
+                      <div className="admin-thread-line1">
+                        <span className="admin-thread-recipient">
+                          {isUnread && <span className="email-unread-dot" />}
+                          {em.from}
                         </span>
-                      )}
+                        <span className="admin-thread-date" title={fullDate(em.created_at)}>
+                          {relativeTime(em.created_at)}
+                        </span>
+                      </div>
+                      <div className="admin-thread-line2">
+                        <span className="admin-thread-subject">{em.subject || '(no subject)'}</span>
+                        {em.attachments && em.attachments.length > 0 && (
+                          <span className="admin-thread-attachment-count">
+                            <svg width="12" height="12" viewBox="0 0 24 24" fill="none">
+                              <path
+                                d="M21.44 11.05l-9.19 9.19a6 6 0 01-8.49-8.49l9.19-9.19a4 4 0 015.66 5.66l-9.2 9.19a2 2 0 01-2.83-2.83l8.49-8.48"
+                                stroke="currentColor"
+                                strokeWidth="1.5"
+                                strokeLinecap="round"
+                                strokeLinejoin="round"
+                              />
+                            </svg>
+                            {em.attachments.length}
+                          </span>
+                        )}
+                      </div>
                     </div>
-                  </div>
-                ))
+                  );
+                })
               )}
             </div>
 
@@ -1398,12 +1520,7 @@ export default function AdminEmailsTab({
       {showSendConfirm && (
         <AdminConfirmDialog
           title="Send to Multiple Recipients"
-          message={`You're about to send this email to ${
-            composeTo
-              .split(',')
-              .map((s) => s.trim())
-              .filter(Boolean).length
-          } recipients. Continue?`}
+          message={`You're about to send this email to ${composeRecipients.length} recipients. Continue?`}
           confirmLabel="Send Email"
           confirmVariant="primary"
           loading={composeSending}
