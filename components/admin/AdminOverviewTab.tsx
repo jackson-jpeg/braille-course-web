@@ -65,6 +65,8 @@ export default function AdminOverviewTab({
   const [selectedStudent, setSelectedStudent] = useState<Enrollment | null>(null);
   const [viewMode, setViewMode] = useState<'dashboard' | 'calendar'>('dashboard');
 
+  const [loadingPayments, setLoadingPayments] = useState(true);
+
   // Fallback estimates while real data loads
   const fullCount = enrollments.filter((e) => e.plan === 'FULL' && e.paymentStatus === 'COMPLETED').length;
   const depositCount = enrollments.filter((e) => e.plan === 'DEPOSIT' && e.paymentStatus === 'COMPLETED').length;
@@ -81,6 +83,8 @@ export default function AdminOverviewTab({
       if (res.ok) setPaymentSummary(data.summary);
     } catch (err) {
       console.error('Failed to fetch payment summary:', err);
+    } finally {
+      setLoadingPayments(false);
     }
   }, []);
 
@@ -111,6 +115,64 @@ export default function AdminOverviewTab({
     waitlisted.length > 0 ||
     newSchoolInquiries.length > 0 ||
     (pendingBalance > 0 && paymentSummary);
+
+  // Trend: enrollments this week vs last week
+  const enrollmentTrend = useMemo(() => {
+    const now = Date.now();
+    const oneWeek = 7 * 24 * 60 * 60 * 1000;
+    const thisWeek = enrollments.filter(
+      (e) => e.paymentStatus === 'COMPLETED' && now - new Date(e.createdAt).getTime() < oneWeek,
+    ).length;
+    const lastWeek = enrollments.filter((e) => {
+      const age = now - new Date(e.createdAt).getTime();
+      return e.paymentStatus === 'COMPLETED' && age >= oneWeek && age < oneWeek * 2;
+    }).length;
+    return { thisWeek, lastWeek, diff: thisWeek - lastWeek };
+  }, [enrollments]);
+
+  // Recent activity feed — unified timeline of enrollments, leads, school inquiries
+  const recentActivity = useMemo(() => {
+    type ActivityItem = {
+      id: string;
+      type: 'enrollment' | 'lead' | 'school';
+      label: string;
+      time: string;
+      tab: string;
+    };
+    const items: ActivityItem[] = [];
+
+    enrollments.slice(0, 20).forEach((e) => {
+      items.push({
+        id: `enroll-${e.id}`,
+        type: 'enrollment',
+        label: `${e.email || 'Unknown'} enrolled (${e.plan === 'FULL' ? 'Full' : 'Deposit'}, ${e.section.label})`,
+        time: e.createdAt,
+        tab: 'students',
+      });
+    });
+
+    leads.slice(0, 10).forEach((l) => {
+      items.push({
+        id: `lead-${l.id}`,
+        type: 'lead',
+        label: `New inquiry from ${l.name || l.email}${l.subject ? `: ${l.subject}` : ''}`,
+        time: l.createdAt,
+        tab: 'students',
+      });
+    });
+
+    schoolInquiries.slice(0, 10).forEach((s) => {
+      items.push({
+        id: `school-${s.id}`,
+        type: 'school',
+        label: `${s.schoolName} — ${s.contactName} (${STATUS_LABELS[s.status] || s.status})`,
+        time: s.createdAt,
+        tab: 'schools',
+      });
+    });
+
+    return items.sort((a, b) => new Date(b.time).getTime() - new Date(a.time).getTime()).slice(0, 8);
+  }, [enrollments, leads, schoolInquiries]);
 
   // Roster
   const sectionRosters = useMemo(() => {
@@ -204,25 +266,50 @@ export default function AdminOverviewTab({
                 {enrollments.filter((e) => e.paymentStatus === 'COMPLETED').length}
               </div>
               <div className="admin-overview-card-label">Enrolled Students</div>
+              {enrollmentTrend.thisWeek > 0 && (
+                <div className="admin-overview-card-trend admin-overview-card-trend-up">
+                  +{enrollmentTrend.thisWeek} this week
+                </div>
+              )}
             </div>
-            <div className="admin-overview-card admin-overview-card-green">
-              <div className="admin-overview-card-value">
-                $
-                {paymentSummary
-                  ? revenueCollected.toLocaleString(undefined, { minimumFractionDigits: 2 })
-                  : revenueCollected.toLocaleString()}
-              </div>
-              <div className="admin-overview-card-label">Revenue Collected</div>
-            </div>
-            <div className="admin-overview-card admin-overview-card-gold">
-              <div className="admin-overview-card-value">
-                $
-                {paymentSummary
-                  ? pendingBalance.toLocaleString(undefined, { minimumFractionDigits: 2 })
-                  : pendingBalance.toLocaleString()}
-              </div>
-              <div className="admin-overview-card-label">Pending Balance</div>
-            </div>
+            {loadingPayments ? (
+              <>
+                <div className="admin-overview-card admin-overview-card-green">
+                  <div className="admin-skeleton-line admin-skeleton-lg" />
+                  <div className="admin-skeleton-line admin-skeleton-sm" style={{ marginTop: 8 }} />
+                </div>
+                <div className="admin-overview-card admin-overview-card-gold">
+                  <div className="admin-skeleton-line admin-skeleton-lg" />
+                  <div className="admin-skeleton-line admin-skeleton-sm" style={{ marginTop: 8 }} />
+                </div>
+              </>
+            ) : (
+              <>
+                <div className="admin-overview-card admin-overview-card-green">
+                  <div className="admin-overview-card-value">
+                    $
+                    {paymentSummary
+                      ? revenueCollected.toLocaleString(undefined, { minimumFractionDigits: 2 })
+                      : revenueCollected.toLocaleString()}
+                  </div>
+                  <div className="admin-overview-card-label">Revenue Collected</div>
+                  {paymentSummary && paymentSummary.netRevenue > 0 && (
+                    <div className="admin-overview-card-trend">
+                      Net: ${paymentSummary.netRevenue.toLocaleString(undefined, { minimumFractionDigits: 2 })}
+                    </div>
+                  )}
+                </div>
+                <div className="admin-overview-card admin-overview-card-gold">
+                  <div className="admin-overview-card-value">
+                    $
+                    {paymentSummary
+                      ? pendingBalance.toLocaleString(undefined, { minimumFractionDigits: 2 })
+                      : pendingBalance.toLocaleString()}
+                  </div>
+                  <div className="admin-overview-card-label">Pending Balance</div>
+                </div>
+              </>
+            )}
           </div>
 
           {/* ── Needs attention ── */}
@@ -292,6 +379,26 @@ export default function AdminOverviewTab({
                     <span className="admin-attention-action">View &rarr;</span>
                   </button>
                 )}
+              </div>
+            </div>
+          )}
+
+          {/* ── Recent Activity ── */}
+          {recentActivity.length > 0 && (
+            <div className="admin-analytics-section">
+              <h3>Recent Activity</h3>
+              <div className="admin-activity-feed">
+                {recentActivity.map((item) => (
+                  <button
+                    key={item.id}
+                    className="admin-activity-item"
+                    onClick={() => onNavigate(item.tab)}
+                  >
+                    <span className={`admin-activity-dot admin-activity-dot-${item.type}`} />
+                    <span className="admin-activity-label">{item.label}</span>
+                    <span className="admin-activity-time">{relativeTime(item.time)}</span>
+                  </button>
+                ))}
               </div>
             </div>
           )}

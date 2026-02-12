@@ -3,6 +3,7 @@
 import { useState, useMemo } from 'react';
 import AdminSchoolPanel from './AdminSchoolPanel';
 import AdminAddSchoolModal from './AdminAddSchoolModal';
+import AdminConfirmDialog from './AdminConfirmDialog';
 import type { SchoolInquiry, SchoolInquiryStatus } from './admin-types';
 import { relativeTime } from './admin-utils';
 
@@ -41,6 +42,8 @@ export default function AdminSchoolsTab({ schoolInquiries, onSync, onNavigate: _
   const [sortColumn, setSortColumn] = useState<string>('updatedAt');
   const [sortDir, setSortDir] = useState<'asc' | 'desc'>('desc');
   const [showAddModal, setShowAddModal] = useState(false);
+  const [deletingSchoolId, setDeletingSchoolId] = useState<string | null>(null);
+  const [deleteLoading, setDeleteLoading] = useState(false);
 
   // Filter inquiries by search query
   const filteredInquiries = useMemo(() => {
@@ -257,11 +260,15 @@ export default function AdminSchoolsTab({ schoolInquiries, onSync, onNavigate: _
   };
 
   const handleDeleteInquiry = async (id: string) => {
-    if (!confirm('Are you sure you want to delete this school inquiry?')) return;
+    setDeletingSchoolId(id);
+  };
 
+  const confirmDeleteInquiry = async () => {
+    if (!deletingSchoolId) return;
+    setDeleteLoading(true);
     try {
       const res = await fetch(
-        `/api/admin/school-inquiries/${id}?key=${encodeURIComponent(localStorage.getItem('adminKey') || '')}`,
+        `/api/admin/school-inquiries/${deletingSchoolId}?key=${encodeURIComponent(localStorage.getItem('adminKey') || '')}`,
         {
           method: 'DELETE',
         },
@@ -271,13 +278,15 @@ export default function AdminSchoolsTab({ schoolInquiries, onSync, onNavigate: _
         throw new Error('Failed to delete inquiry');
       }
 
-      setInquiries((prev) => prev.filter((i) => i.id !== id));
-      if (selectedSchool?.id === id) {
+      setInquiries((prev) => prev.filter((i) => i.id !== deletingSchoolId));
+      if (selectedSchool?.id === deletingSchoolId) {
         setSelectedSchool(null);
       }
     } catch (err) {
       console.error('Failed to delete school inquiry:', err);
-      alert('Failed to delete inquiry. Please try again.');
+    } finally {
+      setDeleteLoading(false);
+      setDeletingSchoolId(null);
     }
   };
 
@@ -361,6 +370,9 @@ export default function AdminSchoolsTab({ schoolInquiries, onSync, onNavigate: _
                   </div>
 
                   <div className="admin-kanban-cards">
+                    {cards.length === 0 && (
+                      <div className="admin-kanban-empty">No schools in this stage</div>
+                    )}
                     {cards.map((inquiry) => (
                       <div
                         key={inquiry.id}
@@ -628,6 +640,19 @@ export default function AdminSchoolsTab({ schoolInquiries, onSync, onNavigate: _
         <AdminAddSchoolModal
           onClose={() => setShowAddModal(false)}
           onAdded={(inquiry) => setInquiries((prev) => [inquiry, ...prev])}
+        />
+      )}
+
+      {/* Delete Confirmation */}
+      {deletingSchoolId && (
+        <AdminConfirmDialog
+          title="Delete School Inquiry"
+          message="Are you sure you want to delete this school inquiry? This action cannot be undone."
+          confirmLabel="Delete"
+          confirmVariant="danger"
+          loading={deleteLoading}
+          onConfirm={confirmDeleteInquiry}
+          onCancel={() => setDeletingSchoolId(null)}
         />
       )}
     </>
