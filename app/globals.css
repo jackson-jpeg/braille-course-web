@@ -7850,6 +7850,91 @@ details.faq-item.reveal:nth-child(6) {
   }
 }
 
+/* ===== GLOBAL ERROR PAGE ===== */
+.global-error-page {
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 100px 24px 40px;
+}
+.global-error-card {
+  position: relative;
+  z-index: 1;
+  background: white;
+  border: 1px solid rgba(212, 168, 83, 0.15);
+  border-radius: var(--radius-lg);
+  padding: 56px 48px;
+  max-width: 520px;
+  width: 100%;
+  text-align: center;
+  box-shadow: 0 16px 64px rgba(27, 42, 74, 0.06);
+  animation: fadeUp 0.8s var(--ease-out) both;
+}
+.global-error-icon {
+  color: var(--gold-text);
+  margin-bottom: 20px;
+  opacity: 0.7;
+}
+.global-error-card h1 {
+  font-family: var(--font-heading), 'DM Serif Display', serif;
+  font-size: clamp(1.6rem, 4vw, 2rem);
+  color: var(--navy);
+  line-height: 1.25;
+  margin-bottom: 12px;
+}
+.global-error-card p {
+  font-size: 0.95rem;
+  color: var(--text-secondary);
+  font-weight: 300;
+  line-height: 1.7;
+  margin-bottom: 24px;
+}
+.global-error-digest {
+  font-size: 0.75rem;
+  color: var(--text-secondary);
+  opacity: 0.5;
+  margin-bottom: 24px;
+  font-family: monospace;
+}
+.global-error-actions {
+  display: flex;
+  gap: 12px;
+  justify-content: center;
+  flex-wrap: wrap;
+}
+.global-error-retry {
+  padding: 12px 28px;
+  background: var(--gold);
+  color: white;
+  border: none;
+  border-radius: var(--radius-sm);
+  font-family: var(--font-body), 'Outfit', sans-serif;
+  font-size: 0.9rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background 0.2s, transform 0.15s;
+}
+.global-error-retry:hover {
+  background: #c49940;
+  transform: translateY(-1px);
+}
+.global-error-home {
+  padding: 12px 28px;
+  background: white;
+  color: var(--navy);
+  border: 1px solid rgba(212, 168, 83, 0.25);
+  border-radius: var(--radius-sm);
+  font-family: var(--font-body), 'Outfit', sans-serif;
+  font-size: 0.9rem;
+  font-weight: 500;
+  text-decoration: none;
+  transition: border-color 0.2s;
+}
+.global-error-home:hover {
+  border-color: var(--gold);
+}
+
 /* ===== POLICIES PAGE ===== */
 .policies-page {
   position: relative;
