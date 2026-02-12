@@ -20,12 +20,14 @@ import QuickStartFAB from '@/components/QuickStartFAB';
 import GameErrorBoundary from '@/components/GameErrorBoundary';
 
 export const metadata: Metadata = {
-  title: 'Interactive Braille Practice — TeachBraille.org',
+  title: 'Free Braille Practice Games — 10 Interactive Activities',
   description:
-    'Practice braille with 10 interactive activities. Word Game, Dot Explorer, Hangman, Speed Match, Memory Match, Contraction Sprint, Number Sense, Reflex Dots, Sequence, and Sentence Decoder.',
+    'Teach and learn braille with 10 free interactive games. Practice letters, numbers, contractions, and sentences with Word Game, Dot Explorer, Hangman, Speed Match, Memory Match, and more.',
+  alternates: { canonical: 'https://teachbraille.org/games' },
   openGraph: {
-    title: 'Interactive Braille Practice — TeachBraille.org',
-    description: 'Interactive braille learning: 10 games from letter recognition to sentence reading.',
+    title: 'Free Braille Practice Games — 10 Interactive Activities | TeachBraille.org',
+    description:
+      'Learn braille with 10 free interactive games — from letter recognition to full sentence decoding. No account needed.',
   },
 };
 

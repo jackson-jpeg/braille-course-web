@@ -2,18 +2,23 @@
 
 import { useState, useMemo, useEffect, useCallback, useRef } from 'react';
 import { useRouter } from 'next/navigation';
+import dynamic from 'next/dynamic';
 import { ToastProvider } from './AdminToast';
 import { downloadCsv } from './admin-utils';
+import { SkeletonCards } from './AdminSkeleton';
 import AdminOverviewTab from './AdminOverviewTab';
-import AdminStudentsTab from './AdminStudentsTab';
-import AdminPaymentsTab from './AdminPaymentsTab';
-import AdminEmailsTab from './AdminEmailsTab';
-import AdminSchoolsTab from './AdminSchoolsTab';
-import AdminCreateTab from './AdminCreateTab';
-import AdminMaterialsTab from './AdminMaterialsTab';
-import AdminSettingsTab from './AdminSettingsTab';
 import AdminConfirmDialog from './AdminConfirmDialog';
 import type { AdminProps } from './admin-types';
+
+const TabLoading = () => <SkeletonCards count={4} />;
+
+const AdminStudentsTab = dynamic(() => import('./AdminStudentsTab'), { loading: TabLoading });
+const AdminPaymentsTab = dynamic(() => import('./AdminPaymentsTab'), { loading: TabLoading });
+const AdminEmailsTab = dynamic(() => import('./AdminEmailsTab'), { loading: TabLoading });
+const AdminSchoolsTab = dynamic(() => import('./AdminSchoolsTab'), { loading: TabLoading });
+const AdminCreateTab = dynamic(() => import('./AdminCreateTab'), { loading: TabLoading });
+const AdminMaterialsTab = dynamic(() => import('./AdminMaterialsTab'), { loading: TabLoading });
+const AdminSettingsTab = dynamic(() => import('./AdminSettingsTab'), { loading: TabLoading });
 
 type Tab = 'overview' | 'students' | 'payments' | 'emails' | 'schools' | 'create' | 'materials' | 'settings';
 

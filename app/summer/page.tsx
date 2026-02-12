@@ -11,13 +11,14 @@ import Footer from '@/components/Footer';
 export const revalidate = 60;
 
 export const metadata: Metadata = {
-  title: 'Summer Braille Course 2026 — Delaney Costello, TVI',
+  title: 'Summer Braille Course 2026 — Learn Braille in 8 Weeks',
   description:
-    'An 8-week introductory remote Braille course for parents and loved ones of visually impaired individuals. Taught by Delaney Costello, Teacher of the Visually Impaired. Only 10 spots available — Summer 2026.',
+    'Learn to read and write braille in 8 weeks. Remote summer course for parents and loved ones of visually impaired individuals. Taught by Delaney Costello, certified TVI. Only 10 spots — Summer 2026.',
+  alternates: { canonical: 'https://teachbraille.org/summer' },
   openGraph: {
-    title: 'Learn Braille This Summer — Remote Course for Parents',
+    title: 'Summer Braille Course 2026 — Learn Braille in 8 Weeks | TeachBraille.org',
     description:
-      'An 8-week introductory remote Braille course for parents and loved ones. Only 10 spots available. Starts June 8.',
+      'An 8-week remote braille course for parents and loved ones. Live instruction from a certified TVI. Only 10 spots available.',
     type: 'website',
   },
 };
@@ -32,8 +33,43 @@ export default async function SummerPage() {
     // DB not available yet — render with empty sections
   }
 
+  const courseJsonLd = {
+    '@context': 'https://schema.org',
+    '@type': 'Course',
+    name: 'Summer Braille Course 2026',
+    description:
+      'An 8-week introductory remote Braille course for parents and loved ones of visually impaired individuals.',
+    provider: {
+      '@type': 'Person',
+      name: 'Delaney Costello',
+      url: 'https://teachbraille.org',
+    },
+    url: 'https://teachbraille.org/summer',
+    courseMode: 'online',
+    datePublished: '2026-01-01',
+    offers: {
+      '@type': 'Offer',
+      price: '500',
+      priceCurrency: 'USD',
+      availability: 'https://schema.org/LimitedAvailability',
+      url: 'https://teachbraille.org/summer',
+    },
+    hasCourseInstance: {
+      '@type': 'CourseInstance',
+      courseMode: 'online',
+      startDate: '2026-06-08',
+      endDate: '2026-08-02',
+      instructor: {
+        '@type': 'Person',
+        name: 'Delaney Costello',
+        jobTitle: 'Teacher of the Visually Impaired',
+      },
+    },
+  };
+
   return (
     <SpotsProvider initialSections={sections}>
+      <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(courseJsonLd) }} />
       <FloatingCta />
 
       {/* ========== HERO ========== */}

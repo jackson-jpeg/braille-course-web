@@ -5,12 +5,14 @@ import BrailleHero from '@/components/BrailleHero';
 import AppointmentRequestForm from '@/components/AppointmentRequestForm';
 
 export const metadata: Metadata = {
-  title: 'Book an Appointment — TeachBraille.org',
+  title: 'Book a Braille Lesson — 1-on-1 TVI Instruction',
   description:
-    'Schedule a 1-on-1 braille instruction session with Delaney Costello, Teacher of the Visually Impaired. Personalized lessons at your own pace.',
+    'Learn braille at your own pace with personalized 1-on-1 instruction from Delaney Costello, a certified Teacher of the Visually Impaired. Schedule a session today.',
+  alternates: { canonical: 'https://teachbraille.org/appointments' },
   openGraph: {
-    title: 'Book a Braille Appointment — TeachBraille.org',
-    description: 'Personalized 1-on-1 braille instruction with a certified TVI.',
+    title: 'Book a Braille Lesson — 1-on-1 TVI Instruction | TeachBraille.org',
+    description:
+      'Personalized braille instruction at your own pace from a certified Teacher of the Visually Impaired.',
   },
 };
 

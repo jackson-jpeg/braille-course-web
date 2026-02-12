@@ -7,12 +7,14 @@ import FAQ from '@/components/FAQ';
 import HowItWorks from '@/components/HowItWorks';
 
 export const metadata: Metadata = {
-  title: 'TVI Services — TeachBraille.org',
+  title: 'TVI Services for Schools & Districts — Braille Instruction & More',
   description:
-    'Contracted vision services for schools and districts. Delaney Costello is a certified Teacher of the Visually Impaired offering braille instruction, assistive technology training, and expanded core curriculum services.',
+    'Teach braille in your school or district. Contracted TVI services from Delaney Costello including braille instruction, assistive technology training, compensatory skills, and expanded core curriculum.',
+  alternates: { canonical: 'https://teachbraille.org/services' },
   openGraph: {
-    title: 'TVI Services — TeachBraille.org',
-    description: 'Contracted vision services for schools, districts, and organizations from a certified TVI.',
+    title: 'TVI Services for Schools & Districts | TeachBraille.org',
+    description:
+      'Contracted vision services from a certified TVI — braille instruction, assistive technology, and expanded core curriculum for schools and districts.',
   },
 };
 

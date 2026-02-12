@@ -2,8 +2,13 @@ import type { Metadata } from 'next';
 import Footer from '@/components/Footer';
 
 export const metadata: Metadata = {
-  title: 'Policies — TeachBraille.org',
+  title: 'Policies',
   description: 'Refund policy, privacy policy, and terms of service for TeachBraille.org summer braille courses.',
+  alternates: { canonical: 'https://teachbraille.org/policies' },
+  openGraph: {
+    title: 'Policies | TeachBraille.org',
+    description: 'Refund policy, privacy policy, and terms of service for TeachBraille.org summer braille courses.',
+  },
 };
 
 export default function PoliciesPage() {

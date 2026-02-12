@@ -1,6 +1,21 @@
+import type { Metadata } from 'next';
 import BrailleHero from '@/components/BrailleHero';
 import Footer from '@/components/Footer';
 import Link from 'next/link';
+
+export const metadata: Metadata = {
+  title: {
+    absolute: 'Teach Braille — Free Practice, Courses & TVI Services | TeachBraille.org',
+  },
+  description:
+    'Teach and learn braille with free interactive practice games, a beginner-friendly guide, summer courses, and personalized 1-on-1 instruction from Delaney Costello, a certified Teacher of the Visually Impaired.',
+  alternates: { canonical: 'https://teachbraille.org' },
+  openGraph: {
+    title: 'Teach Braille — Free Practice, Courses & TVI Services | TeachBraille.org',
+    description:
+      'Learn braille with free interactive games, a step-by-step introduction, summer courses, and personalized TVI instruction from Delaney Costello.',
+  },
+};
 
 export default function HubPage() {
   return (

@@ -9,17 +9,21 @@ export async function GET(req: NextRequest) {
     return NextResponse.json({ found: false }, { status: 400 });
   }
 
-  const enrollment = await prisma.enrollment.findUnique({
-    where: { stripeSessionId: sessionId },
-    include: { section: true },
-  });
+  try {
+    const enrollment = await prisma.enrollment.findUnique({
+      where: { stripeSessionId: sessionId },
+      include: { section: true },
+    });
 
-  if (!enrollment) {
-    return NextResponse.json({ found: false });
+    if (!enrollment) {
+      return NextResponse.json({ found: false });
+    }
+
+    return NextResponse.json({
+      found: true,
+      schedule: getSchedule(enrollment.section.label),
+    });
+  } catch {
+    return NextResponse.json({ error: 'Internal error' }, { status: 500 });
   }
-
-  return NextResponse.json({
-    found: true,
-    schedule: getSchedule(enrollment.section.label),
-  });
 }

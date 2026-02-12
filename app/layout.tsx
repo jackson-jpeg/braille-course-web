@@ -28,26 +28,80 @@ const caveat = Caveat({
 });
 
 export const metadata: Metadata = {
-  title: 'TeachBraille.org — Delaney Costello, TVI',
+  metadataBase: new URL('https://teachbraille.org'),
+  title: {
+    default: 'Teach Braille — Free Practice, Courses & TVI Services | TeachBraille.org',
+    template: '%s | TeachBraille.org',
+  },
   description:
-    'Delaney Costello is a Teacher of the Visually Impaired with 9 years of experience offering braille instruction, assistive technology, compensatory skills, and educational team consultation.',
+    'Teach and learn braille with free interactive practice games, a beginner-friendly guide, summer courses, and 1-on-1 instruction from Delaney Costello, a certified Teacher of the Visually Impaired.',
+  keywords: [
+    'teach braille',
+    'learn braille',
+    'braille instruction',
+    'braille practice',
+    'braille course',
+    'braille alphabet',
+    'braille games',
+    'teacher of the visually impaired',
+    'TVI services',
+    'braille for parents',
+    'braille for beginners',
+    'UEB braille',
+  ],
   openGraph: {
-    title: 'TeachBraille.org — Delaney Costello, Teacher of the Visually Impaired',
+    title: 'Teach Braille — Free Practice, Courses & TVI Services | TeachBraille.org',
     description:
-      'TVI services including braille instruction, assistive technology, and compensatory skills. Summer courses, 1-on-1 sessions, and free interactive braille practice.',
+      'Learn braille with free interactive games, a step-by-step introduction, summer courses, and personalized TVI instruction from Delaney Costello.',
     type: 'website',
     url: 'https://teachbraille.org',
+    siteName: 'TeachBraille.org',
+    locale: 'en_US',
   },
   twitter: {
     card: 'summary_large_image',
   },
+  alternates: {
+    canonical: 'https://teachbraille.org',
+  },
   robots: { index: true, follow: true },
+};
+
+const jsonLd = {
+  '@context': 'https://schema.org',
+  '@graph': [
+    {
+      '@type': 'WebSite',
+      name: 'TeachBraille.org',
+      url: 'https://teachbraille.org',
+      description:
+        'Teach and learn braille with free interactive practice, online courses, and personalized TVI instruction.',
+    },
+    {
+      '@type': 'Person',
+      name: 'Delaney Costello',
+      jobTitle: 'Teacher of the Visually Impaired',
+      url: 'https://teachbraille.org',
+      email: 'Delaney@TeachBraille.org',
+      description:
+        'Teacher of the Visually Impaired with 9 years of experience offering braille instruction, assistive technology, compensatory skills, and educational team consultation.',
+      knowsAbout: [
+        'Braille',
+        'Unified English Braille',
+        'Assistive Technology',
+        'Visual Impairment Education',
+        'Compensatory Skills',
+      ],
+      sameAs: ['https://teachbraille.org'],
+    },
+  ],
 };
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
     <html lang="en" className={`${outfit.variable} ${dmSerif.variable} ${caveat.variable}`}>
       <body>
+        <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }} />
         <a className="skip-link" href="#main-content">
           Skip to content
         </a>

@@ -8650,6 +8650,327 @@ details.faq-item.reveal:nth-child(6) {
   box-shadow: 0 12px 40px rgba(0, 0, 0, 0.15);
 }
 
+/* -- Why Braille Matters -- */
+.intro-impact {
+  padding: 100px 24px;
+  background: var(--section-bg);
+}
+.intro-impact-inner {
+  max-width: 800px;
+  margin: 0 auto;
+  text-align: center;
+}
+.intro-impact-inner h2 {
+  font-family: var(--font-heading), 'DM Serif Display', serif;
+  font-size: clamp(1.6rem, 3.5vw, 2.2rem);
+  color: var(--navy);
+  margin-bottom: 28px;
+}
+.intro-impact-stats {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 24px;
+  margin-bottom: 40px;
+}
+
+/* -- Grades of Braille -- */
+.intro-grades {
+  padding: 100px 24px;
+  background: white;
+}
+.intro-grades-inner {
+  max-width: 800px;
+  margin: 0 auto;
+  text-align: center;
+}
+.intro-grades-inner h2 {
+  font-family: var(--font-heading), 'DM Serif Display', serif;
+  font-size: clamp(1.6rem, 3.5vw, 2.2rem);
+  color: var(--navy);
+  margin-bottom: 28px;
+}
+.intro-grades-compare {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 28px;
+  margin: 40px 0;
+}
+.intro-grades-card {
+  padding: 32px 24px;
+  border-radius: var(--radius-lg);
+  border: 1px solid rgba(212, 168, 83, 0.15);
+  transition: transform 0.3s var(--ease-out), box-shadow 0.3s var(--ease-out);
+}
+.intro-grades-card:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 8px 24px rgba(212, 168, 83, 0.12);
+}
+.intro-grades-card--g1 {
+  background: var(--section-bg);
+}
+.intro-grades-card--g2 {
+  background: linear-gradient(135deg, var(--gold-soft) 0%, rgba(212, 168, 83, 0.06) 100%);
+  border-color: rgba(212, 168, 83, 0.3);
+}
+.intro-grades-card h3 {
+  font-family: var(--font-heading), 'DM Serif Display', serif;
+  font-size: 1.2rem;
+  color: var(--navy);
+  margin-bottom: 4px;
+}
+.intro-grades-card p {
+  font-size: 0.85rem;
+  color: var(--text-secondary);
+  margin-bottom: 20px;
+}
+.intro-grades-cells {
+  display: flex;
+  gap: 16px;
+  justify-content: center;
+  align-items: flex-end;
+  min-height: 80px;
+}
+.intro-grades-card-count {
+  font-size: 0.8rem;
+  color: var(--text-secondary);
+  margin-top: 16px;
+  font-weight: 500;
+}
+
+/* Inline braille cells */
+.intro-bcell {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 6px;
+}
+.intro-bcell-dots {
+  display: grid;
+  grid-template-columns: repeat(2, 14px);
+  grid-template-rows: repeat(3, 14px);
+  gap: 3px;
+}
+.intro-bcell-dot {
+  width: 14px;
+  height: 14px;
+  border-radius: 50%;
+  background: rgba(27, 42, 74, 0.12);
+}
+.intro-bcell-dot.raised {
+  background: var(--gold);
+}
+.intro-bcell-lbl {
+  font-size: 0.75rem;
+  font-weight: 600;
+  color: var(--navy);
+}
+
+/* Contraction examples */
+.intro-grades-examples {
+  display: flex;
+  gap: 20px;
+  justify-content: center;
+  flex-wrap: wrap;
+  margin-top: 32px;
+}
+.intro-grades-example {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 10px;
+  padding: 16px 20px;
+  background: var(--section-bg);
+  border-radius: var(--radius-sm);
+  border: 1px solid rgba(212, 168, 83, 0.1);
+  transition: transform 0.2s var(--ease-out), box-shadow 0.2s var(--ease-out);
+}
+.intro-grades-example:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(212, 168, 83, 0.1);
+}
+.intro-grades-example-word {
+  font-size: 0.7rem;
+  font-weight: 600;
+  letter-spacing: 1.5px;
+  text-transform: uppercase;
+  color: var(--gold-text);
+}
+
+/* -- Numbers in Braille -- */
+.intro-numbers {
+  padding: 100px 24px;
+  background: var(--section-bg);
+}
+.intro-numbers-inner {
+  max-width: 800px;
+  margin: 0 auto;
+  text-align: center;
+}
+.intro-numbers-inner h2 {
+  font-family: var(--font-heading), 'DM Serif Display', serif;
+  font-size: clamp(1.6rem, 3.5vw, 2.2rem);
+  color: var(--navy);
+  margin-bottom: 28px;
+}
+
+/* -- BrailleNumbers component -- */
+.num-wrap {
+  margin-top: 32px;
+}
+.num-indicator-banner {
+  display: flex;
+  align-items: center;
+  gap: 20px;
+  padding: 20px 24px;
+  background: rgba(212, 168, 83, 0.08);
+  border: 1px solid rgba(212, 168, 83, 0.15);
+  border-radius: var(--radius-md);
+  margin-bottom: 28px;
+  text-align: left;
+}
+.num-indicator-banner strong {
+  color: var(--navy);
+  display: block;
+  margin-bottom: 2px;
+}
+.num-indicator-banner p {
+  font-size: 0.9rem;
+  color: var(--text-secondary);
+  line-height: 1.6;
+  margin: 0;
+}
+.num-indicator-cell {
+  display: grid;
+  grid-template-columns: repeat(2, 14px);
+  grid-template-rows: repeat(3, 14px);
+  gap: 3px;
+  flex-shrink: 0;
+}
+.num-dot-sm {
+  width: 14px;
+  height: 14px;
+  border-radius: 50%;
+  background: rgba(27, 42, 74, 0.12);
+}
+.num-dot-sm.raised {
+  background: var(--gold);
+}
+.num-grid {
+  display: grid;
+  grid-template-columns: repeat(5, 1fr);
+  gap: 12px;
+  max-width: 460px;
+  margin: 0 auto;
+}
+.num-card {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+  padding: 12px 8px;
+  background: white;
+  border: 1px solid rgba(212, 168, 83, 0.12);
+  border-radius: var(--radius-md);
+  cursor: pointer;
+  transition: all 0.2s ease;
+  appearance: none;
+  font-family: inherit;
+}
+.num-card:hover {
+  border-color: var(--gold);
+  transform: translateY(-2px);
+  box-shadow: 0 4px 16px rgba(212, 168, 83, 0.15);
+}
+.num-card.active {
+  border-color: var(--gold);
+  background: rgba(212, 168, 83, 0.08);
+  box-shadow: 0 4px 16px rgba(212, 168, 83, 0.2);
+}
+.num-card-dots {
+  display: grid;
+  grid-template-columns: repeat(2, 10px);
+  grid-template-rows: repeat(3, 10px);
+  gap: 4px;
+}
+.num-card-val {
+  font-family: var(--font-heading), 'DM Serif Display', serif;
+  font-size: 1rem;
+  color: var(--navy);
+  font-weight: 600;
+}
+.num-card-eq {
+  font-size: 0.65rem;
+  color: var(--text-secondary);
+}
+.num-detail {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-top: 28px;
+  padding: 28px 32px;
+  background: white;
+  border: 1px solid rgba(212, 168, 83, 0.15);
+  border-radius: var(--radius-lg);
+  position: relative;
+  animation: fadeDown 0.3s ease-out both;
+  box-shadow: 0 8px 32px rgba(27, 42, 74, 0.06);
+}
+.num-detail-equation {
+  display: flex;
+  align-items: center;
+  gap: 20px;
+}
+.num-detail-cell-group {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+}
+.num-detail-cell {
+  display: grid;
+  grid-template-columns: repeat(2, 40px);
+  grid-template-rows: repeat(3, 40px);
+  gap: 6px;
+}
+.num-detail-dot {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  background: rgba(27, 42, 74, 0.1);
+  color: var(--text-secondary);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 0.8rem;
+  font-weight: 500;
+  transition: all 0.2s ease;
+}
+.num-detail-dot.raised {
+  background: var(--gold);
+  color: white;
+  font-weight: 600;
+}
+.num-detail-dot.raised.ind {
+  background: var(--navy);
+}
+.num-detail-cell-lbl {
+  font-size: 0.8rem;
+  font-weight: 600;
+  color: var(--text-secondary);
+}
+.num-detail-op {
+  font-family: var(--font-heading), 'DM Serif Display', serif;
+  font-size: 1.5rem;
+  color: var(--text-secondary);
+}
+.num-detail-result {
+  font-family: var(--font-heading), 'DM Serif Display', serif;
+  font-size: 3rem;
+  color: var(--navy);
+  line-height: 1;
+  min-width: 50px;
+}
+
 /* -- Intro responsive -- */
 @media (max-width: 768px) {
   .intro-hero {
@@ -8687,6 +9008,54 @@ details.faq-item.reveal:nth-child(6) {
     text-align: center;
   }
   .alpha-detail-letter {
+    font-size: 2.4rem;
+  }
+  .intro-impact-stats {
+    grid-template-columns: 1fr;
+    gap: 16px;
+  }
+  .intro-impact-stats .intro-history-stat-card {
+    max-width: 100%;
+  }
+  .intro-grades-compare {
+    grid-template-columns: 1fr;
+  }
+  .intro-grades-examples {
+    gap: 12px;
+  }
+  .intro-impact,
+  .intro-grades,
+  .intro-numbers {
+    padding: 80px 24px;
+  }
+  .num-indicator-banner {
+    flex-direction: column;
+    text-align: center;
+    gap: 12px;
+  }
+  .num-grid {
+    grid-template-columns: repeat(5, 1fr);
+    gap: 8px;
+  }
+  .num-detail {
+    padding: 20px 16px;
+  }
+  .num-detail-equation {
+    gap: 12px;
+    flex-wrap: wrap;
+    justify-content: center;
+  }
+  .num-detail-cell {
+    grid-template-columns: repeat(2, 32px);
+    grid-template-rows: repeat(3, 32px);
+    gap: 4px;
+  }
+  .num-detail-dot {
+    width: 32px;
+    height: 32px;
+    font-size: 0.7rem;
+  }
+  .num-detail-result {
     font-size: 2.4rem;
   }
   .intro-cell-grid {
@@ -16679,4 +17048,55 @@ details.faq-item.reveal:nth-child(6) {
     width: 60px;
     height: 1px;
   }
+}
+
+/* ===== ROOT LOADING SPINNER ===== */
+.root-loading {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 60vh;
+}
+.root-spinner {
+  width: 36px;
+  height: 36px;
+  border: 3px solid var(--gold-light);
+  border-top-color: var(--gold);
+  border-radius: 50%;
+  animation: root-spin 0.8s linear infinite;
+}
+@keyframes root-spin {
+  to { transform: rotate(360deg); }
+}
+
+/* ===== ADMIN ERROR BOUNDARY ===== */
+.admin-error {
+  text-align: center;
+  padding: var(--space-2xl) var(--space-lg);
+}
+.admin-error h1 {
+  font-size: 1.4rem;
+  margin-bottom: var(--space-sm);
+}
+.admin-error p {
+  color: var(--text-secondary);
+  margin-bottom: var(--space-lg);
+}
+.admin-error-digest {
+  font-size: 0.8rem;
+  color: var(--text-secondary);
+  opacity: 0.7;
+}
+.admin-error-retry {
+  background: var(--navy);
+  color: #fff;
+  border: none;
+  padding: 10px 24px;
+  border-radius: var(--radius-sm);
+  cursor: pointer;
+  font-weight: 600;
+  transition: opacity var(--transition-micro);
+}
+.admin-error-retry:hover {
+  opacity: 0.85;
 }
