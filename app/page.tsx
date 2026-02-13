@@ -31,19 +31,13 @@ export default function HubPage() {
             Teacher of the Visually Impaired
           </h1>
 
-          <p className="hub-hero-subtitle">Specialized TVI Services, Including Braille</p>
-
-          <p className="hub-hero-description">
-            Personalized support for students who are visually impaired and their families. From braille instruction and
-            assistive technology to compensatory skills and educational team consultation — all available remotely.
-          </p>
+          <p className="hub-hero-subtitle">Braille Instruction &amp; TVI Services</p>
         </div>
       </section>
 
       {/* ========== ABOUT ========== */}
       <section className="hub-about" aria-labelledby="hub-about-heading">
         <div className="hub-about-inner reveal">
-          <div className="section-label">About Delaney</div>
           <h2 id="hub-about-heading">Hi, I&apos;m Delaney Costello</h2>
           <p className="hub-about-text">
             I am a <strong>Teacher of the Visually Impaired</strong> with <strong>9 years of experience</strong> helping
@@ -92,7 +86,6 @@ export default function HubPage() {
       <section className="hub-cards" aria-labelledby="hub-cards-heading">
         <div className="hub-cards-inner">
           <div className="hub-cards-header reveal">
-            <div className="section-label">Services &amp; Resources</div>
             <h2 id="hub-cards-heading">How Can Delaney Help?</h2>
           </div>
 

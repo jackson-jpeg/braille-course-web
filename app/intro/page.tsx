@@ -121,17 +121,12 @@ export default function IntroPage() {
             Braille is a tactile reading system that opens doors to literacy for millions. In 5&nbsp;minutes,
             you&rsquo;ll understand the history, explore the 6-dot cell, and interact with the full A&ndash;Z alphabet.
           </p>
-          <div className="scroll-hint">
-            <span>Scroll to explore</span>
-            <div className="scroll-line" />
-          </div>
         </div>
       </section>
 
       {/* ========== HISTORY / WHAT IS BRAILLE ========== */}
       <section className="intro-history" aria-labelledby="intro-history-heading">
         <div className="intro-history-inner">
-          <div className="section-label">Background</div>
           <h2 id="intro-history-heading">What Is Braille?</h2>
 
           <div className="intro-history-grid reveal">
@@ -183,7 +178,6 @@ export default function IntroPage() {
       {/* ========== THE BRAILLE CELL ========== */}
       <section className="intro-cell" aria-labelledby="intro-cell-heading">
         <div className="intro-cell-inner reveal">
-          <div className="section-label">Structure</div>
           <h2 id="intro-cell-heading">The Braille Cell</h2>
           <p className="intro-history-text">
             Every braille character lives inside a cell of six dot positions. The left column holds dots{' '}
@@ -225,7 +219,6 @@ export default function IntroPage() {
       {/* ========== WHY BRAILLE MATTERS ========== */}
       <section className="intro-impact" aria-labelledby="intro-impact-heading">
         <div className="intro-impact-inner">
-          <div className="section-label">Impact</div>
           <h2 id="intro-impact-heading">Why Braille Matters</h2>
           <p className="intro-history-text">
             Braille is far more than a code &mdash; it&rsquo;s a gateway to literacy, independence, and opportunity for
@@ -270,7 +263,6 @@ export default function IntroPage() {
       {/* ========== GRADES OF BRAILLE ========== */}
       <section className="intro-grades" aria-labelledby="intro-grades-heading">
         <div className="intro-grades-inner">
-          <div className="section-label">Depth</div>
           <h2 id="intro-grades-heading">Grades of Braille</h2>
           <p className="intro-history-text">
             There are two main grades of braille. <strong>Grade&nbsp;1</strong> spells out every word letter by letter
@@ -322,7 +314,6 @@ export default function IntroPage() {
       {/* ========== NUMBERS IN BRAILLE ========== */}
       <section className="intro-numbers" aria-labelledby="intro-numbers-heading">
         <div className="intro-numbers-inner">
-          <div className="section-label">Numerals</div>
           <h2 id="intro-numbers-heading">Numbers in Braille</h2>
           <p className="intro-history-text">
             Braille cleverly reuses letter patterns for numbers. A special <strong>number indicator</strong> tells the

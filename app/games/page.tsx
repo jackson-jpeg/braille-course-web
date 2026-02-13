@@ -53,9 +53,6 @@ export default function GamesPage() {
       {/* ========== DAILY CHALLENGES ========== */}
       <DailyChallengeBanner />
 
-      {/* ========== PROGRESS DASHBOARD ========== */}
-      <ProgressDashboard />
-
       {/* ========== IN-PAGE NAV ========== */}
       <GamesNav />
 
@@ -65,6 +62,9 @@ export default function GamesPage() {
           <BrailleWordGame />
         </GameErrorBoundary>
       </section>
+
+      {/* ========== PROGRESS DASHBOARD ========== */}
+      <ProgressDashboard />
 
       {/* ========== DOT EXPLORER ========== */}
       <section className="explorer-section" id="explorer" aria-label="Dot Explorer">
