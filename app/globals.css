@@ -36,6 +36,16 @@
   --space-lg: 24px;
   --space-xl: 32px;
   --space-2xl: 48px;
+  --space-3xl: 64px;
+  --space-4xl: 80px;
+  --space-5xl: 100px;
+  --shadow-xs: 0 1px 3px rgba(27, 42, 74, 0.04);
+  --shadow-sm: 0 2px 8px rgba(27, 42, 74, 0.06);
+  --shadow-md: 0 4px 16px rgba(27, 42, 74, 0.07);
+  --shadow-lg: 0 8px 24px rgba(27, 42, 74, 0.08);
+  --shadow-xl: 0 12px 40px rgba(27, 42, 74, 0.08);
+  --transition-fast: 0.15s var(--ease-out);
+  --transition-slow: 0.6s var(--ease-out);
 }
 
 /* ===== RESET ===== */
@@ -886,8 +896,8 @@ body::after {
   transition: all 0.4s var(--ease-out);
 }
 .glance-card:hover {
-  transform: translateY(-6px);
-  box-shadow: 0 16px 48px rgba(27, 42, 74, 0.08);
+  transform: translateY(-3px);
+  box-shadow: var(--shadow-lg);
   border-color: var(--gold-light);
 }
 .glance-icon {
@@ -2779,7 +2789,7 @@ details.faq-item.reveal:nth-child(6) {
   align-items: center;
   justify-content: center;
   gap: 1px;
-  min-width: 32px;
+  min-width: 36px;
   height: 52px;
   padding: 4px 6px;
   background: white;
@@ -2918,8 +2928,8 @@ details.faq-item.reveal:nth-child(6) {
     height: 68px;
   }
   .wordgame-key {
-    min-width: 26px;
-    height: 46px;
+    min-width: 32px;
+    height: 48px;
     padding: 3px 4px;
   }
   .wordgame-key.wide {
@@ -3744,7 +3754,7 @@ details.faq-item.reveal:nth-child(6) {
 .appointments-how {
   position: relative;
   z-index: 1;
-  padding: 80px 24px;
+  padding: 60px 24px;
   background: white;
 }
 .appointments-how-inner {
@@ -3768,18 +3778,18 @@ details.faq-item.reveal:nth-child(6) {
   padding: 32px 20px;
 }
 .appointments-step-number {
-  width: 48px;
-  height: 48px;
+  width: 40px;
+  height: 40px;
   border-radius: 50%;
   background: var(--gold-soft);
   color: var(--gold-text);
   font-family: var(--font-heading), 'DM Serif Display', serif;
-  font-size: 1.3rem;
+  font-size: 1.1rem;
   font-weight: 700;
   display: flex;
   align-items: center;
   justify-content: center;
-  margin: 0 auto 20px;
+  margin: 0 auto 16px;
   border: 2px solid rgba(212, 168, 83, 0.25);
 }
 .appointments-step h3 {
@@ -3940,8 +3950,8 @@ details.faq-item.reveal:nth-child(6) {
     box-shadow 0.3s ease;
 }
 .appointments-why-item:hover {
-  transform: translateY(-4px);
-  box-shadow: 0 12px 40px rgba(27, 42, 74, 0.08);
+  transform: translateY(-3px);
+  box-shadow: var(--shadow-lg);
 }
 .appointments-why-item h3 {
   font-family: var(--font-heading), 'DM Serif Display', serif;
@@ -4204,8 +4214,8 @@ details.faq-item.reveal:nth-child(6) {
   flex-direction: column;
 }
 .services-card:hover {
-  transform: translateY(-8px);
-  box-shadow: 0 20px 60px rgba(27, 42, 74, 0.1);
+  transform: translateY(-3px);
+  box-shadow: var(--shadow-lg);
   border-color: var(--gold-light);
 }
 .services-card-icon {
@@ -4638,6 +4648,15 @@ details.faq-item.reveal:nth-child(6) {
     padding: 6px 14px;
     font-size: 0.78rem;
   }
+}
+
+/* Game section dividers — subtle border on alternating sections */
+.explorer-section,
+.speedmatch-section,
+.csprint-section,
+.reflex-section,
+.seq-section {
+  border-top: 1px solid rgba(212, 168, 83, 0.1);
 }
 
 /* ============================================================
@@ -8904,8 +8923,8 @@ details.faq-item.reveal:nth-child(6) {
     border-color 0.3s ease;
 }
 .intro-cta-card:hover {
-  transform: translateY(-4px);
-  box-shadow: 0 12px 40px rgba(0, 0, 0, 0.15);
+  transform: translateY(-3px);
+  box-shadow: var(--shadow-xl);
   border-color: var(--gold);
 }
 .intro-cta-icon {

@@ -169,12 +169,6 @@ export default function IntroPage() {
         </div>
       </section>
 
-      <div className="divider-dots" aria-hidden="true">
-        <span className="divider-dot" />
-        <span className="divider-dot" />
-        <span className="divider-dot" />
-      </div>
-
       {/* ========== THE BRAILLE CELL ========== */}
       <section className="intro-cell" aria-labelledby="intro-cell-heading">
         <div className="intro-cell-inner reveal">
@@ -199,12 +193,6 @@ export default function IntroPage() {
           </div>
         </div>
       </section>
-
-      <div className="divider-dots" aria-hidden="true">
-        <span className="divider-dot" />
-        <span className="divider-dot" />
-        <span className="divider-dot" />
-      </div>
 
       {/* ========== INTERACTIVE ALPHABET ========== */}
       <section className="intro-alphabet" aria-labelledby="intro-alpha-heading">

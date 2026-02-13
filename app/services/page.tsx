@@ -36,43 +36,10 @@ export default function ServicesPage() {
       {/* ========== HOW IT WORKS (3-step visual) ========== */}
       <HowItWorks />
 
-      {/* ========== ABOUT / PROFESSIONAL BIO ========== */}
+      {/* ========== PROFESSIONAL BACKGROUND + TIMELINE ========== */}
       <section className="services-about" aria-labelledby="services-about-heading">
         <div className="services-about-inner reveal">
-          <div className="section-label">About Delaney</div>
           <h2 id="services-about-heading">Professional Background</h2>
-          <p className="services-about-text">
-            Delaney Costello is a <strong>certified Teacher of the Visually Impaired</strong> with{' '}
-            <strong>9 years of teaching experience</strong>. She earned her degree in{' '}
-            <strong>Blindness &amp; Low Vision Education from Florida State University in 2017</strong> and spent 6
-            years traveling to schools across the state, providing in-person services to PK–12th grade students with a
-            wide range of visual diagnoses — from totally blind to low vision.
-          </p>
-          <p className="services-about-text">
-            In 2023, Delaney expanded to <strong>remote service delivery</strong>, obtaining teaching licenses beyond
-            Florida. She is currently licensed in <strong>Florida, Georgia, Kansas, and Virginia</strong> — and is
-            always willing to obtain licensure in additional states. Today she operates a <strong>hybrid model</strong>{' '}
-            — offering remote services nationwide and in-person instruction in the Tampa, Florida area — giving schools
-            and districts flexible access to a highly qualified vision specialist.
-          </p>
-          <p className="services-about-text">
-            Collaboration with other teachers, service providers, and members of the student&apos;s educational team is
-            guaranteed with every contract. This includes full participation in{' '}
-            <strong>IEP meetings, 504 meetings</strong>, and any other meetings related to the student&apos;s education.
-          </p>
-          <blockquote className="pullquote">
-            <p>
-              Every student with a visual impairment deserves access to a<em> certified vision specialist</em> who
-              understands their unique learning needs.
-            </p>
-          </blockquote>
-        </div>
-      </section>
-
-      {/* ========== CAREER TIMELINE ========== */}
-      <section className="services-timeline" aria-labelledby="services-timeline-heading">
-        <div className="services-timeline-inner reveal">
-          <h2 id="services-timeline-heading">Career Timeline</h2>
           <div className="services-timeline-track">
             <div className="services-timeline-item">
               <div className="services-timeline-year">2017</div>
@@ -103,13 +70,18 @@ export default function ServicesPage() {
               </div>
             </div>
           </div>
+          <blockquote className="pullquote">
+            <p>
+              Every student with a visual impairment deserves access to a<em> certified vision specialist</em> who
+              understands their unique learning needs.
+            </p>
+          </blockquote>
         </div>
       </section>
 
       {/* ========== SERVICES OFFERED ========== */}
       <section className="services-offered" aria-labelledby="services-offered-heading">
         <div className="services-offered-inner reveal">
-          <div className="section-label">What We Offer</div>
           <h2 id="services-offered-heading">Services Offered</h2>
           <div className="services-offered-grid">
             <div className="services-card">
@@ -188,7 +160,6 @@ export default function ServicesPage() {
       {/* ========== ECC DETAIL SECTION ========== */}
       <section className="services-ecc" aria-labelledby="services-ecc-heading" id="ecc">
         <div className="services-ecc-inner reveal">
-          <div className="section-label">Expanded Core Curriculum</div>
           <h2 id="services-ecc-heading">The Expanded Core Curriculum</h2>
           <p className="services-ecc-intro">
             The ECC encompasses 9 skill areas essential for students with visual impairments. Delaney provides direct
@@ -301,36 +272,6 @@ export default function ServicesPage() {
             literacy, assistive technology, and the Expanded Core Curriculum — ensuring your students receive
             instruction from someone who truly understands how vision loss impacts learning and development.
           </p>
-        </div>
-      </section>
-
-      {/* ========== HOW TO GET STARTED ========== */}
-      <section className="services-start" aria-labelledby="services-start-heading">
-        <div className="services-start-inner reveal">
-          <h2 id="services-start-heading">How to Get Started</h2>
-          <div className="services-steps">
-            <div className="services-step">
-              <div className="services-step-number" aria-hidden="true">
-                1
-              </div>
-              <h3>Reach Out</h3>
-              <p>Contact Delaney with your district or school&apos;s vision service needs.</p>
-            </div>
-            <div className="services-step">
-              <div className="services-step-number" aria-hidden="true">
-                2
-              </div>
-              <h3>Consultation</h3>
-              <p>Discuss student needs, scheduling, and service delivery options — remote, in-person, or hybrid.</p>
-            </div>
-            <div className="services-step">
-              <div className="services-step-number" aria-hidden="true">
-                3
-              </div>
-              <h3>Begin Services</h3>
-              <p>Start remote or in-person instruction tailored to each student&apos;s IEP and learning goals.</p>
-            </div>
-          </div>
         </div>
       </section>
 
