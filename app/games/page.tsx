@@ -1,15 +1,21 @@
 import { Metadata } from 'next';
-import BrailleWordGame from '@/components/BrailleWordGame';
-import BrailleDotExplorer from '@/components/BrailleDotExplorer';
-import BrailleHangman from '@/components/BrailleHangman';
-import BrailleSpeedMatch from '@/components/BrailleSpeedMatch';
-import BrailleMemoryMatch from '@/components/BrailleMemoryMatch';
-import BrailleContractionSprint from '@/components/BrailleContractionSprint';
-import BrailleNumberSense from '@/components/BrailleNumberSense';
-import BrailleReflexDots from '@/components/BrailleReflexDots';
-import BrailleSequence from '@/components/BrailleSequence';
-import BrailleSentenceDecoder from '@/components/BrailleSentenceDecoder';
+import dynamic from 'next/dynamic';
 import BrailleHero from '@/components/BrailleHero';
+
+function GameSkeleton() {
+  return <div className="game-skeleton" aria-label="Loading game…" role="status"><div className="game-skeleton-shimmer" /></div>;
+}
+
+const BrailleWordGame = dynamic(() => import('@/components/BrailleWordGame'), { loading: GameSkeleton });
+const BrailleDotExplorer = dynamic(() => import('@/components/BrailleDotExplorer'), { loading: GameSkeleton });
+const BrailleHangman = dynamic(() => import('@/components/BrailleHangman'), { loading: GameSkeleton });
+const BrailleSpeedMatch = dynamic(() => import('@/components/BrailleSpeedMatch'), { loading: GameSkeleton });
+const BrailleMemoryMatch = dynamic(() => import('@/components/BrailleMemoryMatch'), { loading: GameSkeleton });
+const BrailleContractionSprint = dynamic(() => import('@/components/BrailleContractionSprint'), { loading: GameSkeleton });
+const BrailleNumberSense = dynamic(() => import('@/components/BrailleNumberSense'), { loading: GameSkeleton });
+const BrailleReflexDots = dynamic(() => import('@/components/BrailleReflexDots'), { loading: GameSkeleton });
+const BrailleSequence = dynamic(() => import('@/components/BrailleSequence'), { loading: GameSkeleton });
+const BrailleSentenceDecoder = dynamic(() => import('@/components/BrailleSentenceDecoder'), { loading: GameSkeleton });
 import GamesNav from '@/components/GamesNav';
 import Footer from '@/components/Footer';
 import OnboardingModal from '@/components/OnboardingModal';

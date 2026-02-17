@@ -1,13 +1,26 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { prisma } from '@/lib/prisma';
+import { checkRateLimit } from '@/lib/rate-limit';
+
+// CUID format validation to prevent injection
+const CUID_RE = /^c[a-z0-9]{20,30}$/;
 
 /**
  * GET /api/game-progress?enrollmentId=xxx
  * Load cloud-saved game progress for a student.
  */
 export async function GET(req: NextRequest) {
+  const ip = req.headers.get('x-forwarded-for')?.split(',')[0]?.trim() || 'unknown';
+  const { allowed, retryAfter } = checkRateLimit(`game-progress:${ip}`);
+  if (!allowed) {
+    return NextResponse.json(
+      { error: 'Too many requests' },
+      { status: 429, headers: { 'Retry-After': String(retryAfter) } },
+    );
+  }
+
   const enrollmentId = req.nextUrl.searchParams.get('enrollmentId');
-  if (!enrollmentId) {
+  if (!enrollmentId || !CUID_RE.test(enrollmentId)) {
     return NextResponse.json({ error: 'enrollmentId required' }, { status: 400 });
   }
 
@@ -44,6 +57,15 @@ export async function GET(req: NextRequest) {
  * Save game progress to cloud. Body: { enrollmentId, progress }
  */
 export async function PUT(req: NextRequest) {
+  const ip = req.headers.get('x-forwarded-for')?.split(',')[0]?.trim() || 'unknown';
+  const { allowed, retryAfter } = checkRateLimit(`game-progress:${ip}`);
+  if (!allowed) {
+    return NextResponse.json(
+      { error: 'Too many requests' },
+      { status: 429, headers: { 'Retry-After': String(retryAfter) } },
+    );
+  }
+
   let body: { enrollmentId?: string; progress?: unknown };
   try {
     body = await req.json();
@@ -52,7 +74,7 @@ export async function PUT(req: NextRequest) {
   }
 
   const { enrollmentId, progress } = body;
-  if (!enrollmentId || !progress) {
+  if (!enrollmentId || !CUID_RE.test(enrollmentId) || !progress) {
     return NextResponse.json({ error: 'enrollmentId and progress required' }, { status: 400 });
   }
 

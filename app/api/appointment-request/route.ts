@@ -1,10 +1,8 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { prisma } from '@/lib/prisma';
-import { Resend } from 'resend';
+import { resend } from '@/lib/resend';
 import { checkRateLimit } from '@/lib/rate-limit';
 import { appointmentRequestAdminEmail, appointmentRequestConfirmationEmail } from '@/lib/email-templates';
-
-const resend = new Resend(process.env.RESEND_API_KEY);
 
 export async function POST(req: NextRequest) {
   const ip = req.headers.get('x-forwarded-for')?.split(',')[0]?.trim() || 'unknown';

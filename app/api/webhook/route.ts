@@ -28,6 +28,13 @@ export async function POST(req: NextRequest) {
     return NextResponse.json({ error: 'Invalid signature' }, { status: 400 });
   }
 
+  // Log expired checkout sessions for analytics
+  if (event.type === 'checkout.session.expired') {
+    const session = event.data.object;
+    console.log(`Checkout session expired: ${session.id} (section: ${session.metadata?.sectionId}, plan: ${session.metadata?.plan})`);
+    return NextResponse.json({ received: true });
+  }
+
   if (event.type === 'checkout.session.completed') {
     const session = event.data.object;
 
