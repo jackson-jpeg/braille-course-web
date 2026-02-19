@@ -5,8 +5,18 @@ import { stripe } from '@/lib/stripe';
 import { getSchedule } from '@/lib/schedule';
 import { getSettings, getSetting } from '@/lib/settings';
 import { PRICING } from '@/lib/pricing';
+import { checkRateLimit } from '@/lib/rate-limit';
 
 export async function POST(req: NextRequest) {
+  const ip = req.headers.get('x-forwarded-for')?.split(',')[0]?.trim() || 'unknown';
+  const { allowed, retryAfter } = checkRateLimit(`checkout:${ip}`);
+  if (!allowed) {
+    return NextResponse.json(
+      { error: 'Too many requests. Please try again later.' },
+      { status: 429, headers: { 'Retry-After': String(retryAfter) } },
+    );
+  }
+
   try {
     const { sectionId, plan } = await req.json();
 
@@ -43,6 +53,11 @@ export async function POST(req: NextRequest) {
 
     // Load settings from DB for dynamic values
     const settings = await getSettings();
+
+    // Check if enrollment is enabled
+    if (getSetting(settings, 'enrollment.enabled', 'true') !== 'true') {
+      return NextResponse.json({ error: 'Enrollment is currently closed' }, { status: 403 });
+    }
     const courseName = getSetting(settings, 'course.name', 'Summer Braille Course');
     const balanceAmount = getSetting(settings, 'pricing.balance', String(PRICING.balance));
     const balanceDueDate = getSetting(settings, 'course.balanceDueDate', '2026-05-01');

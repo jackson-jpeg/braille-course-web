@@ -49,6 +49,11 @@ export async function POST(req: NextRequest) {
     const stripeCustomerId = typeof session.customer === 'string' ? session.customer : session.customer.id;
     const email = session.customer_details?.email || undefined;
 
+    // Validate plan metadata
+    if (plan && plan !== 'deposit' && plan !== 'full') {
+      console.error(`Unexpected plan metadata: "${plan}" for session ${stripeSessionId}`);
+    }
+
     try {
       // Enrollment + capacity update in a transaction
       if (sectionId) {

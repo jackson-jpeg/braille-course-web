@@ -52,8 +52,11 @@ export async function POST(req: NextRequest) {
       }
     }
 
-    // Convert local ET time to UTC (ET = UTC-4 in summer)
-    const utcHours = hours + 4;
+    // Convert local ET time to UTC.
+    // During the course (June–July), Eastern Daylight Time (EDT) = UTC-4.
+    // If the course ever runs in EST months (Nov–Mar), this would need to be +5.
+    const EDT_OFFSET = 4;
+    const utcHours = hours + EDT_OFFSET;
 
     // Generate session dates by iterating from start
     const dates: Date[] = [];
