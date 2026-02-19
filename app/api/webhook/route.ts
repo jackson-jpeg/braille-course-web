@@ -5,6 +5,7 @@ import { resend } from '@/lib/resend';
 import { getSchedule } from '@/lib/schedule';
 import { enrollmentConfirmation } from '@/lib/email-templates';
 import { getSettings, getSetting } from '@/lib/settings';
+import { PRICING } from '@/lib/pricing';
 
 export async function POST(req: NextRequest) {
   // Env var validation
@@ -126,7 +127,7 @@ export async function POST(req: NextRequest) {
           const depositSubject = getSetting(
             settings,
             'email.depositSubject',
-            'Your $150 Deposit Is Confirmed — Summer Braille Course',
+            `Your $${PRICING.deposit} Deposit Is Confirmed — Summer Braille Course`,
           );
           const fullSubject = getSetting(
             settings,
@@ -158,7 +159,7 @@ export async function POST(req: NextRequest) {
         return NextResponse.json({ received: true });
       }
 
-      // Deposit payments: save card + create draft $350 invoice
+      // Deposit payments: save card + create draft balance invoice
       await stripe.customers.update(stripeCustomerId, {
         invoice_settings: {
           default_payment_method:

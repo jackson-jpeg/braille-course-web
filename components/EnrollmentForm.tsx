@@ -5,6 +5,7 @@ import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 import { useSpots } from '@/lib/spots-context';
 import { SECTION_SCHEDULES } from '@/lib/schedule';
+import { PRICING, formatPrice } from '@/lib/pricing';
 
 type LoadingStage = null | 'processing';
 
@@ -162,7 +163,7 @@ export default function EnrollmentForm() {
 
   const buttonText = (() => {
     if (loadingStage === 'processing') return 'Processing...';
-    const price = selectedPlan === 'full' ? '$500' : selectedPlan === 'deposit' ? '$150' : '';
+    const price = selectedPlan === 'full' ? formatPrice(PRICING.full) : selectedPlan === 'deposit' ? formatPrice(PRICING.deposit) : '';
     return price ? `Continue to Checkout — ${price}` : 'Continue to Checkout';
   })();
 
@@ -228,7 +229,7 @@ export default function EnrollmentForm() {
               onChange={() => setSelectedPlan('full')}
             />
             <div className="enrollment-option-text">
-              <div className="enrollment-option-title">Pay in Full — $500</div>
+              <div className="enrollment-option-title">Pay in Full — {formatPrice(PRICING.full)}</div>
               <div className="enrollment-option-sub">One-time payment</div>
             </div>
           </label>
@@ -242,8 +243,8 @@ export default function EnrollmentForm() {
               onChange={() => setSelectedPlan('deposit')}
             />
             <div className="enrollment-option-text">
-              <div className="enrollment-option-title">Reserve with $150 Deposit</div>
-              <div className="enrollment-option-sub">$350 balance charged May 1st</div>
+              <div className="enrollment-option-title">Reserve with {formatPrice(PRICING.deposit)} Deposit</div>
+              <div className="enrollment-option-sub">{formatPrice(PRICING.balance)} balance charged {PRICING.balanceDueDate}</div>
             </div>
           </label>
         </div>
@@ -254,7 +255,7 @@ export default function EnrollmentForm() {
         (() => {
           const section = sections.find((s) => s.id === selectedSection);
           const scheduleText = section ? SECTION_SCHEDULES[section.label] || section.label : '';
-          const planText = selectedPlan === 'full' ? 'Pay in Full — $500' : '$150 deposit today, $350 on May 1';
+          const planText = selectedPlan === 'full' ? `Pay in Full — ${formatPrice(PRICING.full)}` : `${formatPrice(PRICING.deposit)} deposit today, ${formatPrice(PRICING.balance)} on ${PRICING.balanceDueDate}`;
           return (
             <div className="enrollment-summary">
               <div className="enrollment-summary-row">

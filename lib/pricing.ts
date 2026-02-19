@@ -1,0 +1,29 @@
+/**
+ * Single source of truth for course pricing displayed across the site.
+ * The checkout API also reads from CourseSettings DB for dynamic overrides,
+ * but these constants are used for all static/marketing pages and components.
+ *
+ * To change pricing: update these values, then redeploy.
+ */
+
+export const PRICING = {
+  /** Total course cost */
+  full: 500,
+  /** Deposit amount */
+  deposit: 150,
+  /** Remaining balance after deposit */
+  balance: 350,
+  /** Date the balance is charged (display string) */
+  balanceDueDate: 'May 1st',
+  /** Course date range */
+  courseDates: 'June 8 – July 27, 2026',
+  /** Total sessions */
+  totalSessions: 16,
+  /** Course duration */
+  courseDuration: '8 weeks',
+} as const;
+
+/** Format a number as a dollar amount (no cents) */
+export function formatPrice(amount: number): string {
+  return `$${amount}`;
+}

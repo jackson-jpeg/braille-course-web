@@ -1,5 +1,6 @@
 import type { Metadata } from 'next';
 import Footer from '@/components/Footer';
+import { PRICING, formatPrice } from '@/lib/pricing';
 
 export const metadata: Metadata = {
   title: 'Policies',
@@ -25,17 +26,17 @@ export default function PoliciesPage() {
           <section id="refunds" className="policy-section">
             <h2>Refund &amp; Cancellation Policy</h2>
 
-            <h3>Deposit Plan ($150 deposit + $350 balance)</h3>
+            <h3>Deposit Plan ({formatPrice(PRICING.deposit)} deposit + {formatPrice(PRICING.balance)} balance)</h3>
             <ul>
               <li>
-                <strong>Cancel before May 1:</strong> Full $150 deposit refunded.
+                <strong>Cancel before {PRICING.balanceDueDate}:</strong> Full {formatPrice(PRICING.deposit)} deposit refunded.
               </li>
               <li>
-                <strong>After May 1</strong> (once the $350 balance is charged): Non-refundable.
+                <strong>After {PRICING.balanceDueDate}</strong> (once the {formatPrice(PRICING.balance)} balance is charged): Non-refundable.
               </li>
             </ul>
 
-            <h3>Pay-in-Full Plan ($500)</h3>
+            <h3>Pay-in-Full Plan ({formatPrice(PRICING.full)})</h3>
             <ul>
               <li>
                 <strong>Cancel 30+ days before June 8:</strong> Full refund.

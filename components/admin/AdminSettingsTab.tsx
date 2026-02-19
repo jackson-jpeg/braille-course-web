@@ -5,16 +5,17 @@ import { useToast } from './AdminToast';
 import AdminConfirmDialog from './AdminConfirmDialog';
 import { lastUpdatedText } from './admin-utils';
 import type { CourseSettingsMap } from './admin-types';
+import { PRICING } from '@/lib/pricing';
 
 const DEFAULT_SETTINGS: CourseSettingsMap = {
   'course.name': 'Summer Braille Course',
   'course.startDate': '2026-06-08',
   'course.endDate': '2026-07-31',
   'course.balanceDueDate': '2026-05-01',
-  'course.sessionCount': '16',
-  'pricing.full': '500',
-  'pricing.deposit': '150',
-  'pricing.balance': '350',
+  'course.sessionCount': String(PRICING.totalSessions),
+  'pricing.full': String(PRICING.full),
+  'pricing.deposit': String(PRICING.deposit),
+  'pricing.balance': String(PRICING.balance),
   'pricing.currency': 'USD',
   'section.A.schedule': 'Mon & Wed, 1–2 PM ET',
   'section.A.days': '1,3',
@@ -25,7 +26,7 @@ const DEFAULT_SETTINGS: CourseSettingsMap = {
   'enrollment.enabled': 'true',
   'enrollment.waitlistEnabled': 'true',
   'enrollment.maxWaitlist': '10',
-  'email.depositSubject': 'Your $150 Deposit Is Confirmed — Summer Braille Course',
+  'email.depositSubject': `Your $${PRICING.deposit} Deposit Is Confirmed — Summer Braille Course`,
   'email.fullPaymentSubject': "You're Enrolled — Summer Braille Course",
   'email.balanceReminderSubject': 'Balance Reminder — Summer Braille Course',
 };

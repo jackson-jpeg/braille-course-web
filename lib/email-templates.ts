@@ -18,6 +18,8 @@ function escapeHtml(str: string): string {
     .replace(/'/g, '&#39;');
 }
 
+import { PRICING } from '@/lib/pricing';
+
 /* ── colour tokens (mirrored from globals.css) ── */
 const C = {
   cream: '#FDF8F0',
@@ -191,7 +193,7 @@ export function customEmail(opts: { subject: string; body: string }) {
 export function enrollmentConfirmation(opts: { isDeposit: boolean; schedule: string }) {
   const { isDeposit, schedule } = opts;
 
-  const headline = isDeposit ? 'Your $150 Deposit Is&nbsp;Confirmed!' : 'You&rsquo;re All Set!';
+  const headline = isDeposit ? `Your $${PRICING.deposit} Deposit Is&nbsp;Confirmed!` : 'You&rsquo;re All Set!';
 
   const subtitle = isDeposit
     ? 'Your spot in the Summer Braille Course is reserved.'
@@ -218,10 +220,10 @@ export function enrollmentConfirmation(opts: { isDeposit: boolean; schedule: str
         isDeposit
           ? 'Thank you for reserving your spot! Your <strong style="color:' +
             C.navy +
-            ';">$150 deposit</strong> has been received and your enrollment is&nbsp;confirmed.'
+            ';">$${PRICING.deposit} deposit</strong> has been received and your enrollment is&nbsp;confirmed.'
           : 'Your <strong style="color:' +
             C.navy +
-            ';">$500 payment</strong> is confirmed &mdash; you&rsquo;re fully enrolled and ready to&nbsp;go!'
+            ';">$${PRICING.full} payment</strong> is confirmed &mdash; you&rsquo;re fully enrolled and ready to&nbsp;go!'
       }
     </td>
   </tr>
@@ -229,7 +231,7 @@ export function enrollmentConfirmation(opts: { isDeposit: boolean; schedule: str
   ${
     isDeposit
       ? goldBanner(
-          `<strong>Remaining balance of $350</strong> will be charged automatically on <strong>May&nbsp;1st</strong> to the card you&nbsp;used.`,
+          `<strong>Remaining balance of $${PRICING.balance}</strong> will be charged automatically on <strong>${PRICING.balanceDueDate.replace(' ', '&nbsp;')}</strong> to the card you&nbsp;used.`,
         )
       : ''
   }
@@ -252,7 +254,7 @@ export function enrollmentConfirmation(opts: { isDeposit: boolean; schedule: str
   ${footer(isDeposit ? 'You&rsquo;ll receive a receipt from Stripe separately. No action is needed before June&nbsp;8 &mdash; we&rsquo;ll send a reminder with video call details closer to the start date.' : 'You&rsquo;ll receive a receipt from Stripe separately. We&rsquo;ll send a reminder with video call details closer to the start&nbsp;date.')}`;
 
   const preview = isDeposit
-    ? 'Your $150 deposit is confirmed — your spot in the Summer Braille Course is reserved.'
+    ? `Your $${PRICING.deposit} deposit is confirmed — your spot in the Summer Braille Course is reserved.`
     : "You're fully enrolled in the Summer Braille Course. You're all set!";
   return shell(body, preview);
 }

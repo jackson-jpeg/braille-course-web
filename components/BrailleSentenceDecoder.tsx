@@ -11,6 +11,7 @@ import { useGameProgress } from '@/hooks/useGameProgress';
 import { pushAchievements } from '@/components/AchievementToast';
 import { getRandomTip } from '@/lib/learning-tips';
 import { getDifficultyParams } from '@/lib/difficulty-settings';
+import DifficultySelector from '@/components/DifficultySelector';
 
 function BrailleTokenCell({ token }: { token: BrailleToken }) {
   if (token.type === 'space') {
@@ -32,7 +33,7 @@ function BrailleTokenCell({ token }: { token: BrailleToken }) {
 }
 
 export default function BrailleSentenceDecoder() {
-  const { difficulty, recordResult } = useGameProgress('sentence-decoder');
+  const { difficulty, setDifficulty, recordResult } = useGameProgress('sentence-decoder');
   const [sentence, setSentence] = useState<SentenceData | null>(null);
   const [userInput, setUserInput] = useState('');
   const [submitted, setSubmitted] = useState(false);
@@ -132,6 +133,7 @@ export default function BrailleSentenceDecoder() {
         <span className="section-label">Reading</span>
         <h2>Sentence Decoder</h2>
         <p>Read contracted braille sentences</p>
+        <DifficultySelector gameId="sentence-decoder" current={difficulty} onChange={setDifficulty} />
       </div>
 
       <div className="decoder-body">

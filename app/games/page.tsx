@@ -24,6 +24,7 @@ import DailyChallengeBanner from '@/components/DailyChallenge';
 import AchievementToast from '@/components/AchievementToast';
 import QuickStartFAB from '@/components/QuickStartFAB';
 import GameErrorBoundary from '@/components/GameErrorBoundary';
+import StreakBadge from '@/components/StreakBadge';
 
 export const metadata: Metadata = {
   title: 'Free Braille Practice Games — 10 Interactive Activities',
@@ -52,7 +53,7 @@ export default function GamesPage() {
           <h1>
             Braille <em>Interactive</em>
           </h1>
-          <p className="games-hero-sub">Practice and build your braille skills with 10 interactive activities.</p>
+          <p className="games-hero-sub">Practice and build your braille skills with 10 interactive activities. <StreakBadge /></p>
         </div>
       </section>
 

@@ -10,6 +10,7 @@ import CopyButton from './CopyButton';
 import { useToast } from './AdminToast';
 import type { Section, Enrollment, Lead } from './admin-types';
 import { relativeTime, fullDate, downloadCsv, sortArrow as sortArrowUtil } from './admin-utils';
+import { PRICING, formatPrice } from '@/lib/pricing';
 
 type StudentSortKey = 'email' | 'schedule' | 'plan' | 'status' | 'date';
 
@@ -396,7 +397,7 @@ export default function AdminStudentsTab({
                         </span>
                       </td>
                       <td>{scheduleMap[e.section.label] || e.section.label}</td>
-                      <td>{e.plan === 'FULL' ? 'Full ($500)' : 'Deposit ($150 + $350 May 1)'}</td>
+                      <td>{e.plan === 'FULL' ? `Full (${formatPrice(PRICING.full)})` : `Deposit (${formatPrice(PRICING.deposit)} + ${formatPrice(PRICING.balance)} ${PRICING.balanceDueDate})`}</td>
                       <td>
                         <span className={`admin-status admin-status-${e.paymentStatus.toLowerCase()}`}>
                           {e.paymentStatus}

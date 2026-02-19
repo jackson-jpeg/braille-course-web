@@ -7,6 +7,7 @@ import { useGameProgress } from '@/hooks/useGameProgress';
 import { pushAchievements } from '@/components/AchievementToast';
 import { getRandomTip } from '@/lib/learning-tips';
 import { getDifficultyParams } from '@/lib/difficulty-settings';
+import DifficultySelector from '@/components/DifficultySelector';
 
 const ALL_LETTERS = Object.keys(brailleMap).filter((k) => /^[A-Z]$/.test(k));
 
@@ -37,7 +38,7 @@ function SeqBrailleCell({ pattern }: { pattern: number[] }) {
 }
 
 export default function BrailleSequence() {
-  const { difficulty, recordResult } = useGameProgress('sequence');
+  const { difficulty, setDifficulty, recordResult } = useGameProgress('sequence');
   const [phase, setPhase] = useState<Phase>('playing');
   const [cards, setCards] = useState<SequenceCard[]>([]);
   const [correctOrder, setCorrectOrder] = useState<string[]>([]);
@@ -178,6 +179,7 @@ export default function BrailleSequence() {
         <span className="section-label">Order</span>
         <h2>Braille Sequence</h2>
         <p>Arrange braille cells in alphabetical order</p>
+        <DifficultySelector gameId="sequence" current={difficulty} onChange={setDifficulty} />
       </div>
 
       <div className="seq-body">

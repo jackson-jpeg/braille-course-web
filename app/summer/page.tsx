@@ -6,6 +6,7 @@ import EnrollmentForm from '@/components/EnrollmentForm';
 import { SpotsProvider } from '@/lib/spots-context';
 import SpotsBadge from '@/components/SpotsBadge';
 import Footer from '@/components/Footer';
+import { PRICING, formatPrice } from '@/lib/pricing';
 
 export const revalidate = 60;
 
@@ -48,7 +49,7 @@ export default async function SummerPage() {
     datePublished: '2026-01-01',
     offers: {
       '@type': 'Offer',
-      price: '500',
+      price: String(PRICING.full),
       priceCurrency: 'USD',
       availability: 'https://schema.org/LimitedAvailability',
       url: 'https://teachbraille.org/summer',
@@ -237,9 +238,9 @@ export default async function SummerPage() {
                 What does this course cost?
               </summary>
               <p className="faq-answer">
-                The total cost for 8 weeks of instruction (16 sessions) is <strong>$500 per learner</strong>. You can
-                pay in full upfront, or reserve your spot with a <strong>$150 deposit</strong> — the remaining{' '}
-                <strong>$350</strong> will be charged automatically on <strong>May 1st</strong>.
+                The total cost for {PRICING.courseDuration} of instruction ({PRICING.totalSessions} sessions) is <strong>{formatPrice(PRICING.full)} per learner</strong>. You can
+                pay in full upfront, or reserve your spot with a <strong>{formatPrice(PRICING.deposit)} deposit</strong> — the remaining{' '}
+                <strong>{formatPrice(PRICING.balance)}</strong> will be charged automatically on <strong>{PRICING.balanceDueDate}</strong>.
               </p>
             </details>
           </div>
@@ -348,7 +349,7 @@ export default async function SummerPage() {
           <EnrollmentForm />
 
           <p className="cta-note">
-            Pay in full today, or put down a $150 deposit with the remaining $350 charged on May 1st.
+            Pay in full today, or put down a {formatPrice(PRICING.deposit)} deposit with the remaining {formatPrice(PRICING.balance)} charged on {PRICING.balanceDueDate}.
           </p>
 
           <div className="stripe-badge" aria-label="Secure checkout powered by Stripe">

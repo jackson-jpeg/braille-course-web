@@ -5,6 +5,7 @@ import { contractedBrailleEntries, type ContractionEntry, type ContractionType }
 import { getContractionWords, type ContractionWord } from '@/lib/contraction-words';
 import { computeSimilarity } from '@/lib/braille-map';
 import { useGameProgress } from '@/hooks/useGameProgress';
+import DifficultySelector from '@/components/DifficultySelector';
 import { pushAchievements } from '@/components/AchievementToast';
 import { getRandomTip } from '@/lib/learning-tips';
 
@@ -181,7 +182,7 @@ const KIND_LABELS: Record<QuestionKind, string> = {
 /* ── Main Component ────────────────────────────────────── */
 
 export default function BrailleContractionSprint() {
-  const { difficulty, recordResult } = useGameProgress('contraction-sprint');
+  const { difficulty, setDifficulty, recordResult } = useGameProgress('contraction-sprint');
 
   const [phase, setPhase] = useState<Phase>('ready');
   const [timeLeft, setTimeLeft] = useState(60);
@@ -372,6 +373,7 @@ export default function BrailleContractionSprint() {
         <span className="section-label">Grade 2</span>
         <h2>Contraction Sprint</h2>
         <p>Rapid-fire contraction quiz</p>
+        <DifficultySelector gameId="contraction-sprint" current={difficulty} onChange={setDifficulty} />
       </div>
 
       <div className="csprint-body">

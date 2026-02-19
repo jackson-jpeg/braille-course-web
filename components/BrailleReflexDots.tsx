@@ -6,13 +6,14 @@ import { useGameProgress } from '@/hooks/useGameProgress';
 import { pushAchievements } from '@/components/AchievementToast';
 import { getRandomTip } from '@/lib/learning-tips';
 import { getDifficultyParams } from '@/lib/difficulty-settings';
+import DifficultySelector from '@/components/DifficultySelector';
 
 const LETTERS = Object.keys(brailleMap).filter((k) => /^[A-Z]$/.test(k));
 
 type Phase = 'ready' | 'show' | 'input' | 'feedback' | 'result';
 
 export default function BrailleReflexDots() {
-  const { difficulty, recordResult } = useGameProgress('reflex-dots');
+  const { difficulty, setDifficulty, recordResult } = useGameProgress('reflex-dots');
   const [phase, setPhase] = useState<Phase>('ready');
   const [targetLetter, setTargetLetter] = useState('');
   const [targetPattern, setTargetPattern] = useState<number[]>([0, 0, 0, 0, 0, 0]);
@@ -153,6 +154,7 @@ export default function BrailleReflexDots() {
         <span className="section-label">Arcade</span>
         <h2>Reflex Dots</h2>
         <p>Memorize and recreate braille patterns</p>
+        <DifficultySelector gameId="reflex-dots" current={difficulty} onChange={setDifficulty} />
       </div>
 
       <div className="reflex-body">

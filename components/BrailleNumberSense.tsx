@@ -7,6 +7,7 @@ import { useGameProgress } from '@/hooks/useGameProgress';
 import { pushAchievements } from '@/components/AchievementToast';
 import { getRandomTip } from '@/lib/learning-tips';
 import { getDifficultyParams } from '@/lib/difficulty-settings';
+import DifficultySelector from '@/components/DifficultySelector';
 
 function BrailleCell({ pattern }: { pattern: number[] }) {
   return (
@@ -52,7 +53,7 @@ function BrailleEquals() {
 }
 
 export default function BrailleNumberSense() {
-  const { difficulty, recordResult } = useGameProgress('number-sense');
+  const { difficulty, setDifficulty, recordResult } = useGameProgress('number-sense');
   const [problem, setProblem] = useState<MathProblem | null>(null);
   const [choices, setChoices] = useState<number[]>([]);
   const [selected, setSelected] = useState<number | null>(null);
@@ -171,6 +172,7 @@ export default function BrailleNumberSense() {
           Solve math in braille <span className="numsense-badge">Nemeth Code</span>{' '}
           <span className="numsense-kbd-hint">Keys 1–4 to answer</span>
         </p>
+        <DifficultySelector gameId="number-sense" current={difficulty} onChange={setDifficulty} />
       </div>
 
       <div className="numsense-body">

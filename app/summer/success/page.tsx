@@ -3,6 +3,7 @@ import { stripe } from '@/lib/stripe';
 import { prisma } from '@/lib/prisma';
 import { getSchedule } from '@/lib/schedule';
 import SuccessPoller from '@/components/SuccessPoller';
+import { PRICING, formatPrice } from '@/lib/pricing';
 
 export const metadata = {
   title: 'Registration Confirmed — Summer Braille Course',
@@ -86,9 +87,9 @@ export default async function SuccessPage({ searchParams }: { searchParams: Prom
           </svg>
         </div>
 
-        <h1>{isDeposit ? 'Your $150 Deposit Is Confirmed' : "You're All Set!"}</h1>
+        <h1>{isDeposit ? `Your ${formatPrice(PRICING.deposit)} Deposit Is Confirmed` : "You're All Set!"}</h1>
         <p className="success-amount">
-          {isDeposit ? 'Thank you for reserving your spot!' : "$500 payment confirmed — you're fully enrolled."}
+          {isDeposit ? 'Thank you for reserving your spot!' : `${formatPrice(PRICING.full)} payment confirmed — you're fully enrolled.`}
         </p>
 
         {isDeposit && (
@@ -114,7 +115,7 @@ export default async function SuccessPage({ searchParams }: { searchParams: Prom
                 <line x1="8" y1="2" x2="8" y2="6" />
                 <line x1="3" y1="10" x2="21" y2="10" />
               </svg>
-              Remaining balance of <span className="balance-amount">$350</span> will be charged automatically on{' '}
+              Remaining balance of <span className="balance-amount">{formatPrice(PRICING.balance)}</span> will be charged automatically on{' '}
               <strong>May 1st</strong> to the card you just used.
             </p>
           </div>

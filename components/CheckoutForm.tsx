@@ -5,6 +5,7 @@ import { useSearchParams } from 'next/navigation';
 import Link from 'next/link';
 import { EmbeddedCheckoutProvider, EmbeddedCheckout } from '@stripe/react-stripe-js';
 import getStripe from '@/lib/stripe-client';
+import { PRICING, formatPrice } from '@/lib/pricing';
 
 const VALID_PLANS = ['full', 'deposit'] as const;
 type Plan = (typeof VALID_PLANS)[number];
@@ -12,13 +13,13 @@ type Plan = (typeof VALID_PLANS)[number];
 const PLAN_INFO: Record<Plan, { label: string; price: string; note: string }> = {
   full: {
     label: 'Pay in Full',
-    price: '$500',
+    price: formatPrice(PRICING.full),
     note: 'One-time payment — no balance due',
   },
   deposit: {
     label: 'Reserve with Deposit',
-    price: '$150',
-    note: '$350 balance charged automatically on May 1st',
+    price: formatPrice(PRICING.deposit),
+    note: `${formatPrice(PRICING.balance)} balance charged automatically on ${PRICING.balanceDueDate}`,
   },
 };
 

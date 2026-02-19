@@ -5,6 +5,7 @@ import CopyButton from './CopyButton';
 import { SkeletonText } from './AdminSkeleton';
 import type { Enrollment, StudentDetail, Note, StudentAttendanceStats, Assignment, Grade } from './admin-types';
 import { relativeTime, formatDate, fullDate } from './admin-utils';
+import { PRICING, formatPrice } from '@/lib/pricing';
 
 interface Props {
   enrollment: Enrollment;
@@ -199,7 +200,7 @@ export default function AdminStudentModal({ enrollment, scheduleMap, onClose, on
                   </div>
                   <div className="admin-student-detail-row">
                     <span>Plan</span>
-                    <span>{enrollment.plan === 'FULL' ? 'Full ($500)' : 'Deposit ($150 + $350 May 1)'}</span>
+                    <span>{enrollment.plan === 'FULL' ? `Full (${formatPrice(PRICING.full)})` : `Deposit (${formatPrice(PRICING.deposit)} + ${formatPrice(PRICING.balance)} ${PRICING.balanceDueDate})`}</span>
                   </div>
                   <div className="admin-student-detail-row">
                     <span>Status</span>
