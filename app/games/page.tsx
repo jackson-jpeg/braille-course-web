@@ -53,7 +53,8 @@ export default function GamesPage() {
           <h1>
             Braille <em>Interactive</em>
           </h1>
-          <p className="games-hero-sub">Practice and build your braille skills with 10 interactive activities. <StreakBadge /></p>
+          <p className="games-hero-sub">Practice and build your braille skills with 10 interactive activities.</p>
+          <StreakBadge />
         </div>
       </section>
 

@@ -4,6 +4,7 @@ import { prisma } from '@/lib/prisma';
 import { stripe } from '@/lib/stripe';
 import { getSchedule } from '@/lib/schedule';
 import { getSettings, getSetting } from '@/lib/settings';
+import { PRICING } from '@/lib/pricing';
 
 export async function POST(req: NextRequest) {
   try {
@@ -43,7 +44,7 @@ export async function POST(req: NextRequest) {
     // Load settings from DB for dynamic values
     const settings = await getSettings();
     const courseName = getSetting(settings, 'course.name', 'Summer Braille Course');
-    const balanceAmount = getSetting(settings, 'pricing.balance', '350');
+    const balanceAmount = getSetting(settings, 'pricing.balance', String(PRICING.balance));
     const balanceDueDate = getSetting(settings, 'course.balanceDueDate', '2026-05-01');
     const dueDateFormatted = new Date(balanceDueDate + 'T00:00:00').toLocaleDateString('en-US', {
       month: 'long',

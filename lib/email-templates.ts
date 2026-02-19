@@ -220,10 +220,10 @@ export function enrollmentConfirmation(opts: { isDeposit: boolean; schedule: str
         isDeposit
           ? 'Thank you for reserving your spot! Your <strong style="color:' +
             C.navy +
-            ';">$${PRICING.deposit} deposit</strong> has been received and your enrollment is&nbsp;confirmed.'
+            `;">$${PRICING.deposit} deposit</strong> has been received and your enrollment is&nbsp;confirmed.`
           : 'Your <strong style="color:' +
             C.navy +
-            ';">$${PRICING.full} payment</strong> is confirmed &mdash; you&rsquo;re fully enrolled and ready to&nbsp;go!'
+            `;">$${PRICING.full} payment</strong> is confirmed &mdash; you&rsquo;re fully enrolled and ready to&nbsp;go!`
       }
     </td>
   </tr>
@@ -242,8 +242,8 @@ export function enrollmentConfirmation(opts: { isDeposit: boolean; schedule: str
       <h2 style="margin:0 0 16px;font-family:${FONT_HEADING};font-size:18px;font-weight:400;color:${C.navy};">Course Details</h2>
       <table role="presentation" width="100%" cellpadding="0" cellspacing="0">
         ${detailRow('Schedule', schedule)}
-        ${detailRow('Dates', 'June 8 &ndash; July 27, 2026')}
-        ${detailRow('Sessions', '16 total &mdash; twice per week, 1&nbsp;hr&nbsp;each')}
+        ${detailRow('Dates', PRICING.courseDates.replace('–', '&ndash;'))}
+        ${detailRow('Sessions', `${PRICING.totalSessions} total &mdash; twice per week, 1&nbsp;hr&nbsp;each`)}
         ${detailRow('Format', 'Fully remote via video call')}
       </table>
     </td>

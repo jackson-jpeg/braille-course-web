@@ -88,7 +88,7 @@ export default async function SummerPage() {
           <p className="hero-subtitle">An introductory course for parents &amp; loved ones</p>
 
           <p className="hero-description">
-            Connect with your visually impaired child, family member, or friend in a whole new way. This 8-week remote
+            Connect with your visually impaired child, family member, or friend in a whole new way. This {PRICING.courseDuration} remote
             course will give you a strong foundation in the Unified English Braille Code.
           </p>
 
@@ -100,14 +100,14 @@ export default async function SummerPage() {
                 <line x1="8" y1="2" x2="8" y2="6" />
                 <line x1="3" y1="10" x2="21" y2="10" />
               </svg>
-              June 8 – July 27
+              {PRICING.courseDates.replace(/, \d{4}$/, '')}
             </span>
             <span className="meta-chip" role="listitem">
               <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" aria-hidden="true">
                 <circle cx="12" cy="12" r="10" />
                 <polyline points="12,6 12,12 16,14" />
               </svg>
-              16 Sessions
+              {PRICING.totalSessions} Sessions
             </span>
             <span className="meta-chip" role="listitem">
               <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" aria-hidden="true">
@@ -180,7 +180,7 @@ export default async function SummerPage() {
                 How long is this course?
               </summary>
               <p className="faq-answer">
-                The course runs for <strong>8 weeks</strong>, beginning the week of <strong>June 8th</strong> and ending
+                The course runs for <strong>{PRICING.courseDuration}</strong>, beginning the week of <strong>June 8th</strong> and ending
                 the week of <strong>July 27th</strong>.
               </p>
             </details>
@@ -193,8 +193,8 @@ export default async function SummerPage() {
                 How often will we meet?
               </summary>
               <p className="faq-answer">
-                You&apos;ll meet <strong>twice per week for one hour each session</strong>. Over the 8-week course, that
-                comes out to <strong>16 sessions total</strong>. Two time slots are available — pick the one that works
+                You&apos;ll meet <strong>twice per week for one hour each session</strong>. Over the {PRICING.courseDuration} course, that
+                comes out to <strong>{PRICING.totalSessions} sessions total</strong>. Two time slots are available — pick the one that works
                 best for you:
               </p>
               <ul className="faq-answer" style={{ marginTop: '0.5rem', paddingLeft: '1.25rem' }}>

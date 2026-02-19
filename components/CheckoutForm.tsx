@@ -128,7 +128,7 @@ export default function CheckoutForm() {
           <span className="checkout-summary-name">TeachBraille</span>
         </div>
         <h1 className="checkout-summary-title">Summer Braille Course</h1>
-        <p className="checkout-summary-schedule">June 8 &ndash; July 27, 2026 &middot; 16 live sessions</p>
+        <p className="checkout-summary-schedule">{PRICING.courseDates} &middot; {PRICING.totalSessions} live sessions</p>
         <div className="checkout-summary-divider" />
         <div className="checkout-summary-plan">
           <div className="checkout-summary-plan-row">

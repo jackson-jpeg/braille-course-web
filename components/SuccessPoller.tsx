@@ -1,6 +1,7 @@
 'use client';
 
 import { useState, useEffect, useRef } from 'react';
+import { PRICING } from '@/lib/pricing';
 
 export default function SuccessPoller({
   sessionId,
@@ -95,7 +96,7 @@ export default function SuccessPoller({
         <polyline points="12,6 12,12 16,14" />
       </svg>
       <span>
-        <strong>16 sessions</strong> — loading your schedule&hellip;
+        <strong>{PRICING.totalSessions} sessions</strong> — loading your schedule&hellip;
       </span>
     </div>
   );

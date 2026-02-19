@@ -130,7 +130,7 @@ export default async function SuccessPage({ searchParams }: { searchParams: Prom
               <line x1="3" y1="10" x2="21" y2="10" />
             </svg>
             <span>
-              Course runs <strong>June 8 – July 27, 2026</strong>
+              Course runs <strong>{PRICING.courseDates}</strong>
             </span>
           </div>
           <SuccessPoller sessionId={session_id} initialSchedule={schedule} />
