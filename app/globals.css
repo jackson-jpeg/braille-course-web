@@ -15323,6 +15323,10 @@ details.faq-item.reveal:nth-child(6) {
   color: white;
   border-color: var(--gold);
 }
+.difficulty-pill:focus-visible {
+  outline: 2px solid var(--gold);
+  outline-offset: 2px;
+}
 .difficulty-pill.locked {
   opacity: 0.4;
   cursor: not-allowed;

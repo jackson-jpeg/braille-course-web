@@ -39,10 +39,10 @@ export default function PoliciesPage() {
             <h3>Pay-in-Full Plan ({formatPrice(PRICING.full)})</h3>
             <ul>
               <li>
-                <strong>Cancel 30+ days before June 8:</strong> Full refund.
+                <strong>Cancel 30+ days before {PRICING.courseStartDate}:</strong> Full refund.
               </li>
               <li>
-                <strong>Within 30 days of June 8:</strong> Non-refundable.
+                <strong>Within 30 days of {PRICING.courseStartDate}:</strong> Non-refundable.
               </li>
             </ul>
 

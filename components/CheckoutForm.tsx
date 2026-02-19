@@ -155,7 +155,7 @@ export default function CheckoutForm() {
           Secure payment
         </span>
         <span className="checkout-trust-sep">&middot;</span>
-        <span className="checkout-trust-item">100% refundable before May 1</span>
+        <span className="checkout-trust-item">100% refundable before {PRICING.balanceDueDate}</span>
         <span className="checkout-trust-sep">&middot;</span>
         <span className="checkout-trust-item">Powered by Stripe</span>
       </div>

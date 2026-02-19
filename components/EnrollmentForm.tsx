@@ -297,7 +297,7 @@ export default function EnrollmentForm() {
           Secure payment
         </span>
         <span className="enrollment-trust-sep">&middot;</span>
-        <span className="enrollment-trust-item">100% refundable before May 1</span>
+        <span className="enrollment-trust-item">100% refundable before {PRICING.balanceDueDate}</span>
         <span className="enrollment-trust-sep">&middot;</span>
         <span className="enrollment-trust-item">Powered by Stripe</span>
       </div>

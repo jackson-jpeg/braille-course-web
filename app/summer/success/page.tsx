@@ -116,7 +116,7 @@ export default async function SuccessPage({ searchParams }: { searchParams: Prom
                 <line x1="3" y1="10" x2="21" y2="10" />
               </svg>
               Remaining balance of <span className="balance-amount">{formatPrice(PRICING.balance)}</span> will be charged automatically on{' '}
-              <strong>May 1st</strong> to the card you just used.
+              <strong>{PRICING.balanceDueDate}</strong> to the card you just used.
             </p>
           </div>
         )}

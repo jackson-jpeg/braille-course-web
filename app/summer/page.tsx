@@ -180,7 +180,7 @@ export default async function SummerPage() {
                 How long is this course?
               </summary>
               <p className="faq-answer">
-                The course runs for <strong>{PRICING.courseDuration}</strong>, beginning the week of <strong>June 8th</strong> and ending
+                The course runs for <strong>{PRICING.courseDuration}</strong>, beginning the week of <strong>{PRICING.courseStartDate}</strong> and ending
                 the week of <strong>July 27th</strong>.
               </p>
             </details>

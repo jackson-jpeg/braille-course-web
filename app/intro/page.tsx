@@ -5,6 +5,7 @@ import BrailleHero from '@/components/BrailleHero';
 import BrailleAlphabet from '@/components/BrailleAlphabet';
 import BrailleNumbers from '@/components/BrailleNumbers';
 import { brailleMap } from '@/lib/braille-map';
+import { PRICING } from '@/lib/pricing';
 
 export const metadata: Metadata = {
   title: 'Intro to Braille — What Is Braille & How to Read It',
@@ -346,7 +347,7 @@ export default function IntroPage() {
                 </svg>
               </div>
               <h3>Take the Course</h3>
-              <p>8-week remote braille course, Summer 2026. Live instruction with personalized feedback.</p>
+              <p>{PRICING.courseDuration} remote braille course, Summer 2026. Live instruction with personalized feedback.</p>
               <span className="intro-cta-arrow" aria-hidden="true">
                 <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
                   <line x1="5" y1="12" x2="19" y2="12" />
