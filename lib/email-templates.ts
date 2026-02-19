@@ -36,7 +36,13 @@ const FONT_BODY = "'Outfit', -apple-system, BlinkMacSystemFont, 'Segoe UI', Helv
 
 /* ── reusable fragments ── */
 
-function shell(content: string) {
+function shell(content: string, preheader?: string) {
+  // Hidden preheader text that shows in Gmail/Outlook preview but not in the email body.
+  // Padded with zero-width spaces + non-breaking spaces to push header text out of the snippet.
+  const preheaderHtml = preheader
+    ? `<div style="display:none;font-size:1px;color:${C.cream};line-height:1px;max-height:0;max-width:0;opacity:0;overflow:hidden;">${preheader}${'&#847; &zwnj; '.repeat(40)}</div>`
+    : '';
+
   return `
 <!DOCTYPE html>
 <html lang="en" xmlns="http://www.w3.org/1999/xhtml">
@@ -49,6 +55,7 @@ function shell(content: string) {
   <title>TeachBraille.org</title>
 </head>
 <body style="margin:0;padding:0;background:${C.cream};-webkit-font-smoothing:antialiased;">
+  ${preheaderHtml}
   <!-- outer wrapper -->
   <table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="background:${C.cream};">
     <tr>
@@ -76,10 +83,9 @@ function shell(content: string) {
 
 function header(headline: string, subtitle: string) {
   return `
-  <!-- gold header bar -->
+  <!-- header bar -->
   <tr>
     <td style="background:${C.navy};padding:36px 40px 32px;text-align:center;">
-      <p style="margin:0 0 16px;font-family:${FONT_BODY};font-size:12px;letter-spacing:2px;text-transform:uppercase;color:${C.goldLight};">TeachBraille.org</p>
       <h1 style="margin:0 0 8px;font-family:${FONT_HEADING};font-size:26px;font-weight:400;color:${C.white};line-height:1.3;">${headline}</h1>
       <p style="margin:0;font-family:${FONT_BODY};font-size:15px;color:${C.goldLight};font-weight:300;">${subtitle}</p>
     </td>
@@ -177,7 +183,9 @@ export function customEmail(opts: { subject: string; body: string }) {
   </tr>
   ${footer()}`;
 
-  return shell(content);
+  // Use first ~100 chars of the plain-text body as the preview snippet
+  const preview = body.length > 120 ? body.slice(0, 120) + '…' : body;
+  return shell(content, preview);
 }
 
 export function enrollmentConfirmation(opts: { isDeposit: boolean; schedule: string }) {
@@ -243,7 +251,10 @@ export function enrollmentConfirmation(opts: { isDeposit: boolean; schedule: str
 
   ${footer(isDeposit ? 'You&rsquo;ll receive a receipt from Stripe separately. No action is needed before June&nbsp;8 &mdash; we&rsquo;ll send a reminder with video call details closer to the start date.' : 'You&rsquo;ll receive a receipt from Stripe separately. We&rsquo;ll send a reminder with video call details closer to the start&nbsp;date.')}`;
 
-  return shell(body);
+  const preview = isDeposit
+    ? 'Your $150 deposit is confirmed — your spot in the Summer Braille Course is reserved.'
+    : "You're fully enrolled in the Summer Braille Course. You're all set!";
+  return shell(body, preview);
 }
 
 export function appointmentRequestAdminEmail(opts: {
@@ -288,7 +299,7 @@ export function appointmentRequestAdminEmail(opts: {
 
   ${footer('This lead has been added to your Prospective Students list with status NEW.')}`;
 
-  return shell(body);
+  return shell(body, `New appointment request from ${name} (${email})`);
 }
 
 export function appointmentRequestConfirmationEmail(opts: { name: string }) {
@@ -334,7 +345,7 @@ export function appointmentRequestConfirmationEmail(opts: { name: string }) {
 
   ${footer('If you have any questions in the meantime, feel free to reply to this email.')}`;
 
-  return shell(body);
+  return shell(body, `Hi ${name} — your appointment request has been received. I'll be in touch within 24 hours.`);
 }
 
 export function schoolContactAdminEmail(opts: {
@@ -423,7 +434,7 @@ export function schoolContactAdminEmail(opts: {
     </td>
   </tr>`;
 
-  return shell(body);
+  return shell(body, `New school inquiry from ${schoolName} — ${contactName} (${contactEmail})`);
 }
 
 export function schoolContactConfirmationEmail(opts: { contactName: string; schoolName: string }) {
@@ -483,5 +494,5 @@ export function schoolContactConfirmationEmail(opts: { contactName: string; scho
 
   ${footer('If you have any questions in the meantime, feel free to reply to this email or call me directly.')}`;
 
-  return shell(body);
+  return shell(body, `Hi ${contactName} — thank you for reaching out about TVI services for ${schoolName}. I'll be in touch within 2 business days.`);
 }

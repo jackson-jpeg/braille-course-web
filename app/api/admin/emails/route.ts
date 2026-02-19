@@ -18,7 +18,8 @@ export async function GET(req: NextRequest) {
     }
 
     return NextResponse.json({ emails: result.data?.data ?? [] });
-  } catch {
+  } catch (err) {
+    console.error('Failed to fetch emails:', (err as Error).message);
     return NextResponse.json({ error: 'Failed to fetch emails' }, { status: 500 });
   }
 }
@@ -71,7 +72,8 @@ export async function POST(req: NextRequest) {
     }
 
     return NextResponse.json({ success: true, id: result.data?.id });
-  } catch {
+  } catch (err) {
+    console.error('Failed to send email:', (err as Error).message);
     return NextResponse.json({ error: 'Failed to send email' }, { status: 500 });
   }
 }

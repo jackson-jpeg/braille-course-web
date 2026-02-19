@@ -107,8 +107,17 @@ export async function listReceivedEmails(limit = 50): Promise<ImapEmail[]> {
   return emails.sort((a, b) => new Date(b.created_at).getTime() - new Date(a.created_at).getTime());
 }
 
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
-function walkStructure(node: any, out: { filename: string; content_type: string; size?: number }[]) {
+interface BodyStructureNode {
+  disposition?: string;
+  parameters?: { name?: string };
+  dispositionParameters?: { filename?: string };
+  type?: string;
+  subtype?: string;
+  size?: number;
+  childNodes?: BodyStructureNode[];
+}
+
+function walkStructure(node: BodyStructureNode, out: { filename: string; content_type: string; size?: number }[]) {
   if (node.disposition === 'attachment' || (node.disposition === 'inline' && node.parameters?.name)) {
     out.push({
       filename: node.parameters?.name || node.dispositionParameters?.filename || 'attachment',

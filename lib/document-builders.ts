@@ -95,8 +95,7 @@ export interface BrailleCellOptions {
   ghostDots?: boolean;
 }
 
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
-export function drawBrailleCell(doc: any, pattern: number[], x: number, y: number, options: BrailleCellOptions = {}) {
+export function drawBrailleCell(doc: PDFKit.PDFDocument, pattern: number[], x: number, y: number, options: BrailleCellOptions = {}) {
   const size = options.size || 'small';
   const dotRadius = size === 'medium' ? 3 : 2;
   const dotSpacingX = size === 'medium' ? 12 : 8;
@@ -147,8 +146,7 @@ export function drawBrailleCell(doc: any, pattern: number[], x: number, y: numbe
 }
 
 export function drawBrailleWord(
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  doc: any,
+  doc: PDFKit.PDFDocument,
   word: string,
   x: number,
   y: number,
@@ -168,8 +166,7 @@ export function drawBrailleWord(
 
 /* ── PDF page decoration helper ── */
 
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
-export function setupPdfDecorations(doc: any, title: string) {
+export function setupPdfDecorations(doc: PDFKit.PDFDocument, title: string) {
   const NAVY = '#1B2A4A';
   const GOLD = '#D4A853';
   let pageNumber = 1;
