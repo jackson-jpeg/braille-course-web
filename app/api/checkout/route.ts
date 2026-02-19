@@ -67,7 +67,7 @@ export async function POST(req: NextRequest) {
     });
 
     // Create Stripe Checkout Session
-    const siteUrl = process.env.SITE_URL || 'https://braille-course-web.vercel.app';
+    const siteUrl = process.env.SITE_URL || 'https://teachbraille.org';
     const schedule = getSchedule(section.label);
 
     const sessionParams: Stripe.Checkout.SessionCreateParams = {

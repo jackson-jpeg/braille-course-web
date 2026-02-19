@@ -1,9 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { isAuthorized } from '@/lib/admin-auth';
 import { customEmail } from '@/lib/email-templates';
-import { Resend } from 'resend';
-
-const resend = new Resend(process.env.RESEND_API_KEY);
+import { resend } from '@/lib/resend';
 
 /**
  * POST /api/admin/emails/bulk
