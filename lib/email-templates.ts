@@ -251,7 +251,7 @@ export function enrollmentConfirmation(opts: { isDeposit: boolean; schedule: str
 
   ${ctaButton('View Course Page', 'https://teachbraille.org/summer')}
 
-  ${footer(isDeposit ? 'You&rsquo;ll receive a receipt from Stripe separately. No action is needed before June&nbsp;8 &mdash; we&rsquo;ll send a reminder with video call details closer to the start date.' : 'You&rsquo;ll receive a receipt from Stripe separately. We&rsquo;ll send a reminder with video call details closer to the start&nbsp;date.')}`;
+  ${footer(isDeposit ? 'You&rsquo;ll receive a receipt from Stripe separately. No action is needed before June&nbsp;1 &mdash; we&rsquo;ll send a reminder with video call details closer to the start date.' : 'You&rsquo;ll receive a receipt from Stripe separately. We&rsquo;ll send a reminder with video call details closer to the start&nbsp;date.')}`;
 
   const preview = isDeposit
     ? `Your $${PRICING.deposit} deposit is confirmed — your spot in the Summer Braille Course is reserved.`

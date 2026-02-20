@@ -11,14 +11,14 @@ import { PRICING, formatPrice } from '@/lib/pricing';
 export const revalidate = 60;
 
 export const metadata: Metadata = {
-  title: 'Summer Braille Course 2026 — Learn Braille in 8 Weeks',
+  title: 'Summer Braille Course 2026 — Learn Braille This Summer',
   description:
-    'Learn to read and write braille in 8 weeks. Remote summer course for parents and loved ones of visually impaired individuals. Taught by Delaney Costello, certified TVI. Only 10 spots — Summer 2026.',
+    'Learn to read and write braille this summer. Remote course for parents and loved ones of visually impaired individuals. Taught by Delaney Costello, certified TVI. Only 10 spots — Summer 2026.',
   alternates: { canonical: 'https://teachbraille.org/summer' },
   openGraph: {
-    title: 'Summer Braille Course 2026 — Learn Braille in 8 Weeks | TeachBraille.org',
+    title: 'Summer Braille Course 2026 — Learn Braille This Summer | TeachBraille.org',
     description:
-      'An 8-week remote braille course for parents and loved ones. Live instruction from a certified TVI. Only 10 spots available.',
+      'A remote braille course for parents and loved ones. Live instruction from a certified TVI. Only 10 spots available.',
     type: 'website',
   },
 };
@@ -57,8 +57,8 @@ export default async function SummerPage() {
     hasCourseInstance: {
       '@type': 'CourseInstance',
       courseMode: 'online',
-      startDate: '2026-06-08',
-      endDate: '2026-08-02',
+      startDate: '2026-06-01',
+      endDate: '2026-07-21',
       instructor: {
         '@type': 'Person',
         name: 'Delaney Costello',
@@ -180,8 +180,8 @@ export default async function SummerPage() {
                 How long is this course?
               </summary>
               <p className="faq-answer">
-                The course runs for <strong>{PRICING.courseDuration}</strong>, beginning the week of <strong>{PRICING.courseStartDate}</strong> and ending
-                the week of <strong>July 27th</strong>.
+                The course runs for <strong>{PRICING.courseDuration}</strong>, beginning <strong>{PRICING.courseStartDate}</strong> and ending
+                the week of <strong>July 21st</strong>. The final week is one class short — Section A meets only Monday, July 20th, and Section B meets only Tuesday, July 21st.
               </p>
             </details>
 
