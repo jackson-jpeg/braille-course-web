@@ -22,7 +22,7 @@ export const PRICING = {
   /** Total sessions */
   totalSessions: 15,
   /** Course duration */
-  courseDuration: '8 weeks',
+  courseDuration: '8-week',
 } as const;
 
 /** Format a number as a dollar amount (no cents) */

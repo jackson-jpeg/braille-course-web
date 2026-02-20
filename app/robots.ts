@@ -7,6 +7,6 @@ export default function robots(): MetadataRoute.Robots {
       allow: '/',
       disallow: ['/admin', '/api/', '/summer/checkout', '/summer/success'],
     },
-    sitemap: 'https://teachbraille.org/sitemap.xml',
+    sitemap: 'https://www.teachbraille.org/sitemap.xml',
   };
 }
