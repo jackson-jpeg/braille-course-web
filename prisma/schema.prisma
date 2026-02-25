@@ -200,6 +200,8 @@ model Grade {
   createdAt    DateTime   @default(now())
   updatedAt    DateTime   @updatedAt
   @@unique([assignmentId, enrollmentId])
+  @@index([assignmentId])
+  @@index([enrollmentId])
 }
 
 model CourseSettings {
