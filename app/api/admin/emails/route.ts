@@ -59,16 +59,22 @@ export async function POST(req: NextRequest) {
       }
     }
 
-    const result = await resend.emails.send({
-      from: 'Delaney Costello <delaney@teachbraille.org>',
-      to: recipients,
-      subject,
-      html,
-      ...(emailAttachments.length > 0 ? { attachments: emailAttachments } : {}),
-    });
+    let result;
+    try {
+      result = await resend.emails.send({
+        from: 'Delaney Costello <delaney@teachbraille.org>',
+        to: recipients,
+        subject,
+        html,
+        ...(emailAttachments.length > 0 ? { attachments: emailAttachments } : {}),
+      });
 
-    if (result.error) {
-      return NextResponse.json({ error: result.error.message }, { status: 500 });
+      if (result.error) {
+        return NextResponse.json({ error: result.error.message }, { status: 500 });
+      }
+    } catch (sendErr) {
+      console.error('Failed to send email:', (sendErr as Error).message);
+      return NextResponse.json({ error: 'Failed to send email' }, { status: 500 });
     }
 
     return NextResponse.json({ success: true, id: result.data?.id });
