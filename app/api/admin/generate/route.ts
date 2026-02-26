@@ -406,7 +406,7 @@ export async function POST(req: NextRequest) {
             messages: [{ role: 'user', content: userMessage }],
           });
 
-          if (!response.content) {
+          if (!response || !response.content) {
             send({ error: 'No content in AI response' });
             controller.close();
             return;
