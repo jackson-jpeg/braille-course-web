@@ -43,8 +43,11 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ error: 'Missing email or content' }, { status: 400 });
     }
 
+    // Strip HTML tags from content
+    const sanitizedContent = content.replace(/<[^>]*>/g, '');
+
     const note = await prisma.note.create({
-      data: { studentEmail: email, content },
+      data: { studentEmail: email, content: sanitizedContent },
     });
 
     return NextResponse.json({
