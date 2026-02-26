@@ -32,6 +32,22 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ error: 'label, title, and notes are required' }, { status: 400 });
     }
 
+    // Validate email template variables
+    const templateFields = [title, notes, instructions];
+    const variableRegex = /\{\{[a-zA-Z][a-zA-Z0-9]*\}\}/g;
+    const invalidVariableRegex = /\{[^{}]*\}|\{\{[^a-zA-Z][^{}]*\}\}|\{\{[a-zA-Z][^a-zA-Z0-9]*\}\}/g;
+    
+    for (const field of templateFields) {
+      if (typeof field === 'string') {
+        const invalidVars = field.match(invalidVariableRegex);
+        if (invalidVars) {
+          return NextResponse.json({ 
+            error: `Invalid template variable format: ${invalidVars.join(', ')}. Use {{variableName}} format.` 
+          }, { status: 400 });
+        }
+      }
+    }
+
     const template = await prisma.contentTemplate.create({
       data: {
         label,
