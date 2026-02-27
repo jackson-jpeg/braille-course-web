@@ -375,6 +375,7 @@ export async function POST(req: NextRequest) {
           ]);
 
           const getTextContent = (res: typeof slidesRes) => {
+            if (!res.content) throw new Error('No content in AI response');
             const tb = res.content.find((b) => b.type === 'text');
             if (!tb || tb.type !== 'text') throw new Error('No text response from AI');
             return tb.text;
@@ -405,6 +406,11 @@ export async function POST(req: NextRequest) {
             messages: [{ role: 'user', content: userMessage }],
           });
 
+          if (!response || !response.content) {
+            send({ error: 'No content in AI response' });
+            controller.close();
+            return;
+          }
           const textBlock = response.content.find((b) => b.type === 'text');
           if (!textBlock || textBlock.type !== 'text') {
             send({ error: 'No text response from AI' });

@@ -91,12 +91,13 @@ export default function AdminAttendanceModal({ sessionId, sectionEnrollments, on
 
   async function handleSave() {
     setSaving(true);
+    const optimisticRows = [...rows];
     try {
       const res = await fetch(`/api/admin/sessions/${sessionId}/attendance`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
-          records: rows.map((r) => ({
+          records: optimisticRows.map((r) => ({
             enrollmentId: r.enrollmentId,
             status: r.status,
             note: r.note || null,
@@ -109,8 +110,9 @@ export default function AdminAttendanceModal({ sessionId, sectionEnrollments, on
       onClose();
     } catch (err) {
       showToast(err instanceof Error ? err.message : 'Failed to save', 'error');
+    } finally {
+      setSaving(false);
     }
-    setSaving(false);
   }
 
   return (
