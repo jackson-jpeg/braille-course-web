@@ -56,13 +56,15 @@ export async function POST(req: NextRequest) {
 
     try {
       // Enrollment + capacity update in a transaction
+      // Returns 'enrolled' | 'waitlisted' | 'skipped' so outer code knows whether to create a balance invoice
+      let enrollmentResult: 'enrolled' | 'waitlisted' | 'skipped' = 'skipped';
       if (sectionId) {
-        await prisma.$transaction(async (tx) => {
+        enrollmentResult = await prisma.$transaction(async (tx) => {
           // Check idempotency — if enrollment already exists, skip
           const existing = await tx.enrollment.findUnique({
             where: { stripeSessionId },
           });
-          if (existing) return;
+          if (existing) return 'skipped' as const;
 
           // Re-check capacity inside transaction
           const section = await tx.section.findUnique({
@@ -71,7 +73,7 @@ export async function POST(req: NextRequest) {
 
           if (!section) {
             console.error(`Section ${sectionId} not found in webhook`);
-            return;
+            return 'skipped' as const;
           }
 
           if (section.enrolledCount >= section.maxCapacity) {
@@ -93,7 +95,7 @@ export async function POST(req: NextRequest) {
             console.log(
               `WAITLISTED enrollment for session ${stripeSessionId} — section ${sectionId} is full (position ${waitlistCount + 1}). Manual refund needed.`,
             );
-            return;
+            return 'waitlisted' as const;
           }
 
           // Create enrollment and increment count
@@ -116,11 +118,19 @@ export async function POST(req: NextRequest) {
               status: newCount >= section.maxCapacity ? 'FULL' : 'OPEN',
             },
           });
+
+          return 'enrolled' as const;
         });
       }
 
+      // Only send confirmation email and create invoices for successful enrollments (not waitlisted)
+      if (enrollmentResult === 'waitlisted') {
+        console.log(`Skipping email and invoice for waitlisted session ${stripeSessionId}`);
+        return NextResponse.json({ received: true });
+      }
+
       // Send confirmation email (fire-and-forget)
-      if (email && sectionId) {
+      if (email && sectionId && enrollmentResult === 'enrolled') {
         try {
           const section = await prisma.section.findUnique({
             where: { id: sectionId },
@@ -179,7 +189,6 @@ export async function POST(req: NextRequest) {
         price: process.env.STRIPE_PRICE_BALANCE,
       });
 
-      // Re-use settings loaded above (or load if not in email branch)
       const invoiceSettings = await getSettings();
       const invoiceCourseName = getSetting(invoiceSettings, 'course.name', 'Summer Braille Course');
       const invoiceBalanceDueDate = getSetting(invoiceSettings, 'course.balanceDueDate', '2026-05-01');

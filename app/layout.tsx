@@ -60,6 +60,9 @@ export const metadata: Metadata = {
   },
   twitter: {
     card: 'summary_large_image',
+    title: 'Teach Braille — Free Practice, Courses & TVI Services | TeachBraille.org',
+    description:
+      'Learn braille with free interactive games, a step-by-step introduction, summer courses, and personalized TVI instruction from Delaney Costello.',
   },
   alternates: {
     canonical: 'https://teachbraille.org',
@@ -92,7 +95,7 @@ const jsonLd = {
         'Visual Impairment Education',
         'Compensatory Skills',
       ],
-      sameAs: ['https://teachbraille.org'],
+      sameAs: [],
     },
   ],
 };
