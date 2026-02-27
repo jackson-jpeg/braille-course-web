@@ -5961,7 +5961,7 @@ details.faq-item.reveal:nth-child(6) {
   letter-spacing: 1px;
   text-transform: uppercase;
   color: var(--text-secondary);
-  border-bottom: 1px solid rgba(212, 168, 83, 0.12);
+  border-bottom: 2px solid rgba(212, 168, 83, 0.2);
   white-space: nowrap;
 }
 .admin-table td {
@@ -6386,18 +6386,24 @@ details.faq-item.reveal:nth-child(6) {
   position: absolute;
   top: 12px;
   right: 16px;
+  width: 36px;
+  height: 36px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
   background: none;
   border: none;
+  border-radius: 50%;
   font-size: 1.6rem;
   color: var(--text-secondary);
   cursor: pointer;
   line-height: 1;
   z-index: 1;
+  transition: background 0.15s, color 0.15s;
 }
 .admin-modal-close:hover {
   color: var(--navy);
   background: rgba(212, 168, 83, 0.08);
-  border-radius: 50%;
 }
 .admin-modal-loading {
   padding: 60px 40px;
@@ -6510,6 +6516,11 @@ details.faq-item.reveal:nth-child(6) {
   font-size: 0.88rem;
   color: var(--text-secondary);
   font-style: italic;
+  text-align: center;
+  padding: 32px 20px;
+  background: rgba(212, 168, 83, 0.04);
+  border: 1px dashed rgba(212, 168, 83, 0.2);
+  border-radius: var(--radius-md);
 }
 
 /* ── Activity Feed ── */
@@ -6686,6 +6697,11 @@ details.faq-item.reveal:nth-child(6) {
   color: var(--text-secondary);
   font-style: italic;
   font-weight: 300;
+  text-align: center;
+  padding: 32px 20px;
+  background: rgba(212, 168, 83, 0.04);
+  border: 1px dashed rgba(212, 168, 83, 0.2);
+  border-radius: var(--radius-md);
 }
 .admin-student-payment-list {
   display: flex;
@@ -6811,7 +6827,7 @@ details.faq-item.reveal:nth-child(6) {
 }
 .admin-payments-card-value {
   font-family: var(--font-heading), 'DM Serif Display', serif;
-  font-size: 1.6rem;
+  font-size: 1.8rem;
   color: var(--navy);
   line-height: 1.1;
   margin-bottom: 4px;
