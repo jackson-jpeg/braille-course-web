@@ -180,8 +180,8 @@ export default function AdminStudentModal({ enrollment, scheduleMap, onClose, on
           <div className="admin-student-modal-content">
             {/* Header */}
             <div className="admin-student-header">
-              <h3>{data?.customer.name || enrollment.email || 'Unknown Student'}</h3>
-              {data?.customer.name && enrollment.email && (
+              <h3>{data?.customer?.name || enrollment.email || 'Unknown Student'}</h3>
+              {data?.customer?.name && enrollment.email && (
                 <p className="admin-student-email">
                   {enrollment.email}
                   <CopyButton text={enrollment.email} label="Copy email" />
@@ -214,7 +214,7 @@ export default function AdminStudentModal({ enrollment, scheduleMap, onClose, on
                   </div>
                 </div>
 
-                {data?.customer.card && (
+                {data?.customer?.card && (
                   <div className="admin-student-info-section">
                     <h4>Card on File</h4>
                     <p className="admin-student-card">{data.customer.card}</p>

@@ -27,6 +27,7 @@ export function verifySessionToken(token: string): boolean {
     if (Date.now() - parseInt(ts) > MAX_AGE) return false;
 
     const expected = createHmac('sha256', SECRET).update(payload).digest('hex');
+    if (sig.length !== expected.length) return false;
     return timingSafeEqual(Buffer.from(sig), Buffer.from(expected));
   } catch {
     return false;

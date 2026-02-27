@@ -33,7 +33,7 @@ export default function BrailleHero({
   const longPressTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
   // Unique letters in the word (excluding spaces)
-  const uniqueLettersRef = useRef<Set<string>>(new Set(word.split('').filter((c) => c !== ' ')));
+  const uniqueLettersRef = useRef<Set<string>>(new Set(word.split('').filter((c) => c !== ' ' && brailleMap[c])));
 
   useEffect(() => {
     setIsTouchDevice('ontouchstart' in window || navigator.maxTouchPoints > 0);
@@ -112,8 +112,8 @@ export default function BrailleHero({
         aria-label="Braille letter cells"
       >
         {word.split('').map((char, i) => {
-          if (char === ' ') {
-            return <div key={`space-${i}`} className="braille-spacer" />;
+          if (char === ' ' || !brailleMap[char]) {
+            return char === ' ' ? <div key={`space-${i}`} className="braille-spacer" /> : null;
           }
 
           const groupKey = `${char}-${i}`;

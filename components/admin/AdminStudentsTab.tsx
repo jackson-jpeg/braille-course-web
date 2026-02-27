@@ -200,7 +200,7 @@ export default function AdminStudentsTab({
 
   async function saveEdit(id: string) {
     try {
-      await fetch(`/api/admin/leads/${id}`, {
+      const res = await fetch(`/api/admin/leads/${id}`, {
         method: 'PATCH',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
@@ -213,6 +213,10 @@ export default function AdminStudentsTab({
           preferredCallbackTime: editCallbackTime,
         }),
       });
+      if (!res.ok) {
+        const data = await res.json();
+        throw new Error(data.error || 'Failed to save changes');
+      }
       setEditingLead(null);
       await fetchLeads();
     } catch (err) {
@@ -224,9 +228,13 @@ export default function AdminStudentsTab({
     if (!deletingLead) return;
     setDeleteLoading(true);
     try {
-      await fetch(`/api/admin/leads/${deletingLead.id}`, {
+      const res = await fetch(`/api/admin/leads/${deletingLead.id}`, {
         method: 'DELETE',
       });
+      if (!res.ok) {
+        const data = await res.json();
+        throw new Error(data.error || 'Failed to delete lead');
+      }
       setDeletingLead(null);
       await fetchLeads();
     } catch (err) {

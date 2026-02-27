@@ -7,13 +7,18 @@ export async function GET(req: NextRequest) {
     return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
   }
 
-  const settings = await prisma.courseSettings.findMany();
-  const map: Record<string, string> = {};
-  for (const s of settings) {
-    map[s.key] = s.value;
-  }
+  try {
+    const settings = await prisma.courseSettings.findMany();
+    const map: Record<string, string> = {};
+    for (const s of settings) {
+      map[s.key] = s.value;
+    }
 
-  return NextResponse.json({ settings: map });
+    return NextResponse.json({ settings: map });
+  } catch (err) {
+    console.error('Settings fetch error:', err);
+    return NextResponse.json({ error: 'Failed to fetch settings' }, { status: 500 });
+  }
 }
 
 export async function PUT(req: NextRequest) {

@@ -3,7 +3,14 @@
 // For stricter guarantees, swap to Vercel KV or Upstash Redis.
 
 const WINDOW_MS = 15 * 60 * 1000; // 15 minutes
-const MAX_ATTEMPTS = 5;
+const DEFAULT_MAX = 5;
+
+// Routes that need higher limits
+const ROUTE_LIMITS: Record<string, number> = {
+  'enrollment-status': 60,
+  'game-progress': 60,
+  sections: 60,
+};
 
 interface RateLimitEntry {
   count: number;
@@ -12,23 +19,27 @@ interface RateLimitEntry {
 
 const attempts = new Map<string, RateLimitEntry>();
 
-export function checkRateLimit(ip: string): { allowed: boolean; retryAfter: number } {
+export function checkRateLimit(key: string): { allowed: boolean; retryAfter: number } {
   const now = Date.now();
-  const entry = attempts.get(ip);
+  const entry = attempts.get(key);
 
   // Clean up expired entry
   if (entry && now >= entry.resetAt) {
-    attempts.delete(ip);
+    attempts.delete(key);
   }
 
-  const current = attempts.get(ip);
+  const current = attempts.get(key);
+
+  // Determine max attempts from the route prefix (e.g. "enrollment-status:1.2.3.4" → "enrollment-status")
+  const routePrefix = key.split(':')[0];
+  const max = ROUTE_LIMITS[routePrefix] ?? DEFAULT_MAX;
 
   if (!current) {
-    attempts.set(ip, { count: 1, resetAt: now + WINDOW_MS });
+    attempts.set(key, { count: 1, resetAt: now + WINDOW_MS });
     return { allowed: true, retryAfter: 0 };
   }
 
-  if (current.count >= MAX_ATTEMPTS) {
+  if (current.count >= max) {
     const retryAfter = Math.ceil((current.resetAt - now) / 1000);
     return { allowed: false, retryAfter };
   }

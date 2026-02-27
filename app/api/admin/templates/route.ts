@@ -7,16 +7,21 @@ export async function GET(req: NextRequest) {
     return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
   }
 
-  const templates = await prisma.contentTemplate.findMany({
-    orderBy: { createdAt: 'desc' },
-  });
+  try {
+    const templates = await prisma.contentTemplate.findMany({
+      orderBy: { createdAt: 'desc' },
+    });
 
-  return NextResponse.json({
-    templates: templates.map((t) => ({
-      ...t,
-      createdAt: t.createdAt.toISOString(),
-    })),
-  });
+    return NextResponse.json({
+      templates: templates.map((t) => ({
+        ...t,
+        createdAt: t.createdAt.toISOString(),
+      })),
+    });
+  } catch (err) {
+    console.error('Templates fetch error:', err);
+    return NextResponse.json({ error: 'Failed to fetch templates' }, { status: 500 });
+  }
 }
 
 export async function POST(req: NextRequest) {

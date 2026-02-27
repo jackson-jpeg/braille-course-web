@@ -39,7 +39,8 @@ export async function GET(req: NextRequest) {
     for (const invoice of balanceInvoices) {
       try {
         await stripe.invoices.finalizeInvoice(invoice.id);
-        console.log(`Finalized invoice ${invoice.id} for customer ${invoice.customer}`);
+        await stripe.invoices.pay(invoice.id);
+        console.log(`Finalized and charged invoice ${invoice.id} for customer ${invoice.customer}`);
         finalized++;
       } catch (err) {
         console.error(`Failed to finalize invoice ${invoice.id}:`, (err as Error).message);

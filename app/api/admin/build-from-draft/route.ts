@@ -45,7 +45,15 @@ export async function POST(req: NextRequest) {
     });
   }
 
-  const parsed = typeof contentJson === 'string' ? JSON.parse(contentJson) : contentJson;
+  let parsed;
+  try {
+    parsed = typeof contentJson === 'string' ? JSON.parse(contentJson) : contentJson;
+  } catch {
+    return new Response(JSON.stringify({ error: 'Invalid contentJson: not valid JSON' }), {
+      status: 400,
+      headers: { 'Content-Type': 'application/json' },
+    });
+  }
   const safeTitle = title
     .replace(/[^a-zA-Z0-9-_ ]/g, '')
     .replace(/\s+/g, '-')

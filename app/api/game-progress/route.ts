@@ -24,31 +24,32 @@ export async function GET(req: NextRequest) {
     return NextResponse.json({ error: 'enrollmentId required' }, { status: 400 });
   }
 
-  // Verify enrollment exists and is completed
-  const enrollment = await prisma.enrollment.findUnique({
-    where: { id: enrollmentId },
-    select: { paymentStatus: true },
-  });
-
-  if (!enrollment || enrollment.paymentStatus !== 'COMPLETED') {
-    return NextResponse.json({ error: 'Invalid enrollment' }, { status: 403 });
-  }
-
-  const progress = await prisma.gameProgress.findUnique({
-    where: { enrollmentId },
-  });
-
-  if (!progress) {
-    return NextResponse.json({ progress: null });
-  }
-
   try {
+    // Verify enrollment exists and is completed
+    const enrollment = await prisma.enrollment.findUnique({
+      where: { id: enrollmentId },
+      select: { paymentStatus: true },
+    });
+
+    if (!enrollment || enrollment.paymentStatus !== 'COMPLETED') {
+      return NextResponse.json({ error: 'Invalid enrollment' }, { status: 403 });
+    }
+
+    const progress = await prisma.gameProgress.findUnique({
+      where: { enrollmentId },
+    });
+
+    if (!progress) {
+      return NextResponse.json({ progress: null });
+    }
+
     return NextResponse.json({
       progress: JSON.parse(progress.progressJson),
       lastSyncedAt: progress.lastSyncedAt,
     });
-  } catch {
-    return NextResponse.json({ error: 'Corrupted progress data' }, { status: 500 });
+  } catch (err) {
+    console.error('Game progress fetch error:', err);
+    return NextResponse.json({ error: 'Failed to fetch progress' }, { status: 500 });
   }
 }
 
@@ -78,35 +79,40 @@ export async function PUT(req: NextRequest) {
     return NextResponse.json({ error: 'enrollmentId and progress required' }, { status: 400 });
   }
 
-  // Verify enrollment
-  const enrollment = await prisma.enrollment.findUnique({
-    where: { id: enrollmentId },
-    select: { paymentStatus: true },
-  });
+  try {
+    // Verify enrollment
+    const enrollment = await prisma.enrollment.findUnique({
+      where: { id: enrollmentId },
+      select: { paymentStatus: true },
+    });
 
-  if (!enrollment || enrollment.paymentStatus !== 'COMPLETED') {
-    return NextResponse.json({ error: 'Invalid enrollment' }, { status: 403 });
+    if (!enrollment || enrollment.paymentStatus !== 'COMPLETED') {
+      return NextResponse.json({ error: 'Invalid enrollment' }, { status: 403 });
+    }
+
+    const progressJson = JSON.stringify(progress);
+
+    // Size limit: 500KB
+    if (progressJson.length > 500_000) {
+      return NextResponse.json({ error: 'Progress data too large' }, { status: 413 });
+    }
+
+    await prisma.gameProgress.upsert({
+      where: { enrollmentId },
+      create: {
+        enrollmentId,
+        progressJson,
+        lastSyncedAt: new Date(),
+      },
+      update: {
+        progressJson,
+        lastSyncedAt: new Date(),
+      },
+    });
+
+    return NextResponse.json({ ok: true });
+  } catch (err) {
+    console.error('Game progress save error:', err);
+    return NextResponse.json({ error: 'Failed to save progress' }, { status: 500 });
   }
-
-  const progressJson = JSON.stringify(progress);
-
-  // Size limit: 500KB
-  if (progressJson.length > 500_000) {
-    return NextResponse.json({ error: 'Progress data too large' }, { status: 413 });
-  }
-
-  await prisma.gameProgress.upsert({
-    where: { enrollmentId },
-    create: {
-      enrollmentId,
-      progressJson,
-      lastSyncedAt: new Date(),
-    },
-    update: {
-      progressJson,
-      lastSyncedAt: new Date(),
-    },
-  });
-
-  return NextResponse.json({ ok: true });
 }

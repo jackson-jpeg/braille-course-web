@@ -125,9 +125,9 @@ export async function POST(req: NextRequest) {
         });
       }
 
-      // Only send confirmation email and create invoices for successful enrollments (not waitlisted)
-      if (enrollmentResult === 'waitlisted') {
-        console.log(`Skipping email and invoice for waitlisted session ${stripeSessionId}`);
+      // Only send confirmation email and create invoices for successful enrollments
+      if (enrollmentResult !== 'enrolled') {
+        console.log(`Skipping email and invoice for ${enrollmentResult} session ${stripeSessionId}`);
         return NextResponse.json({ received: true });
       }
 
@@ -182,7 +182,7 @@ export async function POST(req: NextRequest) {
           default_payment_method:
             typeof paymentIntent.payment_method === 'string'
               ? paymentIntent.payment_method
-              : paymentIntent.payment_method?.id || '',
+              : paymentIntent.payment_method?.id ?? undefined,
         },
       });
 
@@ -198,7 +198,7 @@ export async function POST(req: NextRequest) {
       const invoice = await stripe.invoices.create({
         customer: stripeCustomerId,
         collection_method: 'charge_automatically',
-        auto_advance: false,
+        auto_advance: true,
         metadata: {
           course: invoiceCourseName,
           type: 'balance',

@@ -12,22 +12,27 @@ export async function GET(req: NextRequest) {
     return NextResponse.json({ error: 'sectionId is required' }, { status: 400 });
   }
 
-  const assignments = await prisma.assignment.findMany({
-    where: { sectionId },
-    orderBy: [{ sortOrder: 'asc' }, { createdAt: 'asc' }],
-  });
+  try {
+    const assignments = await prisma.assignment.findMany({
+      where: { sectionId },
+      orderBy: [{ sortOrder: 'asc' }, { createdAt: 'asc' }],
+    });
 
-  return NextResponse.json({
-    assignments: assignments.map((a) => ({
-      id: a.id,
-      sectionId: a.sectionId,
-      title: a.title,
-      maxScore: a.maxScore,
-      dueDate: a.dueDate?.toISOString() ?? null,
-      sortOrder: a.sortOrder,
-      createdAt: a.createdAt.toISOString(),
-    })),
-  });
+    return NextResponse.json({
+      assignments: assignments.map((a) => ({
+        id: a.id,
+        sectionId: a.sectionId,
+        title: a.title,
+        maxScore: a.maxScore,
+        dueDate: a.dueDate?.toISOString() ?? null,
+        sortOrder: a.sortOrder,
+        createdAt: a.createdAt.toISOString(),
+      })),
+    });
+  } catch (err) {
+    console.error('Assignments fetch error:', err);
+    return NextResponse.json({ error: 'Failed to fetch assignments' }, { status: 500 });
+  }
 }
 
 export async function POST(req: NextRequest) {

@@ -7,20 +7,25 @@ export async function GET(req: NextRequest) {
     return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
   }
 
-  const todos = await prisma.todoItem.findMany({
-    orderBy: [{ done: 'asc' }, { dueDate: 'asc' }, { sortOrder: 'asc' }, { createdAt: 'desc' }],
-  });
+  try {
+    const todos = await prisma.todoItem.findMany({
+      orderBy: [{ done: 'asc' }, { dueDate: 'asc' }, { sortOrder: 'asc' }, { createdAt: 'desc' }],
+    });
 
-  return NextResponse.json({
-    todos: todos.map((t) => ({
-      id: t.id,
-      text: t.text,
-      done: t.done,
-      dueDate: t.dueDate?.toISOString() ?? null,
-      sortOrder: t.sortOrder,
-      createdAt: t.createdAt.toISOString(),
-    })),
-  });
+    return NextResponse.json({
+      todos: todos.map((t) => ({
+        id: t.id,
+        text: t.text,
+        done: t.done,
+        dueDate: t.dueDate?.toISOString() ?? null,
+        sortOrder: t.sortOrder,
+        createdAt: t.createdAt.toISOString(),
+      })),
+    });
+  } catch (err) {
+    console.error('Todos fetch error:', err);
+    return NextResponse.json({ error: 'Failed to fetch todos' }, { status: 500 });
+  }
 }
 
 export async function POST(req: NextRequest) {
