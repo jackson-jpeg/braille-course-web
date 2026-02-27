@@ -26,21 +26,22 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ error: 'Enrollment is not waitlisted' }, { status: 400 });
     }
 
-    // Delete the enrollment
-    await prisma.enrollment.delete({ where: { id: enrollmentId } });
+    // Delete and re-number in a single transaction
+    await prisma.$transaction(async (tx) => {
+      await tx.enrollment.delete({ where: { id: enrollmentId } });
 
-    // Re-number remaining waitlisted positions for the section
-    const remaining = await prisma.enrollment.findMany({
-      where: { sectionId: enrollment.sectionId, paymentStatus: 'WAITLISTED' },
-      orderBy: [{ waitlistPosition: 'asc' }, { createdAt: 'asc' }],
-    });
-
-    for (let i = 0; i < remaining.length; i++) {
-      await prisma.enrollment.update({
-        where: { id: remaining[i].id },
-        data: { waitlistPosition: i + 1 },
+      const remaining = await tx.enrollment.findMany({
+        where: { sectionId: enrollment.sectionId, paymentStatus: 'WAITLISTED' },
+        orderBy: [{ waitlistPosition: 'asc' }, { createdAt: 'asc' }],
       });
-    }
+
+      for (let i = 0; i < remaining.length; i++) {
+        await tx.enrollment.update({
+          where: { id: remaining[i].id },
+          data: { waitlistPosition: i + 1 },
+        });
+      }
+    });
 
     return NextResponse.json({
       success: true,

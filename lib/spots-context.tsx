@@ -35,7 +35,7 @@ export function SpotsProvider({ initialSections, children }: { initialSections: 
       const res = await fetch('/api/sections');
       if (res.ok) {
         const data = await res.json();
-        if (mountedRef.current) {
+        if (mountedRef.current && Array.isArray(data)) {
           setSections(data);
           setStale(false);
           setLastUpdated(new Date());

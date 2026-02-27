@@ -52,7 +52,7 @@ export async function POST(req: NextRequest) {
 
       try {
         await resend.emails.send({
-          from: 'Delaney Costello <noreply@teachbraille.org>',
+          from: 'Delaney Costello <delaney@teachbraille.org>',
           to: email,
           subject: personalizedSubject,
           html: customEmail({ subject: personalizedSubject, body: personalizedBody }),

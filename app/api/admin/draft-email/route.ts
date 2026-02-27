@@ -36,7 +36,12 @@ export async function POST(req: NextRequest) {
     if (jsonText.startsWith('```')) {
       jsonText = jsonText.replace(/^```(?:json)?\n?/, '').replace(/\n?```$/, '');
     }
-    const parsed = JSON.parse(jsonText);
+    let parsed;
+    try {
+      parsed = JSON.parse(jsonText);
+    } catch {
+      return NextResponse.json({ error: 'AI returned invalid JSON — please try again' }, { status: 502 });
+    }
 
     return NextResponse.json({ subject: parsed.subject, body: parsed.body });
   } catch (err) {

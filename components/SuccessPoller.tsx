@@ -25,8 +25,8 @@ export default function SuccessPoller({
         const res = await fetch(`/api/enrollment-status?session_id=${encodeURIComponent(sessionId)}`);
         if (res.ok) {
           const data = await res.json();
-          if (data.found && data.schedule) {
-            setSchedule(data.schedule);
+          if (data.found) {
+            setSchedule(data.schedule || null);
             setResolved(true);
             clearInterval(interval);
             return;

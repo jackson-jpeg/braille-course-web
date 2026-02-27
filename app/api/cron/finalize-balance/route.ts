@@ -16,21 +16,20 @@ export async function GET(req: NextRequest) {
   }
 
   try {
-    const allInvoices = await stripe.invoices
-      .list({
-        status: 'draft',
-        limit: 100,
-      })
-      .autoPagingToArray({ limit: 10000 });
+    // Fetch both draft (not yet finalized) and open (finalized but charge failed) invoices
+    const [draftInvoices, openInvoices] = await Promise.all([
+      stripe.invoices.list({ status: 'draft', limit: 100 }).autoPagingToArray({ limit: 10000 }),
+      stripe.invoices.list({ status: 'open', limit: 100 }).autoPagingToArray({ limit: 10000 }),
+    ]);
 
     const today = new Date().toISOString().slice(0, 10);
 
-    const balanceInvoices = allInvoices.filter(
-      (inv) =>
-        inv.metadata?.type === 'balance' &&
-        inv.metadata?.scheduled_date != null &&
-        inv.metadata.scheduled_date <= today,
-    );
+    const isBalanceDue = (inv: { metadata?: Record<string, string> | null }) =>
+      inv.metadata?.type === 'balance' &&
+      inv.metadata?.scheduled_date != null &&
+      inv.metadata.scheduled_date <= today;
+
+    const balanceInvoices = [...draftInvoices.filter(isBalanceDue), ...openInvoices.filter(isBalanceDue)];
 
     let finalized = 0;
     let failed = 0;
@@ -38,9 +37,12 @@ export async function GET(req: NextRequest) {
 
     for (const invoice of balanceInvoices) {
       try {
-        await stripe.invoices.finalizeInvoice(invoice.id);
+        // Draft invoices need finalization first; open invoices just need payment
+        if (invoice.status === 'draft') {
+          await stripe.invoices.finalizeInvoice(invoice.id);
+        }
         await stripe.invoices.pay(invoice.id);
-        console.log(`Finalized and charged invoice ${invoice.id} for customer ${invoice.customer}`);
+        console.log(`Charged invoice ${invoice.id} for customer ${invoice.customer}`);
         finalized++;
       } catch (err) {
         console.error(`Failed to finalize invoice ${invoice.id}:`, (err as Error).message);

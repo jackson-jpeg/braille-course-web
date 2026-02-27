@@ -212,7 +212,7 @@ export default function SchoolContactForm() {
           contactName: contactName.trim(),
           email: email.trim(),
           phone: phone.trim() || undefined,
-          contactTitle: contactTitle.trim(),
+          contactTitle: contactTitle.trim() || undefined,
           servicesNeeded,
           studentCount: studentCount || undefined,
           deliveryPreference: deliveryPreference || undefined,
@@ -228,6 +228,7 @@ export default function SchoolContactForm() {
         return;
       }
 
+      setLoading(false);
       setSuccess(true);
     } catch {
       setError('Network error. Please check your connection and try again.');

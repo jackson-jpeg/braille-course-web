@@ -3,6 +3,8 @@ import { prisma } from '@/lib/prisma';
 import { getSchedule } from '@/lib/schedule';
 import { checkRateLimit } from '@/lib/rate-limit';
 
+export const dynamic = 'force-dynamic';
+
 export async function GET(req: NextRequest) {
   const ip = req.headers.get('x-forwarded-for')?.split(',')[0]?.trim() || 'unknown';
   const { allowed, retryAfter } = checkRateLimit(`enrollment-status:${ip}`);

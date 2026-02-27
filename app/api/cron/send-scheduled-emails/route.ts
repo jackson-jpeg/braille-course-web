@@ -19,11 +19,30 @@ export async function GET(req: NextRequest) {
   }
 
   try {
-    // Find PENDING emails whose scheduled time has passed
-    const due = await prisma.scheduledEmail.findMany({
+    // Recover emails stuck in SENDING for over 10 minutes (crashed worker)
+    await prisma.scheduledEmail.updateMany({
+      where: {
+        status: 'SENDING',
+        updatedAt: { lte: new Date(Date.now() - 10 * 60 * 1000) },
+      },
+      data: { status: 'PENDING' },
+    });
+
+    // Atomically claim PENDING emails by setting them to SENDING
+    const now = new Date();
+    await prisma.scheduledEmail.updateMany({
       where: {
         status: 'PENDING',
-        scheduledFor: { lte: new Date() },
+        scheduledFor: { lte: now },
+      },
+      data: { status: 'SENDING' },
+    });
+
+    // Fetch only the emails this worker just claimed
+    const due = await prisma.scheduledEmail.findMany({
+      where: {
+        status: 'SENDING',
+        scheduledFor: { lte: now },
       },
       orderBy: { scheduledFor: 'asc' },
     });
@@ -32,11 +51,6 @@ export async function GET(req: NextRequest) {
     let failed = 0;
 
     for (const email of due) {
-      // Mark as SENDING to prevent duplicates
-      await prisma.scheduledEmail.update({
-        where: { id: email.id },
-        data: { status: 'SENDING' },
-      });
 
       try {
         const html = customEmail({ subject: email.subject, body: email.body });

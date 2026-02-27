@@ -88,8 +88,8 @@ function header(headline: string, subtitle: string) {
   <!-- header bar -->
   <tr>
     <td style="background:${C.navy};padding:36px 40px 32px;text-align:center;">
-      <h1 style="margin:0 0 8px;font-family:${FONT_HEADING};font-size:26px;font-weight:400;color:${C.white};line-height:1.3;">${headline}</h1>
-      <p style="margin:0;font-family:${FONT_BODY};font-size:15px;color:${C.goldLight};font-weight:300;">${subtitle}</p>
+      <h1 style="margin:0 0 8px;font-family:${FONT_HEADING};font-size:26px;font-weight:400;color:${C.white};line-height:1.3;">${escapeHtml(headline)}</h1>
+      <p style="margin:0;font-family:${FONT_BODY};font-size:15px;color:${C.goldLight};font-weight:300;">${escapeHtml(subtitle)}</p>
     </td>
   </tr>`;
 }
