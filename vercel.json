@@ -3,7 +3,7 @@
   "crons": [
     {
       "path": "/api/cron/finalize-balance",
-      "schedule": "0 12 1 5 *"
+      "schedule": "0 12 * * *"
     },
     {
       "path": "/api/cron/send-scheduled-emails",
