@@ -7,52 +7,57 @@ export async function GET(req: NextRequest) {
     return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
   }
 
-  let sectionId = req.nextUrl.searchParams.get('sectionId');
-  const enrollmentId = req.nextUrl.searchParams.get('enrollmentId');
+  try {
+    let sectionId = req.nextUrl.searchParams.get('sectionId');
+    const enrollmentId = req.nextUrl.searchParams.get('enrollmentId');
 
-  // If enrollmentId is provided, look up the sectionId from the enrollment
-  if (!sectionId && enrollmentId) {
-    const enrollment = await prisma.enrollment.findUnique({
-      where: { id: enrollmentId },
-      select: { sectionId: true },
+    // If enrollmentId is provided, look up the sectionId from the enrollment
+    if (!sectionId && enrollmentId) {
+      const enrollment = await prisma.enrollment.findUnique({
+        where: { id: enrollmentId },
+        select: { sectionId: true },
+      });
+      if (enrollment) sectionId = enrollment.sectionId;
+    }
+
+    if (!sectionId) {
+      return NextResponse.json({ error: 'sectionId or enrollmentId is required' }, { status: 400 });
+    }
+
+    const assignments = await prisma.assignment.findMany({
+      where: { sectionId },
+      orderBy: [{ sortOrder: 'asc' }, { createdAt: 'asc' }],
     });
-    if (enrollment) sectionId = enrollment.sectionId;
+
+    const grades = await prisma.grade.findMany({
+      where: {
+        assignmentId: { in: assignments.map((a) => a.id) },
+        ...(enrollmentId ? { enrollmentId } : {}),
+      },
+    });
+
+    return NextResponse.json({
+      assignments: assignments.map((a) => ({
+        id: a.id,
+        sectionId: a.sectionId,
+        title: a.title,
+        maxScore: a.maxScore,
+        dueDate: a.dueDate?.toISOString() ?? null,
+        sortOrder: a.sortOrder,
+        createdAt: a.createdAt.toISOString(),
+      })),
+      grades: grades.map((g) => ({
+        id: g.id,
+        assignmentId: g.assignmentId,
+        enrollmentId: g.enrollmentId,
+        score: g.score,
+        notes: g.notes,
+      })),
+    });
+  } catch (err) {
+    console.error('Grades fetch error:', err);
+    return NextResponse.json({ error: 'Failed to fetch grades' }, { status: 500 });
   }
-
-  if (!sectionId) {
-    return NextResponse.json({ error: 'sectionId or enrollmentId is required' }, { status: 400 });
-  }
-
-  const assignments = await prisma.assignment.findMany({
-    where: { sectionId },
-    orderBy: [{ sortOrder: 'asc' }, { createdAt: 'asc' }],
-  });
-
-  const grades = await prisma.grade.findMany({
-    where: {
-      assignmentId: { in: assignments.map((a) => a.id) },
-      ...(enrollmentId ? { enrollmentId } : {}),
-    },
-  });
-
-  return NextResponse.json({
-    assignments: assignments.map((a) => ({
-      id: a.id,
-      sectionId: a.sectionId,
-      title: a.title,
-      maxScore: a.maxScore,
-      dueDate: a.dueDate?.toISOString() ?? null,
-      sortOrder: a.sortOrder,
-      createdAt: a.createdAt.toISOString(),
-    })),
-    grades: grades.map((g) => ({
-      id: g.id,
-      assignmentId: g.assignmentId,
-      enrollmentId: g.enrollmentId,
-      score: g.score,
-      notes: g.notes,
-    })),
-  });
 }
 
 export async function POST(req: NextRequest) {

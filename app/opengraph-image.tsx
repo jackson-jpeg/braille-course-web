@@ -50,9 +50,9 @@ function BrailleCell({ pattern }: { pattern: number[] }) {
 }
 
 export default async function OGImage() {
-  const fontData = await fetch('https://fonts.gstatic.com/s/dmseriftext/v12/rnCu-xZa_krGOkCWldXRa15pvF2OQFP-.ttf').then(
-    (res) => res.arrayBuffer(),
-  );
+  const fontData = await fetch('https://fonts.gstatic.com/s/dmseriftext/v12/rnCu-xZa_krGOkCWldXRa15pvF2OQFP-.ttf', {
+    cache: 'force-cache',
+  }).then((res) => res.arrayBuffer());
 
   return new ImageResponse(
     <div

@@ -84,6 +84,7 @@ export default function NavBar() {
             className={`site-nav-toggle${menuOpen ? ' open' : ''}`}
             onClick={() => setMenuOpen((v) => !v)}
             aria-expanded={menuOpen}
+            aria-controls="site-nav-links"
             aria-label="Toggle navigation menu"
           >
             <span />
@@ -91,7 +92,8 @@ export default function NavBar() {
             <span />
           </button>
 
-          <div className={`site-nav-links${menuOpen ? ' open' : ''}`} aria-hidden={!menuOpen || undefined}>
+          <div className={`site-nav-links${menuOpen ? ' open' : ''}`} id="site-nav-links">
+
             {NAV_LINKS.map(({ href, label }, index) => {
               const isActive = href === '/' ? pathname === '/' : pathname.startsWith(href);
               return (

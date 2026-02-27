@@ -21,6 +21,10 @@ export default function AdminLogin() {
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ password: password.trim() }),
       });
+      if (res.status === 429) {
+        setError('Too many attempts. Please wait a moment.');
+        return;
+      }
       if (!res.ok) {
         setError('Invalid password');
         return;

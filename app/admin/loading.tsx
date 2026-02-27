@@ -1,4 +1,4 @@
-import { SkeletonCards, SkeletonTable, SkeletonText } from '@/components/admin/AdminSkeleton';
+import { SkeletonCards, SkeletonTable } from '@/components/admin/AdminSkeleton';
 
 export default function AdminLoading() {
   return (

@@ -11,8 +11,8 @@ export const PRICING = {
   full: 500,
   /** Deposit amount */
   deposit: 150,
-  /** Remaining balance after deposit */
-  balance: 350,
+  /** Remaining balance after deposit (computed) */
+  balance: 500 - 150,
   /** Date the balance is charged (display string) */
   balanceDueDate: 'May 1st',
   /** Course start date (display string) */

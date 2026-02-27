@@ -1,7 +1,7 @@
 /** @type {import('next').NextConfig} */
 const nextConfig = {
   experimental: {
-    serverComponentsExternalPackages: ['pdfkit', 'imapflow', 'mailparser'],
+    serverComponentsExternalPackages: ['pdfkit', 'pptxgenjs', 'imapflow', 'mailparser'],
     outputFileTracingIncludes: {
       '/api/admin/generate': ['./node_modules/pdfkit/js/data/**/*.afm'],
     },

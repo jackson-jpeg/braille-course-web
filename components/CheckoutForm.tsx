@@ -44,9 +44,15 @@ export default function CheckoutForm() {
     }
 
     if (!res.ok) {
-      const data = await res.json();
-      setError(data.error || 'Something went wrong. Please try again.');
-      throw new Error(data.error || 'Checkout failed');
+      let message = 'Something went wrong. Please try again.';
+      try {
+        const data = await res.json();
+        if (data.error) message = data.error;
+      } catch {
+        // Non-JSON response (e.g. 502/504 HTML error page)
+      }
+      setError(message);
+      throw new Error(message);
     }
 
     const data = await res.json();

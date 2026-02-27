@@ -13,7 +13,7 @@ export default function BrailleHero({
   const [dots] = useState<Record<string, boolean[]>>(() => {
     const initial: Record<string, boolean[]> = {};
     word.split('').forEach((char, i) => {
-      if (char === ' ') return;
+      if (char === ' ' || !brailleMap[char]) return;
       const key = `${char}-${i}`;
       initial[key] = brailleMap[char].map((v) => v === 1);
     });

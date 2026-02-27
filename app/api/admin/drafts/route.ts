@@ -7,18 +7,23 @@ export async function GET(req: NextRequest) {
     return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
   }
 
-  const drafts = await prisma.materialDraft.findMany({
-    orderBy: { updatedAt: 'desc' },
-    take: 20,
-  });
+  try {
+    const drafts = await prisma.materialDraft.findMany({
+      orderBy: { updatedAt: 'desc' },
+      take: 20,
+    });
 
-  return NextResponse.json({
-    drafts: drafts.map((d) => ({
-      ...d,
-      createdAt: d.createdAt.toISOString(),
-      updatedAt: d.updatedAt.toISOString(),
-    })),
-  });
+    return NextResponse.json({
+      drafts: drafts.map((d) => ({
+        ...d,
+        createdAt: d.createdAt.toISOString(),
+        updatedAt: d.updatedAt.toISOString(),
+      })),
+    });
+  } catch (err) {
+    console.error('Drafts fetch error:', err);
+    return NextResponse.json({ error: 'Failed to fetch drafts' }, { status: 500 });
+  }
 }
 
 export async function POST(req: NextRequest) {
