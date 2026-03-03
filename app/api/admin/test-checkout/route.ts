@@ -71,11 +71,34 @@ export async function DELETE(req: NextRequest) {
   }
 
   try {
-    // Find all test enrollments
+    // Find test enrollments by email OR by checking Stripe session metadata
     const testEnrollments = await prisma.enrollment.findMany({
       where: { email: TEST_EMAIL },
       include: { section: true },
     });
+
+    // Also search for enrollments whose Stripe session has isTest metadata
+    // (covers case where webhook used real email instead of test@test.invalid)
+    const allRecentEnrollments = await prisma.enrollment.findMany({
+      where: {
+        email: { not: TEST_EMAIL },
+        createdAt: { gte: new Date(Date.now() - 24 * 60 * 60 * 1000) },
+      },
+      include: { section: true },
+    });
+
+    for (const enrollment of allRecentEnrollments) {
+      if (enrollment.stripeSessionId) {
+        try {
+          const session = await stripe.checkout.sessions.retrieve(enrollment.stripeSessionId);
+          if (session.metadata?.isTest === 'true') {
+            testEnrollments.push(enrollment);
+          }
+        } catch {
+          // Skip if session can't be retrieved
+        }
+      }
+    }
 
     if (testEnrollments.length === 0) {
       return NextResponse.json({ message: 'No test enrollments found' });
