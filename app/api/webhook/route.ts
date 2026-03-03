@@ -47,9 +47,10 @@ export async function POST(req: NextRequest) {
 
     const sectionId = session.metadata?.sectionId;
     const plan = session.metadata?.plan;
+    const isTest = session.metadata?.isTest === 'true';
     const stripeSessionId = session.id;
     const stripeCustomerId = typeof session.customer === 'string' ? session.customer : session.customer.id;
-    const email = session.customer_details?.email || undefined;
+    const email = isTest ? 'test@test.invalid' : (session.customer_details?.email || undefined);
 
     // Validate plan metadata
     if (plan && plan !== 'deposit' && plan !== 'full') {
@@ -123,6 +124,12 @@ export async function POST(req: NextRequest) {
 
           return 'enrolled' as const;
         });
+      }
+
+      // Test purchases: skip email and invoice after enrollment
+      if (isTest) {
+        console.log(`Test purchase enrolled successfully (session ${stripeSessionId}) — skipping email and invoice`);
+        return NextResponse.json({ received: true });
       }
 
       // Only send confirmation email and create invoices for successful enrollments
