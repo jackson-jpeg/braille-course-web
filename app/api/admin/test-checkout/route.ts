@@ -60,8 +60,9 @@ export async function POST(req: NextRequest) {
 
     return NextResponse.json({ clientSecret: session.client_secret });
   } catch (err) {
-    console.error('Test checkout session creation failed:', (err as Error).message);
-    return NextResponse.json({ error: 'Unable to create test checkout session' }, { status: 500 });
+    const errMsg = (err as Error).message;
+    console.error('Test checkout session creation failed:', errMsg);
+    return NextResponse.json({ error: `Test checkout failed: ${errMsg}` }, { status: 500 });
   }
 }
 
