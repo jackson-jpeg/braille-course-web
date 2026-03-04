@@ -9,3 +9,6 @@ node_modules/
 out/
 **/.DS_Store
 tsconfig.tsbuildinfo
+
+.serena/
+firebase-debug.log
