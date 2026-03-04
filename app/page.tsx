@@ -54,8 +54,8 @@ export default function HubPage() {
 
           <blockquote className="pullquote reveal">
             <p>
-              &ldquo;Every student and family I work with has a unique story. Being part of that journey is the most
-              rewarding work I can imagine.&rdquo;
+              Every student and family I work with has a unique story. Being part of that journey is the most
+              rewarding work I can imagine.
             </p>
           </blockquote>
 

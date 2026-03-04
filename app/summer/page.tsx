@@ -181,7 +181,7 @@ export default async function SummerPage() {
               </summary>
               <p className="faq-answer">
                 The course is <strong>{PRICING.courseDuration} long</strong>, beginning <strong>{PRICING.courseStartDate}</strong> and ending
-                the week of <strong>July 21st</strong>. The final week is one class short — Section A meets only Monday, July 20th, and Section B meets only Tuesday, July 21st.
+                the week of <strong>July 21</strong>. The final week is one class short — Section A meets only Monday, July 20th, and Section B meets only Tuesday, July 21st.
               </p>
             </details>
 

@@ -14,7 +14,7 @@ export default function Footer() {
           Policies
         </Link>
       </div>
-      <p>&copy; 2026 Frankly the Best Education, LLC &middot; Delaney Costello, Teacher of the Visually Impaired</p>
+      <p>&copy; {new Date().getFullYear()} Frankly the Best Education, LLC &middot; Delaney Costello, Teacher of the Visually Impaired</p>
     </footer>
   );
 }

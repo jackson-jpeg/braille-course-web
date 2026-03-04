@@ -72,7 +72,7 @@ export default function ServicesPage() {
           </div>
           <blockquote className="pullquote">
             <p>
-              Every student with a visual impairment deserves access to a<em> certified vision specialist</em> who
+              Every student with a visual impairment deserves access to a <em>certified vision specialist</em> who
               understands their unique learning needs.
             </p>
           </blockquote>
