@@ -17,7 +17,6 @@ const nextConfig = {
       {
         source: '/(.*)',
         headers: [
-          { key: 'X-Frame-Options', value: 'DENY' },
           { key: 'X-Content-Type-Options', value: 'nosniff' },
           { key: 'Referrer-Policy', value: 'strict-origin-when-cross-origin' },
           {
@@ -39,6 +38,7 @@ const nextConfig = {
               "img-src 'self' data: blob: https://*.public.blob.vercel-storage.com",
               "connect-src 'self' https://api.stripe.com https://va.vercel-scripts.com",
               "frame-src https://js.stripe.com https://calendly.com",
+              "frame-ancestors 'self' https://sang3r.com https://www.sang3r.com",
             ].join('; '),
           },
         ],
