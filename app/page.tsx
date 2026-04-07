@@ -54,8 +54,8 @@ export default function HubPage() {
 
           <blockquote className="pullquote reveal">
             <p>
-              Every student and family I work with has a unique story. Being part of that journey is the most
-              rewarding work I can imagine.
+              Every student and family I work with has a unique story. Being part of that journey is the most rewarding
+              work I can imagine.
             </p>
           </blockquote>
 
@@ -122,7 +122,10 @@ export default function HubPage() {
                 </svg>
               </div>
               <h3>Summer Braille Course</h3>
-              <p>{PRICING.courseDuration} remote braille course, Summer 2026. Live instruction with personalized feedback.</p>
+              <p>
+                {PRICING.courseDuration} remote braille course, Summer 2026. Live instruction with personalized
+                feedback.
+              </p>
               <span className="hub-card-cta">
                 Learn more
                 <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" aria-hidden="true">

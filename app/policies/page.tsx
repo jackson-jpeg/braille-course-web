@@ -26,13 +26,17 @@ export default function PoliciesPage() {
           <section id="refunds" className="policy-section">
             <h2>Refund &amp; Cancellation Policy</h2>
 
-            <h3>Deposit Plan ({formatPrice(PRICING.deposit)} deposit + {formatPrice(PRICING.balance)} balance)</h3>
+            <h3>
+              Deposit Plan ({formatPrice(PRICING.deposit)} deposit + {formatPrice(PRICING.balance)} balance)
+            </h3>
             <ul>
               <li>
-                <strong>Cancel before {PRICING.balanceDueDate}:</strong> Full {formatPrice(PRICING.deposit)} deposit refunded.
+                <strong>Cancel before {PRICING.balanceDueDate}:</strong> Full {formatPrice(PRICING.deposit)} deposit
+                refunded.
               </li>
               <li>
-                <strong>After {PRICING.balanceDueDate}</strong> (once the {formatPrice(PRICING.balance)} balance is charged): Non-refundable.
+                <strong>After {PRICING.balanceDueDate}</strong> (once the {formatPrice(PRICING.balance)} balance is
+                charged): Non-refundable.
               </li>
             </ul>
 

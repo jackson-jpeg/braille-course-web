@@ -496,5 +496,8 @@ export function schoolContactConfirmationEmail(opts: { contactName: string; scho
 
   ${footer('If you have any questions in the meantime, feel free to reply to this email or call me directly.')}`;
 
-  return shell(body, `Hi ${contactName} — thank you for reaching out about TVI services for ${schoolName}. I'll be in touch within 2 business days.`);
+  return shell(
+    body,
+    `Hi ${contactName} — thank you for reaching out about TVI services for ${schoolName}. I'll be in touch within 2 business days.`,
+  );
 }

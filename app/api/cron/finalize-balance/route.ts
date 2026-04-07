@@ -25,9 +25,7 @@ export async function GET(req: NextRequest) {
     const today = new Date().toISOString().slice(0, 10);
 
     const isBalanceDue = (inv: { metadata?: Record<string, string> | null }) =>
-      inv.metadata?.type === 'balance' &&
-      inv.metadata?.scheduled_date != null &&
-      inv.metadata.scheduled_date <= today;
+      inv.metadata?.type === 'balance' && inv.metadata?.scheduled_date != null && inv.metadata.scheduled_date <= today;
 
     const balanceInvoices = [...draftInvoices.filter(isBalanceDue), ...openInvoices.filter(isBalanceDue)];
 

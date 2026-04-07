@@ -95,7 +95,13 @@ export interface BrailleCellOptions {
   ghostDots?: boolean;
 }
 
-export function drawBrailleCell(doc: PDFKit.PDFDocument, pattern: number[], x: number, y: number, options: BrailleCellOptions = {}) {
+export function drawBrailleCell(
+  doc: PDFKit.PDFDocument,
+  pattern: number[],
+  x: number,
+  y: number,
+  options: BrailleCellOptions = {},
+) {
   const size = options.size || 'small';
   const dotRadius = size === 'medium' ? 3 : 2;
   const dotSpacingX = size === 'medium' ? 12 : 8;

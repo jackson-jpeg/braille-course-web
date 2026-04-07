@@ -3,7 +3,11 @@ import dynamic from 'next/dynamic';
 import BrailleHero from '@/components/BrailleHero';
 
 function GameSkeleton() {
-  return <div className="game-skeleton" aria-label="Loading game…" role="status"><div className="game-skeleton-shimmer" /></div>;
+  return (
+    <div className="game-skeleton" aria-label="Loading game…" role="status">
+      <div className="game-skeleton-shimmer" />
+    </div>
+  );
 }
 
 const BrailleWordGame = dynamic(() => import('@/components/BrailleWordGame'), { loading: GameSkeleton });
@@ -11,7 +15,9 @@ const BrailleDotExplorer = dynamic(() => import('@/components/BrailleDotExplorer
 const BrailleHangman = dynamic(() => import('@/components/BrailleHangman'), { loading: GameSkeleton });
 const BrailleSpeedMatch = dynamic(() => import('@/components/BrailleSpeedMatch'), { loading: GameSkeleton });
 const BrailleMemoryMatch = dynamic(() => import('@/components/BrailleMemoryMatch'), { loading: GameSkeleton });
-const BrailleContractionSprint = dynamic(() => import('@/components/BrailleContractionSprint'), { loading: GameSkeleton });
+const BrailleContractionSprint = dynamic(() => import('@/components/BrailleContractionSprint'), {
+  loading: GameSkeleton,
+});
 const BrailleNumberSense = dynamic(() => import('@/components/BrailleNumberSense'), { loading: GameSkeleton });
 const BrailleReflexDots = dynamic(() => import('@/components/BrailleReflexDots'), { loading: GameSkeleton });
 const BrailleSequence = dynamic(() => import('@/components/BrailleSequence'), { loading: GameSkeleton });

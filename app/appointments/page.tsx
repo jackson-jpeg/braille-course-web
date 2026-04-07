@@ -11,8 +11,7 @@ export const metadata: Metadata = {
   alternates: { canonical: 'https://teachbraille.org/appointments' },
   openGraph: {
     title: 'Book a Braille Lesson — 1-on-1 TVI Instruction | TeachBraille.org',
-    description:
-      'Personalized braille instruction at your own pace from a certified Teacher of the Visually Impaired.',
+    description: 'Personalized braille instruction at your own pace from a certified Teacher of the Visually Impaired.',
   },
 };
 

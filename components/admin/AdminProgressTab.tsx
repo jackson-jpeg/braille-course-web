@@ -67,10 +67,7 @@ function GameProgressView() {
           <div className="admin-student-progress-bar">
             <div className="admin-mini-progress">
               <div className="admin-mini-progress-track">
-                <div
-                  className="admin-mini-progress-fill"
-                  style={{ width: `${s.completionPct}%` }}
-                />
+                <div className="admin-mini-progress-fill" style={{ width: `${s.completionPct}%` }} />
               </div>
               <span className="admin-mini-progress-pct">{s.completionPct}%</span>
             </div>
@@ -295,160 +292,160 @@ export default function AdminProgressTab({ sections, enrollments, scheduleMap }:
       {progressView === 'games' ? (
         <GameProgressView />
       ) : (
-      <>
-      <div className="admin-attendance-controls">
-        <select
-          className="admin-select"
-          value={selectedSectionId}
-          onChange={(e) => setSelectedSectionId(e.target.value)}
-        >
-          {sections.map((s) => (
-            <option key={s.id} value={s.id}>
-              {scheduleMap[s.label] || s.label}
-            </option>
-          ))}
-        </select>
-        <button className="admin-compose-btn" onClick={() => setShowAdd(!showAdd)}>
-          {showAdd ? 'Cancel' : '+ Add Assignment'}
-        </button>
-        {assignments.length > 0 && (
-          <button className="admin-refresh-btn admin-print-btn" onClick={() => window.print()}>
-            Print Grades
-          </button>
-        )}
-      </div>
-
-      {showAdd && (
-        <div className="admin-compose" style={{ marginBottom: 16, marginTop: 12 }}>
-          <form onSubmit={handleAddAssignment}>
-            <div style={{ display: 'flex', gap: 12, flexWrap: 'wrap', alignItems: 'flex-end' }}>
-              <div className="admin-compose-field" style={{ flex: '2 1 200px' }}>
-                <label>Title</label>
-                <input
-                  type="text"
-                  className="admin-compose-input"
-                  value={addTitle}
-                  onChange={(e) => setAddTitle(e.target.value)}
-                  placeholder="e.g. Homework 1"
-                  required
-                />
-              </div>
-              <div className="admin-compose-field" style={{ flex: '1 1 100px' }}>
-                <label>Max Score</label>
-                <input
-                  type="number"
-                  className="admin-compose-input"
-                  value={addMaxScore}
-                  onChange={(e) => setAddMaxScore(parseInt(e.target.value) || 100)}
-                  min={1}
-                  required
-                />
-              </div>
-              <div className="admin-compose-field" style={{ flex: '1 1 160px' }}>
-                <label>Due Date (optional)</label>
-                <input
-                  type="date"
-                  className="admin-compose-input"
-                  value={addDueDate}
-                  onChange={(e) => setAddDueDate(e.target.value)}
-                />
-              </div>
-              <button type="submit" className="admin-send-btn" disabled={addLoading} style={{ marginBottom: 4 }}>
-                {addLoading ? 'Creating…' : 'Create'}
-              </button>
-            </div>
-          </form>
-        </div>
-      )}
-
-      {loading ? (
-        <p style={{ padding: '12px 0', color: '#6b7280', fontSize: '0.9rem' }}>Loading grades&hellip;</p>
-      ) : assignments.length === 0 ? (
-        <div className="admin-empty-state" style={{ padding: '32px 0' }}>
-          <p className="admin-empty-state-title">No assignments yet</p>
-          <p className="admin-empty-state-sub">
-            Click &quot;+ Add Assignment&quot; to create your first assignment for this section.
-          </p>
-        </div>
-      ) : (
-        <div className="admin-table-wrap admin-grade-grid-wrap" data-print="grades">
-          <table className="admin-table admin-grade-table">
-            <thead>
-              <tr>
-                <th className="admin-grade-student-col">Student</th>
-                {assignments.map((a) => (
-                  <th key={a.id} className="admin-grade-header">
-                    <div className="admin-grade-header-inner">
-                      <span className="admin-grade-header-title" title={a.title}>
-                        {a.title}
-                      </span>
-                      <span className="admin-grade-header-max">/{a.maxScore}</span>
-                      <button
-                        className="admin-grade-header-delete"
-                        onClick={() => setDeletingAssignment(a)}
-                        title="Delete assignment"
-                      >
-                        &times;
-                      </button>
-                    </div>
-                  </th>
-                ))}
-                <th className="admin-grade-avg-col">Avg</th>
-              </tr>
-            </thead>
-            <tbody>
-              {sectionEnrollments.map((enrollment) => (
-                <tr key={enrollment.id}>
-                  <td className="admin-grade-student-cell">{enrollment.email || 'Unknown'}</td>
-                  {assignments.map((a) => {
-                    const score = getGrade(a.id, enrollment.id);
-                    return (
-                      <td key={a.id} className={`admin-grade-cell ${scoreColor(score, a.maxScore)}`}>
-                        <input
-                          type="number"
-                          className="admin-grade-input"
-                          value={score ?? ''}
-                          min={0}
-                          max={a.maxScore}
-                          step="any"
-                          placeholder="—"
-                          onChange={(e) => handleScoreChange(a.id, enrollment.id, e.target.value)}
-                          onBlur={flushSaves}
-                        />
-                      </td>
-                    );
-                  })}
-                  <td className="admin-grade-avg">{studentAverage(enrollment.id)}</td>
-                </tr>
+        <>
+          <div className="admin-attendance-controls">
+            <select
+              className="admin-select"
+              value={selectedSectionId}
+              onChange={(e) => setSelectedSectionId(e.target.value)}
+            >
+              {sections.map((s) => (
+                <option key={s.id} value={s.id}>
+                  {scheduleMap[s.label] || s.label}
+                </option>
               ))}
-              <tr className="admin-grade-summary-row">
-                <td className="admin-grade-student-cell" style={{ fontWeight: 600 }}>
-                  Class Average
-                </td>
-                {assignments.map((a) => (
-                  <td key={a.id} className="admin-grade-avg">
-                    {assignmentAverage(a.id)}
-                  </td>
-                ))}
-                <td></td>
-              </tr>
-            </tbody>
-          </table>
-        </div>
-      )}
+            </select>
+            <button className="admin-compose-btn" onClick={() => setShowAdd(!showAdd)}>
+              {showAdd ? 'Cancel' : '+ Add Assignment'}
+            </button>
+            {assignments.length > 0 && (
+              <button className="admin-refresh-btn admin-print-btn" onClick={() => window.print()}>
+                Print Grades
+              </button>
+            )}
+          </div>
 
-      {deletingAssignment && (
-        <AdminConfirmDialog
-          title="Delete Assignment"
-          message={`Delete "${deletingAssignment.title}" and all its grades? This cannot be undone.`}
-          confirmLabel="Delete"
-          confirmVariant="danger"
-          loading={deleteLoading}
-          onConfirm={handleDeleteAssignment}
-          onCancel={() => setDeletingAssignment(null)}
-        />
-      )}
-      </>
+          {showAdd && (
+            <div className="admin-compose" style={{ marginBottom: 16, marginTop: 12 }}>
+              <form onSubmit={handleAddAssignment}>
+                <div style={{ display: 'flex', gap: 12, flexWrap: 'wrap', alignItems: 'flex-end' }}>
+                  <div className="admin-compose-field" style={{ flex: '2 1 200px' }}>
+                    <label>Title</label>
+                    <input
+                      type="text"
+                      className="admin-compose-input"
+                      value={addTitle}
+                      onChange={(e) => setAddTitle(e.target.value)}
+                      placeholder="e.g. Homework 1"
+                      required
+                    />
+                  </div>
+                  <div className="admin-compose-field" style={{ flex: '1 1 100px' }}>
+                    <label>Max Score</label>
+                    <input
+                      type="number"
+                      className="admin-compose-input"
+                      value={addMaxScore}
+                      onChange={(e) => setAddMaxScore(parseInt(e.target.value) || 100)}
+                      min={1}
+                      required
+                    />
+                  </div>
+                  <div className="admin-compose-field" style={{ flex: '1 1 160px' }}>
+                    <label>Due Date (optional)</label>
+                    <input
+                      type="date"
+                      className="admin-compose-input"
+                      value={addDueDate}
+                      onChange={(e) => setAddDueDate(e.target.value)}
+                    />
+                  </div>
+                  <button type="submit" className="admin-send-btn" disabled={addLoading} style={{ marginBottom: 4 }}>
+                    {addLoading ? 'Creating…' : 'Create'}
+                  </button>
+                </div>
+              </form>
+            </div>
+          )}
+
+          {loading ? (
+            <p style={{ padding: '12px 0', color: '#6b7280', fontSize: '0.9rem' }}>Loading grades&hellip;</p>
+          ) : assignments.length === 0 ? (
+            <div className="admin-empty-state" style={{ padding: '32px 0' }}>
+              <p className="admin-empty-state-title">No assignments yet</p>
+              <p className="admin-empty-state-sub">
+                Click &quot;+ Add Assignment&quot; to create your first assignment for this section.
+              </p>
+            </div>
+          ) : (
+            <div className="admin-table-wrap admin-grade-grid-wrap" data-print="grades">
+              <table className="admin-table admin-grade-table">
+                <thead>
+                  <tr>
+                    <th className="admin-grade-student-col">Student</th>
+                    {assignments.map((a) => (
+                      <th key={a.id} className="admin-grade-header">
+                        <div className="admin-grade-header-inner">
+                          <span className="admin-grade-header-title" title={a.title}>
+                            {a.title}
+                          </span>
+                          <span className="admin-grade-header-max">/{a.maxScore}</span>
+                          <button
+                            className="admin-grade-header-delete"
+                            onClick={() => setDeletingAssignment(a)}
+                            title="Delete assignment"
+                          >
+                            &times;
+                          </button>
+                        </div>
+                      </th>
+                    ))}
+                    <th className="admin-grade-avg-col">Avg</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {sectionEnrollments.map((enrollment) => (
+                    <tr key={enrollment.id}>
+                      <td className="admin-grade-student-cell">{enrollment.email || 'Unknown'}</td>
+                      {assignments.map((a) => {
+                        const score = getGrade(a.id, enrollment.id);
+                        return (
+                          <td key={a.id} className={`admin-grade-cell ${scoreColor(score, a.maxScore)}`}>
+                            <input
+                              type="number"
+                              className="admin-grade-input"
+                              value={score ?? ''}
+                              min={0}
+                              max={a.maxScore}
+                              step="any"
+                              placeholder="—"
+                              onChange={(e) => handleScoreChange(a.id, enrollment.id, e.target.value)}
+                              onBlur={flushSaves}
+                            />
+                          </td>
+                        );
+                      })}
+                      <td className="admin-grade-avg">{studentAverage(enrollment.id)}</td>
+                    </tr>
+                  ))}
+                  <tr className="admin-grade-summary-row">
+                    <td className="admin-grade-student-cell" style={{ fontWeight: 600 }}>
+                      Class Average
+                    </td>
+                    {assignments.map((a) => (
+                      <td key={a.id} className="admin-grade-avg">
+                        {assignmentAverage(a.id)}
+                      </td>
+                    ))}
+                    <td></td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+          )}
+
+          {deletingAssignment && (
+            <AdminConfirmDialog
+              title="Delete Assignment"
+              message={`Delete "${deletingAssignment.title}" and all its grades? This cannot be undone.`}
+              confirmLabel="Delete"
+              confirmVariant="danger"
+              loading={deleteLoading}
+              onConfirm={handleDeleteAssignment}
+              onCancel={() => setDeletingAssignment(null)}
+            />
+          )}
+        </>
       )}
     </>
   );

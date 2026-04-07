@@ -163,7 +163,12 @@ export default function EnrollmentForm() {
 
   const buttonText = (() => {
     if (loadingStage === 'processing') return 'Processing...';
-    const price = selectedPlan === 'full' ? formatPrice(PRICING.full) : selectedPlan === 'deposit' ? formatPrice(PRICING.deposit) : '';
+    const price =
+      selectedPlan === 'full'
+        ? formatPrice(PRICING.full)
+        : selectedPlan === 'deposit'
+          ? formatPrice(PRICING.deposit)
+          : '';
     return price ? `Continue to Checkout — ${price}` : 'Continue to Checkout';
   })();
 
@@ -244,7 +249,9 @@ export default function EnrollmentForm() {
             />
             <div className="enrollment-option-text">
               <div className="enrollment-option-title">Reserve with {formatPrice(PRICING.deposit)} Deposit</div>
-              <div className="enrollment-option-sub">{formatPrice(PRICING.balance)} balance charged {PRICING.balanceDueDate}</div>
+              <div className="enrollment-option-sub">
+                {formatPrice(PRICING.balance)} balance charged {PRICING.balanceDueDate}
+              </div>
             </div>
           </label>
         </div>
@@ -255,7 +262,10 @@ export default function EnrollmentForm() {
         (() => {
           const section = sections.find((s) => s.id === selectedSection);
           const scheduleText = section ? SECTION_SCHEDULES[section.label] || section.label : '';
-          const planText = selectedPlan === 'full' ? `Pay in Full — ${formatPrice(PRICING.full)}` : `${formatPrice(PRICING.deposit)} deposit today, ${formatPrice(PRICING.balance)} on ${PRICING.balanceDueDate}`;
+          const planText =
+            selectedPlan === 'full'
+              ? `Pay in Full — ${formatPrice(PRICING.full)}`
+              : `${formatPrice(PRICING.deposit)} deposit today, ${formatPrice(PRICING.balance)} on ${PRICING.balanceDueDate}`;
           return (
             <div className="enrollment-summary">
               <div className="enrollment-summary-row">

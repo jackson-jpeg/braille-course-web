@@ -208,10 +208,7 @@ export default function AdminScheduledEmailsPanel({ onRefreshSent }: Props) {
                     >
                       {sendingNowId === email.id ? 'Sending\u2026' : 'Send Now'}
                     </button>
-                    <button
-                      className="admin-refresh-btn admin-action-btn-sm"
-                      onClick={() => startEdit(email)}
-                    >
+                    <button className="admin-refresh-btn admin-action-btn-sm" onClick={() => startEdit(email)}>
                       Edit
                     </button>
                     <button

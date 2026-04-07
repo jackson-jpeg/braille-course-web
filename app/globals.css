@@ -5766,8 +5766,15 @@ details.faq-item.reveal:nth-child(6) {
   box-shadow: 0 0 0 2px var(--cream);
 }
 @keyframes adminBadgePulse {
-  0%, 100% { opacity: 1; transform: scale(1); }
-  50% { opacity: 0.7; transform: scale(1.15); }
+  0%,
+  100% {
+    opacity: 1;
+    transform: scale(1);
+  }
+  50% {
+    opacity: 0.7;
+    transform: scale(1.15);
+  }
 }
 
 /* ── Tab content fade ── */
@@ -6088,7 +6095,10 @@ details.faq-item.reveal:nth-child(6) {
   font-size: 0.88rem;
   font-weight: 600;
   cursor: pointer;
-  transition: background 0.2s, transform 0.15s, opacity 0.2s;
+  transition:
+    background 0.2s,
+    transform 0.15s,
+    opacity 0.2s;
 }
 .admin-compose-btn:hover:not(:disabled) {
   background: #c49940;
@@ -6111,7 +6121,10 @@ details.faq-item.reveal:nth-child(6) {
   font-size: 0.85rem;
   font-weight: 500;
   cursor: pointer;
-  transition: border-color 0.2s, transform 0.15s, background 0.2s;
+  transition:
+    border-color 0.2s,
+    transform 0.15s,
+    background 0.2s;
 }
 .admin-refresh-btn:hover:not(:disabled) {
   border-color: var(--gold);
@@ -6237,7 +6250,10 @@ details.faq-item.reveal:nth-child(6) {
   font-size: 0.88rem;
   font-weight: 600;
   cursor: pointer;
-  transition: background 0.2s, transform 0.15s, opacity 0.2s;
+  transition:
+    background 0.2s,
+    transform 0.15s,
+    opacity 0.2s;
 }
 .admin-send-btn:hover:not(:disabled) {
   background: #c49940;
@@ -6399,7 +6415,9 @@ details.faq-item.reveal:nth-child(6) {
   cursor: pointer;
   line-height: 1;
   z-index: 1;
-  transition: background 0.15s, color 0.15s;
+  transition:
+    background 0.15s,
+    color 0.15s;
 }
 .admin-modal-close:hover {
   color: var(--navy);
@@ -6966,7 +6984,9 @@ details.faq-item.reveal:nth-child(6) {
   border: 1px solid rgba(0, 0, 0, 0.06);
   background: white;
   cursor: pointer;
-  transition: box-shadow var(--transition-micro), border-color var(--transition-micro);
+  transition:
+    box-shadow var(--transition-micro),
+    border-color var(--transition-micro);
 }
 .email-delivery-stat-card:hover {
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
@@ -7103,8 +7123,14 @@ details.faq-item.reveal:nth-child(6) {
   animation: chipIn 0.2s var(--ease-out);
 }
 @keyframes chipIn {
-  from { transform: scale(0.85); opacity: 0; }
-  to { transform: scale(1); opacity: 1; }
+  from {
+    transform: scale(0.85);
+    opacity: 0;
+  }
+  to {
+    transform: scale(1);
+    opacity: 1;
+  }
 }
 .email-chip-text {
   overflow: hidden;
@@ -7194,7 +7220,9 @@ details.faq-item.reveal:nth-child(6) {
   font-size: 0.74rem;
   font-weight: 600;
   cursor: pointer;
-  transition: background var(--transition-micro), border-color var(--transition-micro);
+  transition:
+    background var(--transition-micro),
+    border-color var(--transition-micro);
 }
 .email-quick-add-btn:hover {
   background: rgba(168, 191, 160, 0.25);
@@ -7992,7 +8020,7 @@ details.faq-item.reveal:nth-child(6) {
     right: 0;
     bottom: 0;
     width: 24px;
-    background: linear-gradient(to left, rgba(255,255,255,0.9), transparent);
+    background: linear-gradient(to left, rgba(255, 255, 255, 0.9), transparent);
     pointer-events: none;
     border-radius: 0 var(--radius-md) var(--radius-md) 0;
   }
@@ -8270,7 +8298,9 @@ details.faq-item.reveal:nth-child(6) {
   font-size: 0.9rem;
   font-weight: 600;
   cursor: pointer;
-  transition: background 0.2s, transform 0.15s;
+  transition:
+    background 0.2s,
+    transform 0.15s;
 }
 .global-error-retry:hover {
   background: #c49940;
@@ -9056,7 +9086,9 @@ details.faq-item.reveal:nth-child(6) {
   padding: 32px 24px;
   border-radius: var(--radius-lg);
   border: 1px solid rgba(212, 168, 83, 0.15);
-  transition: transform 0.3s var(--ease-out), box-shadow 0.3s var(--ease-out);
+  transition:
+    transform 0.3s var(--ease-out),
+    box-shadow 0.3s var(--ease-out);
 }
 .intro-grades-card:hover {
   transform: translateY(-3px);
@@ -9139,7 +9171,9 @@ details.faq-item.reveal:nth-child(6) {
   background: var(--section-bg);
   border-radius: var(--radius-sm);
   border: 1px solid rgba(212, 168, 83, 0.1);
-  transition: transform 0.2s var(--ease-out), box-shadow 0.2s var(--ease-out);
+  transition:
+    transform 0.2s var(--ease-out),
+    box-shadow 0.2s var(--ease-out);
 }
 .intro-grades-example:hover {
   transform: translateY(-2px);
@@ -9813,7 +9847,7 @@ details.faq-item.reveal:nth-child(6) {
   display: inline-block;
   width: 14px;
   height: 14px;
-  border: 2px solid rgba(255,255,255,0.3);
+  border: 2px solid rgba(255, 255, 255, 0.3);
   border-top-color: white;
   border-radius: 50%;
   animation: admin-spin 0.6s linear infinite;
@@ -9821,7 +9855,7 @@ details.faq-item.reveal:nth-child(6) {
   margin-right: 6px;
 }
 .admin-btn-spinner-dark {
-  border-color: rgba(27,42,74,0.2);
+  border-color: rgba(27, 42, 74, 0.2);
   border-top-color: var(--navy);
 }
 .admin-create-result {
@@ -16783,13 +16817,22 @@ details.faq-item.reveal:nth-child(6) {
 .game-skeleton-shimmer {
   height: 200px;
   border-radius: var(--radius-md);
-  background: linear-gradient(90deg, var(--cream-dark, #f5f0e8) 25%, var(--cream, #fdf8f0) 50%, var(--cream-dark, #f5f0e8) 75%);
+  background: linear-gradient(
+    90deg,
+    var(--cream-dark, #f5f0e8) 25%,
+    var(--cream, #fdf8f0) 50%,
+    var(--cream-dark, #f5f0e8) 75%
+  );
   background-size: 200% 100%;
   animation: skeleton-shimmer 1.5s ease-in-out infinite;
 }
 @keyframes skeleton-shimmer {
-  0% { background-position: 200% 0; }
-  100% { background-position: -200% 0; }
+  0% {
+    background-position: 200% 0;
+  }
+  100% {
+    background-position: -200% 0;
+  }
 }
 
 .game-error-card {
@@ -17056,7 +17099,9 @@ details.faq-item.reveal:nth-child(6) {
   border-radius: var(--radius-md);
   padding: 28px 28px 24px;
   margin: 0;
-  transition: box-shadow var(--transition-default), transform var(--transition-default);
+  transition:
+    box-shadow var(--transition-default),
+    transform var(--transition-default);
 }
 .testimonial-card:hover {
   box-shadow: 0 4px 20px rgba(27, 42, 74, 0.06);
@@ -17156,7 +17201,9 @@ details.faq-item.reveal:nth-child(6) {
   background: var(--gold-soft);
   color: var(--gold-text);
   font-weight: 600;
-  transition: transform var(--transition-micro), background var(--transition-micro);
+  transition:
+    transform var(--transition-micro),
+    background var(--transition-micro);
 }
 .faq-item-open .faq-icon {
   background: var(--navy);
@@ -17460,7 +17507,9 @@ details.faq-item.reveal:nth-child(6) {
   animation: root-spin 0.8s linear infinite;
 }
 @keyframes root-spin {
-  to { transform: rotate(360deg); }
+  to {
+    transform: rotate(360deg);
+  }
 }
 
 /* ===== ADMIN ERROR BOUNDARY ===== */

@@ -370,9 +370,7 @@ export default function AdminSchoolsTab({ schoolInquiries, onSync, onNavigate: _
                   </div>
 
                   <div className="admin-kanban-cards">
-                    {cards.length === 0 && (
-                      <div className="admin-kanban-empty">No schools in this stage</div>
-                    )}
+                    {cards.length === 0 && <div className="admin-kanban-empty">No schools in this stage</div>}
                     {cards.map((inquiry) => (
                       <div
                         key={inquiry.id}

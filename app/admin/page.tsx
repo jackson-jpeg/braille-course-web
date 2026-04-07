@@ -27,16 +27,16 @@ export default async function AdminPage() {
 
   let sections, enrollments, leads, schoolInquiries, scheduleMap;
   try {
-  [sections, enrollments, leads, schoolInquiries, scheduleMap] = await Promise.all([
-    prisma.section.findMany({ orderBy: { label: 'asc' } }),
-    prisma.enrollment.findMany({
-      include: { section: true },
-      orderBy: { createdAt: 'desc' },
-    }),
-    prisma.lead.findMany({ orderBy: { createdAt: 'desc' } }),
-    prisma.schoolInquiry.findMany({ orderBy: { createdAt: 'desc' } }),
-    loadScheduleMap(),
-  ]);
+    [sections, enrollments, leads, schoolInquiries, scheduleMap] = await Promise.all([
+      prisma.section.findMany({ orderBy: { label: 'asc' } }),
+      prisma.enrollment.findMany({
+        include: { section: true },
+        orderBy: { createdAt: 'desc' },
+      }),
+      prisma.lead.findMany({ orderBy: { createdAt: 'desc' } }),
+      prisma.schoolInquiry.findMany({ orderBy: { createdAt: 'desc' } }),
+      loadScheduleMap(),
+    ]);
   } catch (err) {
     console.error('Admin data load failed:', err);
     return (
@@ -46,7 +46,9 @@ export default async function AdminPage() {
           <p style={{ color: 'var(--text-secondary)', margin: '12px 0 24px' }}>
             The database may be temporarily unavailable. Please try refreshing.
           </p>
-          <a href="/admin" style={{ color: 'var(--gold)' }}>Refresh page</a>
+          <a href="/admin" style={{ color: 'var(--gold)' }}>
+            Refresh page
+          </a>
         </div>
       </div>
     );

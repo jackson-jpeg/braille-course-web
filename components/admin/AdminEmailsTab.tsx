@@ -212,8 +212,7 @@ export default function AdminEmailsTab({
 
   // Auto-save draft every 5s when dirty
   useEffect(() => {
-    const hasContent =
-      composeRecipients.length > 0 || composeSubject.trim() !== '' || composeBody.trim() !== '';
+    const hasContent = composeRecipients.length > 0 || composeSubject.trim() !== '' || composeBody.trim() !== '';
     if (showCompose && hasContent) {
       draftDirtyRef.current = true;
     }
@@ -283,8 +282,7 @@ export default function AdminEmailsTab({
   // Track compose dirty state
   useEffect(() => {
     const isDirty =
-      showCompose &&
-      (composeRecipients.length > 0 || composeSubject.trim() !== '' || composeBody.trim() !== '');
+      showCompose && (composeRecipients.length > 0 || composeSubject.trim() !== '' || composeBody.trim() !== '');
     onComposeDirty?.(isDirty);
   }, [showCompose, composeRecipients, composeSubject, composeBody, onComposeDirty]);
 
@@ -781,7 +779,14 @@ export default function AdminEmailsTab({
               {showTemplatePreview ? 'Hide Templates' : 'Preview Templates'}
             </button>
             <button onClick={fetchEmails} className="admin-refresh-btn" disabled={emailsLoading}>
-              {emailsLoading ? <><span className="admin-btn-spinner admin-btn-spinner-dark" />Loading&hellip;</> : 'Refresh'}
+              {emailsLoading ? (
+                <>
+                  <span className="admin-btn-spinner admin-btn-spinner-dark" />
+                  Loading&hellip;
+                </>
+              ) : (
+                'Refresh'
+              )}
             </button>
             {lastFetched && <span className="admin-last-updated">{lastUpdatedText(lastFetched)}</span>}
           </div>
@@ -937,7 +942,14 @@ export default function AdminEmailsTab({
                             onClick={handleDraftWithAI}
                             disabled={draftLoading || !draftBrief.trim()}
                           >
-                            {draftLoading ? <><span className="admin-btn-spinner" />Drafting&hellip;</> : 'Generate'}
+                            {draftLoading ? (
+                              <>
+                                <span className="admin-btn-spinner" />
+                                Drafting&hellip;
+                              </>
+                            ) : (
+                              'Generate'
+                            )}
                           </button>
                         </div>
                       </div>
@@ -1124,15 +1136,25 @@ export default function AdminEmailsTab({
                         className={`admin-send-btn${composeSending ? ' admin-send-btn-sending' : ''}${sendSuccess ? ' admin-send-btn-success' : ''}`}
                         disabled={composeSending}
                       >
-                        {composeSending
-                          ? sendMode === 'schedule'
-                            ? <><span className="admin-btn-spinner" />Scheduling&hellip;</>
-                            : <><span className="admin-btn-spinner" />Sending&hellip;</>
-                          : sendMode === 'schedule'
-                            ? 'Schedule Email'
-                            : attachments.length > 0
-                              ? `Send Email (${attachments.length} attachment${attachments.length > 1 ? 's' : ''})`
-                              : 'Send Email'}
+                        {composeSending ? (
+                          sendMode === 'schedule' ? (
+                            <>
+                              <span className="admin-btn-spinner" />
+                              Scheduling&hellip;
+                            </>
+                          ) : (
+                            <>
+                              <span className="admin-btn-spinner" />
+                              Sending&hellip;
+                            </>
+                          )
+                        ) : sendMode === 'schedule' ? (
+                          'Schedule Email'
+                        ) : attachments.length > 0 ? (
+                          `Send Email (${attachments.length} attachment${attachments.length > 1 ? 's' : ''})`
+                        ) : (
+                          'Send Email'
+                        )}
                       </button>
                       {composeResult && (
                         <span
@@ -1331,7 +1353,14 @@ export default function AdminEmailsTab({
         <div className="admin-email-tab-content" key="received">
           <div className="admin-email-actions">
             <button onClick={fetchReceivedEmails} className="admin-refresh-btn" disabled={receivedLoading}>
-              {receivedLoading ? <><span className="admin-btn-spinner admin-btn-spinner-dark" />Loading&hellip;</> : 'Refresh'}
+              {receivedLoading ? (
+                <>
+                  <span className="admin-btn-spinner admin-btn-spinner-dark" />
+                  Loading&hellip;
+                </>
+              ) : (
+                'Refresh'
+              )}
             </button>
             {receivedLastFetched && <span className="admin-last-updated">{lastUpdatedText(receivedLastFetched)}</span>}
           </div>

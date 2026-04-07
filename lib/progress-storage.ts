@@ -230,9 +230,10 @@ export function mergeProgress(local: ProgressData, cloud: ProgressData): Progres
     streak: {
       currentStreak: Math.max(local.streak.currentStreak, cloud.streak.currentStreak),
       longestStreak: Math.max(local.streak.longestStreak, cloud.streak.longestStreak),
-      lastPlayedDate: local.streak.lastPlayedDate > cloud.streak.lastPlayedDate
-        ? local.streak.lastPlayedDate
-        : cloud.streak.lastPlayedDate,
+      lastPlayedDate:
+        local.streak.lastPlayedDate > cloud.streak.lastPlayedDate
+          ? local.streak.lastPlayedDate
+          : cloud.streak.lastPlayedDate,
       freezesAvailable: Math.max(local.streak.freezesAvailable, cloud.streak.freezesAvailable),
     },
     // Settings — local wins (current device)
@@ -241,18 +242,14 @@ export function mergeProgress(local: ProgressData, cloud: ProgressData): Progres
       difficulty: { ...local.settings.difficulty },
     },
     // Daily challenge — use whichever is more recent
-    dailyChallenge: local.dailyChallenge.date >= cloud.dailyChallenge.date
-      ? local.dailyChallenge
-      : cloud.dailyChallenge,
+    dailyChallenge:
+      local.dailyChallenge.date >= cloud.dailyChallenge.date ? local.dailyChallenge : cloud.dailyChallenge,
     // Games — merge per-game stats
     games: { ...cloud.games },
   };
 
   // Merge per-game: take max of each stat
-  const allGameIds = new Set([
-    ...Object.keys(local.games),
-    ...Object.keys(cloud.games),
-  ]) as Set<GameId>;
+  const allGameIds = new Set([...Object.keys(local.games), ...Object.keys(cloud.games)]) as Set<GameId>;
 
   for (const gameId of allGameIds) {
     const l = local.games[gameId];

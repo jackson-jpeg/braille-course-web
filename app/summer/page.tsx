@@ -88,8 +88,9 @@ export default async function SummerPage() {
           <p className="hero-subtitle">An introductory course for parents &amp; loved ones</p>
 
           <p className="hero-description">
-            Connect with your visually impaired child, family member, or friend in a whole new way. This {PRICING.courseDuration} remote
-            course will give you a strong foundation in the Unified English Braille Code.
+            Connect with your visually impaired child, family member, or friend in a whole new way. This{' '}
+            {PRICING.courseDuration} remote course will give you a strong foundation in the Unified English Braille
+            Code.
           </p>
 
           <div className="hero-meta" role="list" aria-label="Course quick facts">
@@ -180,8 +181,10 @@ export default async function SummerPage() {
                 How long is this course?
               </summary>
               <p className="faq-answer">
-                The course is <strong>{PRICING.courseDuration} long</strong>, beginning <strong>{PRICING.courseStartDate}</strong> and ending
-                the week of <strong>July 21</strong>. The final week is one class short — Section A meets only Monday, July 20th, and Section B meets only Tuesday, July 21st.
+                The course is <strong>{PRICING.courseDuration} long</strong>, beginning{' '}
+                <strong>{PRICING.courseStartDate}</strong> and ending the week of <strong>July 21</strong>. The final
+                week is one class short — Section A meets only Monday, July 20th, and Section B meets only Tuesday, July
+                21st.
               </p>
             </details>
 
@@ -193,9 +196,10 @@ export default async function SummerPage() {
                 How often will we meet?
               </summary>
               <p className="faq-answer">
-                You&apos;ll meet <strong>twice per week for one hour each session</strong>. Over the {PRICING.courseDuration} course, that
-                comes out to <strong>{PRICING.totalSessions} sessions total</strong>. Two time slots are available — pick the one that works
-                best for you:
+                You&apos;ll meet <strong>twice per week for one hour each session</strong>. Over the{' '}
+                {PRICING.courseDuration} course, that comes out to{' '}
+                <strong>{PRICING.totalSessions} sessions total</strong>. Two time slots are available — pick the one
+                that works best for you:
               </p>
               <ul className="faq-answer" style={{ marginTop: '0.5rem', paddingLeft: '1.25rem' }}>
                 <li>Monday &amp; Wednesday, 1–2 PM ET</li>
@@ -238,9 +242,11 @@ export default async function SummerPage() {
                 What does this course cost?
               </summary>
               <p className="faq-answer">
-                The total cost for the {PRICING.courseDuration} course ({PRICING.totalSessions} sessions) is <strong>{formatPrice(PRICING.full)} per learner</strong>. You can
-                pay in full upfront, or reserve your spot with a <strong>{formatPrice(PRICING.deposit)} deposit</strong> — the remaining{' '}
-                <strong>{formatPrice(PRICING.balance)}</strong> will be charged automatically on <strong>{PRICING.balanceDueDate}</strong>.
+                The total cost for the {PRICING.courseDuration} course ({PRICING.totalSessions} sessions) is{' '}
+                <strong>{formatPrice(PRICING.full)} per learner</strong>. You can pay in full upfront, or reserve your
+                spot with a <strong>{formatPrice(PRICING.deposit)} deposit</strong> — the remaining{' '}
+                <strong>{formatPrice(PRICING.balance)}</strong> will be charged automatically on{' '}
+                <strong>{PRICING.balanceDueDate}</strong>.
               </p>
             </details>
           </div>
@@ -349,7 +355,8 @@ export default async function SummerPage() {
           <EnrollmentForm />
 
           <p className="cta-note">
-            Pay in full today, or put down a {formatPrice(PRICING.deposit)} deposit with the remaining {formatPrice(PRICING.balance)} charged on {PRICING.balanceDueDate}.
+            Pay in full today, or put down a {formatPrice(PRICING.deposit)} deposit with the remaining{' '}
+            {formatPrice(PRICING.balance)} charged on {PRICING.balanceDueDate}.
           </p>
 
           <div className="stripe-badge" aria-label="Secure checkout powered by Stripe">

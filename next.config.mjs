@@ -37,7 +37,7 @@ const nextConfig = {
               "font-src 'self' https://fonts.gstatic.com",
               "img-src 'self' data: blob: https://*.public.blob.vercel-storage.com",
               "connect-src 'self' https://api.stripe.com https://va.vercel-scripts.com",
-              "frame-src https://js.stripe.com https://calendly.com",
+              'frame-src https://js.stripe.com https://calendly.com',
               "frame-ancestors 'self' https://sang3r.com https://www.sang3r.com",
             ].join('; '),
           },

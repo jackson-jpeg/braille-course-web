@@ -248,7 +248,9 @@ export default function AdminMaterialsTab({ onEmailMaterial }: Props) {
               strokeLinejoin="round"
             />
           </svg>
-          <p className="admin-drop-zone-text">{uploading ? 'Uploading\u2026' : uploadSuccess ? 'Upload complete!' : 'Drop files here or click to upload'}</p>
+          <p className="admin-drop-zone-text">
+            {uploading ? 'Uploading\u2026' : uploadSuccess ? 'Upload complete!' : 'Drop files here or click to upload'}
+          </p>
         </div>
         <div className="admin-upload-category-select">
           <label>Category</label>

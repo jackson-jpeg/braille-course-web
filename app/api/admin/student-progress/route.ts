@@ -47,61 +47,63 @@ export async function GET(req: NextRequest) {
 
     const TOTAL_GAMES = 10; // Total number of games in the platform
 
-    const students = enrollments.map((e: { id: string; email: string | null; section: { label: string }; createdAt: Date }) => {
-      const gp = progressMap.get(e.id);
-      let totalGamesPlayed = 0;
-      let totalGamesWon = 0;
-      let gamesWithActivity = 0;
-      let achievementCount = 0;
-      let currentStreak = 0;
-      let longestStreak = 0;
-      let lastActive: string | null = null;
+    const students = enrollments.map(
+      (e: { id: string; email: string | null; section: { label: string }; createdAt: Date }) => {
+        const gp = progressMap.get(e.id);
+        let totalGamesPlayed = 0;
+        let totalGamesWon = 0;
+        let gamesWithActivity = 0;
+        let achievementCount = 0;
+        let currentStreak = 0;
+        let longestStreak = 0;
+        let lastActive: string | null = null;
 
-      if (gp) {
-        try {
-          const data = JSON.parse(gp.progressJson) as ProgressData;
-          const games = data.games || {};
-          for (const stats of Object.values(games)) {
-            if (stats && stats.gamesPlayed > 0) {
-              gamesWithActivity++;
-              totalGamesPlayed += stats.gamesPlayed;
-              totalGamesWon += stats.gamesWon;
-              if (!lastActive || stats.lastPlayed > lastActive) {
-                lastActive = stats.lastPlayed;
+        if (gp) {
+          try {
+            const data = JSON.parse(gp.progressJson) as ProgressData;
+            const games = data.games || {};
+            for (const stats of Object.values(games)) {
+              if (stats && stats.gamesPlayed > 0) {
+                gamesWithActivity++;
+                totalGamesPlayed += stats.gamesPlayed;
+                totalGamesWon += stats.gamesWon;
+                if (!lastActive || stats.lastPlayed > lastActive) {
+                  lastActive = stats.lastPlayed;
+                }
               }
             }
+            achievementCount = data.achievements?.unlocked?.length || 0;
+            currentStreak = data.streak?.currentStreak || 0;
+            longestStreak = data.streak?.longestStreak || 0;
+          } catch {
+            // Invalid JSON
           }
-          achievementCount = data.achievements?.unlocked?.length || 0;
-          currentStreak = data.streak?.currentStreak || 0;
-          longestStreak = data.streak?.longestStreak || 0;
-        } catch {
-          // Invalid JSON
         }
-      }
 
-      const completionPct = Math.round((gamesWithActivity / TOTAL_GAMES) * 100);
-      const daysSinceActive = lastActive
-        ? Math.floor((Date.now() - new Date(lastActive).getTime()) / 86400000)
-        : null;
+        const completionPct = Math.round((gamesWithActivity / TOTAL_GAMES) * 100);
+        const daysSinceActive = lastActive
+          ? Math.floor((Date.now() - new Date(lastActive).getTime()) / 86400000)
+          : null;
 
-      return {
-        enrollmentId: e.id,
-        email: e.email,
-        section: e.section.label,
-        enrolledAt: e.createdAt,
-        totalGamesPlayed,
-        totalGamesWon,
-        gamesWithActivity,
-        completionPct,
-        achievementCount,
-        currentStreak,
-        longestStreak,
-        lastActive,
-        daysSinceActive,
-        inactive: daysSinceActive !== null && daysSinceActive > 7,
-        hasProgress: !!gp,
-      };
-    });
+        return {
+          enrollmentId: e.id,
+          email: e.email,
+          section: e.section.label,
+          enrolledAt: e.createdAt,
+          totalGamesPlayed,
+          totalGamesWon,
+          gamesWithActivity,
+          completionPct,
+          achievementCount,
+          currentStreak,
+          longestStreak,
+          lastActive,
+          daysSinceActive,
+          inactive: daysSinceActive !== null && daysSinceActive > 7,
+          hasProgress: !!gp,
+        };
+      },
+    );
 
     return NextResponse.json({ students });
   } catch (error) {

@@ -35,11 +35,7 @@ interface Props {
   onSendEmail: (email: string) => void;
 }
 
-function downloadDataCsv(
-  data: Record<string, string | number>[],
-  headers: string[],
-  filename: string,
-) {
+function downloadDataCsv(data: Record<string, string | number>[], headers: string[], filename: string) {
   const rows = data.map((row) => headers.map((h) => `"${row[h] ?? ''}"`).join(','));
   const csv = [headers.join(','), ...rows].join('\n');
   const blob = new Blob([csv], { type: 'text/csv' });
@@ -205,7 +201,11 @@ export default function AdminOverviewTab({
       Status: e.paymentStatus,
       Date: new Date(e.createdAt).toISOString().slice(0, 10),
     }));
-    downloadDataCsv(rows, ['Email', 'Section', 'Plan', 'Status', 'Date'], `students-${new Date().toISOString().slice(0, 10)}.csv`);
+    downloadDataCsv(
+      rows,
+      ['Email', 'Section', 'Plan', 'Status', 'Date'],
+      `students-${new Date().toISOString().slice(0, 10)}.csv`,
+    );
   }
 
   function exportSchools() {
@@ -217,7 +217,11 @@ export default function AdminOverviewTab({
       State: s.state || '',
       Date: new Date(s.createdAt).toISOString().slice(0, 10),
     }));
-    downloadDataCsv(rows, ['School', 'Contact', 'Email', 'Status', 'State', 'Date'], `schools-${new Date().toISOString().slice(0, 10)}.csv`);
+    downloadDataCsv(
+      rows,
+      ['School', 'Contact', 'Email', 'Status', 'State', 'Date'],
+      `schools-${new Date().toISOString().slice(0, 10)}.csv`,
+    );
   }
 
   function exportPayments() {
@@ -389,11 +393,7 @@ export default function AdminOverviewTab({
               <h3>Recent Activity</h3>
               <div className="admin-activity-feed">
                 {recentActivity.map((item) => (
-                  <button
-                    key={item.id}
-                    className="admin-activity-item"
-                    onClick={() => onNavigate(item.tab)}
-                  >
+                  <button key={item.id} className="admin-activity-item" onClick={() => onNavigate(item.tab)}>
                     <span className={`admin-activity-dot admin-activity-dot-${item.type}`} />
                     <span className="admin-activity-label">{item.label}</span>
                     <span className="admin-activity-time">{relativeTime(item.time)}</span>
@@ -432,13 +432,8 @@ export default function AdminOverviewTab({
               <div className="admin-bar-chart">
                 {analytics.monthlyRevenue.map((m) => (
                   <div key={m.month} className="admin-bar-col">
-                    {m.amount > 0 && (
-                      <span className="admin-bar-value">${m.amount.toLocaleString()}</span>
-                    )}
-                    <div
-                      className="admin-bar"
-                      style={{ height: `${Math.max((m.amount / maxRevenue) * 100, 3)}%` }}
-                    />
+                    {m.amount > 0 && <span className="admin-bar-value">${m.amount.toLocaleString()}</span>}
+                    <div className="admin-bar" style={{ height: `${Math.max((m.amount / maxRevenue) * 100, 3)}%` }} />
                     <span className="admin-bar-label">{m.month}</span>
                   </div>
                 ))}
@@ -484,10 +479,7 @@ export default function AdminOverviewTab({
                   <div key={p.status} className="admin-hbar-row">
                     <span className="admin-hbar-label">{STATUS_LABELS[p.status] || p.status}</span>
                     <div className="admin-hbar-track">
-                      <div
-                        className="admin-hbar-fill"
-                        style={{ width: `${(p.count / maxPipeline) * 100}%` }}
-                      />
+                      <div className="admin-hbar-fill" style={{ width: `${(p.count / maxPipeline) * 100}%` }} />
                     </div>
                     <span className="admin-hbar-count">{p.count}</span>
                   </div>
@@ -520,10 +512,7 @@ export default function AdminOverviewTab({
                         <td>
                           <div className="admin-mini-progress">
                             <div className="admin-mini-progress-track">
-                              <div
-                                className="admin-mini-progress-fill"
-                                style={{ width: `${Math.min(pct, 100)}%` }}
-                              />
+                              <div className="admin-mini-progress-fill" style={{ width: `${Math.min(pct, 100)}%` }} />
                             </div>
                             <span className="admin-mini-progress-pct">{pct}%</span>
                           </div>

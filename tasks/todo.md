@@ -3,6 +3,7 @@
 All items from the original audit have been completed. ✅
 
 ## Completed (previously)
+
 1. ✅ DRY: Extracted duplicated utilities into `admin-utils.ts`
 2. ✅ Fixed N+1 materials fetch in AdminEmailsTab
 3. ✅ AbortController cleanup on unmount in AdminCreateTab
@@ -13,6 +14,7 @@ All items from the original audit have been completed. ✅
 8. ✅ CSS classes for inline-styled action buttons
 
 ## Completed (Feb 19, 2026)
+
 9. ✅ Removed redundant "TeachBraille.org" from email header banner
 10. ✅ Added hidden preheader text to all email templates (fixes Gmail/Outlook preview snippet)
 11. ✅ Replaced `any` types in `document-builders.ts` with `PDFKit.PDFDocument` (4 instances)

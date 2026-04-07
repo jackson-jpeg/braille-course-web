@@ -410,7 +410,14 @@ export default function AdminSchoolPanel({ inquiry, onClose, onUpdate, onDelete 
                   onClick={handleAddActivity}
                   disabled={savingActivity || !newActivityContent.trim()}
                 >
-                  {savingActivity ? <><span className="admin-btn-spinner" />Saving&hellip;</> : 'Add Activity'}
+                  {savingActivity ? (
+                    <>
+                      <span className="admin-btn-spinner" />
+                      Saving&hellip;
+                    </>
+                  ) : (
+                    'Add Activity'
+                  )}
                 </button>
               </div>
 

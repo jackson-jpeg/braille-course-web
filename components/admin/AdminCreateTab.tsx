@@ -1110,10 +1110,7 @@ export default function AdminCreateTab({ onEmailMaterial }: Props) {
                     <td>{formatFileSize(m.size)}</td>
                     <td>
                       <div style={{ display: 'flex', gap: 6 }}>
-                        <button
-                          className="admin-compose-btn admin-action-btn-sm"
-                          onClick={() => onEmailMaterial(m.id)}
-                        >
+                        <button className="admin-compose-btn admin-action-btn-sm" onClick={() => onEmailMaterial(m.id)}>
                           Email
                         </button>
                         <button

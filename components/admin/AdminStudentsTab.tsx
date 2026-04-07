@@ -405,7 +405,11 @@ export default function AdminStudentsTab({
                         </span>
                       </td>
                       <td>{scheduleMap[e.section.label] || e.section.label}</td>
-                      <td>{e.plan === 'FULL' ? `Full (${formatPrice(PRICING.full)})` : `Deposit (${formatPrice(PRICING.deposit)} + ${formatPrice(PRICING.balance)} ${PRICING.balanceDueDate})`}</td>
+                      <td>
+                        {e.plan === 'FULL'
+                          ? `Full (${formatPrice(PRICING.full)})`
+                          : `Deposit (${formatPrice(PRICING.deposit)} + ${formatPrice(PRICING.balance)} ${PRICING.balanceDueDate})`}
+                      </td>
                       <td>
                         <span className={`admin-status admin-status-${e.paymentStatus.toLowerCase()}`}>
                           {e.paymentStatus}
@@ -469,12 +473,15 @@ export default function AdminStudentsTab({
               <option value="Appointment Request">Appointments</option>
               <option value="Waitlist Request">Waitlist</option>
             </select>
-            <button
-              onClick={syncLeads}
-              className="admin-refresh-btn"
-              disabled={syncing}
-            >
-              {syncing ? <><span className="admin-btn-spinner admin-btn-spinner-dark" />Syncing&hellip;</> : 'Sync Inbox'}
+            <button onClick={syncLeads} className="admin-refresh-btn" disabled={syncing}>
+              {syncing ? (
+                <>
+                  <span className="admin-btn-spinner admin-btn-spinner-dark" />
+                  Syncing&hellip;
+                </>
+              ) : (
+                'Sync Inbox'
+              )}
             </button>
             <button
               onClick={() => {

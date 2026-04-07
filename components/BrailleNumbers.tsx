@@ -31,8 +31,8 @@ export default function BrailleNumbers() {
           ))}
         </div>
         <p>
-          <strong>Number Indicator</strong> (dots 3, 4, 5, 6) tells the reader: the next character is a number.
-          Numbers 1&ndash;9 reuse the patterns for letters A&ndash;I, and 0 uses J.
+          <strong>Number Indicator</strong> (dots 3, 4, 5, 6) tells the reader: the next character is a number. Numbers
+          1&ndash;9 reuse the patterns for letters A&ndash;I, and 0 uses J.
         </p>
       </div>
 

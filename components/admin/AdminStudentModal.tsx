@@ -200,7 +200,11 @@ export default function AdminStudentModal({ enrollment, scheduleMap, onClose, on
                   </div>
                   <div className="admin-student-detail-row">
                     <span>Plan</span>
-                    <span>{enrollment.plan === 'FULL' ? `Full (${formatPrice(PRICING.full)})` : `Deposit (${formatPrice(PRICING.deposit)} + ${formatPrice(PRICING.balance)} ${PRICING.balanceDueDate})`}</span>
+                    <span>
+                      {enrollment.plan === 'FULL'
+                        ? `Full (${formatPrice(PRICING.full)})`
+                        : `Deposit (${formatPrice(PRICING.deposit)} + ${formatPrice(PRICING.balance)} ${PRICING.balanceDueDate})`}
+                    </span>
                   </div>
                   <div className="admin-student-detail-row">
                     <span>Status</span>
@@ -425,10 +429,7 @@ export default function AdminStudentModal({ enrollment, scheduleMap, onClose, on
                               }}
                             />
                             <div style={{ display: 'flex', gap: 6, marginTop: 4 }}>
-                              <button
-                                className="admin-send-btn admin-action-btn-sm"
-                                onClick={() => saveNoteEdit(n.id)}
-                              >
+                              <button className="admin-send-btn admin-action-btn-sm" onClick={() => saveNoteEdit(n.id)}>
                                 Save
                               </button>
                               <button

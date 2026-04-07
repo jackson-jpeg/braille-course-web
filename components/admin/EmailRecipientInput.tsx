@@ -183,10 +183,7 @@ export default function EmailRecipientInput({ recipients, onChange, enrollments,
 
   return (
     <div className="email-chip-input-wrapper" ref={containerRef}>
-      <div
-        className="email-chip-input"
-        onClick={() => inputRef.current?.focus()}
-      >
+      <div className="email-chip-input" onClick={() => inputRef.current?.focus()}>
         {recipients.map((email) => (
           <span key={email} className="email-chip">
             <span className="email-chip-text">{email}</span>
@@ -264,9 +261,11 @@ export default function EmailRecipientInput({ recipients, onChange, enrollments,
             onClick={() => handleQuickAdd(enrolledEmails)}
             disabled={netNewCount(enrolledEmails) === 0}
           >
-            All Enrolled ({netNewCount(enrolledEmails) < enrolledEmails.length
+            All Enrolled (
+            {netNewCount(enrolledEmails) < enrolledEmails.length
               ? `+${netNewCount(enrolledEmails)} of ${enrolledEmails.length}`
-              : enrolledEmails.length})
+              : enrolledEmails.length}
+            )
           </button>
         )}
         {leadEmails.length > 0 && (
@@ -276,9 +275,11 @@ export default function EmailRecipientInput({ recipients, onChange, enrollments,
             onClick={() => handleQuickAdd(leadEmails)}
             disabled={netNewCount(leadEmails) === 0}
           >
-            All Leads ({netNewCount(leadEmails) < leadEmails.length
+            All Leads (
+            {netNewCount(leadEmails) < leadEmails.length
               ? `+${netNewCount(leadEmails)} of ${leadEmails.length}`
-              : leadEmails.length})
+              : leadEmails.length}
+            )
           </button>
         )}
         {Array.from(sectionGroups.entries()).map(([label, emails]) => (
@@ -289,9 +290,8 @@ export default function EmailRecipientInput({ recipients, onChange, enrollments,
             onClick={() => handleQuickAdd(emails)}
             disabled={netNewCount(emails) === 0}
           >
-            {label} ({netNewCount(emails) < emails.length
-              ? `+${netNewCount(emails)} of ${emails.length}`
-              : emails.length})
+            {label} (
+            {netNewCount(emails) < emails.length ? `+${netNewCount(emails)} of ${emails.length}` : emails.length})
           </button>
         ))}
       </div>

@@ -34,7 +34,9 @@ export async function POST(req: NextRequest) {
   // Log expired checkout sessions for analytics
   if (event.type === 'checkout.session.expired') {
     const session = event.data.object;
-    console.log(`Checkout session expired: ${session.id} (section: ${session.metadata?.sectionId}, plan: ${session.metadata?.plan})`);
+    console.log(
+      `Checkout session expired: ${session.id} (section: ${session.metadata?.sectionId}, plan: ${session.metadata?.plan})`,
+    );
     return NextResponse.json({ received: true });
   }
 
@@ -182,7 +184,7 @@ export async function POST(req: NextRequest) {
           default_payment_method:
             typeof paymentIntent.payment_method === 'string'
               ? paymentIntent.payment_method
-              : paymentIntent.payment_method?.id ?? undefined,
+              : (paymentIntent.payment_method?.id ?? undefined),
         },
       });
 

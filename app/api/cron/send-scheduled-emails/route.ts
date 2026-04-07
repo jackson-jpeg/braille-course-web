@@ -51,7 +51,6 @@ export async function GET(req: NextRequest) {
     let failed = 0;
 
     for (const email of due) {
-
       try {
         const html = customEmail({ subject: email.subject, body: email.body });
 

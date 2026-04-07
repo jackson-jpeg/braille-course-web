@@ -93,7 +93,6 @@ export default function NavBar() {
           </button>
 
           <div className={`site-nav-links${menuOpen ? ' open' : ''}`} id="site-nav-links">
-
             {NAV_LINKS.map(({ href, label }, index) => {
               const isActive = href === '/' ? pathname === '/' : pathname.startsWith(href);
               return (

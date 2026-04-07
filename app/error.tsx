@@ -13,9 +13,7 @@ export default function GlobalError({ error, reset }: { error: Error & { digest?
         </div>
         <h1>Something went wrong</h1>
         <p>An unexpected error occurred. Please try again or return to the home page.</p>
-        {error.digest && (
-          <p className="global-error-digest">Error ID: {error.digest}</p>
-        )}
+        {error.digest && <p className="global-error-digest">Error ID: {error.digest}</p>}
         <div className="global-error-actions">
           <button onClick={reset} className="global-error-retry">
             Try Again
