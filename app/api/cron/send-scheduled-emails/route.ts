@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { timingSafeEqual } from 'crypto';
 import { prisma } from '@/lib/prisma';
-import { resend } from '@/lib/resend';
+import { resend, SENDER_EMAIL } from '@/lib/resend';
 import { customEmail } from '@/lib/email-templates';
 
 function verifyCronSecret(header: string | null): boolean {
@@ -78,7 +78,7 @@ export async function GET(req: NextRequest) {
         }
 
         const result = await resend.emails.send({
-          from: 'Delaney Costello <delaney@teachbraille.org>',
+          from: SENDER_EMAIL,
           to: email.to,
           subject: email.subject,
           html,

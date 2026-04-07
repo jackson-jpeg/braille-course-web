@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { isAuthorized } from '@/lib/admin-auth';
 import { customEmail } from '@/lib/email-templates';
-import { resend } from '@/lib/resend';
+import { resend, SENDER_EMAIL } from '@/lib/resend';
 
 /**
  * POST /api/admin/emails/bulk
@@ -52,7 +52,7 @@ export async function POST(req: NextRequest) {
 
       try {
         await resend.emails.send({
-          from: 'Delaney Costello <delaney@teachbraille.org>',
+          from: SENDER_EMAIL,
           to: email,
           subject: personalizedSubject,
           html: customEmail({ subject: personalizedSubject, body: personalizedBody }),

@@ -3,7 +3,7 @@ export const maxDuration = 30;
 import { NextRequest, NextResponse } from 'next/server';
 import { prisma } from '@/lib/prisma';
 import { stripe } from '@/lib/stripe';
-import { resend } from '@/lib/resend';
+import { resend, SENDER_EMAIL } from '@/lib/resend';
 import { getSchedule } from '@/lib/schedule';
 import { enrollmentConfirmation } from '@/lib/email-templates';
 import { getSettings, getSetting } from '@/lib/settings';
@@ -155,7 +155,7 @@ export async function POST(req: NextRequest) {
           );
 
           await resend.emails.send({
-            from: 'Delaney Costello <delaney@teachbraille.org>',
+            from: SENDER_EMAIL,
             to: email,
             subject: isDeposit ? depositSubject : fullSubject,
             html: enrollmentConfirmation({ isDeposit, schedule }),

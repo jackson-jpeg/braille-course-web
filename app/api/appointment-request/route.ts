@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { prisma } from '@/lib/prisma';
-import { resend } from '@/lib/resend';
+import { resend, ADMIN_EMAIL, NOREPLY_EMAIL, SYSTEM_NOREPLY_EMAIL } from '@/lib/resend';
 import { checkRateLimit } from '@/lib/rate-limit';
 import { appointmentRequestAdminEmail, appointmentRequestConfirmationEmail } from '@/lib/email-templates';
 
@@ -74,8 +74,8 @@ export async function POST(req: NextRequest) {
     const [adminEmailResult, confirmationEmailResult] = await Promise.allSettled([
       // Admin notification
       resend.emails.send({
-        from: 'TeachBraille.org <noreply@teachbraille.org>',
-        to: 'delaney@teachbraille.org',
+        from: SYSTEM_NOREPLY_EMAIL,
+        to: ADMIN_EMAIL,
         subject: 'New Appointment Request',
         html: appointmentRequestAdminEmail({
           name: name.trim(),
@@ -87,7 +87,7 @@ export async function POST(req: NextRequest) {
       }),
       // User confirmation
       resend.emails.send({
-        from: 'Delaney Costello <noreply@teachbraille.org>',
+        from: NOREPLY_EMAIL,
         to: email.trim(),
         subject: 'Appointment Request Received — TeachBraille.org',
         html: appointmentRequestConfirmationEmail({ name: name.trim() }),

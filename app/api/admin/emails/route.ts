@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { resend } from '@/lib/resend';
+import { resend, SENDER_EMAIL } from '@/lib/resend';
 import { customEmail } from '@/lib/email-templates';
 import { isAuthorized } from '@/lib/admin-auth';
 import { prisma } from '@/lib/prisma';
@@ -62,7 +62,7 @@ export async function POST(req: NextRequest) {
     let result;
     try {
       result = await resend.emails.send({
-        from: 'Delaney Costello <delaney@teachbraille.org>',
+        from: SENDER_EMAIL,
         to: recipients,
         subject,
         html,
