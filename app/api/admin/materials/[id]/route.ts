@@ -24,7 +24,8 @@ export async function PATCH(req: NextRequest, { params }: { params: Promise<{ id
     return NextResponse.json({
       material: { ...material, createdAt: material.createdAt.toISOString() },
     });
-  } catch {
+  } catch (err) {
+    console.error('Material update error:', (err as Error).message);
     return NextResponse.json({ error: 'Failed to update material' }, { status: 500 });
   }
 }
@@ -50,7 +51,8 @@ export async function DELETE(req: NextRequest, { params }: { params: Promise<{ i
     await prisma.material.delete({ where: { id } });
 
     return NextResponse.json({ success: true });
-  } catch {
+  } catch (err) {
+    console.error('Material delete error:', (err as Error).message);
     return NextResponse.json({ error: 'Failed to delete material' }, { status: 500 });
   }
 }

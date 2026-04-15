@@ -25,7 +25,8 @@ export async function GET(req: NextRequest) {
         createdAt: n.createdAt.toISOString(),
       })),
     });
-  } catch {
+  } catch (err) {
+    console.error('Notes fetch error:', (err as Error).message);
     return NextResponse.json({ error: 'Failed to fetch notes' }, { status: 500 });
   }
 }
@@ -53,7 +54,8 @@ export async function POST(req: NextRequest) {
     return NextResponse.json({
       note: { ...note, createdAt: note.createdAt.toISOString() },
     });
-  } catch {
+  } catch (err) {
+    console.error('Note create error:', (err as Error).message);
     return NextResponse.json({ error: 'Failed to create note' }, { status: 500 });
   }
 }

@@ -191,7 +191,7 @@ export async function POST(req: NextRequest) {
       meta: (err as Record<string, unknown>).meta,
     });
     return NextResponse.json(
-      { error: 'Unable to process your request. Please try again or email Delaney@TeachBraille.org directly.' },
+      { error: `Unable to process your request. Please try again or email ${ADMIN_EMAIL} directly.` },
       { status: 500 },
     );
   }

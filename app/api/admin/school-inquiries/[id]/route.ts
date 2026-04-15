@@ -131,7 +131,8 @@ export async function PATCH(req: NextRequest, { params }: { params: Promise<{ id
         updatedAt: inquiry.updatedAt.toISOString(),
       },
     });
-  } catch {
+  } catch (err) {
+    console.error('School inquiry update error:', (err as Error).message);
     return NextResponse.json({ error: 'Failed to update school inquiry' }, { status: 500 });
   }
 }
@@ -146,7 +147,8 @@ export async function DELETE(req: NextRequest, { params }: { params: Promise<{ i
     const { id } = await params;
     await prisma.schoolInquiry.delete({ where: { id } });
     return NextResponse.json({ success: true });
-  } catch {
+  } catch (err) {
+    console.error('School inquiry delete error:', (err as Error).message);
     return NextResponse.json({ error: 'Failed to delete school inquiry' }, { status: 500 });
   }
 }
