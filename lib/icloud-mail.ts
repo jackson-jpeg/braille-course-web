@@ -177,6 +177,9 @@ export async function getReceivedEmail(uid: string): Promise<ImapEmailDetail | n
 }
 
 export async function searchEmailsBySubject(query: string): Promise<ImapEmail[]> {
+  if (!process.env.ICLOUD_EMAIL || !process.env.ICLOUD_APP_PASSWORD) {
+    throw new Error('Missing ICLOUD_EMAIL or ICLOUD_APP_PASSWORD env vars');
+  }
   const client = createClient();
   const emails: ImapEmail[] = [];
 

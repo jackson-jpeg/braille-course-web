@@ -1,16 +1,8 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { timingSafeEqual } from 'crypto';
 import { prisma } from '@/lib/prisma';
 import { resend, SENDER_EMAIL } from '@/lib/resend';
 import { customEmail } from '@/lib/email-templates';
-
-function verifyCronSecret(header: string | null): boolean {
-  const secret = process.env.CRON_SECRET;
-  if (!header || !secret) return false;
-  const expected = `Bearer ${secret}`;
-  if (header.length !== expected.length) return false;
-  return timingSafeEqual(Buffer.from(header), Buffer.from(expected));
-}
+import { verifyCronSecret } from '@/lib/cron-auth';
 
 export async function GET(req: NextRequest) {
   // Only allow Vercel Cron (or manual trigger with the secret)
