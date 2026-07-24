@@ -15,16 +15,6 @@
   --slate: #4a5568;
   --sage: #a8bfa0;
   --sage-dark: #7a9b6d;
-  /* Mid-century storybook accents (Mary Blair / Provensen) — used sparingly for
-     decorative warmth: spot illustrations, hero washes, small accents. Kept muted
-     and warm so they harmonize with the cream/gold/navy/sage spine. Decorative
-     only — never used for body text, so no contrast obligations. */
-  --teal: #4f8a86;
-  --teal-soft: #dcebe8;
-  --clay: #c67c5b;
-  --clay-soft: #f4ddd0;
-  --mustard: #cf9f43;
-  --mustard-soft: #f6e6c0;
   --text-primary: #1b2a4a;
   --text-secondary: #4a5568;
   --section-bg: #fefcf7;
@@ -235,7 +225,7 @@ body::after {
   width: 500px;
   height: 500px;
   border-radius: 50%;
-  background: radial-gradient(circle, rgba(79, 138, 134, 0.16) 0%, transparent 70%);
+  background: radial-gradient(circle, rgba(168, 191, 160, 0.2) 0%, transparent 70%);
   animation: float 25s ease-in-out infinite reverse;
 }
 
@@ -3277,7 +3267,7 @@ details.faq-item.reveal:nth-child(6) {
   width: 500px;
   height: 500px;
   border-radius: 50%;
-  background: radial-gradient(circle, rgba(198, 124, 91, 0.14) 0%, transparent 70%);
+  background: radial-gradient(circle, rgba(168, 191, 160, 0.2) 0%, transparent 70%);
   animation: float 25s ease-in-out infinite reverse;
 }
 
@@ -3285,40 +3275,6 @@ details.faq-item.reveal:nth-child(6) {
   position: relative;
   z-index: 2;
   max-width: 800px;
-}
-
-/* ===== STORYBOOK SPOT ILLUSTRATIONS ===== */
-.storybook-art {
-  position: absolute;
-  z-index: 1;
-  pointer-events: none;
-  opacity: 0.55;
-}
-.storybook-art-reading {
-  top: 8%;
-  left: clamp(12px, 5vw, 72px);
-  width: clamp(72px, 10vw, 130px);
-}
-.storybook-art-summer {
-  bottom: 6%;
-  right: clamp(12px, 5vw, 72px);
-  width: clamp(90px, 12vw, 160px);
-}
-@media (max-width: 768px) {
-  .storybook-art {
-    opacity: 0.35;
-  }
-  .storybook-art-reading {
-    width: 64px;
-  }
-  .storybook-art-summer {
-    width: 78px;
-  }
-}
-@media (max-width: 480px) {
-  .storybook-art {
-    display: none;
-  }
 }
 
 .hub-hero h1 {

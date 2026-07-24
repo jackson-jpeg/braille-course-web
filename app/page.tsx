@@ -1,7 +1,6 @@
 import type { Metadata } from 'next';
 import BrailleHero from '@/components/BrailleHero';
 import Footer from '@/components/Footer';
-import StorybookArt from '@/components/StorybookArt';
 import { PRICING } from '@/lib/pricing';
 import Link from 'next/link';
 
@@ -24,7 +23,6 @@ export default function HubPage() {
     <>
       {/* ========== HUB HERO ========== */}
       <section className="hub-hero" id="top">
-        <StorybookArt variant="reading" />
         <div className="hub-hero-content">
           <BrailleHero />
 

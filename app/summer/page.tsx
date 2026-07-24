@@ -1,7 +1,6 @@
 import { Metadata } from 'next';
 import { prisma } from '@/lib/prisma';
 import BrailleHero from '@/components/BrailleHero';
-import StorybookArt from '@/components/StorybookArt';
 import FloatingCta from '@/components/FloatingCta';
 import EnrollmentForm from '@/components/EnrollmentForm';
 import { SpotsProvider } from '@/lib/spots-context';
@@ -75,7 +74,6 @@ export default async function SummerPage() {
 
       {/* ========== HERO ========== */}
       <section className="hero" id="top">
-        <StorybookArt variant="summer" />
         <div className="hero-content">
           <BrailleHero word="SUMMER #2027" />
 
