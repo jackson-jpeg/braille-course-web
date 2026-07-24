@@ -22,6 +22,8 @@ const BrailleNumberSense = dynamic(() => import('@/components/BrailleNumberSense
 const BrailleReflexDots = dynamic(() => import('@/components/BrailleReflexDots'), { loading: GameSkeleton });
 const BrailleSequence = dynamic(() => import('@/components/BrailleSequence'), { loading: GameSkeleton });
 const BrailleSentenceDecoder = dynamic(() => import('@/components/BrailleSentenceDecoder'), { loading: GameSkeleton });
+const BrailleBingo = dynamic(() => import('@/components/BrailleBingo'), { loading: GameSkeleton });
+const BrailleRain = dynamic(() => import('@/components/BrailleRain'), { loading: GameSkeleton });
 import GamesNav from '@/components/GamesNav';
 import Footer from '@/components/Footer';
 import OnboardingModal from '@/components/OnboardingModal';
@@ -33,14 +35,14 @@ import GameErrorBoundary from '@/components/GameErrorBoundary';
 import StreakBadge from '@/components/StreakBadge';
 
 export const metadata: Metadata = {
-  title: 'Free Braille Practice Games — 10 Interactive Activities',
+  title: 'Free Braille Practice Games — 12 Interactive Activities',
   description:
-    'Teach and learn braille with 10 free interactive games. Practice letters, numbers, contractions, and sentences with Word Game, Dot Explorer, Hangman, Speed Match, Memory Match, and more.',
+    'Teach and learn braille with 12 free interactive games. Practice letters, numbers, contractions, and sentences with Word Game, Dot Explorer, Hangman, Speed Match, Memory Match, Braille Bingo, Braille Rain, and more.',
   alternates: { canonical: 'https://teachbraille.org/games' },
   openGraph: {
-    title: 'Free Braille Practice Games — 10 Interactive Activities | TeachBraille.org',
+    title: 'Free Braille Practice Games — 12 Interactive Activities | TeachBraille.org',
     description:
-      'Learn braille with 10 free interactive games — from letter recognition to full sentence decoding. No account needed.',
+      'Learn braille with 12 free interactive games — from letter recognition to full sentence decoding. No account needed.',
   },
 };
 
@@ -59,7 +61,7 @@ export default function GamesPage() {
           <h1>
             Braille <em>Interactive</em>
           </h1>
-          <p className="games-hero-sub">Practice and build your braille skills with 10 interactive activities.</p>
+          <p className="games-hero-sub">Practice and build your braille skills with 12 interactive activities.</p>
           <StreakBadge />
         </div>
       </section>
@@ -140,6 +142,20 @@ export default function GamesPage() {
       <section className="decoder-section" id="sentence-decoder" aria-label="Sentence Decoder">
         <GameErrorBoundary gameName="Sentence Decoder">
           <BrailleSentenceDecoder />
+        </GameErrorBoundary>
+      </section>
+
+      {/* ========== BRAILLE BINGO ========== */}
+      <section className="bingo-section" id="bingo" aria-label="Braille Bingo">
+        <GameErrorBoundary gameName="Braille Bingo">
+          <BrailleBingo />
+        </GameErrorBoundary>
+      </section>
+
+      {/* ========== BRAILLE RAIN ========== */}
+      <section className="rain-section" id="rain" aria-label="Braille Rain">
+        <GameErrorBoundary gameName="Braille Rain">
+          <BrailleRain />
         </GameErrorBoundary>
       </section>
 

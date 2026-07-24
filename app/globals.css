@@ -15,6 +15,16 @@
   --slate: #4a5568;
   --sage: #a8bfa0;
   --sage-dark: #7a9b6d;
+  /* Mid-century storybook accents (Mary Blair / Provensen) — used sparingly for
+     decorative warmth: spot illustrations, hero washes, small accents. Kept muted
+     and warm so they harmonize with the cream/gold/navy/sage spine. Decorative
+     only — never used for body text, so no contrast obligations. */
+  --teal: #4f8a86;
+  --teal-soft: #dcebe8;
+  --clay: #c67c5b;
+  --clay-soft: #f4ddd0;
+  --mustard: #cf9f43;
+  --mustard-soft: #f6e6c0;
   --text-primary: #1b2a4a;
   --text-secondary: #4a5568;
   --section-bg: #fefcf7;
@@ -225,7 +235,7 @@ body::after {
   width: 500px;
   height: 500px;
   border-radius: 50%;
-  background: radial-gradient(circle, rgba(168, 191, 160, 0.2) 0%, transparent 70%);
+  background: radial-gradient(circle, rgba(79, 138, 134, 0.16) 0%, transparent 70%);
   animation: float 25s ease-in-out infinite reverse;
 }
 
@@ -3267,7 +3277,7 @@ details.faq-item.reveal:nth-child(6) {
   width: 500px;
   height: 500px;
   border-radius: 50%;
-  background: radial-gradient(circle, rgba(168, 191, 160, 0.2) 0%, transparent 70%);
+  background: radial-gradient(circle, rgba(198, 124, 91, 0.14) 0%, transparent 70%);
   animation: float 25s ease-in-out infinite reverse;
 }
 
@@ -3275,6 +3285,40 @@ details.faq-item.reveal:nth-child(6) {
   position: relative;
   z-index: 2;
   max-width: 800px;
+}
+
+/* ===== STORYBOOK SPOT ILLUSTRATIONS ===== */
+.storybook-art {
+  position: absolute;
+  z-index: 1;
+  pointer-events: none;
+  opacity: 0.55;
+}
+.storybook-art-reading {
+  top: 8%;
+  left: clamp(12px, 5vw, 72px);
+  width: clamp(72px, 10vw, 130px);
+}
+.storybook-art-summer {
+  bottom: 6%;
+  right: clamp(12px, 5vw, 72px);
+  width: clamp(90px, 12vw, 160px);
+}
+@media (max-width: 768px) {
+  .storybook-art {
+    opacity: 0.35;
+  }
+  .storybook-art-reading {
+    width: 64px;
+  }
+  .storybook-art-summer {
+    width: 78px;
+  }
+}
+@media (max-width: 480px) {
+  .storybook-art {
+    display: none;
+  }
 }
 
 .hub-hero h1 {
@@ -17542,4 +17586,403 @@ details.faq-item.reveal:nth-child(6) {
 }
 .admin-error-retry:hover {
   opacity: 0.85;
+}
+
+/* ============================================================
+   BRAILLE BINGO
+   ============================================================ */
+.bingo-section {
+  scroll-margin-top: 120px;
+}
+.bingo-container {
+  max-width: 700px;
+  margin: 0 auto;
+  padding: clamp(32px, 6vw, 80px) 24px;
+}
+.bingo-header {
+  text-align: center;
+  margin-bottom: 28px;
+}
+.bingo-header h2 {
+  font-family: var(--font-heading), 'DM Serif Display', serif;
+  font-size: clamp(1.5rem, 3vw, 2rem);
+  color: var(--navy);
+  margin-top: 8px;
+}
+.bingo-header p {
+  color: var(--text-secondary);
+  font-size: 0.95rem;
+}
+.bingo-badge {
+  display: inline-block;
+  font-size: 0.72rem;
+  font-weight: 700;
+  color: var(--gold-text);
+}
+.bingo-body {
+  background: white;
+  border: 1px solid rgba(212, 168, 83, 0.12);
+  border-radius: var(--radius-lg);
+  padding: 32px 28px;
+}
+.bingo-intro {
+  text-align: center;
+  color: var(--text-secondary);
+  font-size: 0.95rem;
+}
+.bingo-start,
+.bingo-play-again {
+  margin-top: 20px;
+  background: var(--navy);
+  color: var(--gold-light);
+  border: none;
+  padding: 12px 28px;
+  border-radius: var(--radius-full);
+  font-weight: 600;
+  font-size: 0.95rem;
+  cursor: pointer;
+  transition: all var(--transition-micro);
+}
+.bingo-start:hover,
+.bingo-play-again:hover {
+  background: var(--navy-light);
+  transform: translateY(-2px);
+}
+.bingo-caller {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 6px;
+  margin-bottom: 20px;
+}
+.bingo-caller-label {
+  font-size: 0.7rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.6px;
+  color: var(--text-secondary);
+}
+.bingo-current {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  padding: 12px 22px;
+  border-radius: var(--radius-md);
+  background: var(--gold-soft);
+  border: 2px solid var(--gold);
+  min-height: 64px;
+}
+.bingo-current-empty {
+  color: var(--text-secondary);
+  font-size: 1.4rem;
+  opacity: 0.5;
+}
+.bingo-current-braille {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 4px;
+  width: 34px;
+}
+.bingo-current-dot {
+  width: 13px;
+  height: 13px;
+  border-radius: 50%;
+}
+.bingo-current-dot.filled {
+  background: var(--navy);
+}
+.bingo-current-dot.empty {
+  background: rgba(27, 42, 74, 0.12);
+}
+.bingo-current-letter {
+  font-family: var(--font-heading), 'DM Serif Display', serif;
+  font-size: 1.8rem;
+  color: var(--navy);
+}
+.bingo-progress {
+  display: flex;
+  justify-content: space-between;
+  font-size: 0.85rem;
+  font-weight: 600;
+  margin-bottom: 16px;
+  color: var(--text-secondary);
+}
+.bingo-card {
+  display: grid;
+  grid-template-columns: repeat(5, 1fr);
+  gap: 8px;
+  max-width: 420px;
+  margin: 0 auto;
+}
+.bingo-cell {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 4px;
+  aspect-ratio: 1;
+  padding: 4px;
+  border-radius: var(--radius-sm);
+  border: 2px solid rgba(212, 168, 83, 0.18);
+  background: white;
+  cursor: pointer;
+  transition: all var(--transition-micro);
+}
+.bingo-cell:hover:not(:disabled) {
+  border-color: var(--gold);
+  transform: translateY(-1px);
+}
+.bingo-cell.marked {
+  border-color: var(--sage-dark);
+  background: rgba(168, 191, 160, 0.22);
+  cursor: default;
+}
+.bingo-cell.free {
+  border-color: var(--gold);
+  background: var(--gold-soft);
+  cursor: default;
+}
+.bingo-cell.shake {
+  animation: bingo-shake 0.35s ease;
+  border-color: var(--game-wrong);
+}
+@keyframes bingo-shake {
+  0%,
+  100% {
+    transform: translateX(0);
+  }
+  25% {
+    transform: translateX(-4px);
+  }
+  75% {
+    transform: translateX(4px);
+  }
+}
+.bingo-cell-braille {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 2px;
+  width: 22px;
+}
+.bingo-cell-dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+}
+.bingo-cell-dot.filled {
+  background: var(--navy);
+}
+.bingo-cell-dot.empty {
+  background: rgba(27, 42, 74, 0.1);
+}
+.bingo-cell.marked .bingo-cell-dot.filled {
+  background: var(--sage-dark);
+}
+.bingo-cell-letter {
+  font-size: 0.7rem;
+  font-weight: 600;
+  color: var(--text-secondary);
+}
+.bingo-free-star {
+  font-size: 1.4rem;
+  color: var(--gold);
+}
+.bingo-called-list {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  justify-content: center;
+  margin-top: 20px;
+}
+.bingo-called-chip {
+  font-size: 0.75rem;
+  font-weight: 700;
+  color: var(--gold-text);
+  background: var(--gold-soft);
+  border-radius: var(--radius-full);
+  padding: 3px 10px;
+}
+.bingo-result {
+  text-align: center;
+}
+.bingo-result-title {
+  font-family: var(--font-heading), 'DM Serif Display', serif;
+  font-size: 2rem;
+  color: var(--navy);
+}
+.bingo-result-score {
+  font-size: 1.3rem;
+  font-weight: 700;
+  color: var(--gold-text);
+  margin-top: 4px;
+}
+.bingo-result-label,
+.bingo-tip {
+  color: var(--text-secondary);
+  font-size: 0.9rem;
+  margin-top: 8px;
+}
+.bingo-tip {
+  font-style: italic;
+  max-width: 420px;
+  margin-inline: auto;
+}
+
+/* ============================================================
+   BRAILLE RAIN
+   ============================================================ */
+.rain-section {
+  scroll-margin-top: 120px;
+}
+.rain-container {
+  max-width: 640px;
+  margin: 0 auto;
+  padding: clamp(32px, 6vw, 80px) 24px;
+}
+.rain-header {
+  text-align: center;
+  margin-bottom: 28px;
+}
+.rain-header h2 {
+  font-family: var(--font-heading), 'DM Serif Display', serif;
+  font-size: clamp(1.5rem, 3vw, 2rem);
+  color: var(--navy);
+  margin-top: 8px;
+}
+.rain-header p {
+  color: var(--text-secondary);
+  font-size: 0.95rem;
+}
+.rain-kbd-hint {
+  display: inline-block;
+  font-size: 0.7rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  background: var(--navy);
+  color: white;
+  padding: 2px 8px;
+  border-radius: var(--radius-full);
+  margin-left: 4px;
+}
+.rain-body {
+  background: white;
+  border: 1px solid rgba(212, 168, 83, 0.12);
+  border-radius: var(--radius-lg);
+  padding: 24px;
+}
+.rain-hud {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 14px;
+  font-weight: 700;
+  font-size: 0.9rem;
+  color: var(--navy);
+}
+.rain-lives {
+  display: inline-flex;
+  gap: 3px;
+}
+.rain-life {
+  color: var(--game-wrong);
+  font-size: 1.1rem;
+}
+.rain-life.lost {
+  color: rgba(27, 42, 74, 0.15);
+}
+.rain-intro {
+  text-align: center;
+  color: var(--text-secondary);
+  font-size: 0.95rem;
+}
+.rain-reduced-note {
+  margin-top: 8px;
+  font-size: 0.82rem;
+  color: var(--gold-text);
+}
+.rain-start,
+.rain-play-again {
+  margin-top: 20px;
+  background: var(--navy);
+  color: var(--gold-light);
+  border: none;
+  padding: 12px 28px;
+  border-radius: var(--radius-full);
+  font-weight: 600;
+  font-size: 0.95rem;
+  cursor: pointer;
+  transition: all var(--transition-micro);
+}
+.rain-start:hover,
+.rain-play-again:hover {
+  background: var(--navy-light);
+  transform: translateY(-2px);
+}
+.rain-field {
+  position: relative;
+  overflow: hidden;
+  border-radius: var(--radius-md);
+  background: linear-gradient(180deg, var(--section-bg), var(--gold-soft));
+  border: 1px solid rgba(212, 168, 83, 0.15);
+}
+.rain-field.wrong {
+  background: linear-gradient(180deg, var(--game-wrong-bg), var(--gold-soft));
+}
+.rain-drop {
+  position: absolute;
+  transform: translateX(-50%);
+  padding: 6px;
+  border-radius: var(--radius-sm);
+  background: white;
+  box-shadow: var(--shadow-sm);
+  border: 1px solid rgba(27, 42, 74, 0.08);
+}
+.rain-drop-braille {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 3px;
+  width: 26px;
+}
+.rain-drop-dot {
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+}
+.rain-drop-dot.filled {
+  background: var(--navy);
+}
+.rain-drop-dot.empty {
+  background: rgba(27, 42, 74, 0.1);
+}
+.rain-baseline {
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  height: 3px;
+  background: repeating-linear-gradient(90deg, var(--gold) 0 8px, transparent 8px 16px);
+  opacity: 0.6;
+}
+.rain-result {
+  text-align: center;
+}
+.rain-result-title {
+  font-family: var(--font-heading), 'DM Serif Display', serif;
+  font-size: 2rem;
+  color: var(--navy);
+}
+.rain-result-score {
+  font-size: 1.3rem;
+  font-weight: 700;
+  color: var(--gold-text);
+  margin-top: 4px;
+}
+.rain-tip {
+  color: var(--text-secondary);
+  font-size: 0.9rem;
+  margin-top: 8px;
+  font-style: italic;
+  max-width: 420px;
+  margin-inline: auto;
 }

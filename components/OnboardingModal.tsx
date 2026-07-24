@@ -6,7 +6,7 @@ import { loadProgress, markOnboardingSeen, setTrackingConsent } from '@/lib/prog
 const STEPS = [
   {
     title: 'Welcome to Braille Interactive!',
-    description: 'Practice and master braille with 10 interactive games — from letter recognition to sentence reading.',
+    description: 'Practice and master braille with 12 interactive games — from letter recognition to sentence reading.',
     icon: '⠃',
   },
   {

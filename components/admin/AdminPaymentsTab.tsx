@@ -979,7 +979,7 @@ export default function AdminPaymentsTab({ enrollments }: Props) {
                     type="text"
                     value={couponPromoCode}
                     onChange={(e) => setCouponPromoCode(e.target.value.toUpperCase())}
-                    placeholder="e.g. SUMMER2026"
+                    placeholder="e.g. SUMMER2027"
                     className="admin-compose-input"
                   />
                 </div>

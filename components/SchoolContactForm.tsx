@@ -497,7 +497,7 @@ export default function SchoolContactForm() {
               value={timeline}
               onChange={(e) => setTimeline(e.target.value)}
               className="school-contact-form-input"
-              placeholder="e.g., Next school year, ASAP, Fall 2026"
+              placeholder="e.g., Next school year, ASAP, Fall 2027"
               maxLength={300}
               disabled={loading}
             />

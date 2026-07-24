@@ -27,6 +27,8 @@ export interface GameDifficultyParams {
   'reflex-dots': { displayTime: number; rounds: number };
   sequence: { letterCount: number };
   'sentence-decoder': { maxWords: number };
+  bingo: { winCondition: 'line' | 'double-line' | 'blackout'; callIntervalMs: number };
+  rain: { fallSpeed: number; spawnMs: number; similarLetters: boolean };
 }
 
 /** Get difficulty parameters for a game */
@@ -81,6 +83,16 @@ export function getDifficultyParams(gameId: GameId, difficulty: Difficulty): Rec
       beginner: { maxWords: 3 },
       intermediate: { maxWords: 5 },
       advanced: { maxWords: 7 },
+    },
+    bingo: {
+      beginner: { winCondition: 'line', callIntervalMs: 3500 },
+      intermediate: { winCondition: 'double-line', callIntervalMs: 2800 },
+      advanced: { winCondition: 'blackout', callIntervalMs: 2200 },
+    },
+    rain: {
+      beginner: { fallSpeed: 22, spawnMs: 2600, similarLetters: false },
+      intermediate: { fallSpeed: 34, spawnMs: 1900, similarLetters: false },
+      advanced: { fallSpeed: 48, spawnMs: 1400, similarLetters: true },
     },
   };
 

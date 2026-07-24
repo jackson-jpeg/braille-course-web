@@ -62,7 +62,7 @@ export async function POST(req: NextRequest) {
     }
     const courseName = getSetting(settings, 'course.name', 'Summer Braille Course');
     const balanceAmount = getSetting(settings, 'pricing.balance', String(PRICING.balance));
-    const balanceDueDate = getSetting(settings, 'course.balanceDueDate', '2026-05-01');
+    const balanceDueDate = getSetting(settings, 'course.balanceDueDate', '2027-05-01');
     const dueDateFormatted = new Date(balanceDueDate + 'T00:00:00').toLocaleDateString('en-US', {
       month: 'long',
       day: 'numeric',

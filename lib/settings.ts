@@ -4,9 +4,9 @@ import { PRICING } from '@/lib/pricing';
 /** Default settings — used as fallbacks when no DB value exists. */
 export const DEFAULT_SETTINGS: Record<string, string> = {
   'course.name': 'Summer Braille Course',
-  'course.startDate': '2026-06-01',
-  'course.endDate': '2026-07-21',
-  'course.balanceDueDate': '2026-05-01',
+  'course.startDate': '2027-06-07',
+  'course.endDate': '2027-07-30',
+  'course.balanceDueDate': '2027-05-01',
   'course.sessionCount': String(PRICING.totalSessions),
   'pricing.full': String(PRICING.full),
   'pricing.deposit': String(PRICING.deposit),

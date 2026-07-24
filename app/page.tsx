@@ -1,6 +1,7 @@
 import type { Metadata } from 'next';
 import BrailleHero from '@/components/BrailleHero';
 import Footer from '@/components/Footer';
+import StorybookArt from '@/components/StorybookArt';
 import { PRICING } from '@/lib/pricing';
 import Link from 'next/link';
 
@@ -23,6 +24,7 @@ export default function HubPage() {
     <>
       {/* ========== HUB HERO ========== */}
       <section className="hub-hero" id="top">
+        <StorybookArt variant="reading" />
         <div className="hub-hero-content">
           <BrailleHero />
 
@@ -123,7 +125,7 @@ export default function HubPage() {
               </div>
               <h3>Summer Braille Course</h3>
               <p>
-                {PRICING.courseDuration} remote braille course, Summer 2026. Live instruction with personalized
+                {PRICING.courseDuration} remote braille course, Summer 2027. Live instruction with personalized
                 feedback.
               </p>
               <span className="hub-card-cta">

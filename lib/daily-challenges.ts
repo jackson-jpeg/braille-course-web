@@ -28,6 +28,8 @@ const GAME_POOL: { gameId: GameId; weight: number }[] = [
   { gameId: 'reflex-dots', weight: 5 },
   { gameId: 'sequence', weight: 5 },
   { gameId: 'sentence-decoder', weight: 5 },
+  { gameId: 'bingo', weight: 10 },
+  { gameId: 'rain', weight: 10 },
 ];
 
 const GAME_LABELS: Record<GameId, string> = {
@@ -41,6 +43,8 @@ const GAME_LABELS: Record<GameId, string> = {
   'reflex-dots': 'Reflex Dots',
   sequence: 'Sequence',
   'sentence-decoder': 'Sentence Decoder',
+  bingo: 'Braille Bingo',
+  rain: 'Braille Rain',
 };
 
 /** Simple seeded pseudo-random number generator */
@@ -184,6 +188,30 @@ function generateChallenge(gameId: GameId, rng: () => number, index: number): Da
         description: `Decode ${wins}+ sentences in ${label}`,
         target: wins,
         xp: 40,
+        type: 'score',
+      };
+    }
+    case 'bingo': {
+      const wins = 1 + Math.floor(rng() * 2);
+      return {
+        id,
+        gameId,
+        title: `Bingo!`,
+        description: `Win ${wins} ${label} game${wins > 1 ? 's' : ''}`,
+        target: wins,
+        xp: 30,
+        type: 'wins',
+      };
+    }
+    case 'rain': {
+      const score = 12 + Math.floor(rng() * 12);
+      return {
+        id,
+        gameId,
+        title: `Downpour`,
+        description: `Clear ${score}+ cells in ${label}`,
+        target: score,
+        xp: 35,
         type: 'score',
       };
     }

@@ -9,9 +9,9 @@ import { PRICING } from '@/lib/pricing';
 
 const DEFAULT_SETTINGS: CourseSettingsMap = {
   'course.name': 'Summer Braille Course',
-  'course.startDate': '2026-06-08',
-  'course.endDate': '2026-07-31',
-  'course.balanceDueDate': '2026-05-01',
+  'course.startDate': '2027-06-07',
+  'course.endDate': '2027-07-30',
+  'course.balanceDueDate': '2027-05-01',
   'course.sessionCount': String(PRICING.totalSessions),
   'pricing.full': String(PRICING.full),
   'pricing.deposit': String(PRICING.deposit),

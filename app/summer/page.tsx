@@ -1,6 +1,7 @@
 import { Metadata } from 'next';
 import { prisma } from '@/lib/prisma';
 import BrailleHero from '@/components/BrailleHero';
+import StorybookArt from '@/components/StorybookArt';
 import FloatingCta from '@/components/FloatingCta';
 import EnrollmentForm from '@/components/EnrollmentForm';
 import { SpotsProvider } from '@/lib/spots-context';
@@ -11,12 +12,12 @@ import { PRICING, formatPrice } from '@/lib/pricing';
 export const revalidate = 60;
 
 export const metadata: Metadata = {
-  title: 'Summer Braille Course 2026 — Learn Braille This Summer',
+  title: 'Summer Braille Course 2027 — Learn Braille This Summer',
   description:
-    'Learn to read and write braille this summer. Remote course for parents and loved ones of visually impaired individuals. Taught by Delaney Costello, certified TVI. Only 10 spots — Summer 2026.',
+    'Learn to read and write braille this summer. Remote course for parents and loved ones of visually impaired individuals. Taught by Delaney Costello, certified TVI. Only 10 spots — Summer 2027.',
   alternates: { canonical: 'https://teachbraille.org/summer' },
   openGraph: {
-    title: 'Summer Braille Course 2026 — Learn Braille This Summer | TeachBraille.org',
+    title: 'Summer Braille Course 2027 — Learn Braille This Summer | TeachBraille.org',
     description:
       'A remote braille course for parents and loved ones. Live instruction from a certified TVI. Only 10 spots available.',
     type: 'website',
@@ -36,7 +37,7 @@ export default async function SummerPage() {
   const courseJsonLd = {
     '@context': 'https://schema.org',
     '@type': 'Course',
-    name: 'Summer Braille Course 2026',
+    name: 'Summer Braille Course 2027',
     description:
       'An 8-week introductory remote Braille course for parents and loved ones of visually impaired individuals.',
     provider: {
@@ -46,7 +47,7 @@ export default async function SummerPage() {
     },
     url: 'https://teachbraille.org/summer',
     courseMode: 'online',
-    datePublished: '2026-01-01',
+    datePublished: '2027-01-01',
     offers: {
       '@type': 'Offer',
       price: String(PRICING.full),
@@ -57,8 +58,8 @@ export default async function SummerPage() {
     hasCourseInstance: {
       '@type': 'CourseInstance',
       courseMode: 'online',
-      startDate: '2026-06-01',
-      endDate: '2026-07-21',
+      startDate: '2027-06-07',
+      endDate: '2027-07-30',
       instructor: {
         '@type': 'Person',
         name: 'Delaney Costello',
@@ -74,10 +75,11 @@ export default async function SummerPage() {
 
       {/* ========== HERO ========== */}
       <section className="hero" id="top">
+        <StorybookArt variant="summer" />
         <div className="hero-content">
-          <BrailleHero word="SUMMER #2026" />
+          <BrailleHero word="SUMMER #2027" />
 
-          <div className="hero-badge">Summer 2026 · Remote Course</div>
+          <div className="hero-badge">Summer 2027 · Remote Course</div>
 
           <h1>
             Learn <em>Braille</em>
@@ -182,9 +184,9 @@ export default async function SummerPage() {
               </summary>
               <p className="faq-answer">
                 The course is <strong>{PRICING.courseDuration} long</strong>, beginning{' '}
-                <strong>{PRICING.courseStartDate}</strong> and ending the week of <strong>July 21</strong>. The final
-                week is one class short — Section A meets only Monday, July 20th, and Section B meets only Tuesday, July
-                21st.
+                <strong>{PRICING.courseStartDate}</strong> and ending the week of <strong>July 26</strong>. The final
+                week is one class short — Section A meets only Monday, July 26th, and Section B meets only Tuesday, July
+                27th.
               </p>
             </details>
 

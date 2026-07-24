@@ -16,6 +16,8 @@ const GAME_INFO: { id: GameId; label: string; anchor: string }[] = [
   { id: 'reflex-dots', label: 'Reflex Dots', anchor: '#reflex-dots' },
   { id: 'sequence', label: 'Sequence', anchor: '#sequence' },
   { id: 'sentence-decoder', label: 'Sentence Decoder', anchor: '#sentence-decoder' },
+  { id: 'bingo', label: 'Braille Bingo', anchor: '#bingo' },
+  { id: 'rain', label: 'Braille Rain', anchor: '#rain' },
 ];
 
 function ProgressRing({ progress, size = 48 }: { progress: number; size?: number }) {

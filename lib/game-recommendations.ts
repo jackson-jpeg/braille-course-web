@@ -16,6 +16,8 @@ const ALL_GAMES: GameId[] = [
   'reflex-dots',
   'sequence',
   'sentence-decoder',
+  'bingo',
+  'rain',
 ];
 
 const GAME_NAMES: Record<GameId, string> = {
@@ -29,6 +31,8 @@ const GAME_NAMES: Record<GameId, string> = {
   'reflex-dots': 'Reflex Dots',
   sequence: 'Sequence',
   'sentence-decoder': 'Sentence Decoder',
+  bingo: 'Braille Bingo',
+  rain: 'Braille Rain',
 };
 
 export interface Recommendation {

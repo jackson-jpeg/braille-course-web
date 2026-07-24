@@ -16,9 +16,9 @@ export const PRICING = {
   /** Date the balance is charged (display string) */
   balanceDueDate: 'May 1st',
   /** Course start date (display string) */
-  courseStartDate: 'June 1',
+  courseStartDate: 'June 7',
   /** Course date range */
-  courseDates: 'June 1 – July 21, 2026',
+  courseDates: 'June 7 – July 30, 2027',
   /** Total sessions */
   totalSessions: 15,
   /** Course duration */

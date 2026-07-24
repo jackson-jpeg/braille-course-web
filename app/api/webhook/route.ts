@@ -195,7 +195,7 @@ export async function POST(req: NextRequest) {
 
       const invoiceSettings = await getSettings();
       const invoiceCourseName = getSetting(invoiceSettings, 'course.name', 'Summer Braille Course');
-      const invoiceBalanceDueDate = getSetting(invoiceSettings, 'course.balanceDueDate', '2026-05-01');
+      const invoiceBalanceDueDate = getSetting(invoiceSettings, 'course.balanceDueDate', '2027-05-01');
 
       const invoice = await stripe.invoices.create({
         customer: stripeCustomerId,

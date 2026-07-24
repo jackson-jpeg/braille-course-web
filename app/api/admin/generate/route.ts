@@ -339,8 +339,8 @@ export async function POST(req: NextRequest) {
         // Inject course context from settings
         const settings = await getSettings();
         const courseName = getSetting(settings, 'course.name', 'Summer Braille Course');
-        const courseStart = getSetting(settings, 'course.startDate', '2026-06-08');
-        const courseEnd = getSetting(settings, 'course.endDate', '2026-07-31');
+        const courseStart = getSetting(settings, 'course.startDate', '2027-06-07');
+        const courseEnd = getSetting(settings, 'course.endDate', '2027-07-30');
         const courseContext = `\nCOURSE CONTEXT: This material is for "${courseName}", running ${courseStart} to ${courseEnd}. Reference these dates where appropriate rather than using generic placeholders.\n`;
 
         const userMessage = instructions

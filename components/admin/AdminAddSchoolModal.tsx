@@ -274,7 +274,7 @@ export default function AdminAddSchoolModal({ onClose, onAdded }: Props) {
                   type="text"
                   value={timeline}
                   onChange={(e) => setTimeline(e.target.value)}
-                  placeholder="e.g., ASAP, Fall 2026"
+                  placeholder="e.g., ASAP, Fall 2027"
                 />
               </div>
               <div className="admin-add-school-field">

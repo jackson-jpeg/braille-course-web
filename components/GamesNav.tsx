@@ -15,6 +15,8 @@ const SECTIONS: { id: string; gameId: GameId; label: string }[] = [
   { id: 'reflex-dots', gameId: 'reflex-dots', label: 'Reflex Dots' },
   { id: 'sequence', gameId: 'sequence', label: 'Sequence' },
   { id: 'sentence-decoder', gameId: 'sentence-decoder', label: 'Sentence Decoder' },
+  { id: 'bingo', gameId: 'bingo', label: 'Braille Bingo' },
+  { id: 'rain', gameId: 'rain', label: 'Braille Rain' },
 ];
 
 function MasteryDot({ mastery }: { mastery: number }) {

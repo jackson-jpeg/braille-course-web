@@ -10,7 +10,9 @@ export type GameId =
   | 'number-sense'
   | 'reflex-dots'
   | 'sequence'
-  | 'sentence-decoder';
+  | 'sentence-decoder'
+  | 'bingo'
+  | 'rain';
 
 export type Difficulty = 'beginner' | 'intermediate' | 'advanced';
 
@@ -90,6 +92,8 @@ export const DEFAULT_SETTINGS: UserSettings = {
     'reflex-dots': 'beginner',
     sequence: 'beginner',
     'sentence-decoder': 'beginner',
+    bingo: 'beginner',
+    rain: 'beginner',
   },
   trackingEnabled: true,
   hasSeenOnboarding: false,

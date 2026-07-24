@@ -348,7 +348,7 @@ export default function IntroPage() {
               </div>
               <h3>Take the Course</h3>
               <p>
-                {PRICING.courseDuration} remote braille course, Summer 2026. Live instruction with personalized
+                {PRICING.courseDuration} remote braille course, Summer 2027. Live instruction with personalized
                 feedback.
               </p>
               <span className="intro-cta-arrow" aria-hidden="true">
