@@ -6,10 +6,11 @@ import { usePathname } from 'next/navigation';
 
 const NAV_LINKS = [
   { href: '/intro', label: 'Intro to Braille' },
+  { href: '/learn', label: 'Free Course' },
+  { href: '/games', label: 'Interactive' },
   { href: '/services', label: 'TVI Services' },
   { href: '/summer', label: 'Summer Course' },
   { href: '/appointments', label: 'Appointments' },
-  { href: '/games', label: 'Interactive' },
 ];
 
 // Braille "T" = dots 2,3,4,5 → grid order [d1,d4,d2,d5,d3,d6] = [0,1,1,1,1,0]

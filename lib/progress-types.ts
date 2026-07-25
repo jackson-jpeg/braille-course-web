@@ -47,6 +47,13 @@ export interface DailyChallengeState {
   }[];
 }
 
+/** Progress through the free structured course (localStorage, no login). */
+export interface CourseProgress {
+  completedLessons: string[]; // lesson slugs the learner has finished
+  lessonScores: Record<string, number>; // slug → best drill score (0-100)
+  lastLessonSlug: string; // most recently opened lesson, for "Resume"
+}
+
 export interface UserSettings {
   difficulty: Record<GameId, Difficulty>;
   trackingEnabled: boolean;
@@ -60,6 +67,7 @@ export interface ProgressData {
   streak: StreakData;
   achievements: AchievementProgress;
   dailyChallenge: DailyChallengeState;
+  course: CourseProgress;
   settings: UserSettings;
   firstPlayDate: string;
 }
@@ -118,6 +126,11 @@ export function createDefaultProgress(): ProgressData {
     dailyChallenge: {
       date: '',
       challenges: [],
+    },
+    course: {
+      completedLessons: [],
+      lessonScores: {},
+      lastLessonSlug: '',
     },
     settings: { ...DEFAULT_SETTINGS },
     firstPlayDate: '',

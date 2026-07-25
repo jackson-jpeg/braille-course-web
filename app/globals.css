@@ -17942,3 +17942,555 @@ details.faq-item.reveal:nth-child(6) {
   max-width: 420px;
   margin-inline: auto;
 }
+
+/* ============================================================
+   FREE BRAILLE COURSE (/learn)
+   Uses only existing design tokens — cream / navy / gold.
+   ============================================================ */
+
+/* ---------- Shared readable column ---------- */
+.lesson-inner {
+  max-width: 760px;
+  margin: 0 auto;
+  padding: 0 24px;
+}
+
+/* ---------- Course home hero ---------- */
+.course-hero,
+.lesson-hero {
+  position: relative;
+  min-height: 38vh;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 100px 24px 40px;
+  text-align: center;
+  overflow: hidden;
+}
+.course-hero-content,
+.lesson-hero-content {
+  position: relative;
+  max-width: 760px;
+}
+.course-hero h1,
+.lesson-hero h1 {
+  font-size: clamp(2.4rem, 5.5vw, 4rem);
+  line-height: 1.05;
+  margin: 6px 0 18px;
+}
+.course-hero-sub,
+.lesson-hero-sub {
+  font-size: 1.05rem;
+  line-height: 1.7;
+  color: var(--text-secondary);
+  font-weight: 300;
+  max-width: 620px;
+  margin: 0 auto;
+}
+.lesson-hero-crumb {
+  font-size: 0.85rem;
+  color: var(--text-secondary);
+  margin-bottom: 14px;
+  letter-spacing: 0.3px;
+}
+.lesson-hero-crumb a {
+  color: var(--gold-text);
+  text-decoration: none;
+  font-weight: 600;
+}
+.lesson-hero-crumb a:hover {
+  text-decoration: underline;
+}
+
+/* ---------- Course home ---------- */
+.course-home {
+  padding: 20px 0 80px;
+}
+.course-home-inner {
+  max-width: 820px;
+  margin: 0 auto;
+  padding: 0 24px;
+}
+.course-home-progress {
+  text-align: center;
+  background: var(--section-bg);
+  border: 1px solid rgba(212, 168, 83, 0.18);
+  border-radius: var(--radius-lg);
+  padding: 32px 28px;
+  margin-bottom: 48px;
+}
+.course-home-cta {
+  margin-top: 22px;
+}
+.course-home-note {
+  margin-top: 16px;
+  font-size: 0.85rem;
+  color: var(--text-secondary);
+}
+
+/* ---------- Progress bar ---------- */
+.course-progress-track {
+  height: 12px;
+  border-radius: var(--radius-full);
+  background: var(--gold-soft);
+  overflow: hidden;
+  border: 1px solid rgba(212, 168, 83, 0.25);
+}
+.course-progress-fill {
+  height: 100%;
+  border-radius: var(--radius-full);
+  background: linear-gradient(90deg, var(--gold), #e0b563);
+  transition: width 0.5s var(--ease-out);
+}
+.course-progress-caption {
+  margin-top: 12px;
+  font-size: 0.9rem;
+  color: var(--text-secondary);
+  font-weight: 500;
+}
+
+/* ---------- Module + lesson list ---------- */
+.course-modules {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 40px;
+}
+.course-module-title {
+  font-size: clamp(1.4rem, 3vw, 1.9rem);
+  margin-bottom: 6px;
+}
+.course-module-blurb {
+  color: var(--text-secondary);
+  margin-bottom: 18px;
+  font-weight: 300;
+}
+.course-lessons {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+.course-lesson-link {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  padding: 16px 20px;
+  background: #fff;
+  border: 1px solid rgba(212, 168, 83, 0.15);
+  border-radius: var(--radius-md);
+  text-decoration: none;
+  color: var(--text-primary);
+  transition:
+    transform 0.25s var(--ease-out),
+    box-shadow 0.25s var(--ease-out),
+    border-color 0.25s ease;
+}
+.course-lesson-link:hover {
+  transform: translateY(-2px);
+  box-shadow: var(--shadow-md);
+  border-color: var(--gold);
+}
+.course-lesson-num {
+  flex: 0 0 auto;
+  width: 34px;
+  height: 34px;
+  display: grid;
+  place-items: center;
+  border-radius: var(--radius-full);
+  background: var(--gold-soft);
+  color: var(--gold-text);
+  font-weight: 700;
+  font-size: 0.95rem;
+}
+.course-lesson.done .course-lesson-num {
+  background: var(--sage);
+  color: var(--navy-deep);
+}
+.course-lesson-body {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+.course-lesson-title {
+  font-weight: 600;
+  font-size: 1.02rem;
+}
+.course-lesson-summary {
+  font-size: 0.86rem;
+  color: var(--text-secondary);
+}
+
+/* ---------- Lesson sections ---------- */
+.lesson-teach,
+.lesson-drill,
+.lesson-practice,
+.lesson-foot {
+  padding: 40px 0;
+}
+.lesson-drill {
+  background: var(--section-bg);
+  border-top: 1px solid rgba(212, 168, 83, 0.12);
+  border-bottom: 1px solid rgba(212, 168, 83, 0.12);
+}
+.lesson-section-heading {
+  font-size: clamp(1.5rem, 3.5vw, 2.1rem);
+  margin-bottom: 14px;
+}
+.lesson-text {
+  font-size: 1.02rem;
+  line-height: 1.75;
+  color: var(--text-secondary);
+  margin-bottom: 16px;
+  max-width: 640px;
+}
+
+/* ---------- Taught characters ---------- */
+.lesson-chars {
+  list-style: none;
+  margin: 28px 0 0;
+  padding: 0;
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
+  gap: 16px;
+}
+.lesson-char {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+  padding: 18px 14px;
+  background: #fff;
+  border: 1px solid rgba(212, 168, 83, 0.15);
+  border-radius: var(--radius-md);
+  text-align: center;
+}
+.lesson-char-cell {
+  display: grid;
+  grid-template-columns: repeat(2, 18px);
+  grid-auto-rows: 18px;
+  gap: 6px;
+}
+.lesson-char-dot {
+  width: 18px;
+  height: 18px;
+  border-radius: 50%;
+}
+.lesson-char-dot.filled {
+  background: var(--navy);
+  box-shadow: inset 0 -1px 2px rgba(0, 0, 0, 0.25);
+}
+.lesson-char-dot.empty {
+  background: transparent;
+  border: 1.5px solid rgba(27, 42, 74, 0.14);
+}
+.lesson-char-print {
+  font-family: var(--font-heading), 'DM Serif Display', serif;
+  font-size: 1.3rem;
+  color: var(--text-primary);
+  margin-top: 4px;
+}
+.lesson-char-dots {
+  font-size: 0.75rem;
+  color: var(--gold-text);
+  font-weight: 600;
+  letter-spacing: 0.3px;
+}
+.lesson-char-note {
+  font-size: 0.8rem;
+  color: var(--text-secondary);
+  line-height: 1.4;
+}
+
+/* ---------- Drill chips ---------- */
+.lesson-drill-chips {
+  list-style: none;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin: 20px 0;
+  padding: 0;
+}
+.lesson-drill-chip {
+  min-width: 40px;
+  padding: 8px 12px;
+  border-radius: var(--radius-sm);
+  background: #fff;
+  border: 1.5px solid rgba(27, 42, 74, 0.12);
+  text-align: center;
+  font-weight: 600;
+  color: var(--text-secondary);
+  font-family: var(--font-heading), 'DM Serif Display', serif;
+}
+.lesson-drill-chip.active {
+  border-color: var(--gold);
+  color: var(--gold-text);
+  box-shadow: 0 0 0 3px var(--gold-glow);
+}
+.lesson-drill-chip.done {
+  background: var(--sage);
+  border-color: var(--sage-dark);
+  color: var(--navy-deep);
+}
+.lesson-drill-counter {
+  font-size: 0.85rem;
+  color: var(--text-secondary);
+  margin-bottom: 12px;
+}
+.lesson-drill-next {
+  margin-top: 20px;
+}
+
+/* ---------- Brailler (signature writer) ---------- */
+.brailler {
+  max-width: 340px;
+  margin: 8px 0 4px;
+  padding: 24px;
+  background: #fff;
+  border: 1px solid rgba(212, 168, 83, 0.2);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-sm);
+}
+.brailler-prompt {
+  display: flex;
+  align-items: baseline;
+  gap: 10px;
+  margin-bottom: 16px;
+}
+.brailler-prompt-label {
+  font-size: 0.8rem;
+  text-transform: uppercase;
+  letter-spacing: 2px;
+  color: var(--gold-text);
+  font-weight: 700;
+}
+.brailler-prompt-char {
+  font-family: var(--font-heading), 'DM Serif Display', serif;
+  font-size: 1.8rem;
+  color: var(--text-primary);
+}
+.brailler-cell {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 14px;
+  width: max-content;
+  margin: 0 auto 18px;
+  padding: 10px;
+  border-radius: var(--radius-md);
+}
+.brailler-cell:focus-visible {
+  outline: 2px solid var(--gold);
+  outline-offset: 4px;
+}
+.brailler-dot {
+  width: 56px;
+  height: 56px;
+  border-radius: 50%;
+  border: 2px solid rgba(27, 42, 74, 0.18);
+  background: var(--cream);
+  color: rgba(27, 42, 74, 0.35);
+  font-weight: 700;
+  font-size: 0.9rem;
+  cursor: pointer;
+  transition:
+    transform 0.15s var(--ease-out),
+    background 0.15s ease,
+    border-color 0.15s ease;
+}
+.brailler-dot:hover:not(:disabled) {
+  border-color: var(--gold);
+}
+.brailler-dot.raised {
+  background: var(--navy);
+  border-color: var(--navy-deep);
+  color: var(--gold-light);
+  box-shadow: inset 0 -2px 4px rgba(0, 0, 0, 0.3);
+}
+.brailler-dot:disabled {
+  cursor: default;
+}
+.brailler-actions {
+  display: flex;
+  gap: 10px;
+  justify-content: center;
+}
+.brailler-btn {
+  padding: 10px 22px;
+  border-radius: var(--radius-full);
+  font-weight: 600;
+  font-size: 0.9rem;
+  cursor: pointer;
+  border: 1.5px solid transparent;
+  transition: all 0.2s ease;
+}
+.brailler-btn--check {
+  background: linear-gradient(135deg, var(--gold), #e0b563);
+  color: var(--navy);
+}
+.brailler-btn--check:hover:not(:disabled) {
+  box-shadow: 0 4px 14px rgba(212, 168, 83, 0.35);
+}
+.brailler-btn--clear {
+  background: transparent;
+  border-color: rgba(27, 42, 74, 0.2);
+  color: var(--text-secondary);
+}
+.brailler-btn:disabled {
+  opacity: 0.55;
+  cursor: default;
+}
+.brailler-hint {
+  margin-top: 16px;
+  font-size: 0.78rem;
+  color: var(--text-secondary);
+  text-align: center;
+  line-height: 1.6;
+}
+.brailler-hint kbd {
+  display: inline-block;
+  padding: 1px 6px;
+  border-radius: 4px;
+  background: var(--gold-soft);
+  border: 1px solid rgba(212, 168, 83, 0.4);
+  font-family: inherit;
+  font-size: 0.72rem;
+  color: var(--gold-text);
+  font-weight: 700;
+}
+.brailler-status {
+  margin-top: 12px;
+  font-size: 0.88rem;
+  line-height: 1.5;
+  min-height: 1.2em;
+  text-align: center;
+}
+.brailler-status--correct {
+  color: var(--sage-dark);
+  font-weight: 600;
+}
+.brailler-status--wrong {
+  color: var(--game-wrong, #dc5050);
+}
+.brailler--solved {
+  border-color: var(--sage-dark);
+  background: linear-gradient(180deg, #fff, rgba(168, 191, 160, 0.12));
+}
+
+/* ---------- Done / complete / tip ---------- */
+.lesson-done-banner {
+  margin-top: 8px;
+  padding: 18px 22px;
+  border-radius: var(--radius-md);
+  background: rgba(168, 191, 160, 0.16);
+  border: 1px solid var(--sage-dark);
+  color: var(--navy-deep);
+}
+.lesson-practice-game {
+  margin-top: 12px;
+}
+.lesson-practice-locked {
+  margin-top: 8px;
+  padding: 20px;
+  border-radius: var(--radius-md);
+  border: 1.5px dashed rgba(27, 42, 74, 0.18);
+  color: var(--text-secondary);
+  text-align: center;
+  font-size: 0.92rem;
+}
+.lesson-complete {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  padding: 18px 22px;
+  border-radius: var(--radius-md);
+  background: var(--gold-soft);
+  border: 1px solid rgba(212, 168, 83, 0.35);
+  margin-bottom: 24px;
+}
+.lesson-complete-check {
+  flex: 0 0 auto;
+  width: 34px;
+  height: 34px;
+  display: grid;
+  place-items: center;
+  border-radius: var(--radius-full);
+  background: var(--sage-dark);
+  color: #fff;
+  font-weight: 700;
+}
+.lesson-complete a {
+  color: var(--gold-text);
+  font-weight: 600;
+}
+.lesson-tip {
+  margin: 8px 0 28px;
+  font-size: 0.95rem;
+  color: var(--text-secondary);
+  line-height: 1.6;
+}
+.lesson-tip-label {
+  display: inline-block;
+  font-size: 0.68rem;
+  text-transform: uppercase;
+  letter-spacing: 2px;
+  font-weight: 700;
+  color: var(--gold-text);
+  margin-right: 8px;
+}
+
+/* ---------- Prev / next nav ---------- */
+.lesson-nav {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 14px;
+  margin-top: 20px;
+}
+.lesson-nav-link {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  padding: 16px 18px;
+  border-radius: var(--radius-md);
+  background: #fff;
+  border: 1px solid rgba(212, 168, 83, 0.18);
+  text-decoration: none;
+  transition:
+    transform 0.2s var(--ease-out),
+    border-color 0.2s ease;
+}
+.lesson-nav-link:hover {
+  transform: translateY(-2px);
+  border-color: var(--gold);
+}
+.lesson-nav-link--next {
+  text-align: right;
+}
+.lesson-nav-dir {
+  font-size: 0.75rem;
+  text-transform: uppercase;
+  letter-spacing: 1.5px;
+  color: var(--gold-text);
+  font-weight: 700;
+}
+.lesson-nav-title {
+  font-weight: 600;
+  color: var(--text-primary);
+}
+
+@media (max-width: 560px) {
+  .lesson-nav {
+    grid-template-columns: 1fr;
+  }
+  .lesson-nav-link--next {
+    text-align: left;
+  }
+  .brailler-dot {
+    width: 48px;
+    height: 48px;
+  }
+}

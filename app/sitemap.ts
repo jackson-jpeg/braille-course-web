@@ -1,11 +1,21 @@
 import type { MetadataRoute } from 'next';
+import { LESSON_SLUGS } from '@/lib/course-curriculum';
 
 export default function sitemap(): MetadataRoute.Sitemap {
   const baseUrl = 'https://teachbraille.org';
 
+  const lessonEntries: MetadataRoute.Sitemap = LESSON_SLUGS.map((slug) => ({
+    url: `${baseUrl}/learn/${slug}`,
+    lastModified: new Date(),
+    changeFrequency: 'monthly',
+    priority: 0.7,
+  }));
+
   return [
+    ...lessonEntries,
     { url: baseUrl, lastModified: new Date(), changeFrequency: 'weekly', priority: 1.0 },
     { url: `${baseUrl}/summer`, lastModified: new Date(), changeFrequency: 'weekly', priority: 0.9 },
+    { url: `${baseUrl}/learn`, lastModified: new Date(), changeFrequency: 'monthly', priority: 0.9 },
     { url: `${baseUrl}/games`, lastModified: new Date(), changeFrequency: 'monthly', priority: 0.8 },
     { url: `${baseUrl}/intro`, lastModified: new Date(), changeFrequency: 'monthly', priority: 0.8 },
     { url: `${baseUrl}/services`, lastModified: new Date(), changeFrequency: 'monthly', priority: 0.7 },

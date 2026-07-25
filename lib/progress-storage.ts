@@ -13,7 +13,7 @@ import {
 } from './progress-types';
 
 const STORAGE_KEY = 'brailleGames_progress';
-const CURRENT_VERSION = 1;
+const CURRENT_VERSION = 2;
 
 // In-memory cache to avoid repeated JSON.parse on every read
 let _cache: ProgressData | null = null;
@@ -170,6 +170,7 @@ export function importProgress(json: string): boolean {
       streak: { ...defaults.streak, ...(data.streak || {}) },
       achievements: { ...defaults.achievements, ...(data.achievements || {}) },
       dailyChallenge: { ...defaults.dailyChallenge, ...(data.dailyChallenge || {}) },
+      course: { ...defaults.course, ...(data.course || {}) },
       version: CURRENT_VERSION,
     };
     saveProgress(merged);
@@ -208,6 +209,68 @@ export function getGameMastery(gameId: GameId): number {
   return Math.round(winRate * 70 + volumeBonus * 30);
 }
 
+/* ── Course progress (free structured course, localStorage only) ───────────── */
+
+/** Mark a course lesson finished, storing the best drill score (0-100). */
+export function markLessonComplete(slug: string, score: number): ProgressData {
+  const progress = loadProgress();
+  if (!progress.settings.trackingEnabled) return progress;
+
+  const now = new Date().toISOString();
+  const { course } = progress;
+
+  if (!course.completedLessons.includes(slug)) {
+    course.completedLessons.push(slug);
+  }
+  const clamped = Math.max(0, Math.min(100, Math.round(score)));
+  course.lessonScores[slug] = Math.max(course.lessonScores[slug] ?? 0, clamped);
+  course.lastLessonSlug = slug;
+
+  if (!progress.firstPlayDate) progress.firstPlayDate = now;
+  // Finishing a lesson counts as daily activity — keep the streak alive.
+  updateStreak(progress, getDateString(new Date()));
+
+  saveProgress(progress);
+  return progress;
+}
+
+/** Whether a lesson is complete and its best drill score. */
+export function getLessonState(slug: string): { completed: boolean; score: number } {
+  const { course } = loadProgress();
+  return {
+    completed: course.completedLessons.includes(slug),
+    score: course.lessonScores[slug] ?? 0,
+  };
+}
+
+/** Record that a lesson was opened (for "Resume"), without completing it. */
+export function setLastLesson(slug: string): void {
+  const progress = loadProgress();
+  if (!progress.settings.trackingEnabled) return;
+  if (progress.course.lastLessonSlug === slug) return;
+  progress.course.lastLessonSlug = slug;
+  saveProgress(progress);
+}
+
+/** Course-wide progress summary for the course home page. */
+export function getCourseProgress(): {
+  completedSlugs: string[];
+  completedCount: number;
+  lastLessonSlug: string;
+} {
+  const { course } = loadProgress();
+  return {
+    completedSlugs: course.completedLessons,
+    completedCount: course.completedLessons.length,
+    lastLessonSlug: course.lastLessonSlug,
+  };
+}
+
+/** The slug to resume from, or '' if the learner hasn't started. */
+export function getResumeLesson(): string {
+  return loadProgress().course.lastLessonSlug;
+}
+
 /**
  * Merge local and cloud progress data.
  * - Achievements: union of unlocked sets (cloud wins)
@@ -244,6 +307,20 @@ export function mergeProgress(local: ProgressData, cloud: ProgressData): Progres
     // Daily challenge — use whichever is more recent
     dailyChallenge:
       local.dailyChallenge.date >= cloud.dailyChallenge.date ? local.dailyChallenge : cloud.dailyChallenge,
+    // Course — union of completed lessons, max of each lesson score
+    course: {
+      completedLessons: [
+        ...new Set([...(local.course?.completedLessons ?? []), ...(cloud.course?.completedLessons ?? [])]),
+      ],
+      lessonScores: (() => {
+        const scores: Record<string, number> = { ...(cloud.course?.lessonScores ?? {}) };
+        for (const [slug, s] of Object.entries(local.course?.lessonScores ?? {})) {
+          scores[slug] = Math.max(scores[slug] ?? 0, s);
+        }
+        return scores;
+      })(),
+      lastLessonSlug: local.course?.lastLessonSlug || cloud.course?.lastLessonSlug || '',
+    },
     // Games — merge per-game stats
     games: { ...cloud.games },
   };

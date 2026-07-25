@@ -112,6 +112,27 @@ export default function HubPage() {
               </span>
             </Link>
 
+            <Link href="/learn" className="hub-card reveal">
+              <div className="hub-card-icon" aria-hidden="true">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                  <path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z" />
+                  <path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z" />
+                </svg>
+              </div>
+              <h3>Free Braille Course</h3>
+              <p>
+                A free, self-paced course from the six-dot cell to Grade&nbsp;2 contractions. Write every character
+                yourself. No account needed.
+              </p>
+              <span className="hub-card-cta">
+                Start the course
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" aria-hidden="true">
+                  <line x1="5" y1="12" x2="19" y2="12" />
+                  <polyline points="12 5 19 12 12 19" />
+                </svg>
+              </span>
+            </Link>
+
             <Link href="/summer" className="hub-card reveal">
               <div className="hub-card-icon" aria-hidden="true">
                 <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">

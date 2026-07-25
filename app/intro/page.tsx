@@ -5,7 +5,6 @@ import BrailleHero from '@/components/BrailleHero';
 import BrailleAlphabet from '@/components/BrailleAlphabet';
 import BrailleNumbers from '@/components/BrailleNumbers';
 import { brailleMap } from '@/lib/braille-map';
-import { PRICING } from '@/lib/pricing';
 
 export const metadata: Metadata = {
   title: 'Intro to Braille — What Is Braille & How to Read It',
@@ -337,19 +336,17 @@ export default function IntroPage() {
               </span>
             </Link>
 
-            <Link href="/summer" className="intro-cta-card">
+            <Link href="/learn" className="intro-cta-card">
               <div className="intro-cta-icon" aria-hidden="true">
                 <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                  <rect x="3" y="4" width="18" height="18" rx="2" />
-                  <line x1="16" y1="2" x2="16" y2="6" />
-                  <line x1="8" y1="2" x2="8" y2="6" />
-                  <line x1="3" y1="10" x2="21" y2="10" />
+                  <path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z" />
+                  <path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z" />
                 </svg>
               </div>
-              <h3>Take the Course</h3>
+              <h3>Take the Free Course</h3>
               <p>
-                {PRICING.courseDuration} remote braille course, Summer 2027. Live instruction with personalized
-                feedback.
+                A free, self-paced course from the braille cell to Grade&nbsp;2 contractions. Write every character
+                yourself. No account needed.
               </p>
               <span className="intro-cta-arrow" aria-hidden="true">
                 <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
