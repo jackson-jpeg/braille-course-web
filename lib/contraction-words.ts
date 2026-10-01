@@ -2,13 +2,10 @@
  * Word lists for Contraction Sprint game.
  * Each word maps to its contracted braille representation.
  *
- * Every word's pieces are checked against liblouis's UEB grade 2 translation in
- * __tests__/lib/ueb.test.ts. Words that need contractions this game does not teach
- * (initial-letter contractions like "mother", shortforms like "together") are left out.
- *
- * - Wordsigns (but, can, child, this…) stand for whole words
- * - Strong contractions (and, for, of, the, with) are used as words AND inside words ("them")
- * - Groupsigns (ch, th, er, ing, ea…) appear within words
+ * UEB rules enforced:
+ * - Wordsigns (but, can, do, etc.) are ONLY used as standalone words
+ * - Strong contractions (and, for, of, the, with) are ONLY standalone
+ * - Groupsigns (ch, th, er, ing, etc.) CAN appear within words
  * - Single letters use uppercase: 'A', 'B', etc.
  */
 
@@ -50,38 +47,46 @@ export const contractionWords: ContractionWord[] = [
   { word: 'WITH', pieces: ['with'], difficulty: 'intermediate' },
   { word: 'OF', pieces: ['of'], difficulty: 'intermediate' },
   // Groupsign words: ch, th, sh, wh, er, ing, st, ar, ou, ow, ed
-  { word: 'CHILD', pieces: ['child'], difficulty: 'intermediate' },
-  { word: 'OTHER', pieces: ['O', 'the', 'R'], difficulty: 'intermediate' },
+  { word: 'CHILD', pieces: ['ch', 'I', 'L', 'D'], difficulty: 'intermediate' },
+  { word: 'MOTHER', pieces: ['M', 'O', 'th', 'er'], difficulty: 'intermediate' },
+  { word: 'FATHER', pieces: ['F', 'A', 'th', 'er'], difficulty: 'intermediate' },
+  { word: 'OTHER', pieces: ['O', 'th', 'er'], difficulty: 'intermediate' },
+  { word: 'THERE', pieces: ['th', 'E', 'R', 'E'], difficulty: 'intermediate' },
   { word: 'THING', pieces: ['th', 'ing'], difficulty: 'intermediate' },
-  { word: 'WHEN', pieces: ['wh', 'en'], difficulty: 'intermediate' },
+  { word: 'WHEN', pieces: ['wh', 'E', 'N'], difficulty: 'intermediate' },
+  { word: 'WHERE', pieces: ['wh', 'E', 'R', 'E'], difficulty: 'intermediate' },
   { word: 'SHOW', pieces: ['sh', 'ow'], difficulty: 'intermediate' },
   { word: 'STING', pieces: ['st', 'ing'], difficulty: 'intermediate' },
   { word: 'STAR', pieces: ['st', 'ar'], difficulty: 'intermediate' },
   { word: 'SHED', pieces: ['sh', 'ed'], difficulty: 'intermediate' },
   { word: 'ARCH', pieces: ['ar', 'ch'], difficulty: 'intermediate' },
-  { word: 'WHICH', pieces: ['which'], difficulty: 'intermediate' },
-  { word: 'THEN', pieces: ['the', 'N'], difficulty: 'intermediate' },
-  { word: 'THEM', pieces: ['the', 'M'], difficulty: 'intermediate' },
-  { word: 'THIS', pieces: ['this'], difficulty: 'intermediate' },
+  { word: 'WHICH', pieces: ['wh', 'I', 'ch'], difficulty: 'intermediate' },
+  { word: 'THEN', pieces: ['th', 'E', 'N'], difficulty: 'intermediate' },
+  { word: 'THEM', pieces: ['th', 'E', 'M'], difficulty: 'intermediate' },
+  { word: 'THIS', pieces: ['th', 'I', 'S'], difficulty: 'intermediate' },
   { word: 'EACH', pieces: ['E', 'A', 'ch'], difficulty: 'intermediate' },
-  { word: 'SUCH', pieces: ['S', 'ch'], difficulty: 'intermediate' },
+  { word: 'SUCH', pieces: ['S', 'U', 'ch'], difficulty: 'intermediate' },
 
   // ── Advanced: multi-groupsign words ──
-  { word: 'WEATHER', pieces: ['W', 'ea', 'the', 'R'], difficulty: 'advanced' },
-  { word: 'ANOTHER', pieces: ['A', 'N', 'O', 'the', 'R'], difficulty: 'advanced' },
-  { word: 'BROTHER', pieces: ['B', 'R', 'O', 'the', 'R'], difficulty: 'advanced' },
+  { word: 'TOGETHER', pieces: ['T', 'O', 'G', 'E', 'th', 'er'], difficulty: 'advanced' },
+  { word: 'WEATHER', pieces: ['W', 'E', 'A', 'th', 'er'], difficulty: 'advanced' },
+  { word: 'ANOTHER', pieces: ['A', 'N', 'O', 'th', 'er'], difficulty: 'advanced' },
+  { word: 'BROTHER', pieces: ['B', 'R', 'O', 'th', 'er'], difficulty: 'advanced' },
   { word: 'NOTHING', pieces: ['N', 'O', 'th', 'ing'], difficulty: 'advanced' },
+  { word: 'EVERYTHING', pieces: ['E', 'V', 'er', 'Y', 'th', 'ing'], difficulty: 'advanced' },
+  { word: 'SOMETHING', pieces: ['S', 'O', 'M', 'E', 'th', 'ing'], difficulty: 'advanced' },
   { word: 'SHOWER', pieces: ['sh', 'ow', 'er'], difficulty: 'advanced' },
-  { word: 'THOUSAND', pieces: ['th', 'ou', 'S', 'and'], difficulty: 'advanced' },
+  { word: 'THOUSAND', pieces: ['th', 'ou', 'S', 'A', 'N', 'D'], difficulty: 'advanced' },
   { word: 'WISHING', pieces: ['W', 'I', 'sh', 'ing'], difficulty: 'advanced' },
   { word: 'CHURCH', pieces: ['ch', 'U', 'R', 'ch'], difficulty: 'advanced' },
-  { word: 'TEACHING', pieces: ['T', 'ea', 'ch', 'ing'], difficulty: 'advanced' },
-  { word: 'REACHING', pieces: ['R', 'ea', 'ch', 'ing'], difficulty: 'advanced' },
+  { word: 'TEACHING', pieces: ['T', 'E', 'A', 'ch', 'ing'], difficulty: 'advanced' },
+  { word: 'REACHING', pieces: ['R', 'E', 'A', 'ch', 'ing'], difficulty: 'advanced' },
   { word: 'STARTING', pieces: ['st', 'ar', 'T', 'ing'], difficulty: 'advanced' },
   { word: 'SHOWING', pieces: ['sh', 'ow', 'ing'], difficulty: 'advanced' },
   { word: 'STARING', pieces: ['st', 'ar', 'ing'], difficulty: 'advanced' },
   { word: 'ARCHING', pieces: ['ar', 'ch', 'ing'], difficulty: 'advanced' },
   { word: 'THIRST', pieces: ['th', 'I', 'R', 'st'], difficulty: 'advanced' },
+  { word: 'THEIRS', pieces: ['th', 'E', 'I', 'R', 'S'], difficulty: 'advanced' },
   { word: 'CHANGED', pieces: ['ch', 'A', 'N', 'G', 'ed'], difficulty: 'advanced' },
   { word: 'WISHED', pieces: ['W', 'I', 'sh', 'ed'], difficulty: 'advanced' },
   { word: 'OWNED', pieces: ['ow', 'N', 'ed'], difficulty: 'advanced' },

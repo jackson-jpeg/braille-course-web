@@ -12,12 +12,7 @@ export type GameId =
   | 'sequence'
   | 'sentence-decoder'
   | 'bingo'
-  | 'rain'
-  | 'letter-race'
-  | 'dot-builder'
-  | 'word-decoder'
-  | 'contraction-trainer'
-  | 'dot-quest';
+  | 'rain';
 
 export type Difficulty = 'beginner' | 'intermediate' | 'advanced';
 
@@ -59,25 +54,6 @@ export interface CourseProgress {
   lastLessonSlug: string; // most recently opened lesson, for "Resume"
 }
 
-/**
- * Per-item skill memory, keyed like "letter:a", "digit:7", "contraction:the", "punct:period".
- * Drives "what to practice next", spaced review in the Contraction Trainer, and Dot Quest stickers.
- */
-export interface ItemStat {
-  seen: number;
-  correct: number;
-  /** Consecutive correct answers (resets on a miss). */
-  run: number;
-  lastSeen: string; // ISO date
-}
-
-export interface QuestState {
-  /** Stage id → best stars earned (1–3). */
-  stars: Record<string, number>;
-  /** Sticker ids collected. */
-  stickers: string[];
-}
-
 export interface UserSettings {
   difficulty: Record<GameId, Difficulty>;
   trackingEnabled: boolean;
@@ -92,8 +68,6 @@ export interface ProgressData {
   achievements: AchievementProgress;
   dailyChallenge: DailyChallengeState;
   course: CourseProgress;
-  items: Record<string, ItemStat>;
-  quest: QuestState;
   settings: UserSettings;
   firstPlayDate: string;
 }
@@ -128,11 +102,6 @@ export const DEFAULT_SETTINGS: UserSettings = {
     'sentence-decoder': 'beginner',
     bingo: 'beginner',
     rain: 'beginner',
-    'letter-race': 'beginner',
-    'dot-builder': 'beginner',
-    'word-decoder': 'beginner',
-    'contraction-trainer': 'beginner',
-    'dot-quest': 'beginner',
   },
   trackingEnabled: true,
   hasSeenOnboarding: false,
@@ -163,9 +132,7 @@ export function createDefaultProgress(): ProgressData {
       lessonScores: {},
       lastLessonSlug: '',
     },
-    items: {},
-    quest: { stars: {}, stickers: [] },
-    settings: { ...DEFAULT_SETTINGS, difficulty: { ...DEFAULT_SETTINGS.difficulty } },
+    settings: { ...DEFAULT_SETTINGS },
     firstPlayDate: '',
   };
 }

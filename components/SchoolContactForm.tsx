@@ -1,11 +1,6 @@
 'use client';
 
-import { useEffect, useRef, useState } from 'react';
-import Cell from '@/components/ui/Cell';
-import BrailleText from '@/components/ui/BrailleText';
-import ButtonCell from '@/components/ui/ButtonCell';
-import { LETTERS, getPunctuation, type Dots } from '@/lib/ueb';
-import '@/styles/pages/forms.css';
+import { useState } from 'react';
 
 const US_STATES = [
   'Alabama',
@@ -70,58 +65,92 @@ const SERVICE_OPTIONS = [
   'Other',
 ];
 
-/** Each delivery option is marked with a decorative cell: its first letter (or a question mark). */
-const DELIVERY_OPTIONS: { value: string; label: string; subtitle: string; cell: Dots }[] = [
-  { value: 'Remote', label: 'Remote', subtitle: 'Via video call — nationwide', cell: LETTERS.r },
-  { value: 'In-Person', label: 'In-Person', subtitle: 'On-site at your school', cell: LETTERS.i },
-  { value: 'Hybrid', label: 'Hybrid', subtitle: 'Combination of both', cell: LETTERS.h },
+const DELIVERY_OPTIONS = [
+  {
+    value: 'Remote',
+    label: 'Remote',
+    subtitle: 'Via video call — nationwide',
+    icon: (
+      <svg
+        width="24"
+        height="24"
+        viewBox="0 0 24 24"
+        fill="none"
+        stroke="currentColor"
+        strokeWidth="1.5"
+        strokeLinecap="round"
+        strokeLinejoin="round"
+      >
+        <rect x="2" y="3" width="20" height="14" rx="2" />
+        <line x1="8" y1="21" x2="16" y2="21" />
+        <line x1="12" y1="17" x2="12" y2="21" />
+      </svg>
+    ),
+  },
+  {
+    value: 'In-Person',
+    label: 'In-Person',
+    subtitle: 'On-site at your school',
+    icon: (
+      <svg
+        width="24"
+        height="24"
+        viewBox="0 0 24 24"
+        fill="none"
+        stroke="currentColor"
+        strokeWidth="1.5"
+        strokeLinecap="round"
+        strokeLinejoin="round"
+      >
+        <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z" />
+        <circle cx="12" cy="10" r="3" />
+      </svg>
+    ),
+  },
+  {
+    value: 'Hybrid',
+    label: 'Hybrid',
+    subtitle: 'Combination of both',
+    icon: (
+      <svg
+        width="24"
+        height="24"
+        viewBox="0 0 24 24"
+        fill="none"
+        stroke="currentColor"
+        strokeWidth="1.5"
+        strokeLinecap="round"
+        strokeLinejoin="round"
+      >
+        <polyline points="17 1 21 5 17 9" />
+        <path d="M3 11V9a4 4 0 0 1 4-4h14" />
+        <polyline points="7 23 3 19 7 15" />
+        <path d="M21 13v2a4 4 0 0 1-4 4H3" />
+      </svg>
+    ),
+  },
   {
     value: 'Not sure',
     label: 'Not Sure',
     subtitle: "Let's discuss options",
-    cell: getPunctuation('question').cells[0],
+    icon: (
+      <svg
+        width="24"
+        height="24"
+        viewBox="0 0 24 24"
+        fill="none"
+        stroke="currentColor"
+        strokeWidth="1.5"
+        strokeLinecap="round"
+        strokeLinejoin="round"
+      >
+        <circle cx="12" cy="12" r="10" />
+        <path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3" />
+        <line x1="12" y1="17" x2="12.01" y2="17" />
+      </svg>
+    ),
   },
 ];
-
-/** Same pattern the /api/school-contact route accepts. */
-const EMAIL_PATTERN = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-
-type FieldKey =
-  | 'schoolName'
-  | 'districtName'
-  | 'contactName'
-  | 'contactTitle'
-  | 'email'
-  | 'phone'
-  | 'services'
-  | 'additionalDetails';
-
-/** Field key → id of the control that receives focus when the field is invalid. In form order. */
-const FIELD_FOCUS_ID: Record<FieldKey, string> = {
-  schoolName: 'school-name',
-  districtName: 'district-name',
-  contactName: 'contact-name',
-  contactTitle: 'contact-title',
-  email: 'contact-email',
-  phone: 'contact-phone',
-  services: 'service-0',
-  additionalDetails: 'additional-details',
-};
-
-type FieldErrors = Partial<Record<FieldKey, string>>;
-
-function Req() {
-  return <span className="field-req"> (required)</span>;
-}
-function Opt() {
-  return <span className="field-req"> (optional)</span>;
-}
-
-/** aria-describedby value from the ids that are present. */
-function ids(...list: (string | false | undefined)[]) {
-  const joined = list.filter(Boolean).join(' ');
-  return joined || undefined;
-}
 
 export default function SchoolContactForm() {
   const [schoolName, setSchoolName] = useState('');
@@ -140,62 +169,9 @@ export default function SchoolContactForm() {
   const [loading, setLoading] = useState(false);
   const [success, setSuccess] = useState(false);
   const [error, setError] = useState<string | null>(null);
-  const [fieldErrors, setFieldErrors] = useState<FieldErrors>({});
-  const successRef = useRef<HTMLDivElement>(null);
-
-  const otherOnly = selectedServices.length === 1 && selectedServices[0] === 'Other';
-
-  useEffect(() => {
-    if (success) successRef.current?.focus();
-  }, [success]);
-
-  const clearFieldError = (key: FieldKey) => {
-    setFieldErrors((prev) => {
-      if (!prev[key]) return prev;
-      const next = { ...prev };
-      delete next[key];
-      return next;
-    });
-  };
 
   const toggleService = (service: string) => {
     setSelectedServices((prev) => (prev.includes(service) ? prev.filter((s) => s !== service) : [...prev, service]));
-    clearFieldError('services');
-    clearFieldError('additionalDetails');
-  };
-
-  /** Mirrors the form's constraints (required / minLength / email) so errors can be shown inline. */
-  const validate = (): FieldErrors => {
-    const errs: FieldErrors = {};
-    const minLen = (key: FieldKey, value: string, min: number, empty: string, short: string) => {
-      const v = value.trim();
-      if (!v) errs[key] = empty;
-      else if (v.length < min) errs[key] = short;
-    };
-    minLen('schoolName', schoolName, 3, 'Enter your school’s name.', 'School name must be at least 3 characters.');
-    minLen(
-      'districtName',
-      districtName,
-      2,
-      'Enter your district’s name.',
-      'District name must be at least 2 characters.',
-    );
-    minLen('contactName', contactName, 2, 'Enter your name.', 'Your name must be at least 2 characters.');
-    minLen(
-      'contactTitle',
-      contactTitle,
-      2,
-      'Enter your title or role.',
-      'Title or role must be at least 2 characters.',
-    );
-    if (!email.trim()) errs.email = 'Enter your email address.';
-    else if (!EMAIL_PATTERN.test(email.trim())) errs.email = 'Enter a valid email address, like name@school.org.';
-    if (phone.trim() && phone.trim().length < 10) errs.phone = 'Phone number must be at least 10 characters.';
-    if (selectedServices.length === 0) errs.services = 'Please select at least one service.';
-    if (otherOnly && additionalDetails.trim().length < 10) {
-      errs.additionalDetails = 'Please describe the services you need (at least 10 characters) when selecting "Other".';
-    }
-    return errs;
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -207,16 +183,13 @@ export default function SchoolContactForm() {
       return;
     }
 
-    const errs = validate();
-    const invalid = (Object.keys(FIELD_FOCUS_ID) as FieldKey[]).filter((k) => errs[k]);
-    setFieldErrors(errs);
-    if (invalid.length > 0) {
-      setError(
-        invalid.length === 1
-          ? 'Please fix 1 field marked below.'
-          : `Please fix the ${invalid.length} fields marked below.`,
-      );
-      document.getElementById(FIELD_FOCUS_ID[invalid[0]])?.focus();
+    if (selectedServices.length === 0) {
+      setError('Please select at least one service.');
+      return;
+    }
+
+    if (selectedServices.length === 1 && selectedServices[0] === 'Other' && additionalDetails.trim().length < 10) {
+      setError('Please describe the services you need (at least 10 characters) when selecting "Other".');
       return;
     }
 
@@ -265,110 +238,91 @@ export default function SchoolContactForm() {
 
   if (success) {
     return (
-      <div className="rf-success" role="status" tabIndex={-1} ref={successRef}>
-        <BrailleText text="thank you" size="sm" />
-        <h3>Inquiry received</h3>
-        <p>
+      <div className="school-contact-success">
+        <div className="school-contact-success-icon" aria-hidden="true">
+          <svg viewBox="0 0 64 64" fill="none">
+            <circle cx="32" cy="32" r="30" stroke="currentColor" strokeWidth="3" />
+            <path
+              d="M20 32L28 40L44 24"
+              stroke="currentColor"
+              strokeWidth="3"
+              strokeLinecap="round"
+              strokeLinejoin="round"
+            />
+          </svg>
+        </div>
+        <h3 className="school-contact-success-title">Inquiry Received!</h3>
+        <p className="school-contact-success-message">
           Thank you for your interest in TVI services for {schoolName}. Delaney will reach out within 2 business days to
           discuss your vision service needs and schedule a consultation.
         </p>
-        <p className="rf-success-note">
+        <p className="school-contact-success-note">
           Check your email at <strong>{email}</strong> for confirmation.
         </p>
       </div>
     );
   }
 
-  const err = (key: FieldKey) => fieldErrors[key];
-  const errId = (key: FieldKey) => (fieldErrors[key] ? `${FIELD_FOCUS_ID[key]}-error` : undefined);
-  const errorText = (k: FieldKey) =>
-    fieldErrors[k] ? (
-      <p id={`${FIELD_FOCUS_ID[k]}-error`} className="form-error">
-        {fieldErrors[k]}
-      </p>
-    ) : null;
-
   return (
-    <form className="rf-form" onSubmit={handleSubmit} noValidate aria-describedby="school-required-note">
-      <p id="school-required-note" className="rf-required-note">
-        Fields marked &ldquo;(required)&rdquo; must be filled in. Everything else is optional.
-      </p>
-
-      <div className="rf-alert" role="alert">
-        {error && <p className="notice notice--error">{error}</p>}
-      </div>
+    <form className="school-contact-form" onSubmit={handleSubmit}>
+      {error && (
+        <div className="school-contact-form-error" role="alert">
+          {error}
+        </div>
+      )}
 
       {/* Section 1: School Information */}
-      <fieldset className="rf-fieldset">
-        <legend className="rf-legend">
-          <Cell dots={LETTERS.s} size="sm" />
-          School information
-        </legend>
-        <div className="rf-grid">
-          <div className="field">
-            <label htmlFor="school-name">
-              School name
-              <Req />
+      <fieldset className="school-contact-form-section">
+        <legend className="school-contact-form-section-legend">School Information</legend>
+        <div className="school-contact-form-section-grid">
+          <div className="school-contact-form-field">
+            <label htmlFor="school-name" className="school-contact-form-label">
+              School Name <span className="school-contact-form-required">*</span>
             </label>
             <input
               type="text"
               id="school-name"
               value={schoolName}
-              onChange={(e) => {
-                setSchoolName(e.target.value);
-                clearFieldError('schoolName');
-              }}
-              className="input"
+              onChange={(e) => setSchoolName(e.target.value)}
+              className="school-contact-form-input"
               placeholder="e.g., Lincoln Elementary School"
               required
               minLength={3}
               maxLength={200}
-              autoComplete="organization"
               disabled={loading}
-              aria-invalid={err('schoolName') ? true : undefined}
-              aria-describedby={errId('schoolName')}
             />
-            {errorText('schoolName')}
           </div>
 
-          <div className="field">
-            <label htmlFor="district-name">
-              District name
-              <Req />
+          <div className="school-contact-form-field">
+            <label htmlFor="district-name" className="school-contact-form-label">
+              District Name <span className="school-contact-form-required">*</span>
             </label>
             <input
               type="text"
               id="district-name"
               value={districtName}
-              onChange={(e) => {
-                setDistrictName(e.target.value);
-                clearFieldError('districtName');
-              }}
-              className="input"
+              onChange={(e) => setDistrictName(e.target.value)}
+              className="school-contact-form-input"
               placeholder="e.g., Springfield School District"
               required
               minLength={2}
               maxLength={150}
               disabled={loading}
-              aria-invalid={err('districtName') ? true : undefined}
-              aria-describedby={errId('districtName')}
             />
-            {errorText('districtName')}
           </div>
 
-          <div className="field">
-            <label htmlFor="state">
-              State / region
-              <Opt />
+          <div className="school-contact-form-field">
+            <label htmlFor="state" className="school-contact-form-label">
+              State / Region
             </label>
             <select
               id="state"
               value={state}
               onChange={(e) => setState(e.target.value)}
-              className="select"
+              className="school-contact-form-select"
               disabled={loading}
             >
-              <option value="">Select state…</option>
+              <option value="">Select state...</option>
               {US_STATES.map((s) => (
                 <option key={s} value={s}>
                   {s}
@@ -380,136 +334,100 @@ export default function SchoolContactForm() {
       </fieldset>
 
       {/* Section 2: Your Information */}
-      <fieldset className="rf-fieldset">
-        <legend className="rf-legend">
-          <Cell dots={LETTERS.y} size="sm" />
-          Your information
-        </legend>
-        <div className="rf-grid">
-          <div className="field">
-            <label htmlFor="contact-name">
-              Your name
-              <Req />
+      <fieldset className="school-contact-form-section school-contact-form-section-divider">
+        <legend className="school-contact-form-section-legend">Your Information</legend>
+        <div className="school-contact-form-section-grid">
+          <div className="school-contact-form-field">
+            <label htmlFor="contact-name" className="school-contact-form-label">
+              Your Name <span className="school-contact-form-required">*</span>
             </label>
             <input
               type="text"
               id="contact-name"
               value={contactName}
-              onChange={(e) => {
-                setContactName(e.target.value);
-                clearFieldError('contactName');
-              }}
-              className="input"
+              onChange={(e) => setContactName(e.target.value)}
+              className="school-contact-form-input"
               placeholder="Your full name"
               required
               minLength={2}
               maxLength={100}
-              autoComplete="name"
               disabled={loading}
-              aria-invalid={err('contactName') ? true : undefined}
-              aria-describedby={errId('contactName')}
             />
-            {errorText('contactName')}
           </div>
 
-          <div className="field">
-            <label htmlFor="contact-title">
-              Your title or role
-              <Req />
+          <div className="school-contact-form-field">
+            <label htmlFor="contact-title" className="school-contact-form-label">
+              Your Title/Role <span className="school-contact-form-required">*</span>
             </label>
             <input
               type="text"
               id="contact-title"
               value={contactTitle}
-              onChange={(e) => {
-                setContactTitle(e.target.value);
-                clearFieldError('contactTitle');
-              }}
-              className="input"
+              onChange={(e) => setContactTitle(e.target.value)}
+              className="school-contact-form-input"
               placeholder="e.g., Special Education Director"
               required
               minLength={2}
               maxLength={100}
-              autoComplete="organization-title"
               disabled={loading}
-              aria-invalid={err('contactTitle') ? true : undefined}
-              aria-describedby={errId('contactTitle')}
             />
-            {errorText('contactTitle')}
           </div>
 
-          <div className="field">
-            <label htmlFor="contact-email">
-              Email
-              <Req />
+          <div className="school-contact-form-field">
+            <label htmlFor="contact-email" className="school-contact-form-label">
+              Email <span className="school-contact-form-required">*</span>
             </label>
             <input
               type="email"
               id="contact-email"
               value={email}
-              onChange={(e) => {
-                setEmail(e.target.value);
-                clearFieldError('email');
-              }}
-              className="input"
+              onChange={(e) => setEmail(e.target.value)}
+              className="school-contact-form-input"
               placeholder="your@email.com"
               required
-              autoComplete="email"
               disabled={loading}
               inputMode="email"
-              aria-invalid={err('email') ? true : undefined}
-              aria-describedby={errId('email')}
             />
-            {errorText('email')}
           </div>
 
-          <div className="field">
-            <label htmlFor="contact-phone">
-              Phone number
-              <Opt />
+          <div className="school-contact-form-field">
+            <label htmlFor="contact-phone" className="school-contact-form-label">
+              Phone Number
             </label>
             <input
               type="tel"
               id="contact-phone"
               value={phone}
-              onChange={(e) => {
-                setPhone(e.target.value);
-                clearFieldError('phone');
-              }}
-              className="input"
+              onChange={(e) => setPhone(e.target.value)}
+              className="school-contact-form-input"
               placeholder="(555) 123-4567"
               minLength={10}
-              autoComplete="tel"
               disabled={loading}
               inputMode="tel"
-              aria-invalid={err('phone') ? true : undefined}
-              aria-describedby={errId('phone')}
             />
-            {errorText('phone')}
           </div>
         </div>
       </fieldset>
 
       {/* Section 3: Service Details */}
-      <fieldset className="rf-fieldset">
-        <legend className="rf-legend">
-          <Cell dots={LETTERS.s} size="sm" />
-          Service details
-        </legend>
-        <div className="rf-grid">
-          <fieldset className="rf-fieldset rf-full" aria-describedby={errId('services')}>
-            <legend className="rf-group-label label">
-              Services needed
-              <Req />
-            </legend>
-            <div className="rf-choices" data-invalid={err('services') ? 'true' : undefined}>
-              {SERVICE_OPTIONS.map((service, i) => {
+      <fieldset className="school-contact-form-section school-contact-form-section-divider">
+        <legend className="school-contact-form-section-legend">Service Details</legend>
+        <div className="school-contact-form-section-grid">
+          {/* Service Checkboxes */}
+          <div className="school-contact-form-field school-contact-form-field-full">
+            <span className="school-contact-form-label">
+              Services Needed <span className="school-contact-form-required">*</span>
+            </span>
+            <div className="school-contact-form-checkboxes" role="group" aria-label="Services needed">
+              {SERVICE_OPTIONS.map((service) => {
                 const checked = selectedServices.includes(service);
                 return (
-                  <label key={service} className={`rf-choice${checked ? ' is-checked' : ''}`}>
+                  <label
+                    key={service}
+                    className={`school-contact-form-checkbox-item ${checked ? 'school-contact-form-checkbox-item--checked' : ''}`}
+                  >
                     <input
                       type="checkbox"
-                      id={`service-${i}`}
                       checked={checked}
                       onChange={() => toggleService(service)}
                       disabled={loading}
@@ -519,52 +437,47 @@ export default function SchoolContactForm() {
                 );
               })}
             </div>
-            {errorText('services')}
-          </fieldset>
+          </div>
 
-          <div className="field rf-full">
-            <label htmlFor="additional-details">
+          {/* Additional Details */}
+          <div className="school-contact-form-field school-contact-form-field-full">
+            <label htmlFor="additional-details" className="school-contact-form-label">
               Additional details about your needs
-              {otherOnly ? <Req /> : <Opt />}
+              {selectedServices.length === 1 && selectedServices[0] === 'Other' && (
+                <span className="school-contact-form-required"> *</span>
+              )}
             </label>
             <textarea
               id="additional-details"
               value={additionalDetails}
-              onChange={(e) => {
-                setAdditionalDetails(e.target.value);
-                clearFieldError('additionalDetails');
-              }}
-              className="textarea"
+              onChange={(e) => setAdditionalDetails(e.target.value)}
+              className="school-contact-form-textarea"
               placeholder="Describe student needs, IEP goals, schedule preferences..."
               rows={4}
               maxLength={2000}
               disabled={loading}
-              required={otherOnly}
-              minLength={otherOnly ? 10 : undefined}
-              aria-invalid={err('additionalDetails') ? true : undefined}
-              aria-describedby={ids('additional-details-hint', errId('additionalDetails'))}
+              required={selectedServices.length === 1 && selectedServices[0] === 'Other'}
+              minLength={selectedServices.length === 1 && selectedServices[0] === 'Other' ? 10 : undefined}
             />
-            <p id="additional-details-hint" className="hint">
+            <p className="school-contact-form-hint">
               Be as specific as possible to help us prepare for our conversation
               {additionalDetails.length > 0 && ` (${additionalDetails.length}/2000)`}
             </p>
-            {errorText('additionalDetails')}
           </div>
 
           {/* Student Count & Timeline */}
-          <div className="field">
-            <label htmlFor="student-count">
-              Number of students
-              <Opt />
+          <div className="school-contact-form-field">
+            <label htmlFor="student-count" className="school-contact-form-label">
+              Number of Students
             </label>
             <select
               id="student-count"
               value={studentCount}
               onChange={(e) => setStudentCount(e.target.value)}
-              className="select"
+              className="school-contact-form-select"
               disabled={loading}
             >
-              <option value="">Select…</option>
+              <option value="">Select...</option>
               <option value="1">1</option>
               <option value="2-3">2-3</option>
               <option value="4-5">4-5</option>
@@ -574,17 +487,16 @@ export default function SchoolContactForm() {
             </select>
           </div>
 
-          <div className="field">
-            <label htmlFor="timeline">
-              Desired start timeline
-              <Opt />
+          <div className="school-contact-form-field">
+            <label htmlFor="timeline" className="school-contact-form-label">
+              Desired Start Timeline
             </label>
             <input
               type="text"
               id="timeline"
               value={timeline}
               onChange={(e) => setTimeline(e.target.value)}
-              className="input"
+              className="school-contact-form-input"
               placeholder="e.g., Next school year, ASAP, Fall 2027"
               maxLength={300}
               disabled={loading}
@@ -592,32 +504,45 @@ export default function SchoolContactForm() {
           </div>
 
           {/* Delivery Preference Cards */}
-          <fieldset className="rf-fieldset rf-full">
-            <legend className="rf-group-label label">
-              Preferred service delivery
-              <Opt />
-            </legend>
-            <div className="rf-choices rf-delivery">
-              {DELIVERY_OPTIONS.map((opt) => {
-                const checked = deliveryPreference === opt.value;
-                return (
-                  <label key={opt.value} className={`rf-choice${checked ? ' is-checked' : ''}`}>
-                    <input
-                      type="radio"
-                      name="delivery-preference"
-                      value={opt.value}
-                      checked={checked}
-                      onChange={(e) => setDeliveryPreference(e.target.value)}
-                      disabled={loading}
-                    />
-                    <Cell dots={opt.cell} size="xs" className="rf-delivery-icon" />
-                    <span className="rf-delivery-label">{opt.label}</span>
-                    <span className="rf-delivery-sub">{opt.subtitle}</span>
-                  </label>
-                );
-              })}
+          <div className="school-contact-form-field school-contact-form-field-full">
+            <span className="school-contact-form-label">Preferred Service Delivery</span>
+            <div className="school-contact-form-delivery-cards">
+              {DELIVERY_OPTIONS.map((opt) => (
+                <label
+                  key={opt.value}
+                  className={`school-contact-form-delivery-card ${deliveryPreference === opt.value ? 'school-contact-form-delivery-card--selected' : ''}`}
+                >
+                  <input
+                    type="radio"
+                    name="delivery-preference"
+                    value={opt.value}
+                    checked={deliveryPreference === opt.value}
+                    onChange={(e) => setDeliveryPreference(e.target.value)}
+                    disabled={loading}
+                  />
+                  <span className="school-contact-form-delivery-icon" aria-hidden="true">
+                    {opt.icon}
+                  </span>
+                  <span className="school-contact-form-delivery-label">{opt.label}</span>
+                  <span className="school-contact-form-delivery-subtitle">{opt.subtitle}</span>
+                  {deliveryPreference === opt.value && (
+                    <span className="school-contact-form-delivery-check" aria-hidden="true">
+                      <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
+                        <circle cx="8" cy="8" r="8" fill="currentColor" />
+                        <path
+                          d="M5 8l2 2 4-4"
+                          stroke="white"
+                          strokeWidth="1.5"
+                          strokeLinecap="round"
+                          strokeLinejoin="round"
+                        />
+                      </svg>
+                    </span>
+                  )}
+                </label>
+              ))}
             </div>
-          </fieldset>
+          </div>
         </div>
       </fieldset>
 
@@ -633,13 +558,24 @@ export default function SchoolContactForm() {
         aria-hidden="true"
       />
 
-      <div className="rf-actions">
-        <button type="submit" className="btn btn--lg" disabled={loading}>
-          <ButtonCell letter="s" />
-          {loading ? 'Sending inquiry…' : 'Send inquiry'}
-        </button>
-        <p className="rf-note">Delaney typically responds within 2 business days.</p>
-      </div>
+      <button type="submit" className="school-contact-form-submit" disabled={loading}>
+        {loading ? (
+          <>
+            <span className="school-contact-form-spinner" aria-hidden="true" />
+            Sending Inquiry...
+          </>
+        ) : (
+          <>
+            Send Inquiry
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" aria-hidden="true">
+              <line x1="5" y1="12" x2="19" y2="12" />
+              <polyline points="12 5 19 12 12 19" />
+            </svg>
+          </>
+        )}
+      </button>
+
+      <p className="school-contact-form-note">Delaney typically responds within 2 business days</p>
     </form>
   );
 }

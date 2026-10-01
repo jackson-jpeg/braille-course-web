@@ -33,7 +33,7 @@ export interface GameDifficultyParams {
 
 /** Get difficulty parameters for a game */
 export function getDifficultyParams(gameId: GameId, difficulty: Difficulty): Record<string, unknown> {
-  const params: Partial<Record<GameId, Record<Difficulty, Record<string, unknown>>>> = {
+  const params: Record<GameId, Record<Difficulty, Record<string, unknown>>> = {
     wordgame: {
       beginner: { wordLength: 4 },
       intermediate: { wordLength: 4 },

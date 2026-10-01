@@ -32,8 +32,8 @@ npm run dev                   # http://localhost:3000
 app/                  # Next.js App Router pages + API routes
   api/                # Route handlers (admin/, checkout/, webhook/, cron/)
   admin/              # Admin dashboard page
-  (site)/            # public pages (home, learn, games, courses, intro, services, appointments, policies)
-  (site)/summer/      # Stripe checkout + success (URLs kept for Stripe return_url)
+  games/              # Interactive braille learning games
+  summer/             # Summer enrollment + Stripe checkout
 components/           # React components
   admin/              # Admin dashboard tabs, modals, utilities
 hooks/                # Custom React hooks
@@ -46,25 +46,10 @@ lib/                  # Shared utilities, services, data maps
 prisma/               # Schema + seed script
 ```
 
-## Braille accuracy (read first)
-
-- `lib/ueb.ts` is the single source of truth for every braille cell. Never hand-type dot patterns.
-- Contracted braille comes only from liblouis output in `lib/data/ueb-contracted.json`.
-- Add any new braille text to `lib/ueb-corpus.ts`, then run `npx tsx scripts/generate-ueb-oracle.ts`
-  (needs liblouis: `apt-get install liblouis-bin python3-louis`). `__tests__/lib/ueb.test.ts` must pass.
-
-## Design + games + lessons
-
-- Design system: `docs/DESIGN.md`, tokens in `app/globals.css`, page CSS in `styles/pages`, game CSS in `styles/games`.
-- Public pages live in `app/(site)/`; admin keeps the legacy stylesheet (`styles/legacy-admin.css`).
-- Games: `lib/games/registry.ts` + `components/games/kit` + `/games/[slug]`. Lessons: `lib/course-curriculum.ts`.
-- Next live course: `lib/cohort.ts` (null = evergreen interest list, no public checkout).
-- Tests: `npm test` (jest) and `npm run build && npx playwright test` (axe + keyboard e2e, desktop + mobile).
-
 ## Conventions
 
 - **Imports**: Use `@/*` path alias (maps to project root)
-- **Styling**: Design tokens + components in `app/globals.css`; page/game CSS files imported by their page/component
+- **Styling**: Global CSS in `app/globals.css` with CSS custom properties (design tokens in `:root`)
 - **Components**: Client components use `'use client'` directive; server components are the default
 - **API routes**: All admin routes check `isAuthorized(req)` from `lib/admin-auth.ts`
 - **Database**: Prisma client via `lib/prisma.ts` singleton; always use `@prisma/client` imports for types

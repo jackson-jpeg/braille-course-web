@@ -249,7 +249,7 @@ export function enrollmentConfirmation(opts: { isDeposit: boolean; schedule: str
     </td>
   </tr>
 
-  ${ctaButton('View Course Page', 'https://teachbraille.org/courses')}
+  ${ctaButton('View Course Page', 'https://teachbraille.org/summer')}
 
   ${footer(isDeposit ? 'You&rsquo;ll receive a receipt from Stripe separately. No action is needed before June&nbsp;7 &mdash; we&rsquo;ll send a reminder with video call details closer to the start date.' : 'You&rsquo;ll receive a receipt from Stripe separately. We&rsquo;ll send a reminder with video call details closer to the start&nbsp;date.')}`;
 

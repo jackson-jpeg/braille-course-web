@@ -1,161 +1,184 @@
 /**
- * The beginner track: structure, links, and braille accuracy. Every cell a lesson shows must
- * come from lib/ueb.ts (checked against the official chart and liblouis in ueb.test.ts), and
- * every example word must match liblouis.
+ * Accuracy suite for the free braille course.
+ *
+ * The course promises "100% accurate" braille. These tests encode the real
+ * structural facts of Unified English Braille (UEB) *independently* of the app's
+ * data maps, then assert the curriculum agrees with them. If any lesson ever
+ * drifts from correct braille — or from the canonical maps the rest of the site
+ * uses — this suite fails.
  */
-import oracle from '../fixtures/ueb-oracle.json';
-import runtime from '../../lib/data/ueb-contracted.json';
+import { brailleMap, dotDescription } from '@/lib/braille-map';
+import { contractedBrailleEntries } from '@/lib/contracted-braille-map';
 import {
-  ALL_LESSONS,
   COURSE_MODULES,
-  LEGACY_LESSON_REDIRECTS,
+  ALL_LESSONS,
   LESSON_SLUGS,
   TOTAL_LESSONS,
+  describeDots,
+  getLessonBySlug,
   getAdjacentLessons,
-  type CharItem,
 } from '@/lib/course-curriculum';
-import {
-  LETTERS,
-  CONTRACTIONS,
-  PUNCTUATION,
-  INDICATORS,
-  DIGITS,
-  transcribeToUnicode,
-  cellsToUnicode,
-  toUnicode,
-} from '@/lib/ueb';
-import { GAME_BY_ID } from '@/lib/games/registry';
+import type { GameId } from '@/lib/progress-types';
 
-const REQUIRED_ORDER = [
-  'what-is-braille',
-  'the-braille-cell',
-  'letters-a-j',
-  'letters-k-t',
-  'letters-u-z',
-  'first-words',
-  'numbers',
-  'punctuation',
-  'capitals',
-  'first-contractions',
-  'more-contractions',
-  'next-steps',
+/** Grid order is [d1, d4, d2, d5, d3, d6]; convert to a set of dot numbers. */
+const GRID_TO_DOT = [1, 4, 2, 5, 3, 6];
+function dotsOf(pattern: number[]): Set<number> {
+  const s = new Set<number>();
+  pattern.forEach((v, i) => {
+    if (v) s.add(GRID_TO_DOT[i]);
+  });
+  return s;
+}
+function setsEqual(a: Set<number>, b: Set<number>): boolean {
+  return a.size === b.size && [...a].every((x) => b.has(x));
+}
+const patternKey = (p: number[]) => p.join(',');
+
+const VALID_GAME_IDS: GameId[] = [
+  'wordgame',
+  'explorer',
+  'hangman',
+  'speedmatch',
+  'memorymatch',
+  'contraction-sprint',
+  'number-sense',
+  'reflex-dots',
+  'sequence',
+  'sentence-decoder',
+  'bingo',
+  'rain',
 ];
 
-function allChars(): CharItem[] {
-  return ALL_LESSONS.flatMap((l) =>
-    l.blocks.flatMap((b) =>
-      b.type === 'cells' || b.type === 'write' ? b.items : b.type === 'read' ? [...b.items, ...b.pool] : [],
-    ),
-  );
-}
-
-describe('track structure', () => {
-  test('lessons follow the beginner order', () => {
-    expect(LESSON_SLUGS).toEqual(REQUIRED_ORDER);
-    expect(TOTAL_LESSONS).toBe(12);
-  });
-
-  test('slugs are unique and URL-safe', () => {
-    expect(new Set(LESSON_SLUGS).size).toBe(LESSON_SLUGS.length);
-    for (const s of LESSON_SLUGS) expect(s).toMatch(/^[a-z0-9]+(-[a-z0-9]+)*$/);
-  });
-
-  test('every lesson links to a real game, and that game links back', () => {
-    for (const l of ALL_LESSONS) {
-      const g = GAME_BY_ID.get(l.practiceGameId);
-      expect([l.slug, !!g]).toEqual([l.slug, true]);
-      for (const extra of l.alsoTry ?? [])
-        expect([l.slug, extra, GAME_BY_ID.has(extra)]).toEqual([l.slug, extra, true]);
-    }
-    for (const g of GAME_BY_ID.values())
-      for (const slug of g.lessons) expect([g.id, LESSON_SLUGS.includes(slug)]).toEqual([g.id, true]);
-  });
-
-  test('the last lesson points to the courses', () => {
-    const last = ALL_LESSONS[ALL_LESSONS.length - 1];
-    expect(last.slug).toBe('next-steps');
-  });
-
-  test('prev/next navigation is a chain', () => {
-    expect(getAdjacentLessons(LESSON_SLUGS[0]).prev).toBeNull();
-    expect(getAdjacentLessons(LESSON_SLUGS[11]).next).toBeNull();
-    for (let i = 1; i < 12; i++) expect(getAdjacentLessons(LESSON_SLUGS[i]).prev?.slug).toBe(LESSON_SLUGS[i - 1]);
-  });
-
-  test('legacy lesson URLs all redirect to real lessons', () => {
-    for (const [from, to] of Object.entries(LEGACY_LESSON_REDIRECTS)) {
-      expect(LESSON_SLUGS).not.toContain(from);
-      expect(LESSON_SLUGS).toContain(to);
+describe('UEB structural facts (independent ground truth)', () => {
+  it('A–J use only the top four dots (1, 2, 4, 5)', () => {
+    for (const ch of 'ABCDEFGHIJ') {
+      const dots = dotsOf(brailleMap[ch]);
+      [...dots].forEach((d) => expect([1, 2, 4, 5]).toContain(d));
     }
   });
 
-  test('every module has lessons and every lesson has goals and a quiz or practice', () => {
-    for (const m of COURSE_MODULES) expect(m.lessons.length).toBeGreaterThan(0);
-    for (const l of ALL_LESSONS) {
-      expect(l.goals.length).toBeGreaterThan(0);
-      expect(l.summary.length).toBeGreaterThan(20);
+  it('K–T are exactly A–J with dot 3 added', () => {
+    const firstTen = 'ABCDEFGHIJ'.split('');
+    const secondTen = 'KLMNOPQRST'.split('');
+    firstTen.forEach((base, i) => {
+      const expected = new Set(dotsOf(brailleMap[base]));
+      expected.add(3);
+      expect(setsEqual(dotsOf(brailleMap[secondTen[i]]), expected)).toBe(true);
+    });
+  });
+
+  it('U, V, X, Y, Z are A, B, C, D, E with dots 3 and 6 added', () => {
+    const pairs: [string, string][] = [
+      ['U', 'A'],
+      ['V', 'B'],
+      ['X', 'C'],
+      ['Y', 'D'],
+      ['Z', 'E'],
+    ];
+    for (const [letter, base] of pairs) {
+      const expected = new Set(dotsOf(brailleMap[base]));
+      expected.add(3);
+      expected.add(6);
+      expect(setsEqual(dotsOf(brailleMap[letter]), expected)).toBe(true);
     }
   });
 
-  test('quiz answers are in range', () => {
-    for (const l of ALL_LESSONS)
-      for (const b of l.blocks)
-        if (b.type === 'quiz')
-          for (const q of b.questions) {
-            expect(q.answer).toBeGreaterThanOrEqual(0);
-            expect(q.answer).toBeLessThan(q.options.length);
-          }
+  it('W is the exception — dots 2, 4, 5, 6 (does not follow the U–Z pattern)', () => {
+    expect(setsEqual(dotsOf(brailleMap.W), new Set([2, 4, 5, 6]))).toBe(true);
+    // If W followed the sequence it would be J + {3,6}; confirm it does not.
+    const asIfSequenced = new Set(dotsOf(brailleMap.J));
+    asIfSequenced.add(3);
+    asIfSequenced.add(6);
+    expect(setsEqual(dotsOf(brailleMap.W), asIfSequenced)).toBe(false);
+  });
+
+  it('digits 1–9 and 0 reuse the shapes of A–I and J', () => {
+    const digits = ['1', '2', '3', '4', '5', '6', '7', '8', '9', '0'];
+    const letters = 'ABCDEFGHIJ'.split('');
+    digits.forEach((d, i) => {
+      expect(patternKey(brailleMap[d])).toBe(patternKey(brailleMap[letters[i]]));
+    });
+  });
+
+  it('the number sign is dots 3, 4, 5, 6 and the capital sign is dot 6', () => {
+    expect(setsEqual(dotsOf(brailleMap['#']), new Set([3, 4, 5, 6]))).toBe(true);
+    expect(setsEqual(dotsOf(brailleMap['^']), new Set([6]))).toBe(true);
   });
 });
 
-describe('lesson braille accuracy', () => {
-  const known = new Set<string>([
-    ...Object.values(LETTERS).map((d) => toUnicode(d)),
-    ...Object.values(DIGITS).map((d) => toUnicode(d)),
-    ...CONTRACTIONS.map((c) => toUnicode(c.dots)),
-    ...PUNCTUATION.flatMap((p) => p.cells.map(toUnicode)),
-    ...Object.values(INDICATORS).flatMap((i) => i.cells.map(toUnicode)),
-    ...[1, 2, 3, 4, 5, 6].map((n) => toUnicode([n])),
+describe('describeDots matches the canonical dotDescription', () => {
+  it('agrees with lib/braille-map for every letter A–Z', () => {
+    for (const ch of 'ABCDEFGHIJKLMNOPQRSTUVWXYZ') {
+      expect(describeDots(brailleMap[ch])).toBe(dotDescription(ch));
+    }
+  });
+});
+
+describe('every character taught is drawn from the canonical maps', () => {
+  const canonicalPatterns = new Set<string>([
+    ...Object.values(brailleMap).map(patternKey),
+    ...contractedBrailleEntries.map((e) => patternKey(e.pattern)),
   ]);
 
-  test('every taught cell is a defined UEB cell', () => {
-    for (const c of allChars())
-      for (const cell of c.cells) expect([c.print, known.has(toUnicode(cell))]).toEqual([c.print, true]);
+  it('has no lesson character with a hand-invented pattern', () => {
+    for (const lesson of ALL_LESSONS) {
+      for (const c of lesson.chars) {
+        expect(c.pattern).toHaveLength(6);
+        c.pattern.forEach((v) => expect(v === 0 || v === 1).toBe(true));
+        expect(canonicalPatterns.has(patternKey(c.pattern))).toBe(true);
+      }
+    }
+  });
+});
+
+describe('Grade 2 lessons match the canonical contraction map exactly', () => {
+  const byLabel = new Map<string, number[]>();
+  for (const e of contractedBrailleEntries) {
+    byLabel.set(e.label, e.pattern);
+    byLabel.set(e.label.split(' ')[0], e.pattern);
+  }
+
+  it('each contraction taught equals its canonical pattern', () => {
+    const grade2 = COURSE_MODULES.find((m) => m.id === 'grade2');
+    expect(grade2).toBeDefined();
+    for (const lesson of grade2!.lessons) {
+      for (const c of lesson.chars) {
+        const canonical = byLabel.get(c.print);
+        expect(canonical).toBeDefined();
+        expect(patternKey(c.pattern)).toBe(patternKey(canonical!));
+      }
+    }
+  });
+});
+
+describe('curriculum integrity', () => {
+  it('loads without throwing and has lessons', () => {
+    expect(TOTAL_LESSONS).toBeGreaterThan(0);
+    expect(ALL_LESSONS).toHaveLength(TOTAL_LESSONS);
   });
 
-  test('letters, digits and punctuation in lessons match their UEB definitions', () => {
-    for (const c of allChars()) {
-      const [kind, id] = c.key.split(':');
-      if (kind === 'letter') expect(cellsToUnicode(c.cells)).toBe((oracle.g1 as Record<string, string>)[id]);
-      if (kind === 'digit') expect(cellsToUnicode(c.cells)).toBe((oracle.g1 as Record<string, string>)[id]);
-      if (kind === 'punct')
-        expect(cellsToUnicode(c.cells)).toBe(cellsToUnicode(PUNCTUATION.find((p) => p.id === id)!.cells));
+  it('has unique, URL-safe lesson slugs', () => {
+    expect(new Set(LESSON_SLUGS).size).toBe(LESSON_SLUGS.length);
+    for (const slug of LESSON_SLUGS) {
+      expect(slug).toMatch(/^[a-z0-9-]+$/);
     }
   });
 
-  test('uncontracted examples match liblouis', () => {
-    for (const l of ALL_LESSONS)
-      for (const b of l.blocks)
-        if (b.type === 'example' && !b.contracted)
-          expect([b.text, transcribeToUnicode(b.text)]).toEqual([
-            b.text,
-            (oracle.g1 as Record<string, string>)[b.text],
-          ]);
+  it('references only real games and real modules', () => {
+    for (const lesson of ALL_LESSONS) {
+      if (lesson.practiceGameId) {
+        expect(VALID_GAME_IDS).toContain(lesson.practiceGameId);
+      }
+      expect(COURSE_MODULES.some((m) => m.id === lesson.moduleId)).toBe(true);
+    }
   });
 
-  test('contracted examples have liblouis braille stored', () => {
-    for (const l of ALL_LESSONS)
-      for (const b of l.blocks)
-        if (b.type === 'example' && b.contracted) {
-          const stored = (runtime.braille as Record<string, string>)[b.text];
-          expect([b.text, stored]).toEqual([b.text, (oracle.g2 as Record<string, string>)[b.text]]);
-        }
-  });
-
-  test('quiz cells are defined UEB cells', () => {
-    for (const l of ALL_LESSONS)
-      for (const b of l.blocks)
-        if (b.type === 'quiz')
-          for (const q of b.questions) for (const cell of q.cells ?? []) expect(known.has(toUnicode(cell))).toBe(true);
+  it('links lessons into a consistent prev/next chain', () => {
+    ALL_LESSONS.forEach((lesson, i) => {
+      const { prev, next } = getAdjacentLessons(lesson.slug);
+      expect(prev?.slug ?? null).toBe(i > 0 ? ALL_LESSONS[i - 1].slug : null);
+      expect(next?.slug ?? null).toBe(i < ALL_LESSONS.length - 1 ? ALL_LESSONS[i + 1].slug : null);
+      expect(getLessonBySlug(lesson.slug)).toBe(lesson);
+    });
   });
 });

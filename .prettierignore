@@ -2,5 +2,3 @@
 node_modules/
 package-lock.json
 prisma/migrations/
-__tests__/fixtures/*.json
-lib/data/*.json

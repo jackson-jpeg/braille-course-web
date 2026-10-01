@@ -6,7 +6,6 @@ import Link from 'next/link';
 import { useSpots } from '@/lib/spots-context';
 import { SECTION_SCHEDULES } from '@/lib/schedule';
 import { PRICING, formatPrice } from '@/lib/pricing';
-import Cell from '@/components/ui/Cell';
 
 type LoadingStage = null | 'processing';
 
@@ -87,50 +86,75 @@ export default function EnrollmentForm() {
 
   if (totalRemaining <= 0) {
     return (
-      <div className="enroll-soldout">
-        <Cell dots={[1, 2, 3, 4, 5, 6]} size="lg" framed />
-        <h3>This course is fully enrolled</h3>
-        <p>Join the waitlist and we&rsquo;ll email you if a spot opens.</p>
+      <div className="enrollment-sold-out">
+        <svg
+          className="enrollment-sold-out-icon"
+          viewBox="0 0 36 48"
+          fill="none"
+          stroke="currentColor"
+          strokeWidth="1.5"
+          aria-hidden="true"
+        >
+          {/* Braille cell outline */}
+          <rect x="2" y="2" width="32" height="44" rx="6" />
+          {/* 6 dots — all filled to represent completeness */}
+          <circle cx="13" cy="12" r="3.5" fill="currentColor" stroke="none" />
+          <circle cx="23" cy="12" r="3.5" fill="currentColor" stroke="none" />
+          <circle cx="13" cy="24" r="3.5" fill="currentColor" stroke="none" />
+          <circle cx="23" cy="24" r="3.5" fill="currentColor" stroke="none" />
+          <circle cx="13" cy="36" r="3.5" fill="currentColor" stroke="none" />
+          <circle cx="23" cy="36" r="3.5" fill="currentColor" stroke="none" />
+        </svg>
+        <div className="enrollment-sold-out-title">This session is fully enrolled</div>
+        <p>Join the waitlist and we&rsquo;ll notify you if a spot opens.</p>
 
         {waitlistSuccess ? (
-          <div className="notice" role="status">
+          <div className="enrollment-waitlist-success">
             You&rsquo;re on the list! We&rsquo;ll reach out if a spot opens.
           </div>
         ) : (
-          <form className="interest-form" onSubmit={handleWaitlistSubmit}>
-            <div className="field">
-              <label htmlFor="waitlist-email">Your email address</label>
-              <div className="interest-row">
-                <input
-                  id="waitlist-email"
-                  type="email"
-                  value={waitlistEmail}
-                  onChange={(e) => setWaitlistEmail(e.target.value)}
-                  required
-                  autoComplete="email"
-                  className="input"
-                  disabled={waitlistSubmitting}
-                />
-                <button type="submit" className="btn" disabled={waitlistSubmitting}>
-                  {waitlistSubmitting ? 'Joining…' : 'Join the waitlist'}
-                </button>
-              </div>
-              {waitlistError && (
-                <p className="form-error" role="alert">
-                  {waitlistError}
-                </p>
+          <form className="enrollment-waitlist-form" onSubmit={handleWaitlistSubmit}>
+            <input
+              type="email"
+              placeholder="Your email address"
+              value={waitlistEmail}
+              onChange={(e) => setWaitlistEmail(e.target.value)}
+              required
+              className="enrollment-waitlist-input"
+              aria-label="Email address for waitlist"
+              disabled={waitlistSubmitting}
+            />
+            <button type="submit" className="enrollment-sold-out-cta" disabled={waitlistSubmitting}>
+              {waitlistSubmitting ? 'Joining...' : 'Join the Waitlist'}
+              {!waitlistSubmitting && (
+                <svg
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="currentColor"
+                  strokeWidth="2.5"
+                  aria-hidden="true"
+                  style={{ width: 16, height: 16 }}
+                >
+                  <line x1="5" y1="12" x2="19" y2="12" />
+                  <polyline points="12 5 19 12 12 19" />
+                </svg>
               )}
-            </div>
+            </button>
+            {waitlistError && (
+              <div className="enrollment-error" role="alert">
+                {waitlistError}
+              </div>
+            )}
           </form>
         )}
 
-        <p className="muted">
+        <div className="enrollment-sold-out-note">
           Or email{' '}
-          <a href="mailto:Delaney@TeachBraille.org?subject=Waitlist%20Request%20%E2%80%94%20Braille%20Course">
+          <a href="mailto:Delaney@TeachBraille.org?subject=Waitlist%20Request%20%E2%80%94%20Summer%20Braille%20Course">
             Delaney@TeachBraille.org
           </a>{' '}
           directly.
-        </p>
+        </div>
       </div>
     );
   }
@@ -138,21 +162,22 @@ export default function EnrollmentForm() {
   const canSubmit = selectedSection && selectedPlan && !loading;
 
   const buttonText = (() => {
-    if (loadingStage === 'processing') return 'Processing…';
+    if (loadingStage === 'processing') return 'Processing...';
     const price =
       selectedPlan === 'full'
         ? formatPrice(PRICING.full)
         : selectedPlan === 'deposit'
           ? formatPrice(PRICING.deposit)
           : '';
-    return price ? `Continue to checkout — ${price}` : 'Continue to checkout';
+    return price ? `Continue to Checkout — ${price}` : 'Continue to Checkout';
   })();
 
   return (
-    <div className="enroll-form">
-      <fieldset className="enroll-step">
-        <legend>1. Choose your schedule</legend>
-        <div className="enroll-options">
+    <div className="enrollment-form">
+      {/* Step 1: Choose Section */}
+      <div className={`enrollment-step${selectedSection ? ' completed' : ''}`}>
+        <div className="enrollment-step-label">1. Choose Your Schedule</div>
+        <div className="enrollment-options">
           {sections.map((section) => {
             const spotsLeft = section.maxCapacity - section.enrolledCount;
             const isFull = section.status === 'FULL' || spotsLeft <= 0;
@@ -162,7 +187,9 @@ export default function EnrollmentForm() {
             return (
               <label
                 key={section.id}
-                className={`enroll-option${isSelected ? ' is-selected' : ''}${isFull ? ' is-disabled' : ''}`}
+                className={`enrollment-option${isSelected ? ' selected' : ''}${
+                  isFull ? ' disabled' : ''
+                }${isJustFilled ? ' just-filled' : ''}`}
               >
                 <input
                   type="radio"
@@ -175,26 +202,29 @@ export default function EnrollmentForm() {
                     setJustFilledId(null);
                   }}
                 />
-                <span className="enroll-option-text">
-                  <span className="enroll-option-title">{SECTION_SCHEDULES[section.label] || section.label}</span>
-                  <span className="enroll-option-sub">
+                <div className="enrollment-option-text">
+                  <div className="enrollment-option-title">{SECTION_SCHEDULES[section.label] || section.label}</div>
+                  <div className="enrollment-option-sub">
                     {isJustFilled
                       ? 'Just filled'
                       : isFull
                         ? 'Full'
                         : `${spotsLeft} spot${spotsLeft !== 1 ? 's' : ''} left`}
-                  </span>
-                </span>
+                  </div>
+                </div>
               </label>
             );
           })}
         </div>
-      </fieldset>
+      </div>
 
-      <fieldset className="enroll-step" disabled={!selectedSection}>
-        <legend>2. Choose your plan</legend>
-        <div className="enroll-options">
-          <label className={`enroll-option${selectedPlan === 'full' ? ' is-selected' : ''}`}>
+      {/* Step 2: Choose Plan */}
+      <div
+        className={`enrollment-step enrollment-step-2${selectedSection ? ' enrollment-step-active' : ''}${selectedPlan ? ' completed' : ''}`}
+      >
+        <div className="enrollment-step-label">2. Choose Your Plan</div>
+        <div className="enrollment-options">
+          <label className={`enrollment-option${selectedPlan === 'full' ? ' selected' : ''}`}>
             <input
               type="radio"
               name="plan"
@@ -203,12 +233,12 @@ export default function EnrollmentForm() {
               disabled={loading}
               onChange={() => setSelectedPlan('full')}
             />
-            <span className="enroll-option-text">
-              <span className="enroll-option-title">Pay in full — {formatPrice(PRICING.full)}</span>
-              <span className="enroll-option-sub">One-time payment</span>
-            </span>
+            <div className="enrollment-option-text">
+              <div className="enrollment-option-title">Pay in Full — {formatPrice(PRICING.full)}</div>
+              <div className="enrollment-option-sub">One-time payment</div>
+            </div>
           </label>
-          <label className={`enroll-option${selectedPlan === 'deposit' ? ' is-selected' : ''}`}>
+          <label className={`enrollment-option${selectedPlan === 'deposit' ? ' selected' : ''}`}>
             <input
               type="radio"
               name="plan"
@@ -217,58 +247,75 @@ export default function EnrollmentForm() {
               disabled={loading}
               onChange={() => setSelectedPlan('deposit')}
             />
-            <span className="enroll-option-text">
-              <span className="enroll-option-title">Reserve with a {formatPrice(PRICING.deposit)} deposit</span>
-              <span className="enroll-option-sub">
+            <div className="enrollment-option-text">
+              <div className="enrollment-option-title">Reserve with {formatPrice(PRICING.deposit)} Deposit</div>
+              <div className="enrollment-option-sub">
                 {formatPrice(PRICING.balance)} balance charged {PRICING.balanceDueDate}
-              </span>
-            </span>
+              </div>
+            </div>
           </label>
         </div>
-      </fieldset>
+      </div>
 
+      {/* Order Summary */}
       {canSubmit &&
         (() => {
           const section = sections.find((s) => s.id === selectedSection);
           const scheduleText = section ? SECTION_SCHEDULES[section.label] || section.label : '';
           const planText =
             selectedPlan === 'full'
-              ? `Pay in full — ${formatPrice(PRICING.full)}`
+              ? `Pay in Full — ${formatPrice(PRICING.full)}`
               : `${formatPrice(PRICING.deposit)} deposit today, ${formatPrice(PRICING.balance)} on ${PRICING.balanceDueDate}`;
           return (
-            <dl className="enroll-summary">
-              <div>
-                <dt>Schedule</dt>
-                <dd>{scheduleText}</dd>
+            <div className="enrollment-summary">
+              <div className="enrollment-summary-row">
+                <span className="enrollment-summary-label">Schedule</span>
+                <span className="enrollment-summary-value">{scheduleText}</span>
               </div>
-              <div>
-                <dt>Plan</dt>
-                <dd>{planText}</dd>
+              <div className="enrollment-summary-row">
+                <span className="enrollment-summary-label">Plan</span>
+                <span className="enrollment-summary-value">{planText}</span>
               </div>
-            </dl>
+            </div>
           );
         })()}
 
-      <button className="btn btn--lg btn--block" disabled={!canSubmit} onClick={handleSubmit} type="button">
-        {loadingStage === 'processing' && <CellLoaderInline />}
+      {/* Step 3: Submit */}
+      <button className="enrollment-submit" disabled={!canSubmit} onClick={handleSubmit}>
+        {loadingStage === 'processing' && <span className="enrollment-spinner" aria-hidden="true" />}
         {buttonText}
+        {!loading && (
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" aria-hidden="true">
+            <line x1="5" y1="12" x2="19" y2="12" />
+            <polyline points="12 5 19 12 12 19" />
+          </svg>
+        )}
       </button>
 
       {error && (
-        <p className="form-error" role="alert">
+        <div className="enrollment-error" role="alert">
           {error}
-        </p>
+        </div>
       )}
 
-      <p className="enroll-trust muted">Secure payment by Stripe · Fully refundable before {PRICING.balanceDueDate}</p>
-      <p className="enroll-legal muted">
+      <div className="enrollment-trust-row">
+        <span className="enrollment-trust-item">
+          <svg className="enrollment-trust-lock" viewBox="0 0 16 16" fill="none" aria-hidden="true">
+            <rect x="3" y="7" width="10" height="7" rx="1.5" stroke="currentColor" strokeWidth="1.3" />
+            <path d="M5.5 7V5a2.5 2.5 0 015 0v2" stroke="currentColor" strokeWidth="1.3" strokeLinecap="round" />
+          </svg>
+          Secure payment
+        </span>
+        <span className="enrollment-trust-sep">&middot;</span>
+        <span className="enrollment-trust-item">100% refundable before {PRICING.balanceDueDate}</span>
+        <span className="enrollment-trust-sep">&middot;</span>
+        <span className="enrollment-trust-item">Powered by Stripe</span>
+      </div>
+
+      <p className="enrollment-legal">
         By enrolling, you agree to our <Link href="/policies#refunds">Refund Policy</Link> and{' '}
         <Link href="/policies#terms">Terms of Service</Link>.
       </p>
     </div>
   );
-}
-
-function CellLoaderInline() {
-  return <Cell dots={[1, 4]} size="xs" className="btn-cell" />;
 }

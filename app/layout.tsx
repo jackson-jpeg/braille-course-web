@@ -1,53 +1,58 @@
-import type { Metadata, Viewport } from 'next';
-import { Atkinson_Hyperlegible, Bricolage_Grotesque } from 'next/font/google';
+import type { Metadata } from 'next';
+import { Outfit, DM_Serif_Display, Caveat } from 'next/font/google';
 import { Analytics } from '@vercel/analytics/next';
+import NavBar from '@/components/NavBar';
+import ScrollRevealInit from '@/components/ScrollRevealInit';
 import './globals.css';
 
-// Atkinson Hyperlegible was designed by the Braille Institute for low-vision readers.
-const atkinson = Atkinson_Hyperlegible({
+const outfit = Outfit({
   subsets: ['latin'],
-  weight: ['400', '700'],
+  weight: ['300', '400', '500', '600', '700'],
+  variable: '--font-body',
+  display: 'swap',
+});
+
+const dmSerif = DM_Serif_Display({
+  subsets: ['latin'],
+  weight: '400',
   style: ['normal', 'italic'],
-  variable: '--font-atkinson',
+  variable: '--font-heading',
   display: 'swap',
 });
 
-const bricolage = Bricolage_Grotesque({
+const caveat = Caveat({
   subsets: ['latin'],
-  axes: ['wdth', 'opsz'],
-  variable: '--font-bricolage',
+  weight: ['500', '600'],
+  variable: '--font-accent',
   display: 'swap',
 });
-
-export const viewport: Viewport = {
-  themeColor: '#1e1b2e',
-};
 
 export const metadata: Metadata = {
   metadataBase: new URL('https://teachbraille.org'),
   title: {
-    default: 'Teach Braille — Free Lessons, Games & Courses | TeachBraille.org',
+    default: 'Teach Braille — Free Practice, Courses & TVI Services | TeachBraille.org',
     template: '%s | TeachBraille.org',
   },
   description:
-    'Learn braille for free with warm, beginner-friendly lessons and practice games, then go further with live courses and 1-on-1 instruction from Delaney Costello, a Teacher of the Visually Impaired.',
+    'Teach and learn braille with free interactive practice games, a beginner-friendly guide, summer courses, and 1-on-1 instruction from Delaney Costello, a certified Teacher of the Visually Impaired.',
   keywords: [
     'teach braille',
     'learn braille',
-    'braille for parents',
-    'braille for beginners',
-    'braille games',
-    'braille alphabet',
-    'UEB braille',
-    'Unified English Braille',
+    'braille instruction',
+    'braille practice',
     'braille course',
+    'braille alphabet',
+    'braille games',
     'teacher of the visually impaired',
     'TVI services',
+    'braille for parents',
+    'braille for beginners',
+    'UEB braille',
   ],
   openGraph: {
-    title: 'Teach Braille — Free Lessons, Games & Courses | TeachBraille.org',
+    title: 'Teach Braille — Free Practice, Courses & TVI Services | TeachBraille.org',
     description:
-      'Free braille lessons and games for families and kids, plus live courses with Delaney Costello, Teacher of the Visually Impaired.',
+      'Learn braille with free interactive games, a step-by-step introduction, summer courses, and personalized TVI instruction from Delaney Costello.',
     type: 'website',
     url: 'https://teachbraille.org',
     siteName: 'TeachBraille.org',
@@ -55,11 +60,13 @@ export const metadata: Metadata = {
   },
   twitter: {
     card: 'summary_large_image',
-    title: 'Teach Braille — Free Lessons, Games & Courses | TeachBraille.org',
+    title: 'Teach Braille — Free Practice, Courses & TVI Services | TeachBraille.org',
     description:
-      'Free braille lessons and games for families and kids, plus live courses with Delaney Costello, Teacher of the Visually Impaired.',
+      'Learn braille with free interactive games, a step-by-step introduction, summer courses, and personalized TVI instruction from Delaney Costello.',
   },
-  alternates: { canonical: 'https://teachbraille.org' },
+  alternates: {
+    canonical: 'https://teachbraille.org',
+  },
   robots: { index: true, follow: true },
 };
 
@@ -70,7 +77,8 @@ const jsonLd = {
       '@type': 'WebSite',
       name: 'TeachBraille.org',
       url: 'https://teachbraille.org',
-      description: 'Free braille lessons and practice games, live courses, and TVI services.',
+      description:
+        'Teach and learn braille with free interactive practice, online courses, and personalized TVI instruction.',
     },
     {
       '@type': 'Person',
@@ -80,20 +88,30 @@ const jsonLd = {
       email: 'Delaney@TeachBraille.org',
       description:
         'Teacher of the Visually Impaired with 9 years of experience offering braille instruction, assistive technology, compensatory skills, and educational team consultation.',
-      knowsAbout: ['Braille', 'Unified English Braille', 'Assistive Technology', 'Visual Impairment Education'],
+      knowsAbout: [
+        'Braille',
+        'Unified English Braille',
+        'Assistive Technology',
+        'Visual Impairment Education',
+        'Compensatory Skills',
+      ],
+      sameAs: [],
     },
   ],
 };
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
-    <html lang="en" className={`${atkinson.variable} ${bricolage.variable}`}>
+    <html lang="en" className={`${outfit.variable} ${dmSerif.variable} ${caveat.variable}`}>
       <body>
         <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }} />
         <a className="skip-link" href="#main-content">
           Skip to content
         </a>
-        {children}
+        <div className="braille-bg" aria-hidden="true"></div>
+        <NavBar />
+        <ScrollRevealInit />
+        <main id="main-content">{children}</main>
         <Analytics />
       </body>
     </html>
