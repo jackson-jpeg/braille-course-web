@@ -81,3 +81,8 @@ See `HUMAN-QUEUE.md` (top item: check whether any "Summer 2027" deposits were ta
 5. Dark mode (tokens are ready for it), and a printable lesson/alphabet PDF.
 6. More content: initial-letter contractions and shortforms lessons, more Word Decoder levels, a Dot Quest island 5.
 7. Add a GitHub Action running `npm test` and the Playwright suite on pull requests.
+
+## Deploy
+
+- PR: https://github.com/jackson-jpeg/braille-course-web/pull/3
+- Live verification: see the session summary (production URLs, redirects and smoke checks run after merge).
