@@ -339,6 +339,7 @@ hr {
   padding: calc(var(--dot-size) * 0.45);
   flex: none;
   vertical-align: middle;
+  width: max-content;
 }
 .cell--xs {
   --cell-dot: 0.32rem;

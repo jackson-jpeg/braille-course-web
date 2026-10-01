@@ -20,6 +20,11 @@ export function useGameKeys(
       const typing =
         t && (t.tagName === 'INPUT' || t.tagName === 'TEXTAREA' || t.tagName === 'SELECT' || t.isContentEditable);
       if (typing && !allowInInputs) return;
+      // Enter and Space on a link or button must do that control's own job (follow the skip link,
+      // press "Next"...), never trigger a page-level game shortcut.
+      const onControl =
+        typeof t?.closest === 'function' && t.closest('a, button, summary, [role="button"], [role="link"]');
+      if ((e.key === 'Enter' || e.key === ' ') && onControl) return;
       if (document.querySelector('dialog[open]')) return;
       ref.current(e);
     };

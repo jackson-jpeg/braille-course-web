@@ -15,7 +15,7 @@ export default function NotFound() {
   return (
     <>
       <SiteHeader />
-      <main id="main-content" className="system-page lattice">
+      <main id="main-content" tabIndex={-1} className="system-page lattice">
         <div className="wrap-narrow system-card tile">
           <BrailleText text="404" size="lg" label="404 in braille: number sign, d, j, d" />
           <h1>We couldn&rsquo;t find that page</h1>

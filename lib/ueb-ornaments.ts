@@ -17,7 +17,7 @@ export function ornamentCorpus(rootDir: string): string[] {
         for (const m of src.matchAll(/<BrailleText[^>]*?\stext="([^"]+)"/g)) found.push(m[1]);
         for (const m of src.matchAll(/<Eyebrow[^>]*?\sbraille="([^"]+)"/g)) found.push(m[1]);
         for (const m of src.matchAll(/<Eyebrow(?:\s+className="[^"]*")?>([^<{]+)<\/Eyebrow>/g))
-          found.push(m[1].replace(/&amp;/g, '&').trim().toLowerCase());
+          found.push(m[1].replace(/&amp;/g, '&').trim().split(' ')[0].toLowerCase());
       }
     }
   };

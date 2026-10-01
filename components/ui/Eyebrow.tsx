@@ -1,6 +1,6 @@
 import BrailleText from './BrailleText';
 
-/** Small uppercase label with its own braille spelling — the site's signature ornament. */
+/** Small uppercase label, led by its first word in braille — the site's signature ornament. */
 export default function Eyebrow({
   children,
   braille,
@@ -12,7 +12,7 @@ export default function Eyebrow({
 }) {
   return (
     <p className={['eyebrow', className].filter(Boolean).join(' ')}>
-      <BrailleText text={(braille ?? children).toLowerCase()} size="xs" />
+      <BrailleText text={(braille ?? children.split(' ')[0]).toLowerCase()} size="xs" />
       <span>{children}</span>
     </p>
   );

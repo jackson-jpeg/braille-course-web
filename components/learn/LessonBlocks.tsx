@@ -69,7 +69,7 @@ export default function LessonBlocks({ slug, blocks }: { slug: string; blocks: L
                   <BrailleText
                     text={b.contracted ? undefined : b.text}
                     cells={cells}
-                    size="md"
+                    size="lg"
                     label={`“${b.text}” in ${b.contracted ? 'contracted ' : ''}braille`}
                   />
                 </div>

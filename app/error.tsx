@@ -6,7 +6,7 @@ import '@/styles/pages/system.css';
 
 export default function GlobalError({ error, reset }: { error: Error & { digest?: string }; reset: () => void }) {
   return (
-    <main id="main-content" className="system-page lattice">
+    <main id="main-content" tabIndex={-1} className="system-page lattice">
       <div className="wrap-narrow system-card tile">
         <Cell dots={[]} size="xl" framed flat="ghost" />
         <h1>Something slipped</h1>

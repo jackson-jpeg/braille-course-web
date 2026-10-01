@@ -27,6 +27,9 @@ export function trackErrors(page: Page) {
     // Expected without production secrets/DB in the test environment.
     if (/Failed to load resource: the server responded with a status of (404|500)/.test(text)) return;
     if (/va\.vercel-scripts|_vercel\/insights/.test(text)) return;
+    // The cloud test container reaches the internet through a TLS-inspecting proxy that Chromium
+    // doesn't trust, so third-party scripts (js.stripe.com) fail to load here but not in production.
+    if (/ERR_CERT_AUTHORITY_INVALID/.test(text)) return;
     errors.push(`console: ${text}`);
   });
   return errors;
