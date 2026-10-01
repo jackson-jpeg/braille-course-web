@@ -84,5 +84,20 @@ See `HUMAN-QUEUE.md` (top item: check whether any "Summer 2027" deposits were ta
 
 ## Deploy
 
-- PR: https://github.com/jackson-jpeg/braille-course-web/pull/3
-- Live verification: see the session summary (production URLs, redirects and smoke checks run after merge).
+- Production deploy: PR #3 squash-merged to `master` as d7ef44e (authored by jackson-jpeg) on 2026-10-01 ~18:02 UTC;
+  Vercel built it and teachbraille.org has served the new site since ~18:05 UTC.
+- Live checks (curl from the container, after deploy):
+  - 200 on `/`, `/learn`, 2 lessons, `/games`, 3 game pages, `/intro`, `/courses`, `/services`, `/appointments`,
+    `/policies`, `/summer/checkout`, `/sitemap.xml`, `/robots.txt`, `/opengraph-image`, `/icon`; 404 on unknown pages.
+  - 308 permanent redirects: `/summer` → `/courses`, `/learn/wrap-up` → `/learn/next-steps`,
+    `/learn/alphabet-wordsigns` → `/learn/first-contractions`.
+  - Money and lead endpoints answer exactly as before: `/api/sections` 200; `/api/checkout`, `/api/waitlist-signup` and
+    `/api/webhook` return their usual validation errors to empty requests.
+  - All 5 production stylesheets and the shared game/component JS chunks are byte-identical (same content hash) to the
+    build that passed 470 jest + 202 Playwright tests. Only framework entry/layout wrapper chunks differ, as expected
+    between build machines.
+- A full browser run against production from the cloud container was not reliable: its outbound proxy dropped
+  page assets (`ERR_TOO_MANY_RETRIES`). To run it from a normal machine:
+  `E2E_BASE_URL=https://www.teachbraille.org npx playwright test`.
+- The two Vercel "deployment failed" emails at ~18:00 UTC were preview builds of the working branch (commits
+  authored as Claude). They never affect production. The repo's local git author is now set to Jackson.
