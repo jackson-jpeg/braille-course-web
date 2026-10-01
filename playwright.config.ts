@@ -10,6 +10,8 @@ import { existsSync } from 'fs';
 const executablePath =
   process.env.PW_CHROMIUM ?? (existsSync('/opt/pw-browsers/chromium') ? '/opt/pw-browsers/chromium' : undefined);
 const PORT = Number(process.env.E2E_PORT ?? 3100);
+/** Set E2E_BASE_URL (e.g. https://www.teachbraille.org) to test a deployed site instead of a local build. */
+const REMOTE = process.env.E2E_BASE_URL;
 
 export default defineConfig({
   testDir: './e2e',
@@ -20,18 +22,28 @@ export default defineConfig({
   retries: 0,
   reporter: [['list'], ['json', { outputFile: 'test-results/e2e-report.json' }]],
   use: {
-    baseURL: `http://localhost:${PORT}`,
+    baseURL: REMOTE ?? `http://localhost:${PORT}`,
+    ignoreHTTPSErrors: !!REMOTE,
     trace: 'retain-on-failure',
-    launchOptions: executablePath ? { executablePath } : {},
+    launchOptions: {
+      ...(executablePath ? { executablePath } : {}),
+      // Sandboxed environments (e.g. the Claude Code cloud container) reach the internet through a local
+      // proxy; Chromium skips loopback proxies unless told otherwise.
+      ...(REMOTE && process.env.HTTPS_PROXY
+        ? { args: [`--proxy-server=${process.env.HTTPS_PROXY}`, '--proxy-bypass-list=<-loopback>'] }
+        : {}),
+    },
   },
   projects: [
     { name: 'desktop', use: { ...devices['Desktop Chrome'], viewport: { width: 1280, height: 800 } } },
     { name: 'mobile', use: { ...devices['Pixel 7'] } },
   ],
-  webServer: {
-    command: `npx next start -p ${PORT}`,
-    url: `http://localhost:${PORT}`,
-    reuseExistingServer: true,
-    timeout: 120_000,
-  },
+  webServer: REMOTE
+    ? undefined
+    : {
+        command: `npx next start -p ${PORT}`,
+        url: `http://localhost:${PORT}`,
+        reuseExistingServer: true,
+        timeout: 120_000,
+      },
 });
