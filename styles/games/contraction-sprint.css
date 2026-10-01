@@ -1,0 +1,105 @@
+/* ==========================================================================
+   Contraction Sprint — quick-fire contraction quiz.
+   ========================================================================== */
+
+.cs-board .btn--sm,
+.cs-board .mode-option {
+  min-height: 3rem;
+}
+
+.cs-options {
+  display: grid;
+  gap: var(--s-4);
+  justify-items: center;
+}
+.cs-rule {
+  max-width: 34ch;
+  color: var(--ink-soft);
+}
+
+.cs-timer-row {
+  display: flex;
+  align-items: center;
+  gap: var(--s-3);
+}
+.cs-timer-row .timer-bar {
+  flex: 1;
+  height: 0.75rem;
+}
+.cs-delta {
+  min-width: 3.5rem;
+  padding: 0.15rem 0.6rem;
+  border-radius: var(--r-pill);
+  font-family: var(--font-display);
+  font-weight: 800;
+  text-align: center;
+  animation: cs-float 0.9s var(--ease) both;
+}
+.cs-delta.is-plus {
+  background: var(--pine-tint);
+  color: var(--pine-deep);
+}
+.cs-delta.is-minus {
+  background: var(--danger-tint);
+  color: var(--danger);
+}
+@keyframes cs-float {
+  from {
+    transform: translateY(6px);
+    opacity: 0;
+  }
+  30% {
+    transform: translateY(0);
+    opacity: 1;
+  }
+}
+
+.cs-question {
+  display: grid;
+  gap: var(--s-3);
+}
+.cs-prompt {
+  font-size: var(--step-1);
+}
+.cs-stage {
+  min-height: 10rem;
+}
+.cs-print {
+  font-family: var(--font-display);
+  font-size: clamp(2.75rem, 11vw, 4.5rem);
+  font-weight: 800;
+  line-height: 1;
+  letter-spacing: -0.01em;
+}
+.cs-print--word {
+  font-size: clamp(2rem, 9vw, 3.5rem);
+  overflow-wrap: anywhere;
+}
+.cs-word {
+  display: grid;
+  justify-items: center;
+  gap: var(--s-4);
+}
+
+.cs-board .choice {
+  min-height: 5.5rem;
+}
+.cs-choice-text {
+  overflow-wrap: anywhere;
+}
+
+.cs-feedback {
+  display: inline-flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: center;
+  gap: var(--s-2);
+}
+
+.cs-actions {
+  display: flex;
+  justify-content: center;
+}
+.cs-actions .btn {
+  min-height: 3.25rem;
+}

@@ -16,6 +16,7 @@ import { WORD_DECODER_LEVELS } from './games/word-decoder-content';
 import { CONTRACTED_SENTENCES, CONTRACTION_EXAMPLES } from './games/contracted-content';
 import { LESSON_BRAILLE_TEXT } from './course-curriculum';
 import { contractionWords } from './contraction-words';
+import { GAMES } from './games/registry';
 
 function unique(list: string[]): string[] {
   return Array.from(new Set(list)).sort();
@@ -27,6 +28,7 @@ export function uncontractedCorpus(): string[] {
     ...hangmanWords.map((w) => w.toLowerCase()),
     ...WORD_DECODER_LEVELS.flatMap((l) => l.items.map((i) => i.text)),
     ...LESSON_BRAILLE_TEXT.uncontracted,
+    ...GAMES.map((g) => g.emblem),
   ]);
 }
 

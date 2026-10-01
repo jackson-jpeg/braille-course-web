@@ -127,6 +127,7 @@ export const PUNCTUATION: readonly Sign[] = [
       [3, 4],
     ],
   },
+  { id: 'ampersand', name: 'Ampersand', print: '&', cells: [[4], [1, 2, 3, 4, 6]] },
 ];
 
 export function getPunctuation(id: string): Sign {
@@ -308,7 +309,10 @@ export function describeCells(cells: readonly Dots[]): string {
 }
 
 export function sameDots(a: Dots, b: Dots): boolean {
-  return a.length === b.length && [...a].sort().every((d, i) => d === [...b].sort()[i]);
+  if (a.length !== b.length) return false;
+  const sa = [...a].sort((x, y) => x - y);
+  const sb = [...b].sort((x, y) => x - y);
+  return sa.every((d, i) => d === sb[i]);
 }
 
 /* ── Uncontracted (Grade 1) transcription ─────────────────────────────────── */

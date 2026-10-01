@@ -5,11 +5,11 @@ export default function manifest(): MetadataRoute.Manifest {
     name: 'TeachBraille.org — Delaney Costello, TVI',
     short_name: 'TeachBraille',
     description:
-      'Braille instruction, assistive technology, and TVI services from Delaney Costello. Summer courses, 1-on-1 sessions, and free interactive braille practice.',
+      'Free braille lessons and games for families, plus live courses and TVI services from Delaney Costello.',
     start_url: '/',
     display: 'standalone',
-    background_color: '#fdf8f0',
-    theme_color: '#1b2a4a',
+    background_color: '#fffdf9',
+    theme_color: '#1e1b2e',
     icons: [
       { src: '/icon', sizes: '32x32', type: 'image/png' },
       { src: '/apple-icon', sizes: '180x180', type: 'image/png' },

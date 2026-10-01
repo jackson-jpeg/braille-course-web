@@ -1,7 +1,8 @@
 'use client';
 
 import { useState, useEffect, useCallback, useRef } from 'react';
-import { type Achievement, getTierColor } from '@/lib/achievements';
+import { type Achievement } from '@/lib/achievements';
+import Cell from '@/components/ui/Cell';
 
 /** Global achievement queue — games push here, toast component reads */
 const achievementQueue: Achievement[] = [];
@@ -40,7 +41,7 @@ export default function AchievementToast() {
         if (achievementQueue.length > 0) showNext();
       }, 300);
       timerRefs.current.push(t2);
-    }, 3500);
+    }, 6000);
     timerRefs.current.push(t1);
   }, []); // eslint-disable-line react-hooks/exhaustive-deps
 
@@ -60,29 +61,30 @@ export default function AchievementToast() {
     return () => clearTimers();
   }, [clearTimers]);
 
-  if (!current) return null;
-
   return (
-    <div
-      className={`achievement-toast ${visible ? 'visible' : ''}`}
-      role="alert"
-      aria-live="polite"
-      onClick={() => {
-        clearTimers();
-        setVisible(false);
-        setCurrent(null);
-        if (achievementQueue.length > 0) showNext();
-      }}
-      style={{ cursor: 'pointer' }}
-    >
-      <span className="achievement-toast-icon" style={{ background: getTierColor(current.tier) }}>
-        {current.icon}
-      </span>
-      <div className="achievement-toast-content">
-        <span className="achievement-toast-label">Achievement Unlocked!</span>
-        <span className="achievement-toast-name">{current.name}</span>
-        <span className="achievement-toast-desc">{current.description}</span>
-      </div>
+    <div className="toast-region" role="status" aria-live="polite">
+      {current && visible && (
+        <div className="toast">
+          <Cell dots={[1, 2, 3, 4, 5, 6]} size="sm" tone="marigold" onInk pop />
+          <div>
+            <strong>Achievement unlocked: {current.name}</strong>
+            <span>{current.description}</span>
+          </div>
+          <button
+            type="button"
+            className="toast-close"
+            aria-label="Dismiss"
+            onClick={() => {
+              clearTimers();
+              setVisible(false);
+              setCurrent(null);
+              if (achievementQueue.length > 0) showNext();
+            }}
+          >
+            ×
+          </button>
+        </div>
+      )}
     </div>
   );
 }

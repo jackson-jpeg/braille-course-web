@@ -12,6 +12,28 @@ const nextConfig = {
     }
     return config;
   },
+  async redirects() {
+    // Keep old URLs working for bookmarks and search engines (301).
+    const lessonMoves = {
+      'reading-words': 'first-words',
+      'alphabet-wordsigns': 'first-contractions',
+      'strong-contractions': 'first-contractions',
+      'strong-groupsigns': 'more-contractions',
+      'lower-groupsigns': 'more-contractions',
+      'lower-wordsigns': 'more-contractions',
+      'reading-sentences': 'more-contractions',
+      'wrap-up': 'next-steps',
+    };
+    return [
+      // The summer course page is now the evergreen /courses page. Checkout and success stay under /summer.
+      { source: '/summer', destination: '/courses', permanent: true },
+      ...Object.entries(lessonMoves).map(([from, to]) => ({
+        source: `/learn/${from}`,
+        destination: `/learn/${to}`,
+        permanent: true,
+      })),
+    ];
+  },
   async headers() {
     return [
       {

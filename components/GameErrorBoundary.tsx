@@ -13,7 +13,7 @@ interface State {
 
 /**
  * Per-game error boundary so one crashed game doesn't take down
- * the entire Interactive page.
+ * the whole page.
  */
 export default class GameErrorBoundary extends React.Component<Props, State> {
   constructor(props: Props) {
@@ -32,12 +32,11 @@ export default class GameErrorBoundary extends React.Component<Props, State> {
   render() {
     if (this.state.hasError) {
       return (
-        <div className="game-error-card" role="alert">
-          <p>
-            <strong>{this.props.gameName}</strong> couldn&apos;t load.
-          </p>
-          <button className="game-error-retry" onClick={() => this.setState({ hasError: false })}>
-            Retry
+        <div className="game-board game-board--center" role="alert">
+          <h2>Oops — {this.props.gameName} tripped over a dot</h2>
+          <p className="muted">Sorry about that. Trying again usually fixes it.</p>
+          <button type="button" className="btn" onClick={() => this.setState({ hasError: false })}>
+            Try again
           </button>
         </div>
       );

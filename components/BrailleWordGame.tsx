@@ -1,383 +1,319 @@
 'use client';
 
-import { useState, useEffect, useCallback, useRef } from 'react';
-import { dotDescription } from '@/lib/braille-map';
-import BrailleCell from '@/components/BrailleCell';
+import '@/styles/games/word-game.css';
+import { useCallback, useEffect, useRef, useState } from 'react';
+import Cell from '@/components/ui/Cell';
+import BrailleText from '@/components/ui/BrailleText';
+import { Results, sample, useAnnouncer, useGameKeys, useSession } from '@/components/games/kit';
+import { LETTERS, describe } from '@/lib/ueb';
 import { answerWords, validGuesses } from '@/lib/game-words';
-import { useGameProgress } from '@/hooks/useGameProgress';
-import { pushAchievements } from '@/components/AchievementToast';
 import { getRandomTip } from '@/lib/learning-tips';
 
-type TileStatus = 'empty' | 'active' | 'correct' | 'present' | 'absent';
-type KeyStatus = 'unused' | 'correct' | 'present' | 'absent';
+type Status = 'correct' | 'present' | 'absent';
 
 const ROWS = 6;
 const COLS = 4;
-const KB_ROWS = [
-  ['Q', 'W', 'E', 'R', 'T', 'Y', 'U', 'I', 'O', 'P'],
-  ['A', 'S', 'D', 'F', 'G', 'H', 'J', 'K', 'L'],
-  ['ENTER', 'Z', 'X', 'C', 'V', 'B', 'N', 'M', 'BACK'],
-];
+const KB_ROWS = ['qwertyuiop'.split(''), 'asdfghjkl'.split(''), ['enter', ...'zxcvbnm'.split(''), 'back']];
+const STAGGER = 220;
+const RANK: Record<Status, number> = { absent: 1, present: 2, correct: 3 };
+const STATUS_TEXT: Record<Status, string> = {
+  correct: 'right spot',
+  present: 'in the word, wrong spot',
+  absent: 'not in the word',
+};
+const STATUS_MARK: Record<Status, string> = { correct: '✓', present: '↔', absent: '–' };
 
-function pickWord(): string {
-  return answerWords[Math.floor(Math.random() * answerWords.length)];
-}
-
-function computeStatuses(guess: string, answer: string): TileStatus[] {
-  const statuses: TileStatus[] = Array(COLS).fill('absent');
-  const remaining = answer.split('');
-
-  // First pass: mark correct positions
+function computeStatuses(guess: string, answer: string): Status[] {
+  const out: Status[] = Array(COLS).fill('absent');
+  const rest = answer.split('');
   for (let i = 0; i < COLS; i++) {
     if (guess[i] === answer[i]) {
-      statuses[i] = 'correct';
-      remaining[i] = '';
+      out[i] = 'correct';
+      rest[i] = '';
     }
   }
-
-  // Second pass: mark present (right letter, wrong spot)
   for (let i = 0; i < COLS; i++) {
-    if (statuses[i] === 'correct') continue;
-    const idx = remaining.indexOf(guess[i]);
-    if (idx !== -1) {
-      statuses[i] = 'present';
-      remaining[idx] = '';
+    if (out[i] === 'correct') continue;
+    const j = rest.indexOf(guess[i]);
+    if (j !== -1) {
+      out[i] = 'present';
+      rest[j] = '';
     }
   }
-
-  return statuses;
+  return out;
 }
 
-function WordGameBrailleCell({ letter, small = false }: { letter: string; small?: boolean }) {
-  const prefix = small ? 'key' : 'tile';
-  return <BrailleCell letter={letter} className={`${prefix}-braille`} dotClassName={`${prefix}-dot`} />;
+function prefersReducedMotion() {
+  return typeof window !== 'undefined' && !!window.matchMedia?.('(prefers-reduced-motion: reduce)').matches;
 }
 
-const KEY_STATUS_PRIORITY: Record<KeyStatus, number> = {
-  unused: 0,
-  absent: 1,
-  present: 2,
-  correct: 3,
-};
-
-const FLIP_DURATION = 500; // ms per tile flip
-const FLIP_STAGGER = 250; // ms between each tile starting
+const pickWord = () => sample(answerWords).toLowerCase();
 
 export default function BrailleWordGame() {
-  const { recordResult } = useGameProgress('wordgame');
+  const { stats, finish } = useSession('wordgame');
+  const { announce, region } = useAnnouncer();
   const [answer, setAnswer] = useState('');
   const [guesses, setGuesses] = useState<string[]>([]);
-  const [currentGuess, setCurrentGuess] = useState('');
-  const [currentRow, setCurrentRow] = useState(0);
-  const [gameOver, setGameOver] = useState(false);
-  const [won, setWon] = useState(false);
-  const [keyStatuses, setKeyStatuses] = useState<Record<string, KeyStatus>>({});
-  const [shakeRow, setShakeRow] = useState<number | null>(null);
-  const [tip, setTip] = useState('');
-
-  // Animation state
-  const [revealingRow, setRevealingRow] = useState<number | null>(null);
-  const [revealGuess, setRevealGuess] = useState<string | null>(null);
-  const [popTile, setPopTile] = useState<string | null>(null); // "row-col"
-  const [winBounce, setWinBounce] = useState(false);
-
-  // Timer cleanup to prevent state updates after unmount
-  const timersRef = useRef<ReturnType<typeof setTimeout>[]>([]);
-  const scheduleTimeout = useCallback((fn: () => void, delay: number) => {
-    const id = setTimeout(fn, delay);
-    timersRef.current.push(id);
-    return id;
+  const [current, setCurrent] = useState('');
+  const [revealed, setRevealed] = useState(COLS); // tiles shown in the newest row
+  const [message, setMessage] = useState('');
+  const [shake, setShake] = useState(false);
+  const [over, setOver] = useState<null | { won: boolean; best: number; isNewBest: boolean; tip: string }>(null);
+  const timers = useRef<ReturnType<typeof setTimeout>[]>([]);
+  const later = useCallback((fn: () => void, ms: number) => {
+    timers.current.push(setTimeout(fn, ms));
   }, []);
 
-  // Visibility-scoped keyboard: only capture keys when this section is visible
-  const sectionRef = useRef<HTMLDivElement>(null);
-  const visibleRef = useRef(true);
-
-  useEffect(() => {
-    const el = sectionRef.current;
-    if (!el) return;
-    const observer = new IntersectionObserver(
-      ([entry]) => {
-        visibleRef.current = entry.isIntersecting;
-      },
-      { threshold: 0.3 },
-    );
-    observer.observe(el);
-    return () => observer.disconnect();
-  }, []);
-
-  // Cleanup all scheduled timers on unmount
-  useEffect(() => {
-    const timers = timersRef.current;
-    return () => {
-      timers.forEach(clearTimeout);
-    };
-  }, []);
-
-  // Pick a word on mount
   useEffect(() => {
     setAnswer(pickWord());
+    const list = timers.current;
+    return () => list.forEach(clearTimeout);
   }, []);
 
-  const handleKey = useCallback(
-    (key: string) => {
-      if (gameOver || !answer || revealingRow !== null) return;
+  const revealing = revealed < COLS;
 
-      if (key === 'BACK') {
-        setCurrentGuess((prev) => prev.slice(0, -1));
-        return;
-      }
+  const keyStatus: Record<string, Status> = {};
+  guesses.forEach((g, r) => {
+    const st = computeStatuses(g, answer);
+    for (let i = 0; i < COLS; i++) {
+      if (r === guesses.length - 1 && i >= revealed) continue;
+      const prev = keyStatus[g[i]];
+      if (!prev || RANK[st[i]] > RANK[prev]) keyStatus[g[i]] = st[i];
+    }
+  });
 
-      if (key === 'ENTER') {
-        if (currentGuess.length !== COLS) return;
+  const submit = useCallback(() => {
+    if (current.length < COLS) {
+      setMessage(`Type ${COLS} letters first.`);
+      announce(`Not enough letters. Type ${COLS} letters first.`);
+      return;
+    }
+    if (!validGuesses.has(current.toUpperCase())) {
+      setMessage(`“${current}” is not in the word list.`);
+      announce(`${current.split('').join(' ')} is not in the word list. Try another word.`);
+      setShake(true);
+      later(() => setShake(false), 450);
+      return;
+    }
+    const guess = current;
+    const row = guesses.length;
+    const statuses = computeStatuses(guess, answer);
+    setGuesses((g) => [...g, guess]);
+    setCurrent('');
+    setMessage('');
 
-        if (!validGuesses.has(currentGuess)) {
-          setShakeRow(currentRow);
-          scheduleTimeout(() => setShakeRow(null), 500);
-          return;
-        }
+    const step = prefersReducedMotion() ? 0 : STAGGER;
+    setRevealed(step ? 0 : COLS);
+    for (let i = 1; i <= COLS && step; i++) later(() => setRevealed(i), i * step);
 
-        // Start reveal animation
-        const row = currentRow;
-        const guess = currentGuess;
-        setRevealingRow(row);
-        setRevealGuess(guess);
-        setCurrentGuess('');
-        setCurrentRow((prev) => prev + 1);
-
-        // After all tiles have flipped, finalize
-        const totalRevealTime = FLIP_STAGGER * (COLS - 1) + FLIP_DURATION;
-        scheduleTimeout(() => {
-          const statuses = computeStatuses(guess, answer);
-
-          // Update key statuses
-          setKeyStatuses((prev) => {
-            const next = { ...prev };
-            for (let i = 0; i < COLS; i++) {
-              const letter = guess[i];
-              const newStatus = statuses[i] as KeyStatus;
-              const currentStatus = next[letter] || 'unused';
-              if (KEY_STATUS_PRIORITY[newStatus] > KEY_STATUS_PRIORITY[currentStatus]) {
-                next[letter] = newStatus;
-              }
-            }
-            return next;
+    later(
+      () => {
+        const won = guess === answer;
+        const summary = guess
+          .split('')
+          .map((l, i) => `${l} ${STATUS_TEXT[statuses[i]]}`)
+          .join(', ');
+        if (won || row === ROWS - 1) {
+          const score = won ? ROWS - row : 0;
+          const prevBest = stats.bestScore;
+          finish(won, score);
+          setOver({
+            won,
+            best: Math.max(prevBest, score),
+            isNewBest: won && score > prevBest,
+            tip: getRandomTip().fact,
           });
+          announce(
+            won ? `${summary}. You found it in ${row + 1}!` : `${summary}. Out of guesses. The word was ${answer}.`,
+          );
+        } else {
+          announce(`Guess ${row + 1}: ${summary}. ${ROWS - row - 1} guesses left.`);
+        }
+      },
+      COLS * step + 50,
+    );
+  }, [announce, answer, current, finish, guesses.length, later, stats.bestScore]);
 
-          setGuesses((prev) => [...prev, guess]);
-          setRevealingRow(null);
-          setRevealGuess(null);
-
-          const isWin = guess === answer;
-          const isLastRow = row === ROWS - 1;
-
-          if (isWin) {
-            setWon(true);
-            setGameOver(true);
-            setWinBounce(true);
-            setTip(getRandomTip().fact);
-            // Score: higher is better (ROWS + 1 - guesses used)
-            const score = ROWS + 1 - (row + 1);
-            const achievements = recordResult(true, score);
-            pushAchievements(achievements);
-          } else if (isLastRow) {
-            setGameOver(true);
-            setTip(getRandomTip().fact);
-            const achievements = recordResult(false, 0);
-            pushAchievements(achievements);
-          }
-        }, totalRevealTime);
-
-        return;
-      }
-
-      // Letter key
-      if (/^[A-Z]$/.test(key) && currentGuess.length < COLS) {
-        const col = currentGuess.length;
-        setPopTile(`${currentRow}-${col}`);
-        scheduleTimeout(() => setPopTile(null), 150);
-        setCurrentGuess((prev) => prev + key);
+  const press = useCallback(
+    (key: string) => {
+      if (over || !answer || revealing) return;
+      if (key === 'enter') submit();
+      else if (key === 'back') setCurrent((c) => c.slice(0, -1));
+      else if (/^[a-z]$/.test(key) && current.length < COLS) {
+        setCurrent((c) => (c.length < COLS ? c + key : c));
+        setMessage('');
+        announce(`${key}, ${describe(LETTERS[key])}`);
       }
     },
-    [answer, currentGuess, currentRow, gameOver, revealingRow, recordResult, scheduleTimeout],
+    [announce, answer, current.length, over, revealing, submit],
   );
 
-  // Physical keyboard listener (only when this game section is visible)
-  useEffect(() => {
-    function onKeyDown(e: KeyboardEvent) {
-      if (!visibleRef.current) return;
-      if (e.ctrlKey || e.metaKey || e.altKey) return;
-      const k = e.key;
-      if (k === 'Enter') {
-        handleKey('ENTER');
-      } else if (k === 'Backspace') {
-        handleKey('BACK');
-      } else if (/^[a-zA-Z]$/.test(k)) {
-        handleKey(k.toUpperCase());
-      }
+  useGameKeys((e) => {
+    // Enter / Space on a focused on-screen key: let the button's own click handle it.
+    const onButton = e.target instanceof HTMLButtonElement || e.target instanceof HTMLAnchorElement;
+    if (e.key === 'Enter') {
+      if (onButton) return;
+      e.preventDefault();
+      if (over) restart();
+      else press('enter');
+    } else if (e.key === 'Backspace') {
+      e.preventDefault();
+      press('back');
+    } else if (/^[a-zA-Z]$/.test(e.key)) {
+      e.preventDefault();
+      press(e.key.toLowerCase());
     }
-    window.addEventListener('keydown', onKeyDown);
-    return () => window.removeEventListener('keydown', onKeyDown);
-  }, [handleKey]);
+  });
 
-  function resetGame() {
+  function restart() {
+    timers.current.forEach(clearTimeout);
     setAnswer(pickWord());
     setGuesses([]);
-    setCurrentGuess('');
-    setCurrentRow(0);
-    setGameOver(false);
-    setWon(false);
-    setKeyStatuses({});
-    setShakeRow(null);
-    setRevealingRow(null);
-    setRevealGuess(null);
-    setPopTile(null);
-    setWinBounce(false);
-    setTip('');
+    setCurrent('');
+    setRevealed(COLS);
+    setMessage('');
+    setOver(null);
+    announce('New word. Type your first guess.');
   }
 
-  // Build the tile grid
-  function getTileData(
-    row: number,
-    col: number,
-  ): {
-    letter: string;
-    status: TileStatus;
-    revealing: boolean;
-    revealIndex: number;
-    isWinBounce: boolean;
-  } {
-    // Currently revealing row — show the guess letters but status is still 'active' visually
-    // CSS handles the flip + color change via data-status
-    if (revealingRow === row && revealGuess) {
-      const letter = revealGuess[col] || '';
-      const statuses = computeStatuses(revealGuess, answer);
-      return {
-        letter,
-        status: statuses[col],
-        revealing: true,
-        revealIndex: col,
-        isWinBounce: false,
-      };
-    }
-
-    if (row < guesses.length) {
-      // Submitted row
-      const letter = guesses[row][col];
-      const statuses = computeStatuses(guesses[row], answer);
-      const isLastGuess = row === guesses.length - 1;
-      return {
-        letter,
-        status: statuses[col],
-        revealing: false,
-        revealIndex: -1,
-        isWinBounce: winBounce && won && isLastGuess,
-      };
-    }
-
-    if (row === currentRow) {
-      // Current input row
-      const letter = currentGuess[col] || '';
-      return {
-        letter,
-        status: letter ? 'active' : 'empty',
-        revealing: false,
-        revealIndex: -1,
-        isWinBounce: false,
-      };
-    }
-
-    // Future row
-    return { letter: '', status: 'empty', revealing: false, revealIndex: -1, isWinBounce: false };
-  }
+  const rows = Array.from({ length: ROWS }, (_, r) => {
+    if (r < guesses.length) return { word: guesses[r], statuses: computeStatuses(guesses[r], answer), state: 'done' };
+    if (r === guesses.length && !over) return { word: current, statuses: null, state: 'current' };
+    return { word: '', statuses: null, state: 'empty' };
+  });
 
   return (
-    <div className="wordgame-inner" ref={sectionRef}>
-      <div className="wordgame-header">
-        <span className="section-label">Practice</span>
-        <h2>Braille Word Game</h2>
-        <p>Guess the 4-letter word</p>
+    <div className="game-board wg" data-testid="game-board">
+      {region}
+      <div className="game-board-toolbar">
+        <h2 className="wg-title">Guess the {COLS}-letter word</h2>
+        <span className="wg-count">
+          Guess {Math.min(guesses.length + 1, ROWS)} of {ROWS}
+        </span>
       </div>
 
-      <div className="wordgame-board" role="grid" aria-label="Game board">
-        {Array.from({ length: ROWS }).map((_, row) => (
-          <div key={row} className={`wordgame-row${shakeRow === row ? ' shake' : ''}`}>
-            {Array.from({ length: COLS }).map((_, col) => {
-              const { letter, status, revealing, revealIndex, isWinBounce } = getTileData(row, col);
-              const isPop = popTile === `${row}-${col}`;
+      <ol className="wg-board" aria-label="Your guesses">
+        {rows.map((row, r) => {
+          const isNewest = r === guesses.length - 1;
+          let sr = '';
+          if (row.state === 'done' && row.statuses && (!isNewest || !revealing)) {
+            sr = row.word
+              .split('')
+              .map((l, i) => `${l}: ${STATUS_TEXT[row.statuses![i]]}`)
+              .join('; ');
+          } else if (row.state === 'current') {
+            sr = row.word ? `Typing: ${row.word.split('').join(' ')}` : 'Empty — type a word';
+          }
+          return (
+            <li key={r} className={`wg-row${row.state === 'current' && shake ? ' is-shaking' : ''}`}>
+              <span className="sr-only">{`Row ${r + 1}: ${sr || 'empty'}`}</span>
+              {Array.from({ length: COLS }, (_, c) => {
+                const letter = row.word[c] ?? '';
+                const shown = row.statuses && (!isNewest || c < revealed);
+                const st = shown ? row.statuses![c] : null;
+                return (
+                  <span
+                    key={c}
+                    aria-hidden="true"
+                    className={`wg-tile${letter ? ' has-letter' : ''}${st ? ` is-${st}` : ''}${
+                      row.state === 'current' && c === row.word.length ? ' is-next' : ''
+                    }`}
+                  >
+                    {letter && (
+                      <>
+                        <Cell dots={LETTERS[letter]} size="sm" tone={st && st !== 'absent' ? 'ink' : 'tomato'} />
+                        <span className="wg-tile-letter">{letter}</span>
+                      </>
+                    )}
+                    {st && <span className="wg-mark">{STATUS_MARK[st]}</span>}
+                  </span>
+                );
+              })}
+            </li>
+          );
+        })}
+      </ol>
 
-              const tileClasses = [
-                'wordgame-tile',
-                revealing ? 'revealing' : status,
-                isPop ? 'pop' : '',
-                isWinBounce ? 'win-bounce' : '',
-              ]
-                .filter(Boolean)
-                .join(' ');
+      <p className="wg-message" aria-hidden="true">
+        {message}
+      </p>
 
-              const style: Record<string, string> = {};
-              if (revealing) {
-                style['--reveal-delay'] = `${revealIndex * FLIP_STAGGER}ms`;
-              }
-              if (isWinBounce) {
-                style['--bounce-delay'] = `${col * 100}ms`;
-              }
+      <p className="wg-legend">
+        <span>
+          <span className="wg-swatch is-correct">✓</span> right spot
+        </span>
+        <span>
+          <span className="wg-swatch is-present">↔</span> wrong spot
+        </span>
+        <span>
+          <span className="wg-swatch is-absent">–</span> not in word
+        </span>
+      </p>
 
-              return (
-                <div key={col} className={tileClasses} data-status={revealing ? status : undefined} style={style}>
-                  {letter ? (
-                    <>
-                      <WordGameBrailleCell letter={letter} />
-                      <span className="tile-letter">{letter}</span>
-                    </>
-                  ) : null}
-                </div>
-              );
-            })}
-          </div>
-        ))}
-      </div>
-
-      <div className="wordgame-keyboard">
-        {KB_ROWS.map((rowKeys, ri) => (
-          <div key={ri} className="wordgame-kb-row">
-            {rowKeys.map((key) => {
-              const isSpecial = key === 'ENTER' || key === 'BACK';
-              const ks = !isSpecial ? keyStatuses[key] || 'unused' : 'unused';
-              const statusClass = ks !== 'unused' ? ` ${ks}` : '';
-              const wideClass = isSpecial ? ' wide' : '';
-
-              const ariaLabel = isSpecial
-                ? key === 'ENTER'
-                  ? 'Enter'
-                  : 'Backspace'
-                : `Letter ${key}, Braille ${dotDescription(key)}`;
-
-              return (
-                <button
-                  key={key}
-                  className={`wordgame-key${wideClass}${statusClass}`}
-                  onClick={() => handleKey(key)}
-                  disabled={gameOver}
-                  aria-label={ariaLabel}
-                >
-                  {!isSpecial && <WordGameBrailleCell letter={key} small />}
-                  <span className="key-letter">{key === 'BACK' ? '⌫' : key}</span>
-                </button>
-              );
-            })}
-          </div>
-        ))}
-      </div>
-
-      {gameOver && (
-        <div className="wordgame-result" aria-live="polite">
-          <div className="wordgame-message">{won ? 'Great job! You found the word!' : `The word was ${answer}.`}</div>
-          {tip && <p className="wordgame-tip">{tip}</p>}
-          <button className="wordgame-play-again" onClick={resetGame}>
-            Play Again
-          </button>
+      {!over && (
+        <div className="wg-keyboard" role="group" aria-label="On-screen keyboard">
+          {KB_ROWS.map((keys, i) => (
+            <div key={i} className="wg-kb-row">
+              {keys.map((k) => {
+                const special = k === 'enter' || k === 'back';
+                const st = special ? undefined : keyStatus[k];
+                const name =
+                  k === 'enter' ? 'Enter' : k === 'back' ? 'Delete letter' : `${k}${st ? `, ${STATUS_TEXT[st]}` : ''}`;
+                return (
+                  <button
+                    key={k}
+                    type="button"
+                    className={`wg-key${special ? ' wg-key--wide' : ''}${st ? ` is-${st}` : ''}`}
+                    onClick={() => press(k)}
+                    aria-label={name}
+                  >
+                    {special ? (
+                      <span className="wg-key-text" aria-hidden="true">
+                        {k === 'enter' ? 'Enter' : '⌫'}
+                      </span>
+                    ) : (
+                      <>
+                        <Cell dots={LETTERS[k]} size="xs" />
+                        <span className="wg-key-text">{k}</span>
+                      </>
+                    )}
+                    {st && (
+                      <span className="wg-key-mark" aria-hidden="true">
+                        {STATUS_MARK[st]}
+                      </span>
+                    )}
+                  </button>
+                );
+              })}
+            </div>
+          ))}
         </div>
+      )}
+
+      {over && (
+        <Results
+          title={over.won ? 'You found the word!' : 'So close!'}
+          summary={
+            over.won
+              ? `“${answer}” in ${guesses.length} ${guesses.length === 1 ? 'guess' : 'guesses'}.`
+              : `The word was “${answer}”.`
+          }
+          stars={over.won ? (guesses.length <= 3 ? 3 : guesses.length <= 5 ? 2 : 1) : 0}
+          best={`${over.best} points`}
+          isNewBest={over.isNewBest}
+          onReplay={restart}
+          replayLabel="New word"
+        >
+          <BrailleText
+            text={answer}
+            size="md"
+            label={`${answer} in braille: ${answer
+              .split('')
+              .map((l) => describe(LETTERS[l]))
+              .join(', then ')}`}
+          />
+          {over.tip && <p className="wg-tip">{over.tip}</p>}
+        </Results>
       )}
     </div>
   );

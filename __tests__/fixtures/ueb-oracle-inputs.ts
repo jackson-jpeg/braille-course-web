@@ -19,6 +19,7 @@ export const PUNCTUATION_SAMPLES: Record<string, string> = {
   openParen: '(a',
   closeParen: 'a)',
   slash: 'a/b',
+  ampersand: 'a & b',
 };
 
 /**

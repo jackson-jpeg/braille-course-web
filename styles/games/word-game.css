@@ -1,0 +1,246 @@
+/* Word Game — four-letter word guessing with braille tiles and an on-screen keyboard. */
+
+.wg {
+  --wg-gap: clamp(0.3rem, 1.4vw, 0.5rem);
+}
+.wg-title {
+  font-size: var(--step-2);
+}
+.wg-count {
+  font-weight: 700;
+  color: var(--ink-soft);
+}
+
+/* Board */
+.wg-board {
+  list-style: none;
+  padding: 0;
+  display: grid;
+  gap: var(--wg-gap);
+  justify-content: center;
+}
+.wg-row {
+  display: grid;
+  grid-template-columns: repeat(4, clamp(3.4rem, 15vw, 4.5rem));
+  gap: var(--wg-gap);
+}
+.wg-row.is-shaking {
+  animation: shake 0.35s var(--ease);
+}
+.wg-tile {
+  position: relative;
+  display: grid;
+  place-items: center;
+  aspect-ratio: 1;
+  border-radius: var(--r-2);
+  border: 2px dashed var(--rule);
+  background: var(--paper);
+  transition:
+    background var(--t-med) var(--ease),
+    border-color var(--t-med) var(--ease),
+    transform var(--t-med) var(--ease-pop);
+}
+.wg-tile.has-letter {
+  border: 2px solid var(--ink-faint);
+  box-shadow: 0 3px 0 var(--rule);
+  animation: wg-pop var(--t-fast) var(--ease-pop);
+}
+.wg-tile.is-next {
+  border-color: var(--ink-soft);
+}
+.wg-tile .cell {
+  --cell-dot: clamp(0.4rem, 1.7vw, 0.55rem);
+}
+.wg-tile-letter {
+  position: absolute;
+  bottom: 0.15rem;
+  right: 0.35rem;
+  font-family: var(--font-display);
+  font-weight: 800;
+  font-size: 0.95rem;
+  line-height: 1;
+}
+.wg-tile.is-correct,
+.wg-tile.is-present,
+.wg-tile.is-absent {
+  animation: wg-flip var(--t-slow) var(--ease);
+}
+.wg-tile.is-correct {
+  background: var(--pine-tint);
+  border: 3px solid var(--pine);
+  box-shadow: 0 3px 0 var(--pine);
+}
+.wg-tile.is-present {
+  background: var(--marigold-tint);
+  border: 3px dashed #a8700c;
+  box-shadow: 0 3px 0 #d9a034;
+}
+.wg-tile.is-absent {
+  background: var(--paper-deep);
+  border: 2px solid var(--paper-deep);
+  box-shadow: none;
+}
+.wg-mark {
+  position: absolute;
+  top: 0.15rem;
+  left: 0.3rem;
+  font-weight: 800;
+  font-size: 0.85rem;
+  line-height: 1;
+}
+.wg-tile.is-correct .wg-mark {
+  color: var(--pine-deep);
+}
+.wg-tile.is-present .wg-mark {
+  color: #7a5208;
+}
+.wg-tile.is-absent .wg-mark {
+  color: var(--ink-soft);
+}
+@keyframes wg-pop {
+  50% {
+    transform: scale(1.08);
+  }
+}
+@keyframes wg-flip {
+  0% {
+    transform: rotateX(90deg);
+  }
+  100% {
+    transform: rotateX(0);
+  }
+}
+
+.wg-message {
+  min-height: 1.5rem;
+  text-align: center;
+  font-weight: 700;
+  color: var(--danger);
+}
+
+.wg-legend {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: var(--s-2) var(--s-4);
+  font-size: var(--step--1);
+  color: var(--ink-soft);
+}
+.wg-swatch {
+  display: inline-grid;
+  place-items: center;
+  width: 1.4rem;
+  height: 1.4rem;
+  margin-right: 0.2rem;
+  border-radius: var(--r-1);
+  font-weight: 800;
+  color: var(--ink);
+  vertical-align: middle;
+}
+.wg-swatch.is-correct {
+  background: var(--pine-tint);
+  border: 2px solid var(--pine);
+}
+.wg-swatch.is-present {
+  background: var(--marigold-tint);
+  border: 2px dashed #a8700c;
+}
+.wg-swatch.is-absent {
+  background: var(--paper-deep);
+}
+
+/* On-screen keyboard: fits 360px wide (keys ≥ 26px wide, 56px tall), roomy on tablets */
+.wg-keyboard {
+  display: grid;
+  gap: 0.4rem;
+  width: 100%;
+  max-width: 40rem;
+  margin-inline: auto;
+}
+.wg-kb-row {
+  display: flex;
+  justify-content: center;
+  gap: clamp(0.2rem, 1vw, 0.4rem);
+}
+.wg-key {
+  position: relative;
+  flex: 1 1 0;
+  min-width: 0;
+  max-width: 3.6rem;
+  min-height: 3.5rem;
+  display: grid;
+  place-items: center;
+  align-content: center;
+  gap: 0.2rem;
+  padding: 0.3rem 0;
+  border: 0;
+  border-radius: var(--r-2);
+  background: var(--paper-sunk);
+  color: var(--ink);
+  font-family: var(--font-display);
+  font-weight: 800;
+  font-size: var(--step-0);
+  box-shadow: 0 3px 0 var(--rule);
+  transition:
+    transform var(--t-fast) var(--ease),
+    box-shadow var(--t-fast) var(--ease);
+  -webkit-tap-highlight-color: transparent;
+}
+.wg-key:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 4px 0 var(--rule);
+}
+.wg-key:active {
+  transform: translateY(3px);
+  box-shadow: 0 0 0 var(--rule);
+}
+.wg-key--wide {
+  flex-grow: 1.6;
+  max-width: 5.5rem;
+  font-size: var(--step--1);
+}
+.wg-key .cell {
+  --cell-dot: 0.26rem;
+  padding: 0;
+}
+.wg-key-text {
+  line-height: 1;
+}
+.wg-key-mark {
+  position: absolute;
+  top: 0.1rem;
+  right: 0.25rem;
+  font-size: 0.7rem;
+}
+.wg-key.is-correct {
+  background: var(--pine-tint);
+  box-shadow: 0 3px 0 var(--pine);
+}
+.wg-key.is-present {
+  background: var(--marigold-tint);
+  box-shadow: 0 3px 0 #d9a034;
+}
+.wg-key.is-absent {
+  background: var(--paper-deep);
+  color: var(--ink-soft);
+  box-shadow: none;
+}
+
+.wg-tip {
+  max-width: 34rem;
+  color: var(--ink-soft);
+}
+
+@media (min-width: 600px) {
+  .wg-key {
+    min-height: 3.9rem;
+  }
+}
+@media (max-width: 420px) {
+  .game-board.wg {
+    padding: var(--s-4) var(--s-3);
+  }
+  .wg-title {
+    font-size: var(--step-1);
+  }
+}

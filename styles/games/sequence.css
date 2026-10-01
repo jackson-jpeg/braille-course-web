@@ -1,0 +1,151 @@
+/* ==========================================================================
+   Sequence — swap paper cards until the braille runs A to Z.
+   ========================================================================== */
+
+.seq-board .btn--sm,
+.seq-board .mode-option {
+  min-height: 3rem;
+}
+
+.seq-prompt {
+  font-size: var(--step-1);
+}
+.seq-how {
+  font-size: var(--step--1);
+}
+
+.seq-cards {
+  list-style: none;
+  padding: 0;
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(4.75rem, 1fr));
+  gap: var(--s-3);
+  max-width: 48rem;
+  width: 100%;
+  margin-inline: auto;
+  counter-reset: none;
+}
+@media (max-width: 420px) {
+  .seq-cards {
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    gap: var(--s-2);
+  }
+}
+.seq-slot {
+  display: grid;
+}
+
+/* A card is a thick paper tile you can pick up */
+.seq-card {
+  position: relative;
+  display: grid;
+  justify-items: center;
+  align-content: center;
+  gap: var(--s-2);
+  min-height: 7.5rem;
+  padding: var(--s-5) var(--s-2) var(--s-3);
+  border: 2px solid var(--rule);
+  border-radius: var(--r-3);
+  background: var(--paper);
+  box-shadow:
+    0 4px 0 var(--rule),
+    var(--lift-1);
+  transition:
+    transform var(--t-fast) var(--ease-pop),
+    box-shadow var(--t-fast) var(--ease),
+    border-color var(--t-fast) var(--ease),
+    background var(--t-fast) var(--ease);
+  -webkit-tap-highlight-color: transparent;
+}
+.seq-card .cell {
+  --cell-dot: clamp(0.62rem, 2.6vw, 1.1rem);
+}
+.seq-card:hover:not(:disabled) {
+  border-color: var(--ink-faint);
+  transform: translateY(-2px);
+}
+.seq-card:active:not(:disabled) {
+  transform: translateY(3px);
+  box-shadow: 0 0 0 var(--rule);
+}
+.seq-card:disabled {
+  cursor: default;
+}
+.seq-card-num {
+  position: absolute;
+  top: 0.4rem;
+  left: 0.55rem;
+  font-size: 0.85rem;
+  font-weight: 700;
+  color: var(--ink-soft);
+}
+
+/* Picked up: lifted, tilted, with a text tag (never color alone) */
+.seq-card.is-picked {
+  border: 3px solid var(--ink);
+  background: var(--marigold-tint);
+  transform: translateY(-8px) rotate(-2deg);
+  box-shadow:
+    0 6px 0 var(--ink),
+    0 18px 28px -14px rgba(30, 27, 46, 0.45);
+}
+.seq-tag {
+  position: absolute;
+  bottom: -0.7rem;
+  padding: 0.05rem 0.55rem;
+  border-radius: var(--r-pill);
+  background: var(--ink);
+  color: var(--paper);
+  font-size: 0.75rem;
+  font-weight: 700;
+}
+
+.seq-card.is-correct {
+  border-color: var(--pine);
+  background: var(--pine-tint);
+  box-shadow: 0 4px 0 var(--pine);
+}
+.seq-card.is-wrong {
+  border-color: var(--danger);
+  background: var(--danger-tint);
+  box-shadow: 0 4px 0 var(--danger);
+}
+.seq-reveal {
+  font-family: var(--font-display);
+  font-size: var(--step-1);
+  font-weight: 800;
+  line-height: 1;
+}
+.seq-card.is-correct .seq-mark {
+  color: var(--pine-deep);
+}
+.seq-card.is-wrong .seq-mark {
+  color: var(--danger);
+}
+
+.seq-answer {
+  list-style: none;
+  padding: 0;
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: var(--s-3);
+}
+.seq-answer li {
+  display: grid;
+  justify-items: center;
+  gap: var(--s-1);
+  padding: var(--s-2) var(--s-3);
+  border-radius: var(--r-2);
+  background: var(--paper-sunk);
+  font-family: var(--font-display);
+  font-weight: 800;
+}
+
+.seq-actions {
+  display: flex;
+  justify-content: center;
+}
+.seq-actions .btn {
+  min-height: 3.25rem;
+}

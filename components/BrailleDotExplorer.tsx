@@ -1,186 +1,226 @@
 'use client';
 
-import { useState, useMemo, useEffect, useRef } from 'react';
-import { brailleMap } from '@/lib/braille-map';
-import { buildContractedReverseLookup } from '@/lib/contracted-braille-map';
+import '@/styles/games/dot-explorer.css';
+import { useCallback, useEffect, useMemo, useState } from 'react';
+import Cell from '@/components/ui/Cell';
+import { DotPad, ModePicker, useAnnouncer, useGameKeys, useSession, sample } from '@/components/games/kit';
+import {
+  ALPHABET,
+  CONTRACTIONS,
+  DIGIT_LETTER,
+  INDICATORS,
+  KIND_LABELS,
+  LETTERS,
+  PUNCTUATION,
+  describe,
+  sameDots,
+  type Dots,
+} from '@/lib/ueb';
 
-type ExplorerMode = 'alphabetic' | 'contracted';
+type Show = 'letters' | 'contractions';
 
-// Build reverse lookup: dot pattern string → letter
-function buildReverseLookup(): Map<string, string> {
-  const map = new Map<string, string>();
-  for (const [letter, pattern] of Object.entries(brailleMap)) {
-    map.set(pattern.join(','), letter);
-  }
-  return map;
+interface Meaning {
+  kind: string;
+  text: string;
+  /** Main reading (shown big). */
+  primary?: boolean;
 }
 
-// Standard dot numbers for display: grid positions [d1, d4, d2, d5, d3, d6]
-const DOT_NUMBERS = [1, 4, 2, 5, 3, 6];
+const FOUND_KEY = 'tb-explorer-found';
+
+/** Every single-cell meaning of a dot pattern, straight from lib/ueb.ts. */
+function meaningsFor(dots: Dots, withContractions: boolean): Meaning[] {
+  if (dots.length === 0) return [];
+  const out: Meaning[] = [];
+  const letter = ALPHABET.find((l) => sameDots(LETTERS[l], dots));
+  if (letter) {
+    out.push({ kind: 'Letter', text: letter, primary: true });
+    const digit = Object.keys(DIGIT_LETTER).find((d) => DIGIT_LETTER[d] === letter);
+    if (digit) out.push({ kind: 'Number, after the number sign', text: digit });
+  }
+  for (const ind of Object.values(INDICATORS)) {
+    if (ind.cells.length === 1 && sameDots(ind.cells[0], dots)) out.push({ kind: 'Sign', text: ind.name });
+  }
+  for (const p of PUNCTUATION) {
+    if (p.cells.length === 1 && sameDots(p.cells[0], dots))
+      out.push({ kind: 'Punctuation', text: `${p.name} ${p.print}` });
+  }
+  if (withContractions) {
+    for (const c of CONTRACTIONS) {
+      if (sameDots(c.dots, dots)) out.push({ kind: KIND_LABELS[c.kind], text: c.text });
+    }
+  }
+  if (out.length && !out.some((m) => m.primary)) out[0].primary = true;
+  return out;
+}
+
+function loadFound(): string[] {
+  try {
+    const raw = window.localStorage.getItem(FOUND_KEY);
+    const list = raw ? (JSON.parse(raw) as unknown) : [];
+    return Array.isArray(list) ? list.filter((l): l is string => typeof l === 'string' && l in LETTERS) : [];
+  } catch {
+    return [];
+  }
+}
 
 export default function BrailleDotExplorer() {
-  const [dots, setDots] = useState<number[]>([0, 0, 0, 0, 0, 0]);
-  const [mode, setMode] = useState<ExplorerMode>('alphabetic');
-  const reverseLookup = useMemo(() => buildReverseLookup(), []);
-  const contractedLookup = useMemo(() => buildContractedReverseLookup(), []);
+  const { answer, finish } = useSession('explorer');
+  const { announce, region } = useAnnouncer();
+  const [dots, setDots] = useState<number[]>([]);
+  const [show, setShow] = useState<Show>('letters');
+  const [found, setFound] = useState<string[]>([]);
+  const [target, setTarget] = useState<string | null>(null);
+  const [hint, setHint] = useState(false);
 
-  const containerRef = useRef<HTMLDivElement>(null);
-  const visibleRef = useRef(true);
+  useEffect(() => setFound(loadFound()), []);
 
-  // Visibility-scoped keyboard
-  useEffect(() => {
-    const el = containerRef.current;
-    if (!el) return;
-    const observer = new IntersectionObserver(
-      ([entry]) => {
-        visibleRef.current = entry.isIntersecting;
-      },
-      { threshold: 0.3 },
-    );
-    observer.observe(el);
-    return () => observer.disconnect();
-  }, []);
+  const meanings = useMemo(() => meaningsFor(dots, show === 'contractions'), [dots, show]);
+  const primary = meanings.find((m) => m.primary);
 
-  // Keyboard: 1-6 to toggle dots, C to clear
-  useEffect(() => {
-    const dotKeyMap: Record<string, number> = {
-      '1': 0,
-      '4': 1,
-      '2': 2,
-      '5': 3,
-      '3': 4,
-      '6': 5,
-    };
-    function onKeyDown(e: KeyboardEvent) {
-      if (!visibleRef.current) return;
-      if (e.ctrlKey || e.metaKey || e.altKey) return;
-      if (e.key in dotKeyMap) {
-        const idx = dotKeyMap[e.key];
-        setDots((prev) => {
-          const next = [...prev];
-          next[idx] = next[idx] === 1 ? 0 : 1;
-          return next;
+  const change = useCallback(
+    (next: number[]) => {
+      setDots(next);
+      const m = meaningsFor(next, show === 'contractions');
+      const what = m.length ? m.map((x) => `${x.kind}: ${x.text}`).join('. ') : next.length ? 'No match yet' : '';
+      announce(next.length ? `${describe(next)}. ${what}.` : 'Cell cleared.');
+
+      const l = ALPHABET.find((x) => sameDots(LETTERS[x], next));
+      if (l) {
+        setFound((prev) => {
+          if (prev.includes(l)) return prev;
+          const list = [...prev, l].sort();
+          try {
+            window.localStorage.setItem(FOUND_KEY, JSON.stringify(list));
+          } catch {
+            /* private mode — keep it in memory */
+          }
+          return list;
         });
       }
-      if (e.key.toLowerCase() === 'c') {
-        setDots([0, 0, 0, 0, 0, 0]);
+      if (target && l === target) {
+        answer(`letter:${target}`, true);
+        finish(true, 1);
+        announce(`Yes! ${describe(next)} is the letter ${target}. Press N for another challenge.`);
+        setTarget(null);
       }
+    },
+    [announce, answer, finish, show, target],
+  );
+
+  const clear = useCallback(() => change([]), [change]);
+
+  const newChallenge = useCallback(() => {
+    const notFound = ALPHABET.filter((l) => !found.includes(l));
+    const pick = sample(notFound.length ? notFound : ALPHABET.filter((l) => l !== target));
+    setTarget(pick);
+    setHint(false);
+    setDots([]);
+    announce(`Challenge: make the letter ${pick}.`);
+  }, [announce, found, target]);
+
+  useGameKeys((e) => {
+    if (e.key === 'Escape') {
+      e.preventDefault();
+      clear();
+    } else if (e.key.toLowerCase() === 'n') {
+      e.preventDefault();
+      newChallenge();
     }
-    window.addEventListener('keydown', onKeyDown);
-    return () => window.removeEventListener('keydown', onKeyDown);
-  }, []);
-
-  const patternKey = dots.join(',');
-  const matchedLetter = reverseLookup.get(patternKey) || null;
-  const matchedContraction = contractedLookup.get(patternKey) || null;
-  const anyActive = dots.some((d) => d === 1);
-
-  function toggleDot(index: number) {
-    setDots((prev) => {
-      const next = [...prev];
-      next[index] = next[index] === 1 ? 0 : 1;
-      return next;
-    });
-  }
-
-  function clearAll() {
-    setDots([0, 0, 0, 0, 0, 0]);
-  }
-
-  const contractionTypeLabels: Record<string, string> = {
-    wordsign: 'Alphabetic wordsign',
-    strong: 'Strong contraction',
-    'groupsign-strong': 'Strong groupsign',
-    'groupsign-lower': 'Lower groupsign',
-    'wordsign-lower': 'Lower wordsign',
-  };
-
-  // Which dot numbers are currently raised
-  const raisedDots = dots
-    .map((v, i) => (v ? DOT_NUMBERS[i] : null))
-    .filter(Boolean)
-    .sort((a, b) => a! - b!) as number[];
+  });
 
   return (
-    <div className="explorer-container" ref={containerRef}>
-      <div className="explorer-header">
-        <span className="section-label">Explore</span>
-        <h2>Dot Explorer</h2>
-        <p>
-          Toggle dots to discover braille {mode === 'contracted' ? 'contractions' : 'letters'}{' '}
-          <span className="explorer-kbd-hint">Keys 1–6 toggle dots</span>
-        </p>
-      </div>
-
-      <div className="explorer-mode-toggle" role="radiogroup" aria-label="Explorer mode">
-        <button
-          className={`explorer-mode-pill${mode === 'alphabetic' ? ' active' : ''}`}
-          role="radio"
-          aria-checked={mode === 'alphabetic'}
-          onClick={() => setMode('alphabetic')}
-        >
-          Alphabetic
-        </button>
-        <button
-          className={`explorer-mode-pill${mode === 'contracted' ? ' active' : ''}`}
-          role="radio"
-          aria-checked={mode === 'contracted'}
-          onClick={() => setMode('contracted')}
-        >
-          Contracted
+    <div className="game-board dex" data-testid="game-board">
+      {region}
+      <div className="game-board-toolbar">
+        <ModePicker
+          legend="Show me"
+          name="explorer-show"
+          value={show}
+          onChange={setShow}
+          options={[
+            { value: 'letters', label: 'Letters & signs' },
+            { value: 'contractions', label: 'Contractions too' },
+          ]}
+        />
+        <button type="button" className="btn btn--paper btn--sm" onClick={newChallenge}>
+          {target ? 'New challenge' : 'Give me a challenge'}
         </button>
       </div>
 
-      <div className="explorer-body">
-        <div className="explorer-cell" role="group" aria-label="Interactive braille cell">
-          {dots.map((filled, i) => (
-            <button
-              key={i}
-              className={`explorer-dot${filled ? ' active' : ''}`}
-              onClick={() => toggleDot(i)}
-              aria-pressed={filled === 1}
-              aria-label={`Dot ${DOT_NUMBERS[i]}${filled ? ', raised' : ', lowered'}`}
-            >
-              <span className="explorer-dot-number">{DOT_NUMBERS[i]}</span>
-            </button>
-          ))}
-        </div>
-
-        <div className="explorer-result">
-          {anyActive ? (
-            mode === 'alphabetic' ? (
-              matchedLetter ? (
-                <>
-                  <div className="explorer-letter">{matchedLetter}</div>
-                  <div className="explorer-dots-label">Dots {raisedDots.join(', ')}</div>
-                </>
-              ) : (
-                <>
-                  <div className="explorer-letter explorer-no-match">?</div>
-                  <div className="explorer-dots-label">Dots {raisedDots.join(', ')} — No match</div>
-                </>
-              )
-            ) : matchedContraction ? (
-              <>
-                <div className="explorer-contraction">{matchedContraction.label}</div>
-                <div className="explorer-contraction-type">{contractionTypeLabels[matchedContraction.type]}</div>
-                <div className="explorer-dots-label">Dots {raisedDots.join(', ')}</div>
-              </>
-            ) : (
-              <>
-                <div className="explorer-letter explorer-no-match">?</div>
-                <div className="explorer-dots-label">Dots {raisedDots.join(', ')} — No match</div>
-              </>
-            )
+      {target && (
+        <div className="dex-challenge">
+          <p>
+            Challenge: make the letter <span className="letter-chip">{target}</span>
+          </p>
+          {hint ? (
+            <p className="dex-hint">
+              Hint: {target} is {describe(LETTERS[target])}.
+            </p>
           ) : (
-            <div className="explorer-prompt">Tap dots to begin</div>
+            <button type="button" className="btn btn--paper btn--sm" onClick={() => setHint(true)}>
+              Hint
+            </button>
           )}
         </div>
+      )}
 
-        <button className="explorer-clear" onClick={clearAll} disabled={!anyActive} aria-label="Clear all dots">
-          Clear
-        </button>
+      <div className="dex-main">
+        <div className="dex-pad">
+          <DotPad value={dots} onChange={change} label="Your braille cell" />
+          <button type="button" className="btn btn--paper btn--sm" onClick={clear} disabled={dots.length === 0}>
+            Clear dots
+          </button>
+        </div>
+
+        <div className={`dex-result${primary ? ' is-match' : ''}`}>
+          <h2 className="dex-result-title">
+            {dots.length === 0 ? 'Raise a dot to begin' : primary ? 'You made' : 'No match yet'}
+          </h2>
+          {dots.length > 0 && (
+            <>
+              <div className="dex-result-cell">
+                <Cell dots={dots} size="lg" framed />
+                <span className={primary ? 'dex-big' : 'dex-big dex-big--none'}>{primary ? primary.text : '?'}</span>
+              </div>
+              <p className="dex-dots">{describe(dots)}</p>
+              {meanings.length > 0 ? (
+                <ul className="dex-meanings">
+                  {meanings.map((m) => (
+                    <li key={`${m.kind}-${m.text}`}>
+                      <span className="dex-kind">{m.kind}</span> <strong>{m.text}</strong>
+                    </li>
+                  ))}
+                </ul>
+              ) : (
+                <p className="dex-hint">
+                  {show === 'letters'
+                    ? 'Try another dot — or switch on contractions to see more.'
+                    : 'This pattern is not a single-cell sign. Try another dot.'}
+                </p>
+              )}
+            </>
+          )}
+        </div>
       </div>
+
+      <section className="dex-found" aria-labelledby="dex-found-title">
+        <h3 id="dex-found-title" className="dex-found-title">
+          Letters you have found: {found.length} of 26
+        </h3>
+        <p className="sr-only">{found.length ? found.join(', ') : 'None yet.'}</p>
+        <ul className="dex-found-list" aria-hidden="true">
+          {ALPHABET.map((l) => {
+            const has = found.includes(l);
+            return (
+              <li key={l} className={has ? 'is-found' : ''}>
+                <Cell dots={has ? LETTERS[l] : []} size="xs" flat="ghost" pop={has} />
+                <span>{l}</span>
+              </li>
+            );
+          })}
+        </ul>
+      </section>
     </div>
   );
 }

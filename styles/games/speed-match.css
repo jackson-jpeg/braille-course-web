@@ -1,0 +1,46 @@
+/* Speed Match — quick-fire letter ↔ cell matching. Built on kit Choices + Hud. */
+
+.spm-options {
+  display: grid;
+  gap: var(--s-4);
+  justify-items: center;
+}
+.spm-options .mode-picker-options {
+  justify-content: center;
+}
+
+.spm .game-prompt:focus:not(:focus-visible) {
+  outline: none;
+}
+
+.spm-stage {
+  min-height: 11rem;
+}
+
+.spm-letter {
+  font-size: var(--step-3);
+  line-height: 1;
+}
+
+/* Cells inside answer buttons should read big on tablets */
+.spm .choice .cell {
+  --cell-dot: clamp(0.7rem, 2.6vw, 0.95rem);
+}
+.spm .choice {
+  min-height: 5.5rem;
+}
+
+.spm .feedback-pill {
+  font-size: var(--step-0);
+}
+
+.spm-next {
+  justify-self: center;
+  min-width: 10rem;
+}
+
+@media (max-width: 420px) {
+  .game-board.spm {
+    padding: var(--s-4) var(--s-3);
+  }
+}

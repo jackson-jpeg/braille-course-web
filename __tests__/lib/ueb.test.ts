@@ -11,6 +11,7 @@
  * Do not loosen these tests to make them pass. Fix the data.
  */
 
+import path from 'path';
 import oracle from '../fixtures/ueb-oracle.json';
 import runtimeContracted from '../../lib/data/ueb-contracted.json';
 import { PUNCTUATION_SAMPLES, GROUPSIGN_SAMPLES, TRANSCRIBE_SAMPLES } from '../fixtures/ueb-oracle-inputs';
@@ -32,6 +33,7 @@ import {
   transcribeToUnicode,
 } from '../../lib/ueb';
 import { uncontractedCorpus, contractedCorpus } from '../../lib/ueb-corpus';
+import { ornamentCorpus } from '../../lib/ueb-ornaments';
 import { CONTRACTION_EXAMPLES } from '../../lib/games/contracted-content';
 import { contractionWords } from '../../lib/contraction-words';
 
@@ -107,6 +109,7 @@ const OFFICIAL_PUNCTUATION: Record<string, string> = {
   openParen: '⠐⠣',
   closeParen: '⠐⠜',
   slash: '⠸⠌',
+  ampersand: '⠈⠯',
 };
 
 /** key = `${kind}:${text}` */
@@ -309,6 +312,17 @@ describe('uncontracted transcription', () => {
     const missing = corpus.filter((s) => !(s in g1));
     expect({ missingFromOracle_runGenerateUebOracle: missing }).toEqual({ missingFromOracle_runGenerateUebOracle: [] });
     const wrong = corpus.filter((s) => transcribeToUnicode(s) !== g1[s]).map((s) => [s, transcribeToUnicode(s), g1[s]]);
+    expect(wrong).toEqual([]);
+  });
+
+  test('every decorative braille word in the source (eyebrows, emblems, footer) matches liblouis', () => {
+    const ornaments = ornamentCorpus(path.join(__dirname, '../..'));
+    expect(ornaments.length).toBeGreaterThan(10);
+    const missing = ornaments.filter((s) => !(s in g1));
+    expect({ missingFromOracle_runGenerateUebOracle: missing }).toEqual({ missingFromOracle_runGenerateUebOracle: [] });
+    const wrong = ornaments
+      .filter((s) => transcribeToUnicode(s) !== g1[s])
+      .map((s) => [s, transcribeToUnicode(s), g1[s]]);
     expect(wrong).toEqual([]);
   });
 

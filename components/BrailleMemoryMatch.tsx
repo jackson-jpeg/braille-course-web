@@ -1,202 +1,302 @@
 'use client';
 
-import { useState, useEffect, useCallback, useRef } from 'react';
-import { brailleMap } from '@/lib/braille-map';
-import { useGameProgress } from '@/hooks/useGameProgress';
-import { pushAchievements } from '@/components/AchievementToast';
+import '@/styles/games/memory-match.css';
+import { useCallback, useEffect, useRef, useState, type KeyboardEvent as ReactKeyboardEvent } from 'react';
+import Cell from '@/components/ui/Cell';
+import {
+  Hud,
+  ModePicker,
+  Results,
+  StartPanel,
+  shuffle,
+  useAnnouncer,
+  useGameKeys,
+  useSession,
+} from '@/components/games/kit';
+import { ALPHABET, LETTERS, describe } from '@/lib/ueb';
+import { DIFFICULTY_INFO, getDifficultyParams } from '@/lib/difficulty-settings';
 import { getRandomTip } from '@/lib/learning-tips';
+import type { Difficulty } from '@/lib/progress-types';
 
-const ALL_LETTERS = Object.keys(brailleMap);
+type Phase = 'start' | 'play' | 'done';
+type Face = 'cell' | 'print';
 
 interface Card {
   id: number;
   letter: string;
-  type: 'braille' | 'letter';
-  flipped: boolean;
-  matched: boolean;
+  face: Face;
 }
 
-function pickRandomLetters(count: number): string[] {
-  const shuffled = [...ALL_LETTERS].sort(() => Math.random() - 0.5);
-  return shuffled.slice(0, count);
+const LEVELS: Difficulty[] = ['beginner', 'intermediate', 'advanced'];
+
+function pairsFor(d: Difficulty): number {
+  const p = getDifficultyParams('memorymatch', d) as { pairs?: number };
+  return p.pairs ?? 6;
 }
 
-function buildDeck(letters: string[]): Card[] {
-  const cards: Card[] = [];
+/** Letters only (a–z): digits share their cells with a–j, so mixing them in made unfair look-alike pairs. */
+function buildDeck(pairs: number): Card[] {
+  const letters = shuffle(ALPHABET).slice(0, pairs);
   let id = 0;
+  const cards: Card[] = [];
   for (const letter of letters) {
-    cards.push({ id: id++, letter, type: 'braille', flipped: false, matched: false });
-    cards.push({ id: id++, letter, type: 'letter', flipped: false, matched: false });
+    cards.push({ id: id++, letter, face: 'cell' });
+    cards.push({ id: id++, letter, face: 'print' });
   }
-  return cards.sort(() => Math.random() - 0.5);
+  return shuffle(cards);
 }
 
-function BrailleFace({ pattern }: { pattern: number[] }) {
-  return (
-    <div className="memorymatch-braille" aria-hidden="true">
-      {pattern.map((v, i) => (
-        <span key={i} className={`memorymatch-dot ${v ? 'filled' : 'empty'}`} />
-      ))}
-    </div>
-  );
+function faceText(c: Card) {
+  return c.face === 'print' ? `letter ${c.letter}` : `braille cell, ${describe(LETTERS[c.letter])}`;
 }
-
-const PAIR_COUNT = 6;
 
 export default function BrailleMemoryMatch() {
-  const { recordResult } = useGameProgress('memorymatch');
+  const { difficulty, setDifficulty, stats, finish, answer } = useSession('memorymatch');
+  const { announce, region } = useAnnouncer();
+  const [phase, setPhase] = useState<Phase>('start');
   const [cards, setCards] = useState<Card[]>([]);
-  const [flippedIds, setFlippedIds] = useState<number[]>([]);
+  const [up, setUp] = useState<number[]>([]);
+  const [matched, setMatched] = useState<string[]>([]);
   const [moves, setMoves] = useState(0);
-  const [matchedPairs, setMatchedPairs] = useState(0);
-  const [won, setWon] = useState(false);
-  const [checking, setChecking] = useState(false);
+  const [focusIdx, setFocusIdx] = useState(0);
   const [tip, setTip] = useState('');
+  const [result, setResult] = useState<{ score: number; best: number; isNewBest: boolean } | null>(null);
 
-  const containerRef = useRef<HTMLDivElement>(null);
-  const matchTimerRef = useRef<ReturnType<typeof setTimeout>>();
-  const movesRef = useRef(moves);
-  movesRef.current = moves;
+  const pairs = pairsFor(difficulty);
+  const cols = pairs >= 10 ? 5 : 4;
+  const btnRefs = useRef<(HTMLButtonElement | null)[]>([]);
+  const upRef = useRef<number[]>([]);
+  const flipBack = useRef<ReturnType<typeof setTimeout>>();
+  const doneTimer = useRef<ReturnType<typeof setTimeout>>();
+  upRef.current = up;
 
-  const startGame = useCallback(() => {
-    const letters = pickRandomLetters(PAIR_COUNT);
-    setCards(buildDeck(letters));
-    setFlippedIds([]);
-    setMoves(0);
-    setMatchedPairs(0);
-    setWon(false);
-    setChecking(false);
-    setTip('');
-  }, []);
-
-  useEffect(() => {
-    startGame();
-  }, [startGame]);
-
-  // Cleanup match/mismatch timer on unmount
-  useEffect(() => {
-    return () => {
-      if (matchTimerRef.current) clearTimeout(matchTimerRef.current);
-    };
-  }, []);
-
-  const handleFlip = useCallback(
-    (cardId: number) => {
-      if (checking) return;
-      if (flippedIds.length >= 2) return;
-
-      const card = cards.find((c) => c.id === cardId);
-      if (!card || card.flipped || card.matched) return;
-
-      const newFlipped = [...flippedIds, cardId];
-      setFlippedIds(newFlipped);
-
-      // Reveal this card
-      setCards((prev) => prev.map((c) => (c.id === cardId ? { ...c, flipped: true } : c)));
-
-      if (newFlipped.length === 2) {
-        setMoves((m) => m + 1);
-        setChecking(true);
-
-        const first = cards.find((c) => c.id === newFlipped[0])!;
-        const second = cards.find((c) => c.id === newFlipped[1])!;
-
-        const isMatch = first.letter === second.letter && first.type !== second.type;
-
-        if (isMatch) {
-          matchTimerRef.current = setTimeout(() => {
-            setCards((prev) =>
-              prev.map((c) => (c.id === first.id || c.id === second.id ? { ...c, matched: true, flipped: true } : c)),
-            );
-            setMatchedPairs((p) => {
-              const next = p + 1;
-              if (next === PAIR_COUNT) {
-                setWon(true);
-                setTip(getRandomTip().fact);
-                const finalMoves = movesRef.current + 1; // +1 for this move
-                const score = Math.max(1, PAIR_COUNT * 2 - finalMoves);
-                const achievements = recordResult(true, score);
-                pushAchievements(achievements);
-              }
-              return next;
-            });
-            setFlippedIds([]);
-            setChecking(false);
-          }, 600);
-        } else {
-          matchTimerRef.current = setTimeout(() => {
-            setCards((prev) =>
-              prev.map((c) => (c.id === first.id || c.id === second.id ? { ...c, flipped: false } : c)),
-            );
-            setFlippedIds([]);
-            setChecking(false);
-          }, 1000);
-        }
-      }
+  useEffect(
+    () => () => {
+      clearTimeout(flipBack.current);
+      clearTimeout(doneTimer.current);
     },
-    [cards, flippedIds, checking, recordResult],
+    [],
   );
 
+  const start = useCallback(() => {
+    clearTimeout(flipBack.current);
+    clearTimeout(doneTimer.current);
+    setCards(buildDeck(pairs));
+    setUp([]);
+    upRef.current = [];
+    setMatched([]);
+    setMoves(0);
+    setFocusIdx(0);
+    setResult(null);
+    setPhase('play');
+    announce(`${pairs * 2} cards, face down, in ${cols} columns. Find each letter and its braille cell.`);
+  }, [announce, cols, pairs]);
+
+  // Focus the first card when a round starts.
+  useEffect(() => {
+    if (phase === 'play') btnRefs.current[0]?.focus();
+  }, [phase]);
+
+  const flip = useCallback(
+    (idx: number) => {
+      const card = cards[idx];
+      if (!card || matched.includes(card.letter)) return;
+      let current = upRef.current;
+      if (current.includes(card.id)) return;
+      // Two unmatched cards still showing: turn them back now instead of waiting.
+      if (current.length === 2) {
+        clearTimeout(flipBack.current);
+        current = [];
+      }
+      const next = [...current, card.id];
+      upRef.current = next;
+      setUp(next);
+
+      if (next.length < 2) {
+        announce(`${faceText(card)}.`);
+        return;
+      }
+
+      const first = cards.find((c) => c.id === next[0])!;
+      const moveCount = moves + 1;
+      setMoves(moveCount);
+      const isMatch = first.letter === card.letter && first.face !== card.face;
+      const braille = first.face === 'cell' ? first : card;
+      if (first.face !== card.face) answer(`letter:${braille.letter}`, isMatch);
+
+      if (isMatch) {
+        const nowMatched = [...matched, card.letter];
+        setMatched(nowMatched);
+        upRef.current = [];
+        setUp([]);
+        const left = pairs - nowMatched.length;
+        announce(
+          `${faceText(card)}. Match! ${card.letter} is ${describe(LETTERS[card.letter])}. ${left ? `${left} pairs left.` : ''}`,
+        );
+        if (left === 0) {
+          const score = Math.max(1, pairs * 3 - moveCount);
+          const prevBest = stats.bestScore;
+          finish(true, score);
+          setTip(getRandomTip().fact);
+          doneTimer.current = setTimeout(() => {
+            setResult({ score, best: Math.max(prevBest, score), isNewBest: score > prevBest });
+            setPhase('done');
+          }, 700);
+        }
+      } else {
+        announce(`${faceText(card)}. No match.`);
+        flipBack.current = setTimeout(() => {
+          upRef.current = [];
+          setUp([]);
+        }, 1400);
+      }
+    },
+    [announce, answer, cards, finish, matched, moves, pairs, stats.bestScore],
+  );
+
+  const onGridKey = (e: ReactKeyboardEvent<HTMLDivElement>) => {
+    const n = cards.length;
+    let next = focusIdx;
+    switch (e.key) {
+      case 'ArrowRight':
+        next = Math.min(n - 1, focusIdx + 1);
+        break;
+      case 'ArrowLeft':
+        next = Math.max(0, focusIdx - 1);
+        break;
+      case 'ArrowDown':
+        next = focusIdx + cols < n ? focusIdx + cols : focusIdx;
+        break;
+      case 'ArrowUp':
+        next = focusIdx - cols >= 0 ? focusIdx - cols : focusIdx;
+        break;
+      case 'Home':
+        next = 0;
+        break;
+      case 'End':
+        next = n - 1;
+        break;
+      case 'Enter':
+      case ' ':
+        e.preventDefault();
+        flip(focusIdx);
+        return;
+      default:
+        return;
+    }
+    e.preventDefault();
+    setFocusIdx(next);
+    btnRefs.current[next]?.focus();
+  };
+
+  useGameKeys((e) => {
+    if (phase === 'play' || e.key !== 'Enter') return;
+    if (e.target instanceof HTMLButtonElement || e.target instanceof HTMLAnchorElement) return;
+    e.preventDefault();
+    start();
+  });
+
+  const stars = moves <= pairs * 1.5 ? 3 : moves <= pairs * 2.2 ? 2 : 1;
+
   return (
-    <div className="memorymatch-container" ref={containerRef}>
-      <div className="memorymatch-header">
-        <span className="section-label">Memory</span>
-        <h2>Memory Match</h2>
-        <p>Match braille patterns to their letters</p>
-      </div>
+    <div className="game-board mem" data-testid="game-board">
+      {region}
 
-      <div className="memorymatch-body">
-        <div className="memorymatch-stats" aria-live="polite" aria-atomic="true">
-          <span>
-            Moves: <strong>{moves}</strong>
-          </span>
-          <span>
-            Pairs: <strong>{matchedPairs}</strong> / {PAIR_COUNT}
-          </span>
-        </div>
+      {phase === 'start' && (
+        <StartPanel heading="Find the pairs" onStart={start}>
+          <p className="game-prompt-sub">
+            Turn over two cards at a time. Match each print letter with its braille cell.
+          </p>
+          <ModePicker
+            legend="Level"
+            name="mem-level"
+            value={difficulty}
+            onChange={setDifficulty}
+            options={LEVELS.map((d) => ({ value: d, label: DIFFICULTY_INFO[d].label, hint: `${pairsFor(d)} pairs` }))}
+          />
+        </StartPanel>
+      )}
 
-        <div className="memorymatch-grid" role="group" aria-label="Memory game cards">
-          {cards.map((card) => (
-            <button
-              key={card.id}
-              className={`memorymatch-card${card.flipped || card.matched ? ' flipped' : ''}${card.matched ? ' matched' : ''}`}
-              onClick={() => handleFlip(card.id)}
-              disabled={card.flipped || card.matched || checking}
-              aria-label={
-                card.flipped || card.matched
-                  ? card.type === 'letter'
-                    ? `Letter ${card.letter}`
-                    : `Braille pattern for ${card.letter}`
-                  : 'Face-down card'
-              }
-            >
-              <div className="memorymatch-card-inner">
-                <div className="memorymatch-card-front">
-                  {card.type === 'braille' ? (
-                    <BrailleFace pattern={brailleMap[card.letter]} />
-                  ) : (
-                    <span className="memorymatch-card-letter">{card.letter}</span>
-                  )}
-                </div>
-                <div className="memorymatch-card-back">
-                  <span className="memorymatch-card-back-icon">?</span>
-                </div>
-              </div>
-            </button>
-          ))}
-        </div>
-
-        {won && (
-          <div className="memorymatch-win" aria-live="polite">
-            <div>All pairs matched in {moves} moves!</div>
-            {tip && <p className="memorymatch-tip">{tip}</p>}
+      {phase === 'play' && (
+        <>
+          <div className="game-board-toolbar">
+            <h2 className="mem-title">Find the pairs</h2>
+            <Hud
+              items={[
+                { label: 'Moves', value: moves },
+                { label: 'Pairs', value: `${matched.length} / ${pairs}`, tone: 'streak' },
+              ]}
+            />
           </div>
-        )}
+          <p id="mem-help" className="game-prompt-sub">
+            Use the arrow keys to move between cards. Press Enter or Space to turn one over.
+          </p>
+          <div
+            className="mem-grid"
+            role="group"
+            aria-label={`Cards, ${cols} per row`}
+            aria-describedby="mem-help"
+            style={{ '--mem-cols': cols } as React.CSSProperties}
+            onKeyDown={onGridKey}
+          >
+            {cards.map((card, i) => {
+              const isMatched = matched.includes(card.letter);
+              const isUp = isMatched || up.includes(card.id);
+              const row = Math.floor(i / cols) + 1;
+              const col = (i % cols) + 1;
+              return (
+                <button
+                  key={card.id}
+                  ref={(el) => {
+                    btnRefs.current[i] = el;
+                  }}
+                  type="button"
+                  className={`mem-card${isUp ? ' is-up' : ''}${isMatched ? ' is-matched' : ''}`}
+                  tabIndex={i === focusIdx ? 0 : -1}
+                  aria-disabled={isUp || undefined}
+                  aria-label={`Row ${row}, card ${col}: ${isUp ? faceText(card) : 'face down'}${isMatched ? ', matched' : ''}`}
+                  onFocus={() => setFocusIdx(i)}
+                  onClick={() => flip(i)}
+                >
+                  <span className="mem-card-inner" aria-hidden="true">
+                    <span className="mem-card-back" />
+                    <span className="mem-card-front">
+                      {card.face === 'cell' ? (
+                        <Cell dots={LETTERS[card.letter]} size="md" />
+                      ) : (
+                        <span className="mem-letter">{card.letter}</span>
+                      )}
+                    </span>
+                  </span>
+                  {isMatched && (
+                    <span className="mem-tick" aria-hidden="true">
+                      ✓
+                    </span>
+                  )}
+                </button>
+              );
+            })}
+          </div>
+          <div className="game-board-toolbar">
+            <button type="button" className="btn btn--paper btn--sm" onClick={start}>
+              New cards
+            </button>
+          </div>
+        </>
+      )}
 
-        <button className="memorymatch-play-again" onClick={startGame}>
-          Play Again
-        </button>
-      </div>
+      {phase === 'done' && result && (
+        <Results
+          title="All pairs found!"
+          summary={`${pairs} pairs in ${moves} moves · ${result.score} points`}
+          stars={stars}
+          best={`${result.best} points`}
+          isNewBest={result.isNewBest}
+          onReplay={start}
+        >
+          {tip && <p className="mem-tip">{tip}</p>}
+        </Results>
+      )}
     </div>
   );
 }

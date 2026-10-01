@@ -16,6 +16,7 @@ import { writeFileSync } from 'fs';
 import path from 'path';
 import { ALPHABET, DIGIT_LETTER, CONTRACTIONS } from '../lib/ueb';
 import { uncontractedCorpus, contractedCorpus } from '../lib/ueb-corpus';
+import { ornamentCorpus } from '../lib/ueb-ornaments';
 import { PUNCTUATION_SAMPLES, GROUPSIGN_SAMPLES, TRANSCRIBE_SAMPLES } from '../__tests__/fixtures/ueb-oracle-inputs';
 
 const g1 = Array.from(
@@ -25,6 +26,7 @@ const g1 = Array.from(
     ...Object.values(PUNCTUATION_SAMPLES),
     ...TRANSCRIBE_SAMPLES,
     ...uncontractedCorpus(),
+    ...ornamentCorpus(path.join(__dirname, '..')),
   ]),
 ).sort();
 

@@ -1,0 +1,103 @@
+/* ==========================================================================
+   Number Sense — Nemeth math problems on a slate.
+   ========================================================================== */
+
+.ns-board .btn--sm,
+.ns-board .mode-option {
+  min-height: 3rem;
+}
+
+.ns-note {
+  justify-self: center;
+  display: inline-flex;
+  align-items: center;
+  gap: var(--s-2);
+  padding: 0.35rem 0.9rem;
+  border-radius: var(--r-pill);
+  background: var(--sky-tint);
+  font-size: var(--step--1);
+  font-weight: 700;
+  text-align: center;
+}
+
+.ns-prompt {
+  font-size: var(--step-1);
+}
+
+/* The problem sits on a sunk slate, like a line on a braille page */
+.ns-stage {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  align-items: center;
+  gap: var(--s-3);
+  background-image: radial-gradient(circle, rgba(30, 27, 46, 0.07) 1.4px, transparent 1.8px);
+  background-size: 16px 20px;
+}
+/* Cells keep their own padding, so the space between cells is always wider than the
+   space between a cell's two columns. */
+.ns-cells {
+  --ns-dot: clamp(0.5rem, 2.3vw, 1.1rem);
+  display: inline-flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  align-items: center;
+  row-gap: calc(var(--ns-dot) * 1.2);
+}
+.ns-cells .cell {
+  --cell-dot: var(--ns-dot);
+}
+.ns-space {
+  display: inline-block;
+  width: calc(var(--ns-dot) * 2.2);
+}
+@media (max-width: 480px) {
+  .ns-stage {
+    padding: var(--s-4) var(--s-2);
+  }
+}
+.ns-blank {
+  display: inline-grid;
+  place-items: center;
+  min-width: 3rem;
+  min-height: 3.5rem;
+  border-radius: var(--r-2);
+  border: 3px dashed var(--ink-faint);
+  font-family: var(--font-display);
+  font-size: var(--step-2);
+  font-weight: 800;
+  color: var(--ink-soft);
+}
+
+.ns-print {
+  text-align: center;
+  font-family: var(--font-display);
+  font-size: var(--step-1);
+  font-weight: 700;
+  color: var(--ink-soft);
+}
+
+/* Each answer shows its Nemeth braille above the print number */
+.ns-choice {
+  display: grid;
+  justify-items: center;
+  gap: var(--s-2);
+}
+.ns-choice .braille-run {
+  justify-content: center;
+}
+.ns-choice-print {
+  font-size: var(--step-1);
+  line-height: 1;
+}
+.ns-board .choice {
+  min-height: 6rem;
+}
+
+.ns-actions {
+  display: flex;
+  justify-content: center;
+}
+.ns-actions .btn {
+  min-height: 3.25rem;
+}

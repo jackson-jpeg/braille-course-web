@@ -6,6 +6,9 @@ import Link from 'next/link';
 import { EmbeddedCheckoutProvider, EmbeddedCheckout } from '@stripe/react-stripe-js';
 import getStripe from '@/lib/stripe-client';
 import { PRICING, formatPrice } from '@/lib/pricing';
+import { NEXT_COHORT } from '@/lib/cohort';
+import Cell from '@/components/ui/Cell';
+import { LETTERS } from '@/lib/ueb';
 
 const VALID_PLANS = ['full', 'deposit'] as const;
 type Plan = (typeof VALID_PLANS)[number];
@@ -61,23 +64,13 @@ export default function CheckoutForm() {
 
   if (!sectionId || !isValidPlan) {
     return (
-      <div className="checkout-page">
-        <div className="checkout-card">
-          <div className="checkout-card-icon" aria-hidden="true">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-              <circle cx="12" cy="12" r="10" />
-              <line x1="12" y1="8" x2="12" y2="12" />
-              <line x1="12" y1="16" x2="12.01" y2="16" />
-            </svg>
-          </div>
-          <h1>Invalid Checkout Link</h1>
-          <p>This checkout link is missing required information.</p>
-          <Link href="/summer#cta" className="home-button">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" aria-hidden="true">
-              <line x1="19" y1="12" x2="5" y2="12" />
-              <polyline points="12 19 5 12 12 5" />
-            </svg>
-            Back to Enrollment
+      <div className="checkout-page wrap-narrow">
+        <div className="tile checkout-card">
+          <Cell dots={[]} size="lg" framed flat="ghost" />
+          <h1>This checkout link is incomplete</h1>
+          <p>It&rsquo;s missing some information. Please head back and choose your schedule and plan again.</p>
+          <Link href="/courses" className="btn">
+            Back to courses
           </Link>
         </div>
       </div>
@@ -86,22 +79,13 @@ export default function CheckoutForm() {
 
   if (error) {
     return (
-      <div className="checkout-page">
-        <div className="checkout-card" role="alert" aria-live="assertive">
-          <div className="checkout-card-icon checkout-card-icon--error" aria-hidden="true">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5">
-              <line x1="18" y1="6" x2="6" y2="18" />
-              <line x1="6" y1="6" x2="18" y2="18" />
-            </svg>
-          </div>
-          <h1>Unable to Check Out</h1>
+      <div className="checkout-page wrap-narrow">
+        <div className="tile checkout-card" role="alert">
+          <Cell dots={LETTERS.x} size="lg" framed />
+          <h1>We couldn&rsquo;t start checkout</h1>
           <p>{error}</p>
-          <Link href="/summer#cta" className="home-button">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" aria-hidden="true">
-              <line x1="19" y1="12" x2="5" y2="12" />
-              <polyline points="12 19 5 12 12 5" />
-            </svg>
-            Back to Enrollment
+          <Link href="/courses#enroll" className="btn">
+            Back to enrollment
           </Link>
         </div>
       </div>
@@ -111,62 +95,36 @@ export default function CheckoutForm() {
   const info = PLAN_INFO[plan];
 
   return (
-    <div className="checkout-page">
-      <Link href="/summer#cta" className="checkout-back">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" aria-hidden="true">
-          <line x1="19" y1="12" x2="5" y2="12" />
-          <polyline points="12 19 5 12 12 5" />
-        </svg>
+    <div className="checkout-page wrap-narrow">
+      <Link href="/courses#enroll" className="link-arrow checkout-back">
         Back to enrollment
       </Link>
 
-      {/* Branded summary card */}
-      <div className="checkout-summary">
-        <div className="checkout-summary-brand">
-          <span className="checkout-summary-dots" aria-hidden="true">
-            <span />
-            <span className="filled" />
-            <span className="filled" />
-            <span className="filled" />
-            <span className="filled" />
-            <span />
-          </span>
-          <span className="checkout-summary-name">TeachBraille</span>
-        </div>
-        <h1 className="checkout-summary-title">Summer Braille Course</h1>
-        <p className="checkout-summary-schedule">
-          {PRICING.courseDates} &middot; {PRICING.totalSessions} live sessions
+      <section className="checkout-summary band-ink" aria-labelledby="checkout-title">
+        <p className="checkout-brand">
+          <Cell dots={LETTERS.t} size="xs" onInk tone="marigold" />
+          TeachBraille
         </p>
-        <div className="checkout-summary-divider" />
-        <div className="checkout-summary-plan">
-          <div className="checkout-summary-plan-row">
-            <span className="checkout-summary-plan-label">{info.label}</span>
-            <span className="checkout-summary-plan-price">{info.price}</span>
-          </div>
-          <p className="checkout-summary-plan-note">{info.note}</p>
+        <h1 id="checkout-title">Braille course for parents &amp; loved ones</h1>
+        <p className="checkout-schedule">
+          {NEXT_COHORT ? `${NEXT_COHORT.name} · ${NEXT_COHORT.dates}` : 'Live, remote course'}
+        </p>
+        <div className="checkout-plan">
+          <span>{info.label}</span>
+          <span className="checkout-price">{info.price}</span>
         </div>
-      </div>
+        <p className="checkout-note">{info.note}</p>
+      </section>
 
-      {/* Stripe embed */}
-      <div className="checkout-embed-wrapper">
+      <div className="checkout-embed">
         <EmbeddedCheckoutProvider stripe={getStripe()} options={{ fetchClientSecret }}>
           <EmbeddedCheckout />
         </EmbeddedCheckoutProvider>
       </div>
 
-      <div className="checkout-trust-row">
-        <span className="checkout-trust-item">
-          <svg viewBox="0 0 16 16" fill="none" aria-hidden="true">
-            <rect x="3" y="7" width="10" height="7" rx="1.5" stroke="currentColor" strokeWidth="1.3" />
-            <path d="M5.5 7V5a2.5 2.5 0 015 0v2" stroke="currentColor" strokeWidth="1.3" strokeLinecap="round" />
-          </svg>
-          Secure payment
-        </span>
-        <span className="checkout-trust-sep">&middot;</span>
-        <span className="checkout-trust-item">100% refundable before {PRICING.balanceDueDate}</span>
-        <span className="checkout-trust-sep">&middot;</span>
-        <span className="checkout-trust-item">Powered by Stripe</span>
-      </div>
+      <p className="checkout-trust muted">
+        Secure payment by Stripe · Fully refundable before {PRICING.balanceDueDate}
+      </p>
     </div>
   );
 }
