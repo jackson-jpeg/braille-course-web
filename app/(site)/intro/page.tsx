@@ -145,7 +145,7 @@ const introJsonLd = {
           name: 'Why does braille matter?',
           acceptedAnswer: {
             '@type': 'Answer',
-            text: 'Braille is essential for literacy and independence. Over 39 million blind people worldwide rely on braille. Research shows that 90% of braille-literate adults are employed, compared to roughly 30% of non-readers. Braille has been adapted for 133 languages worldwide.',
+            text: 'Braille gives people who are blind or have low vision direct access to reading and writing, from books and labels to math, music and computer code. It has been adapted for many languages around the world.',
           },
         },
       ],
@@ -516,8 +516,8 @@ export default function IntroPage() {
               <span>blind people worldwide, with over 250&nbsp;million experiencing vision impairment</span>
             </li>
             <li>
-              <span className="intro-fact-num">90%</span>
-              <span>of braille-literate adults are employed, compared to roughly 30% of non-readers</span>
+              <span className="intro-fact-num">1829</span>
+              <span>the year Louis Braille first published his six-dot code</span>
             </li>
           </ul>
           <blockquote className="intro-quote">

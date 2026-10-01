@@ -76,7 +76,7 @@ const FAQ = [
   },
   {
     q: 'How much does it cost?',
-    a: 'Tuition for the next course will be shared along with the dates. If cost is a concern, please email Delaney — she’s happy to talk it through.',
+    a: 'Tuition for the next course will be shared along with the dates. Questions about cost? Email Delaney@TeachBraille.org.',
   },
   {
     q: 'Do I need this course to learn braille?',
