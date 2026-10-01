@@ -1,50 +1,22 @@
 /**
- * Full A-Z UEB braille dot mappings.
- * Array format: [d1, d4, d2, d5, d3, d6] matching the 2x3 CSS grid.
- * Standard cell:  1 4
+ * Legacy grid-order view of the UEB letters and digits, derived from lib/ueb.ts
+ * (the single source of truth). Do not add patterns here — add them to lib/ueb.ts.
+ *
+ * Array format: [d1, d4, d2, d5, d3, d6], the reading order of a 2-column CSS grid:
+ *                 1 4
  *                 2 5
  *                 3 6
  */
-export const brailleMap: Record<string, number[]> = {
-  A: [1, 0, 0, 0, 0, 0],
-  B: [1, 0, 1, 0, 0, 0],
-  C: [1, 1, 0, 0, 0, 0],
-  D: [1, 1, 0, 1, 0, 0],
-  E: [1, 0, 0, 1, 0, 0],
-  F: [1, 1, 1, 0, 0, 0],
-  G: [1, 1, 1, 1, 0, 0],
-  H: [1, 0, 1, 1, 0, 0],
-  I: [0, 1, 1, 0, 0, 0],
-  J: [0, 1, 1, 1, 0, 0],
-  K: [1, 0, 0, 0, 1, 0],
-  L: [1, 0, 1, 0, 1, 0],
-  M: [1, 1, 0, 0, 1, 0],
-  N: [1, 1, 0, 1, 1, 0],
-  O: [1, 0, 0, 1, 1, 0],
-  P: [1, 1, 1, 0, 1, 0],
-  Q: [1, 1, 1, 1, 1, 0],
-  R: [1, 0, 1, 1, 1, 0],
-  S: [0, 1, 1, 0, 1, 0],
-  T: [0, 1, 1, 1, 1, 0],
-  U: [1, 0, 0, 0, 1, 1],
-  V: [1, 0, 1, 0, 1, 1],
-  W: [0, 1, 1, 1, 0, 1],
-  X: [1, 1, 0, 0, 1, 1],
-  Y: [1, 1, 0, 1, 1, 1],
-  Z: [1, 0, 0, 1, 1, 1],
-  '^': [0, 0, 0, 0, 0, 1], // capital indicator (dot 6)
-  '#': [0, 1, 0, 1, 1, 1], // numeric indicator (dots 3, 4, 5, 6)
-  '0': [0, 1, 1, 1, 0, 0], // J
-  '1': [1, 0, 0, 0, 0, 0], // A
-  '2': [1, 0, 1, 0, 0, 0], // B
-  '3': [1, 1, 0, 0, 0, 0], // C
-  '4': [1, 1, 0, 1, 0, 0], // D
-  '5': [1, 0, 0, 1, 0, 0], // E
-  '6': [1, 1, 1, 0, 0, 0], // F
-  '7': [1, 1, 1, 1, 0, 0], // G
-  '8': [1, 0, 1, 1, 0, 0], // H
-  '9': [0, 1, 1, 0, 0, 0], // I
-};
+
+import { LETTERS, DIGITS, INDICATORS, toGrid, describe } from './ueb';
+
+const map: Record<string, number[]> = {};
+for (const [letter, dots] of Object.entries(LETTERS)) map[letter.toUpperCase()] = toGrid(dots);
+map['^'] = toGrid(INDICATORS.capital.cells[0]); // capital indicator (dot 6)
+map['#'] = toGrid(INDICATORS.numeric.cells[0]); // numeric indicator (dots 3 4 5 6)
+for (const [digit, dots] of Object.entries(DIGITS)) map[digit] = toGrid(dots); // after a numeric indicator
+
+export const brailleMap: Readonly<Record<string, number[]>> = map;
 
 /** Count how many of the 6 dot positions match between two patterns */
 export function computeSimilarity(a: number[], b: number[]): number {
@@ -57,13 +29,6 @@ export function computeSimilarity(a: number[], b: number[]): number {
 
 /** Describe which dots are raised for a letter (e.g., "dots 1 2") */
 export function dotDescription(letter: string): string {
-  const pattern = brailleMap[letter.toUpperCase()];
-  if (!pattern) return '';
-  // Map grid positions back to dot numbers: [d1, d4, d2, d5, d3, d6]
-  const dotNumbers = [1, 4, 2, 5, 3, 6];
-  const raised = pattern
-    .map((v, i) => (v ? dotNumbers[i] : null))
-    .filter(Boolean)
-    .sort((a, b) => a! - b!);
-  return `dots ${raised.join(' ')}`;
+  const dots = LETTERS[letter.toLowerCase()];
+  return dots ? describe(dots) : '';
 }

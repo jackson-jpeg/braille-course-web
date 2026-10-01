@@ -10,6 +10,7 @@
 import { brailleMap } from './braille-map';
 import { contractedBrailleEntries, ContractionEntry } from './contracted-braille-map';
 import type { GameId } from './progress-types';
+import { describe, fromGrid } from './ueb';
 
 /** A single character (letter, digit, indicator, or contraction) taught in a lesson. */
 export interface CharItem {
@@ -78,12 +79,7 @@ function contraction(key: string, print?: string, note?: string): CharItem {
  * pattern-based companion to `dotDescription()` in lib/braille-map.ts.
  */
 export function describeDots(pattern: number[]): string {
-  const dotNumbers = [1, 4, 2, 5, 3, 6];
-  const raised = pattern
-    .map((v, i) => (v ? dotNumbers[i] : null))
-    .filter((n): n is number => n !== null)
-    .sort((a, b) => a - b);
-  return raised.length ? `dots ${raised.join(' ')}` : 'an empty cell';
+  return describe(fromGrid(pattern));
 }
 
 /* ── The curriculum ────────────────────────────────────────────────────────── */
@@ -383,3 +379,9 @@ export function getAdjacentLessons(slug: string): { prev: Lesson | null; next: L
     next: idx < ALL_LESSONS.length - 1 ? ALL_LESSONS[idx + 1] : null,
   };
 }
+
+/** Print text the lessons render as braille (checked against liblouis via lib/ueb-corpus.ts). */
+export const LESSON_BRAILLE_TEXT: { uncontracted: string[]; contracted: string[] } = {
+  uncontracted: [],
+  contracted: [],
+};
