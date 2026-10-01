@@ -1,250 +1,310 @@
 'use client';
 
-import { useState, useEffect, useCallback, useRef } from 'react';
-import { brailleMap, computeSimilarity } from '@/lib/braille-map';
-import SharedBrailleCell from '@/components/BrailleCell';
-import { useGameProgress } from '@/hooks/useGameProgress';
-import { pushAchievements } from '@/components/AchievementToast';
-import { getRandomTip } from '@/lib/learning-tips';
+import '@/styles/games/sequence.css';
+import { useCallback, useEffect, useRef, useState } from 'react';
+import {
+  Hud,
+  ModePicker,
+  Results,
+  StartPanel,
+  dotSimilarity,
+  shuffle,
+  useAnnouncer,
+  useGameKeys,
+  useSession,
+} from '@/components/games/kit';
+import Cell from '@/components/ui/Cell';
+import { ALPHABET, LETTERS, describe } from '@/lib/ueb';
 import { getDifficultyParams } from '@/lib/difficulty-settings';
-import DifficultySelector from '@/components/DifficultySelector';
+import type { Difficulty } from '@/lib/progress-types';
 
-const ALL_LETTERS = Object.keys(brailleMap).filter((k) => /^[A-Z]$/.test(k));
+const ROUNDS = 5;
 
-type Phase = 'playing' | 'checking' | 'result';
+const LEVELS: { value: Difficulty; label: string; hint: string }[] = [
+  { value: 'beginner', label: '4 cells', hint: 'any letters' },
+  { value: 'intermediate', label: '6 cells', hint: 'any letters' },
+  { value: 'advanced', label: '8 cells', hint: 'look-alike letters' },
+];
 
-interface SequenceCard {
-  letter: string;
-  pattern: number[];
+/** Pick N different letters; Advanced picks letters whose cells look alike. */
+function pickLetters(count: number, lookAlike: boolean): string[] {
+  if (!lookAlike) return shuffle(ALPHABET).slice(0, count);
+  const anchor = ALPHABET[Math.floor(Math.random() * ALPHABET.length)];
+  const near = shuffle(ALPHABET.filter((l) => l !== anchor))
+    .sort((a, b) => dotSimilarity(LETTERS[anchor], LETTERS[b]) - dotSimilarity(LETTERS[anchor], LETTERS[a]))
+    .slice(0, count * 2);
+  return [anchor, ...shuffle(near).slice(0, count - 1)];
 }
 
-/** Pick N unique letters; harder difficulty picks visually similar ones */
-function pickLetters(count: number, difficulty: string): string[] {
-  if (difficulty === 'advanced') {
-    const anchor = ALL_LETTERS[Math.floor(Math.random() * ALL_LETTERS.length)];
-    const scored = ALL_LETTERS.filter((l) => l !== anchor)
-      .map((l) => ({ letter: l, sim: computeSimilarity(brailleMap[anchor], brailleMap[l]) }))
-      .sort((a, b) => b.sim - a.sim);
-    const pool = scored.slice(0, count * 2);
-    const shuffled = pool.sort(() => Math.random() - 0.5).slice(0, count - 1);
-    return [anchor, ...shuffled.map((p) => p.letter)].sort(() => Math.random() - 0.5);
-  }
-  const shuffled = [...ALL_LETTERS].sort(() => Math.random() - 0.5);
-  return shuffled.slice(0, count);
+function scramble(letters: string[]): string[] {
+  const sorted = [...letters].sort();
+  let out = shuffle(letters);
+  for (let i = 0; i < 20 && out.every((l, k) => l === sorted[k]); i++) out = shuffle(letters);
+  return out;
 }
 
-function SeqBrailleCell({ pattern }: { pattern: number[] }) {
-  return <SharedBrailleCell pattern={pattern} className="seq-cell" dotClassName="seq-dot" />;
-}
+type Phase = 'ready' | 'playing' | 'checked' | 'done';
 
+/** Sequence: put a row of braille letters into alphabetical order by swapping cards. */
 export default function BrailleSequence() {
-  const { difficulty, setDifficulty, recordResult } = useGameProgress('sequence');
-  const [phase, setPhase] = useState<Phase>('playing');
-  const [cards, setCards] = useState<SequenceCard[]>([]);
-  const [correctOrder, setCorrectOrder] = useState<string[]>([]);
-  const [selectedIdx, setSelectedIdx] = useState<number | null>(null);
+  const { difficulty, setDifficulty, stats, finish, answer } = useSession('sequence');
+  const { announce, region } = useAnnouncer();
+
+  const [phase, setPhase] = useState<Phase>('ready');
+  const [cards, setCards] = useState<string[]>([]);
+  const [picked, setPicked] = useState<number | null>(null);
+  const [results, setResults] = useState<boolean[] | null>(null);
   const [round, setRound] = useState(0);
   const [score, setScore] = useState(0);
-  const [totalRounds] = useState(5);
-  const [feedback, setFeedback] = useState<boolean | null>(null);
-  const [cardResults, setCardResults] = useState<boolean[]>([]);
-  const [tip, setTip] = useState('');
+  const [newBest, setNewBest] = useState(false);
+  const cardRefs = useRef<(HTMLButtonElement | null)[]>([]);
+  const nextRef = useRef<HTMLButtonElement>(null);
+  const focusAfter = useRef<number | null>(null);
 
-  const containerRef = useRef<HTMLDivElement>(null);
-  const roundTimerRef = useRef<ReturnType<typeof setTimeout>>();
-  const scoreRef = useRef(score);
-  scoreRef.current = score;
-  // Refs for the check function to always read latest state
-  const cardsRef = useRef(cards);
-  cardsRef.current = cards;
-  const correctOrderRef = useRef(correctOrder);
-  correctOrderRef.current = correctOrder;
-
-  const params = getDifficultyParams('sequence', difficulty) as { letterCount: number };
-
-  const startRound = useCallback(() => {
-    const letters = pickLetters(params.letterCount, difficulty);
-    const sorted = [...letters].sort();
-    setCorrectOrder(sorted);
-
-    // Scramble — ensure not already in order
-    let scrambled = [...letters].sort(() => Math.random() - 0.5);
-    let attempts = 0;
-    while (scrambled.every((l, i) => l === sorted[i]) && letters.length > 1 && attempts < 20) {
-      scrambled = [...letters].sort(() => Math.random() - 0.5);
-      attempts++;
-    }
-
-    setCards(
-      scrambled.map((letter) => ({
-        letter,
-        pattern: brailleMap[letter],
-      })),
-    );
-    setSelectedIdx(null);
-    setFeedback(null);
-    setCardResults([]);
+  const newRound = useCallback(() => {
+    const { letterCount } = getDifficultyParams('sequence', difficulty) as { letterCount: number };
+    setCards(scramble(pickLetters(letterCount, difficulty === 'advanced')));
+    setPicked(null);
+    setResults(null);
     setPhase('playing');
-  }, [params.letterCount, difficulty]);
+  }, [difficulty]);
 
-  const startGame = useCallback(() => {
-    setScore(0);
+  const start = useCallback(() => {
     setRound(0);
-    setTip('');
-    startRound();
-  }, [startRound]);
+    setScore(0);
+    setNewBest(false);
+    newRound();
+  }, [newRound]);
 
-  useEffect(() => {
-    startGame();
-  }, []); // eslint-disable-line react-hooks/exhaustive-deps
-
-  // Cleanup timer
-  useEffect(() => {
-    return () => {
-      if (roundTimerRef.current) clearTimeout(roundTimerRef.current);
-    };
-  }, []);
-
-  const handleCardClick = useCallback(
-    (index: number) => {
-      if (phase !== 'playing') return;
-
-      if (selectedIdx === null) {
-        setSelectedIdx(index);
-      } else if (selectedIdx === index) {
-        setSelectedIdx(null);
-      } else {
-        // Swap cards
-        const si = selectedIdx;
-        setCards((prev) => {
-          const next = [...prev];
-          const temp = next[si];
-          next[si] = next[index];
-          next[index] = temp;
-          return next;
-        });
-        setSelectedIdx(null);
-      }
+  const swap = useCallback(
+    (a: number, b: number, keepPicked: boolean) => {
+      setCards((prev) => {
+        const next = [...prev];
+        [next[a], next[b]] = [next[b], next[a]];
+        return next;
+      });
+      setPicked(keepPicked ? b : null);
+      announce(`Swapped cards ${a + 1} and ${b + 1}.`);
     },
-    [phase, selectedIdx],
+    [announce],
   );
 
-  const checkOrder = useCallback(() => {
+  /** Pick a card up, put it back, or swap it with the one already picked. */
+  const choose = useCallback(
+    (i: number) => {
+      if (phase !== 'playing' || i < 0 || i >= cards.length) return;
+      if (picked === null) {
+        setPicked(i);
+        announce(`Card ${i + 1} picked up. Choose another card to swap with.`);
+      } else if (picked === i) {
+        setPicked(null);
+        announce(`Card ${i + 1} put back.`);
+      } else {
+        swap(picked, i, false);
+      }
+    },
+    [phase, cards.length, picked, swap, announce],
+  );
+
+  const move = useCallback(
+    (dir: -1 | 1) => {
+      if (phase !== 'playing' || picked === null) return;
+      const to = picked + dir;
+      if (to < 0 || to >= cards.length) return;
+      if (cardRefs.current.some((b) => b === document.activeElement)) focusAfter.current = to;
+      swap(picked, to, true);
+    },
+    [phase, picked, cards.length, swap],
+  );
+
+  useEffect(() => {
+    if (focusAfter.current !== null) {
+      cardRefs.current[focusAfter.current]?.focus();
+      focusAfter.current = null;
+    }
+  }, [cards]);
+
+  const check = useCallback(() => {
     if (phase !== 'playing') return;
-    setPhase('checking');
+    const sorted = [...cards].sort();
+    const perCard = cards.map((l, i) => l === sorted[i]);
+    const ok = perCard.every(Boolean);
+    cards.forEach((l, i) => answer(`letter:${l}`, perCard[i]));
+    setResults(perCard);
+    setPicked(null);
+    setPhase('checked');
+    if (ok) setScore((s) => s + 1);
+    const inPlace = perCard.filter(Boolean).length;
+    announce(
+      ok
+        ? `All in order! ${sorted.join(', ')}.`
+        : `Not yet: ${inPlace} of ${cards.length} in the right place. The order is ${sorted.join(', ')}.`,
+    );
+  }, [phase, cards, answer, announce]);
 
-    // Read from refs to guarantee latest state
-    const currentCards = cardsRef.current;
-    const expected = correctOrderRef.current;
-
-    // Safety: if data is somehow empty, treat as wrong
-    if (currentCards.length === 0 || expected.length === 0) {
-      setFeedback(false);
-      setCardResults([]);
-      setTimeout(() => {
-        startRound();
-      }, 1500);
+  const next = useCallback(() => {
+    if (phase !== 'checked') return;
+    if (round + 1 >= ROUNDS) {
+      setNewBest(score > stats.bestScore);
+      finish(score >= Math.ceil(ROUNDS / 2), score);
+      setPhase('done');
       return;
     }
+    setRound(round + 1);
+    newRound();
+  }, [phase, round, score, stats.bestScore, finish, newRound]);
 
-    // Check each card individually
-    const perCard = currentCards.map((card, i) => card.letter === expected[i]);
-    const isCorrect = perCard.every(Boolean);
+  useEffect(() => {
+    if (phase === 'checked') nextRef.current?.focus();
+  }, [phase]);
 
-    setCardResults(perCard);
-    setFeedback(isCorrect);
-    if (isCorrect) setScore((s) => s + 1);
+  useGameKeys((e) => {
+    const onButton = e.target instanceof HTMLButtonElement;
+    if (phase === 'ready' || phase === 'checked') {
+      if (e.key === 'Enter' && !onButton) {
+        e.preventDefault();
+        if (phase === 'ready') start();
+        else next();
+      }
+      return;
+    }
+    if (phase !== 'playing') return;
+    const n = Number(e.key);
+    if (Number.isInteger(n) && n >= 1 && n <= cards.length) {
+      e.preventDefault();
+      choose(n - 1);
+    } else if (e.key === 'ArrowLeft' && picked !== null) {
+      e.preventDefault();
+      move(-1);
+    } else if (e.key === 'ArrowRight' && picked !== null) {
+      e.preventDefault();
+      move(1);
+    } else if (e.key === 'Escape' && picked !== null) {
+      e.preventDefault();
+      setPicked(null);
+      announce('Card put back.');
+    } else if (e.key === 'Enter' && !onButton) {
+      e.preventDefault();
+      check();
+    }
+  });
 
-    roundTimerRef.current = setTimeout(
-      () => {
-        const nextR = round + 1;
-        setRound(nextR);
-        if (nextR >= totalRounds) {
-          const finalScore = isCorrect ? scoreRef.current + 1 : scoreRef.current;
-          setPhase('result');
-          const achievements = recordResult(finalScore >= totalRounds / 2, finalScore);
-          pushAchievements(achievements);
-          setTip(getRandomTip().fact);
-        } else {
-          startRound();
-        }
-      },
-      isCorrect ? 800 : 2000,
-    );
-  }, [phase, round, totalRounds, startRound, recordResult]);
+  const sorted = [...cards].sort();
 
   return (
-    <div className="seq-container" ref={containerRef}>
-      <div className="seq-header">
-        <span className="section-label">Order</span>
-        <h2>Braille Sequence</h2>
-        <p>Arrange braille cells in alphabetical order</p>
-        <DifficultySelector gameId="sequence" current={difficulty} onChange={setDifficulty} />
-      </div>
+    <div className="game-board seq-board" data-testid="game-board">
+      {region}
 
-      <div className="seq-body">
-        {phase !== 'result' && (
-          <>
-            <div className="seq-status" aria-live="polite" aria-atomic="true">
-              <span>
-                Round {round + 1} / {totalRounds}
-              </span>
-              <span>Score: {score}</span>
-            </div>
+      {phase === 'ready' && (
+        <StartPanel heading="Can you put the braille in ABC order?" onStart={start}>
+          <p className="game-prompt-sub">
+            Read each cell, then swap cards until the letters run from A to Z. Five rounds, no timer.
+          </p>
+          <ModePicker legend="Cards" name="seq-level" value={difficulty} options={LEVELS} onChange={setDifficulty} />
+        </StartPanel>
+      )}
 
-            <p className="seq-instruction">Tap two cards to swap them. Arrange in A→Z order.</p>
+      {(phase === 'playing' || phase === 'checked') && (
+        <>
+          <Hud
+            items={[
+              { label: 'Round', value: `${round + 1} of ${ROUNDS}` },
+              { label: 'Score', value: score },
+            ]}
+          />
+          <h2 className="game-prompt seq-prompt">Put these letters in ABC order</h2>
+          <p className="game-prompt-sub seq-how">
+            Choose a card, then another to swap them. Keys: card number to pick, ← → to move, Enter to check.
+          </p>
 
-            <div className="seq-cards" role="group" aria-label="Braille sequence cards">
-              {cards.map((card, i) => (
-                <button
-                  key={card.letter}
-                  className={`seq-card ${selectedIdx === i ? 'selected' : ''} ${
-                    cardResults.length > 0 ? (cardResults[i] ? 'correct' : 'wrong') : ''
-                  }`}
-                  onClick={() => handleCardClick(i)}
-                  disabled={phase !== 'playing'}
-                  aria-label={`Position ${i + 1}${feedback !== null ? `: letter ${card.letter}` : ''}`}
-                >
-                  <SeqBrailleCell pattern={card.pattern} />
-                  {feedback !== null && <span className="seq-card-letter">{card.letter}</span>}
-                  {cardResults.length > 0 && (
-                    <span className={`seq-card-mark ${cardResults[i] ? 'correct' : 'wrong'}`}>
-                      {cardResults[i] ? '✓' : '✗'}
+          <ol className="seq-cards" aria-label="Cards, first to last">
+            {cards.map((letter, i) => {
+              const ok = results?.[i];
+              return (
+                <li key={letter} className="seq-slot">
+                  <button
+                    ref={(el) => {
+                      cardRefs.current[i] = el;
+                    }}
+                    type="button"
+                    className={`seq-card${picked === i ? ' is-picked' : ''}${
+                      results ? (ok ? ' is-correct' : ' is-wrong') : ''
+                    }`}
+                    aria-pressed={phase === 'playing' ? picked === i : undefined}
+                    aria-label={`Card ${i + 1}: ${describe(LETTERS[letter])}${
+                      results ? `, letter ${letter}, ${ok ? 'in the right place' : 'out of place'}` : ''
+                    }`}
+                    onClick={() => choose(i)}
+                    disabled={phase !== 'playing'}
+                  >
+                    <span className="seq-card-num" aria-hidden="true">
+                      {i + 1}
                     </span>
-                  )}
-                </button>
-              ))}
-            </div>
+                    <Cell dots={LETTERS[letter]} size="lg" />
+                    {picked === i && (
+                      <span className="seq-tag" aria-hidden="true">
+                        Moving
+                      </span>
+                    )}
+                    {results && (
+                      <span className="seq-reveal" aria-hidden="true">
+                        {letter} <span className="seq-mark">{ok ? '✓' : '✗'}</span>
+                      </span>
+                    )}
+                  </button>
+                </li>
+              );
+            })}
+          </ol>
 
-            {phase === 'playing' && (
-              <button className="seq-check-btn" onClick={checkOrder}>
-                Check Order
+          {phase === 'playing' && (
+            <div className="seq-actions">
+              <button type="button" className="btn btn--pine" onClick={check}>
+                Check order
               </button>
-            )}
+            </div>
+          )}
 
-            {feedback !== null && (
-              <div className={`seq-feedback ${feedback ? 'correct' : 'wrong'}`} aria-live="assertive">
-                {feedback ? 'Correct order!' : `Correct: ${correctOrder.join(' → ')}`}
+          {phase === 'checked' && results && (
+            <>
+              <div
+                className={`feedback ${results.every(Boolean) ? 'feedback--good' : 'feedback--bad'}`}
+                aria-hidden="true"
+              >
+                <span className="feedback-pill">
+                  {results.every(Boolean) ? '✓ All in order!' : '✗ Not quite. The order is:'}
+                </span>
               </div>
-            )}
-          </>
-        )}
+              {!results.every(Boolean) && (
+                <ol className="seq-answer" aria-label="Correct order">
+                  {sorted.map((l) => (
+                    <li key={l}>
+                      <Cell dots={LETTERS[l]} size="sm" />
+                      <span>{l}</span>
+                    </li>
+                  ))}
+                </ol>
+              )}
+              <div className="seq-actions">
+                <button ref={nextRef} type="button" className="btn btn--pine" onClick={next}>
+                  {round + 1 >= ROUNDS ? 'See results' : 'Next round'}
+                </button>
+              </div>
+            </>
+          )}
+        </>
+      )}
 
-        {phase === 'result' && (
-          <div className="seq-result">
-            <div className="seq-result-score">
-              {score} / {totalRounds}
-            </div>
-            <div className="seq-result-label">
-              {score === totalRounds ? 'Perfect sequence!' : score >= 3 ? 'Well done!' : 'Keep practicing!'}
-            </div>
-            {tip && <p className="seq-tip">{tip}</p>}
-            <button className="seq-start-btn" onClick={startGame}>
-              Play Again
-            </button>
-          </div>
-        )}
-      </div>
+      {phase === 'done' && (
+        <Results
+          title={score === ROUNDS ? 'Perfect sequence!' : score >= 3 ? 'Well done!' : 'Keep practicing!'}
+          summary={`${score} of ${ROUNDS} rounds in perfect order`}
+          stars={score === ROUNDS ? 3 : score >= 4 ? 2 : score >= 3 ? 1 : 0}
+          best={Math.max(stats.bestScore, score) > 0 ? `${Math.max(stats.bestScore, score)} of ${ROUNDS}` : undefined}
+          isNewBest={newBest}
+          onReplay={start}
+        />
+      )}
     </div>
   );
 }

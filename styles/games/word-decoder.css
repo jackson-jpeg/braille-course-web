@@ -1,0 +1,263 @@
+/* ==========================================================================
+   Word Decoder — read a braille word, type what it says.
+   Builds on styles/games/kit.css and the Raised tokens in app/globals.css.
+   ========================================================================== */
+
+/* Start screen: level cards (native radios) */
+.wd-intro {
+  max-width: 38rem;
+  font-size: var(--step-0);
+}
+.wd-levels {
+  border: 0;
+  padding: 0;
+  margin: 0;
+  min-width: 0;
+  width: 100%;
+  text-align: left;
+}
+.wd-levels legend {
+  font-weight: 700;
+  font-size: var(--step--1);
+  margin-bottom: var(--s-3);
+}
+.wd-level-grid {
+  display: grid;
+  gap: var(--s-3);
+  grid-template-columns: repeat(auto-fill, minmax(min(100%, 15rem), 1fr));
+}
+.wd-level {
+  position: relative;
+  display: grid;
+  grid-template-columns: auto 1fr;
+  column-gap: var(--s-3);
+  row-gap: var(--s-1);
+  align-content: start;
+  min-height: 5.5rem;
+  padding: var(--s-4);
+  border: 2px solid var(--rule);
+  border-radius: var(--r-3);
+  background: var(--paper);
+  box-shadow: 0 3px 0 var(--rule);
+  cursor: pointer;
+  transition:
+    transform var(--t-fast) var(--ease),
+    box-shadow var(--t-fast) var(--ease),
+    border-color var(--t-fast) var(--ease);
+}
+.wd-level input {
+  position: absolute;
+  opacity: 0;
+  pointer-events: none;
+}
+.wd-level:hover {
+  border-color: var(--ink-faint);
+  transform: translateY(-2px);
+  box-shadow: 0 5px 0 var(--rule);
+}
+.wd-level.is-checked {
+  border-color: var(--ink);
+  background: var(--paper-sunk);
+  box-shadow: 0 3px 0 var(--ink);
+}
+.wd-level:has(input:focus-visible) {
+  outline: var(--focus);
+  outline-offset: 3px;
+}
+.wd-level-num {
+  grid-row: span 2;
+  display: grid;
+  place-items: center;
+  width: 2.25rem;
+  height: 2.25rem;
+  border-radius: 50%;
+  background: var(--paper-deep);
+  font-family: var(--font-display);
+  font-weight: 800;
+}
+.wd-level.is-checked .wd-level-num {
+  background: var(--tomato-deep);
+  color: #fff;
+}
+.wd-level-title {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--s-2);
+  font-family: var(--font-display);
+  font-weight: 800;
+  font-size: var(--step-1);
+  line-height: 1.2;
+}
+.wd-level-badge {
+  font-family: var(--font-body);
+}
+.wd-level-blurb {
+  color: var(--ink-soft);
+  font-size: var(--step--1);
+}
+.wd-best {
+  color: var(--ink-soft);
+  font-weight: 700;
+}
+
+/* Play */
+.wd-level-heading {
+  font-size: var(--step-1);
+}
+.wd-stage {
+  min-height: 10rem;
+}
+.wd-run {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  align-items: flex-start;
+  gap: var(--s-3);
+  row-gap: var(--s-5);
+}
+.wd-run--md {
+  gap: var(--s-2);
+  row-gap: var(--s-4);
+}
+.wd-slot {
+  display: grid;
+  justify-items: center;
+  gap: var(--s-2);
+  padding: var(--s-2);
+  border-radius: var(--r-2);
+  transition:
+    background var(--t-med) var(--ease),
+    box-shadow var(--t-med) var(--ease);
+}
+.wd-slot.is-revealed {
+  background: var(--paper);
+}
+.wd-slot.is-hint {
+  background: var(--marigold-tint);
+  box-shadow: 0 0 0 3px var(--marigold);
+}
+.wd-caption {
+  min-height: 1.6rem;
+  max-width: 5.5rem;
+  font-family: var(--font-display);
+  font-weight: 800;
+  font-size: var(--step-1);
+  line-height: 1.1;
+  text-align: center;
+  overflow-wrap: anywhere;
+}
+/* Indicator names ("number sign", "capital") are longer: keep them small. */
+.wd-caption--long {
+  font-family: var(--font-body);
+  font-size: var(--step--1);
+  font-weight: 700;
+  line-height: 1.2;
+}
+.wd-run--md .wd-caption:not(.wd-caption--long) {
+  font-size: var(--step-0);
+  max-width: 4.25rem;
+}
+.wd-space {
+  width: 2rem;
+  align-self: stretch;
+}
+.wd-run--md .wd-space {
+  width: 1.5rem;
+}
+
+.wd-reveal {
+  text-align: center;
+  font-size: var(--step-1);
+}
+.wd-reveal-word {
+  display: inline-block;
+  margin-left: var(--s-2);
+  padding: 0.1em 0.6em;
+  border-radius: var(--r-2);
+  background: var(--paper-sunk);
+  font-family: var(--font-display);
+  font-weight: 800;
+}
+
+.wd-answer {
+  display: grid;
+  justify-items: center;
+  gap: var(--s-3);
+}
+.wd-answer-label {
+  font-size: var(--step-0);
+}
+.wd-answer-note {
+  font-weight: 400;
+  color: var(--ink-soft);
+}
+.wd-answer-row {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  align-items: stretch;
+  gap: var(--s-3);
+  width: 100%;
+}
+.wd-answer-row .answer-input {
+  flex: 1 1 14rem;
+  min-height: 3.5rem;
+}
+.wd-answer-row .btn {
+  min-height: 3.5rem;
+  min-width: 8rem;
+}
+.wd-answer-row .answer-input[readonly] {
+  background: var(--paper-sunk);
+}
+.wd-tools {
+  justify-content: center;
+  align-items: center;
+}
+.wd-tools .btn {
+  min-height: 2.75rem;
+}
+.wd-hint-cost {
+  color: var(--ink-soft);
+  font-size: var(--step--1);
+}
+.wd-points {
+  font-family: var(--font-display);
+  color: var(--pine);
+}
+
+/* Results recap */
+.wd-recap {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: var(--s-2);
+}
+.wd-recap li {
+  display: inline-flex;
+  gap: var(--s-2);
+  padding: 0.3rem 0.8rem;
+  border-radius: var(--r-pill);
+  font-weight: 700;
+}
+.wd-recap li.is-correct {
+  background: var(--pine-tint);
+  color: var(--pine-deep);
+}
+.wd-recap li.is-wrong {
+  background: var(--danger-tint);
+  color: var(--danger);
+}
+
+@media (max-width: 480px) {
+  .wd-run {
+    gap: var(--s-2);
+  }
+  .wd-caption {
+    font-size: var(--step-0);
+  }
+}

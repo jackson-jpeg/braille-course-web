@@ -1,294 +1,280 @@
 'use client';
 
-import { useState, useEffect, useCallback, useRef } from 'react';
-import { brailleMap } from '@/lib/braille-map';
-import { useGameProgress } from '@/hooks/useGameProgress';
-import { pushAchievements } from '@/components/AchievementToast';
-import { getRandomTip } from '@/lib/learning-tips';
+import '@/styles/games/reflex-dots.css';
+import { useCallback, useEffect, useRef, useState, type CSSProperties } from 'react';
+import {
+  DotPad,
+  Hud,
+  ModePicker,
+  Results,
+  StartPanel,
+  sample,
+  useAnnouncer,
+  useGameKeys,
+  useSession,
+} from '@/components/games/kit';
+import Cell from '@/components/ui/Cell';
+import { ALPHABET, LETTERS, describe, sameDots } from '@/lib/ueb';
 import { getDifficultyParams } from '@/lib/difficulty-settings';
-import DifficultySelector from '@/components/DifficultySelector';
+import type { Difficulty } from '@/lib/progress-types';
 
-const LETTERS = Object.keys(brailleMap).filter((k) => /^[A-Z]$/.test(k));
+type Show = 'flash' | 'relaxed';
+type Phase = 'ready' | 'show' | 'input' | 'feedback' | 'done';
+type Mark = 'correct' | 'missing' | 'extra';
 
-type Phase = 'ready' | 'show' | 'input' | 'feedback' | 'result';
+const LEVELS: { value: Difficulty; label: string; hint: string }[] = [
+  { value: 'beginner', label: 'Gentle', hint: '2 seconds · 10 rounds' },
+  { value: 'intermediate', label: 'Quick', hint: '1.2 seconds · 15 rounds' },
+  { value: 'advanced', label: 'Lightning', hint: '0.7 seconds · 20 rounds' },
+];
 
+const SHOWS: { value: Show; label: string; hint: string }[] = [
+  { value: 'flash', label: 'Flash', hint: 'the cell fades by itself' },
+  { value: 'relaxed', label: 'Relaxed', hint: 'you hide it when ready' },
+];
+
+function marksFor(target: readonly number[], got: readonly number[]): Partial<Record<number, Mark>> {
+  const marks: Partial<Record<number, Mark>> = {};
+  for (let d = 1; d <= 6; d++) {
+    const want = target.includes(d);
+    const have = got.includes(d);
+    if (want && have) marks[d] = 'correct';
+    else if (want) marks[d] = 'missing';
+    else if (have) marks[d] = 'extra';
+  }
+  return marks;
+}
+
+/** Reflex Dots: a cell flashes up, then fades — raise the same dots from memory. */
 export default function BrailleReflexDots() {
-  const { difficulty, setDifficulty, recordResult } = useGameProgress('reflex-dots');
-  const [phase, setPhase] = useState<Phase>('ready');
-  const [targetLetter, setTargetLetter] = useState('');
-  const [targetPattern, setTargetPattern] = useState<number[]>([0, 0, 0, 0, 0, 0]);
-  const [userPattern, setUserPattern] = useState<number[]>([0, 0, 0, 0, 0, 0]);
-  const [round, setRound] = useState(0);
-  const [score, setScore] = useState(0);
-  const [isCorrect, setIsCorrect] = useState<boolean | null>(null);
-  const [tip, setTip] = useState('');
-
-  const containerRef = useRef<HTMLDivElement>(null);
-  const visibleRef = useRef(true);
-  const showTimeoutRef = useRef<ReturnType<typeof setTimeout>>();
-  const roundTimerRef = useRef<ReturnType<typeof setTimeout>>();
-  const scoreRef = useRef(score);
-  scoreRef.current = score;
-
-  const params = getDifficultyParams('reflex-dots', difficulty) as {
+  const { difficulty, setDifficulty, stats, finish, answer } = useSession('reflex-dots');
+  const { announce, region } = useAnnouncer();
+  const { displayTime, rounds } = getDifficultyParams('reflex-dots', difficulty) as {
     displayTime: number;
     rounds: number;
   };
 
-  // Visibility-scoped keyboard
-  useEffect(() => {
-    const el = containerRef.current;
-    if (!el) return;
-    const observer = new IntersectionObserver(
-      ([entry]) => {
-        visibleRef.current = entry.isIntersecting;
-      },
-      { threshold: 0.3 },
-    );
-    observer.observe(el);
-    return () => observer.disconnect();
-  }, []);
+  const [show, setShow] = useState<Show>('flash');
+  const [phase, setPhase] = useState<Phase>('ready');
+  const [letter, setLetter] = useState('a');
+  const [dots, setDots] = useState<number[]>([]);
+  const [round, setRound] = useState(0);
+  const [score, setScore] = useState(0);
+  const [newBest, setNewBest] = useState(false);
+  const hideTimer = useRef<ReturnType<typeof setTimeout>>();
+  const nextRef = useRef<HTMLButtonElement>(null);
+  const lastLetter = useRef('');
 
-  const startRound = useCallback(() => {
-    const letter = LETTERS[Math.floor(Math.random() * LETTERS.length)];
-    const pattern = brailleMap[letter];
-    setTargetLetter(letter);
-    setTargetPattern(pattern);
-    setUserPattern([0, 0, 0, 0, 0, 0]);
-    setIsCorrect(null);
+  const clearTimer = useCallback(() => {
+    if (hideTimer.current) clearTimeout(hideTimer.current);
+  }, []);
+  useEffect(() => clearTimer, [clearTimer]);
+
+  const hide = useCallback(() => {
+    clearTimer();
+    setPhase((p) => (p === 'show' ? 'input' : p));
+    announce('Your turn. Raise the dots you saw, then press Enter.');
+  }, [clearTimer, announce]);
+
+  const showCell = useCallback(() => {
+    let l = sample(ALPHABET);
+    while (l === lastLetter.current) l = sample(ALPHABET);
+    lastLetter.current = l;
+    setLetter(l);
+    setDots([]);
     setPhase('show');
+    announce(`Remember this cell: ${describe(LETTERS[l])}.`);
+    clearTimer();
+    if (show === 'flash') hideTimer.current = setTimeout(hide, displayTime);
+  }, [show, displayTime, hide, clearTimer, announce]);
 
-    // Show the pattern briefly, then hide
-    showTimeoutRef.current = setTimeout(() => {
-      setPhase('input');
-    }, params.displayTime);
-  }, [params.displayTime]);
-
-  const startGame = useCallback(() => {
-    setScore(0);
+  const start = useCallback(() => {
     setRound(0);
-    setTip('');
-    startRound();
-  }, [startRound]);
+    setScore(0);
+    setNewBest(false);
+    showCell();
+  }, [showCell]);
+
+  const target = LETTERS[letter];
+
+  const check = useCallback(() => {
+    if (phase !== 'input') return;
+    const ok = sameDots(dots, target);
+    answer(`letter:${letter}`, ok);
+    if (ok) setScore((s) => s + 1);
+    setPhase('feedback');
+    announce(
+      ok
+        ? `Correct! ${describe(target)} — that’s the letter ${letter}.`
+        : `Not quite. You raised ${describe(dots)}. The cell was ${describe(target)}, the letter ${letter}.`,
+    );
+  }, [phase, dots, target, letter, answer, announce]);
+
+  const next = useCallback(() => {
+    if (phase !== 'feedback') return;
+    if (round + 1 >= rounds) {
+      setNewBest(score > stats.bestScore);
+      finish(score >= rounds / 2, score);
+      setPhase('done');
+      return;
+    }
+    setRound(round + 1);
+    showCell();
+  }, [phase, round, rounds, score, stats.bestScore, finish, showCell]);
 
   useEffect(() => {
-    return () => {
-      if (showTimeoutRef.current) clearTimeout(showTimeoutRef.current);
-      if (roundTimerRef.current) clearTimeout(roundTimerRef.current);
-    };
-  }, []);
+    if (phase === 'feedback') nextRef.current?.focus();
+  }, [phase]);
 
-  const toggleDot = useCallback(
-    (index: number) => {
-      if (phase !== 'input') return;
-      setUserPattern((prev) => {
-        const next = [...prev];
-        next[index] = next[index] ? 0 : 1;
-        return next;
-      });
+  useGameKeys(
+    (e) => {
+      if (e.key !== 'Enter' || e.target instanceof HTMLButtonElement) return;
+      e.preventDefault();
+      if (phase === 'ready') start();
+      else if (phase === 'show' && show === 'relaxed') hide();
+      else if (phase === 'feedback') next();
     },
-    [phase],
+    { enabled: phase === 'ready' || phase === 'show' || phase === 'feedback' },
   );
 
-  const submitAnswer = useCallback(() => {
-    if (phase !== 'input') return;
-
-    const correct = userPattern.every((v, i) => v === targetPattern[i]);
-    setIsCorrect(correct);
-    setPhase('feedback');
-
-    if (correct) setScore((s) => s + 1);
-
-    roundTimerRef.current = setTimeout(
-      () => {
-        const nextRound = round + 1;
-        setRound(nextRound);
-        if (nextRound >= params.rounds) {
-          const finalScore = correct ? scoreRef.current + 1 : scoreRef.current;
-          setPhase('result');
-          const achievements = recordResult(finalScore >= params.rounds / 2, finalScore);
-          pushAchievements(achievements);
-          setTip(getRandomTip().fact);
-        } else {
-          startRound();
-        }
-      },
-      correct ? 800 : 1200,
-    );
-  }, [phase, userPattern, targetPattern, round, params.rounds, startRound, recordResult]);
-
-  // Keyboard: 1-6 to toggle dots, Enter to submit
-  useEffect(() => {
-    function onKeyDown(e: KeyboardEvent) {
-      if (!visibleRef.current) return;
-      if (e.ctrlKey || e.metaKey || e.altKey) return;
-
-      if (phase === 'input') {
-        // Dot positions: keys 1-6 map to dots 1,4,2,5,3,6 (grid order)
-        const dotKeyMap: Record<string, number> = {
-          '1': 0,
-          '4': 1,
-          '2': 2,
-          '5': 3,
-          '3': 4,
-          '6': 5,
-        };
-        if (e.key in dotKeyMap) {
-          toggleDot(dotKeyMap[e.key]);
-        }
-        if (e.key === 'Enter') {
-          submitAnswer();
-        }
-      }
-    }
-    window.addEventListener('keydown', onKeyDown);
-    return () => window.removeEventListener('keydown', onKeyDown);
-  }, [phase, toggleDot, submitAnswer]);
-
-  // Dot number labels for the grid (standard braille numbering)
-  const dotNumbers = [1, 4, 2, 5, 3, 6];
+  const ok = phase === 'feedback' && sameDots(dots, target);
 
   return (
-    <div className="reflex-container" ref={containerRef}>
-      <div className="reflex-header">
-        <span className="section-label">Arcade</span>
-        <h2>Reflex Dots</h2>
-        <p>Memorize and recreate braille patterns</p>
-        <DifficultySelector gameId="reflex-dots" current={difficulty} onChange={setDifficulty} />
-      </div>
+    <div className="game-board rx-board" data-testid="game-board">
+      {region}
 
-      <div className="reflex-body">
-        {phase === 'ready' && (
-          <div className="reflex-ready">
-            <p className="reflex-instructions">
-              A braille pattern will flash briefly. Tap the dots to recreate it from memory!
-              <span className="reflex-kbd-hint">Keyboard: 1–6 toggle dots, Enter to submit</span>
-            </p>
-            <button className="reflex-start-btn" onClick={startGame}>
-              Start Game
-            </button>
+      {phase === 'ready' && (
+        <StartPanel heading="How good is your dot memory?" onStart={start}>
+          <p className="game-prompt-sub">
+            A cell appears, then disappears. Raise the same dots from memory with the dot pad, keys 1–6, or F D S J K L.
+          </p>
+          <div className="rx-options">
+            <ModePicker legend="Speed" name="rx-level" value={difficulty} options={LEVELS} onChange={setDifficulty} />
+            <ModePicker legend="Showing the cell" name="rx-show" value={show} options={SHOWS} onChange={setShow} />
           </div>
-        )}
+        </StartPanel>
+      )}
 
-        {(phase === 'show' || phase === 'input' || phase === 'feedback') && (
-          <>
-            <div className="reflex-status" aria-live="polite" aria-atomic="true">
-              <span>
-                Round {round + 1} / {params.rounds}
-              </span>
-              <span>Score: {score}</span>
-            </div>
+      {(phase === 'show' || phase === 'input' || phase === 'feedback') && (
+        <>
+          <Hud
+            items={[
+              { label: 'Round', value: `${round + 1} of ${rounds}` },
+              { label: 'Score', value: score },
+            ]}
+          />
 
-            {/* Show phase: display the target pattern */}
-            {phase === 'show' && (
-              <div className="reflex-display" aria-label={`Remember this pattern for letter ${targetLetter}`}>
-                <div className="reflex-flash-label">
-                  Memorize: <span className="reflex-letter-badge">{targetLetter}</span>
-                </div>
-                <div className="reflex-grid reflex-grid-show">
-                  {targetPattern.map((v, i) => (
-                    <span key={i} className={`reflex-dot-display ${v ? 'filled' : 'empty'}`}>
-                      {v ? '●' : '○'}
-                    </span>
-                  ))}
-                </div>
+          {phase === 'show' && (
+            <div className="rx-show">
+              <h2 className="game-prompt rx-prompt">Remember this cell</h2>
+              <div className="game-cell-stage rx-stage">
+                <Cell key={`${round}-${letter}`} dots={target} size="xl" framed pop label="Cell to remember" />
               </div>
-            )}
+              {show === 'flash' ? (
+                <div className="timer-bar rx-fuse" aria-hidden="true">
+                  <span style={{ '--rx-ms': `${displayTime}ms` } as CSSProperties} />
+                </div>
+              ) : (
+                <div className="rx-actions">
+                  <button type="button" className="btn btn--pine" onClick={hide}>
+                    Got it — hide the cell
+                  </button>
+                </div>
+              )}
+            </div>
+          )}
 
-            {/* Input phase: user taps dots */}
-            {phase === 'input' && (
-              <div className="reflex-input" aria-label={`Recreate the pattern for letter ${targetLetter}`}>
-                <div className="reflex-prompt-text">
-                  Recreate: <span className="reflex-letter-badge">{targetLetter}</span>
-                </div>
-                <div className="reflex-grid reflex-grid-input" role="group">
-                  {userPattern.map((v, i) => (
-                    <button
-                      key={i}
-                      className={`reflex-dot-btn ${v ? 'active' : ''}`}
-                      onClick={() => toggleDot(i)}
-                      aria-label={`Dot ${dotNumbers[i]}: ${v ? 'raised' : 'flat'}`}
-                      aria-pressed={!!v}
-                    >
-                      <span className="reflex-dot-num">{dotNumbers[i]}</span>
-                      {v ? '●' : '○'}
-                    </button>
-                  ))}
-                </div>
-                <button className="reflex-submit-btn" onClick={submitAnswer}>
+          {phase === 'input' && (
+            <div className="rx-input">
+              <h2 className="game-prompt rx-prompt">Now raise the same dots</h2>
+              <DotPad value={dots} onChange={setDots} onSubmit={check} label="Your cell" />
+              <div className="rx-actions">
+                <button
+                  type="button"
+                  className="btn btn--paper btn--sm"
+                  onClick={() => setDots([])}
+                  disabled={!dots.length}
+                >
+                  Clear
+                </button>
+                <button type="button" className="btn btn--pine" onClick={check}>
                   Check
                 </button>
               </div>
-            )}
+            </div>
+          )}
 
-            {/* Feedback phase */}
-            {phase === 'feedback' && (
-              <div className={`reflex-feedback ${isCorrect ? 'correct' : 'wrong'}`} aria-live="assertive">
-                <div className="reflex-feedback-icon">{isCorrect ? '✓' : '✗'}</div>
-                <div className="reflex-feedback-text">
-                  {isCorrect ? (
-                    <>
-                      Correct! That&apos;s <span className="reflex-letter-badge">{targetLetter}</span>
-                    </>
-                  ) : (
-                    <>
-                      That was <span className="reflex-letter-badge">{targetLetter}</span>
-                    </>
-                  )}
-                </div>
-                {!isCorrect && (
-                  <div className="reflex-comparison" role="group" aria-label="Pattern comparison">
-                    <div className="reflex-comparison-col" aria-label="Your answer">
-                      <div className="reflex-comparison-label">Your answer</div>
-                      <div className="reflex-grid reflex-grid-show">
-                        {userPattern.map((v, i) => (
-                          <span
-                            key={i}
-                            className={`reflex-dot-display ${v ? 'filled' : 'empty'}${v !== targetPattern[i] ? ' mismatch' : ''}`}
-                          >
-                            {v ? '●' : '○'}
-                          </span>
-                        ))}
-                      </div>
-                    </div>
-                    <div className="reflex-comparison-col" aria-label="Correct pattern">
-                      <div className="reflex-comparison-label">Correct</div>
-                      <div className="reflex-grid reflex-grid-show">
-                        {targetPattern.map((v, i) => (
-                          <span key={i} className={`reflex-dot-display ${v ? 'filled' : 'empty'}`}>
-                            {v ? '●' : '○'}
-                          </span>
-                        ))}
-                      </div>
-                    </div>
+          {phase === 'feedback' && (
+            <div className="rx-feedback">
+              <h2 className="game-prompt rx-prompt">{ok ? 'Perfect copy!' : 'Here’s how it compares'}</h2>
+              <div className="rx-compare">
+                <figure className="rx-col">
+                  <DotPad
+                    value={dots}
+                    onChange={() => {}}
+                    disabled
+                    keyboard={false}
+                    marks={marksFor(target, dots)}
+                    size="md"
+                    label="Your cell"
+                  />
+                  <figcaption>Yours</figcaption>
+                </figure>
+                <figure className="rx-col">
+                  <div className="rx-target">
+                    <Cell dots={target} size="xl" framed label={`The cell was the letter ${letter}`} />
                   </div>
-                )}
+                  <figcaption>
+                    The cell: <span className="letter-chip">{letter}</span>
+                  </figcaption>
+                </figure>
               </div>
-            )}
-          </>
-        )}
+              {!ok && (
+                <ul className="rx-legend" aria-hidden="true">
+                  <li>
+                    <span className="rx-key">✓</span> right dot
+                  </li>
+                  <li>
+                    <span className="rx-key">+</span> missed dot
+                  </li>
+                  <li>
+                    <span className="rx-key">✗</span> extra dot
+                  </li>
+                </ul>
+              )}
+              <div className={`feedback ${ok ? 'feedback--good' : 'feedback--bad'}`} aria-hidden="true">
+                <span className="feedback-pill">
+                  {ok ? `✓ Correct — ${describe(target)}` : `✗ It was ${describe(target)}`}
+                </span>
+              </div>
+              <div className="rx-actions">
+                <button ref={nextRef} type="button" className="btn btn--pine" onClick={next}>
+                  {round + 1 >= rounds ? 'See results' : 'Next cell'}
+                </button>
+              </div>
+            </div>
+          )}
+        </>
+      )}
 
-        {phase === 'result' && (
-          <div className="reflex-result">
-            <div className="reflex-result-score">
-              {score} / {params.rounds}
-            </div>
-            <div className="reflex-result-label">
-              {score === params.rounds
-                ? 'Perfect reflexes!'
-                : score >= params.rounds * 0.7
-                  ? 'Sharp memory!'
-                  : score >= params.rounds * 0.5
-                    ? 'Good effort!'
-                    : 'Keep practicing!'}
-            </div>
-            {tip && <p className="reflex-tip">{tip}</p>}
-            <button className="reflex-start-btn" onClick={startGame}>
-              Play Again
-            </button>
-          </div>
-        )}
-      </div>
+      {phase === 'done' && (
+        <Results
+          title={
+            score === rounds
+              ? 'Perfect reflexes!'
+              : score >= rounds * 0.7
+                ? 'Sharp memory!'
+                : score >= rounds / 2
+                  ? 'Good effort!'
+                  : 'Keep practicing!'
+          }
+          summary={`${score} of ${rounds} cells copied exactly`}
+          stars={score === rounds ? 3 : score >= rounds * 0.7 ? 2 : score >= rounds / 2 ? 1 : 0}
+          best={Math.max(stats.bestScore, score) > 0 ? `${Math.max(stats.bestScore, score)} cells` : undefined}
+          isNewBest={newBest}
+          onReplay={start}
+        />
+      )}
     </div>
   );
 }

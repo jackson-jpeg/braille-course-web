@@ -1,7 +1,9 @@
 'use client';
 
+import Cell from '@/components/ui/Cell';
+import { LETTERS } from '@/lib/ueb';
+
 import { useState, useEffect, useRef } from 'react';
-import { PRICING } from '@/lib/pricing';
 
 export default function SuccessPoller({
   sessionId,
@@ -48,56 +50,42 @@ export default function SuccessPoller({
   // Already had schedule from SSR
   if (initialSchedule) {
     return (
-      <div className="detail-row">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" aria-hidden="true">
-          <circle cx="12" cy="12" r="10" />
-          <polyline points="12,6 12,12 16,14" />
-        </svg>
+      <li>
+        <Cell dots={LETTERS.s} size="xs" />
         <span>
           <strong>Your schedule:</strong> {initialSchedule}
         </span>
-      </div>
+      </li>
     );
   }
 
   // Resolved via polling
   if (resolved && schedule) {
     return (
-      <div className="detail-row schedule-resolved">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" aria-hidden="true">
-          <circle cx="12" cy="12" r="10" />
-          <polyline points="12,6 12,12 16,14" />
-        </svg>
+      <li className="is-resolved" role="status">
+        <Cell dots={LETTERS.s} size="xs" />
         <span>
           <strong>Your schedule:</strong> {schedule}
         </span>
-      </div>
+      </li>
     );
   }
 
   // Exhausted retries
   if (exhausted) {
     return (
-      <div className="detail-row">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" aria-hidden="true">
-          <circle cx="12" cy="12" r="10" />
-          <polyline points="12,6 12,12 16,14" />
-        </svg>
+      <li>
+        <Cell dots={LETTERS.s} size="xs" />
         <span>Schedule details will be in your confirmation email.</span>
-      </div>
+      </li>
     );
   }
 
   // Polling in progress
   return (
-    <div className="detail-row schedule-shimmer">
-      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" aria-hidden="true">
-        <circle cx="12" cy="12" r="10" />
-        <polyline points="12,6 12,12 16,14" />
-      </svg>
-      <span>
-        <strong>{PRICING.totalSessions} sessions</strong> — loading your schedule&hellip;
-      </span>
-    </div>
+    <li className="is-loading" role="status">
+      <Cell dots={LETTERS.s} size="xs" />
+      <span>Loading your schedule&hellip;</span>
+    </li>
   );
 }

@@ -13,7 +13,7 @@ import {
 } from './progress-types';
 
 const STORAGE_KEY = 'brailleGames_progress';
-const CURRENT_VERSION = 2;
+const CURRENT_VERSION = 3;
 
 // In-memory cache to avoid repeated JSON.parse on every read
 let _cache: ProgressData | null = null;
@@ -375,6 +375,75 @@ function getDateString(date: Date): string {
 }
 
 function migrateData(data: ProgressData): ProgressData {
-  // Future migrations go here
-  return { ...createDefaultProgress(), ...data, version: CURRENT_VERSION };
+  const defaults = createDefaultProgress();
+  // v1 → v2 added `course`; v2 → v3 added `items` and `quest`. Spreading defaults fills them.
+  return {
+    ...defaults,
+    ...data,
+    items: data.items ?? {},
+    quest: { ...defaults.quest, ...(data.quest ?? {}) },
+    settings: {
+      ...defaults.settings,
+      ...(data.settings ?? {}),
+      difficulty: { ...defaults.settings.difficulty, ...(data.settings?.difficulty ?? {}) },
+    },
+    version: CURRENT_VERSION,
+  };
+}
+
+/* ── Item skill memory ─────────────────────────────────────────────────────── */
+
+/** Record one answer about one item (e.g. "letter:q"). Safe to call often. */
+export function recordItem(key: string, correct: boolean): void {
+  const progress = loadProgress();
+  if (!progress.settings.trackingEnabled) return;
+  const stat = progress.items[key] ?? { seen: 0, correct: 0, run: 0, lastSeen: '' };
+  stat.seen++;
+  if (correct) {
+    stat.correct++;
+    stat.run++;
+  } else {
+    stat.run = 0;
+  }
+  stat.lastSeen = new Date().toISOString();
+  progress.items[key] = stat;
+  saveProgress(progress);
+}
+
+/** 0–1 confidence for an item: accuracy weighted by how many times it's been seen. */
+export function itemStrength(key: string, progress: ProgressData = loadProgress()): number {
+  const stat = progress.items[key];
+  if (!stat || stat.seen === 0) return 0;
+  const accuracy = stat.correct / stat.seen;
+  const exposure = Math.min(stat.seen / 6, 1);
+  const runBonus = Math.min(stat.run / 4, 1) * 0.2;
+  return Math.min(1, accuracy * exposure * 0.8 + runBonus);
+}
+
+/** The weakest items among `keys` (unseen first, then lowest strength). */
+export function weakestItems(keys: string[], count: number): string[] {
+  const progress = loadProgress();
+  return [...keys]
+    .map((k, i) => ({ k, s: itemStrength(k, progress), i }))
+    .sort((a, b) => a.s - b.s || a.i - b.i)
+    .slice(0, count)
+    .map((x) => x.k);
+}
+
+/* ── Dot Quest ─────────────────────────────────────────────────────────────── */
+
+export function getQuest(): ProgressData['quest'] {
+  return loadProgress().quest;
+}
+
+/** Save stars for a stage (keeps the best) and add any new stickers. Returns newly earned stickers. */
+export function saveQuestStage(stageId: string, stars: number, stickers: string[] = []): string[] {
+  const progress = loadProgress();
+  const quest = progress.quest;
+  quest.stars[stageId] = Math.max(quest.stars[stageId] ?? 0, Math.max(0, Math.min(3, stars)));
+  const fresh = stickers.filter((s) => !quest.stickers.includes(s));
+  quest.stickers.push(...fresh);
+  if (!progress.firstPlayDate) progress.firstPlayDate = new Date().toISOString();
+  saveProgress(progress);
+  return fresh;
 }

@@ -1,0 +1,144 @@
+/* ==========================================================================
+   Reflex Dots — see a cell, then raise it from memory.
+   ========================================================================== */
+
+.rx-board .btn--sm,
+.rx-board .mode-option {
+  min-height: 3rem;
+}
+
+.rx-options {
+  display: grid;
+  gap: var(--s-4);
+  justify-items: center;
+}
+
+.rx-show,
+.rx-input,
+.rx-feedback {
+  display: grid;
+  gap: var(--s-5);
+  justify-items: center;
+}
+.rx-show > *,
+.rx-feedback > * {
+  width: 100%;
+}
+.rx-prompt {
+  font-size: var(--step-1);
+}
+.rx-stage {
+  min-height: 12rem;
+}
+
+/* Flash mode: a fuse that burns down while the cell is visible */
+.rx-fuse {
+  max-width: 20rem;
+  margin-inline: auto;
+}
+.rx-fuse > span {
+  width: 100%;
+  background: var(--marigold);
+  transform-origin: left;
+  animation: rx-fuse var(--rx-ms, 2000ms) linear forwards;
+}
+@keyframes rx-fuse {
+  to {
+    transform: scaleX(0);
+  }
+}
+
+.rx-actions {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: var(--s-3);
+}
+.rx-actions .btn {
+  min-height: 3.25rem;
+}
+
+/* Comparison: your pad next to the real cell */
+.rx-compare {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  align-items: flex-end;
+  gap: var(--s-6);
+}
+.rx-col {
+  display: grid;
+  justify-items: center;
+  gap: var(--s-3);
+  margin: 0;
+}
+.rx-col figcaption {
+  font-weight: 700;
+  display: inline-flex;
+  align-items: center;
+  gap: var(--s-2);
+}
+.rx-target {
+  display: grid;
+  place-items: center;
+  min-height: 12rem;
+}
+
+/* Feedback marks carry a symbol as well as a color */
+.rx-board .dotpad-dot {
+  position: relative;
+}
+.rx-board .dotpad-dot.is-correct::after,
+.rx-board .dotpad-dot.is-missing::after,
+.rx-board .dotpad-dot.is-extra::after {
+  position: absolute;
+  top: -0.45rem;
+  right: -0.45rem;
+  display: grid;
+  place-items: center;
+  width: 1.5rem;
+  height: 1.5rem;
+  border-radius: 50%;
+  font-size: 0.85rem;
+  font-weight: 800;
+  color: #fff;
+}
+.rx-board .dotpad-dot.is-correct::after {
+  content: '✓';
+  background: var(--pine);
+}
+.rx-board .dotpad-dot.is-missing::after {
+  content: '+';
+  background: var(--pine-deep);
+}
+.rx-board .dotpad-dot.is-extra::after {
+  content: '✗';
+  background: var(--danger);
+}
+.rx-board .dotpad-dot:disabled {
+  opacity: 1;
+  cursor: default;
+}
+
+.rx-legend {
+  list-style: none;
+  padding: 0;
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: var(--s-2) var(--s-5);
+  font-size: var(--step--1);
+  color: var(--ink-soft);
+}
+.rx-key {
+  display: inline-grid;
+  place-items: center;
+  width: 1.4rem;
+  height: 1.4rem;
+  margin-right: 0.3rem;
+  border-radius: 50%;
+  background: var(--ink);
+  color: #fff;
+  font-weight: 800;
+  font-size: 0.8rem;
+}

@@ -1,477 +1,461 @@
 'use client';
 
-import { useState, useEffect, useCallback, useRef } from 'react';
-import { contractedBrailleEntries, type ContractionEntry, type ContractionType } from '@/lib/contracted-braille-map';
+import '@/styles/games/contraction-sprint.css';
+import { useCallback, useEffect, useRef, useState } from 'react';
+import {
+  Choices,
+  Hud,
+  ModePicker,
+  Results,
+  StartPanel,
+  dotSimilarity,
+  shuffle,
+  useAnnouncer,
+  useGameKeys,
+  useSession,
+} from '@/components/games/kit';
+import Cell from '@/components/ui/Cell';
+import BrailleText from '@/components/ui/BrailleText';
+import { contractedBrailleEntries, type ContractionType } from '@/lib/contracted-braille-map';
 import { getContractionWords, type ContractionWord } from '@/lib/contraction-words';
-import { computeSimilarity } from '@/lib/braille-map';
-import { useGameProgress } from '@/hooks/useGameProgress';
-import DifficultySelector from '@/components/DifficultySelector';
-import { pushAchievements } from '@/components/AchievementToast';
-import { getRandomTip } from '@/lib/learning-tips';
+import { CONTRACTIONS, LETTERS, describe, describeCells, fromGrid, type Dots } from '@/lib/ueb';
+import { getDifficultyParams } from '@/lib/difficulty-settings';
+import type { Difficulty } from '@/lib/progress-types';
 
-/* ── Types ─────────────────────────────────────────────── */
+/* ── Question generation (pure, exported for tests) ──────────────────────── */
 
-type Phase = 'ready' | 'playing' | 'result';
-type QuestionKind = 'recognition' | 'recall' | 'application';
+export interface SprintItem {
+  /** Print text of the contraction, e.g. "the", "ch", "but". */
+  text: string;
+  dots: number[];
+  type: ContractionType;
+}
 
-interface Question {
+export type QuestionKind = 'recognition' | 'recall' | 'application';
+
+export interface SprintQuestion {
   kind: QuestionKind;
-  /** What the user sees as the prompt */
-  promptLabel: string;
-  /** Braille dots shown in the prompt (recognition only) */
-  promptPattern?: number[];
-  /** The 4 choices */
-  choices: Choice[];
-  /** Index of correct choice (0-3) */
-  correctIndex: number;
+  answer: SprintItem;
+  /** Four options with distinct texts AND distinct cells (one is the answer). */
+  options: SprintItem[];
+  /** Application questions: the print word and its contracted braille. */
+  word?: { print: string; cells: Dots[] };
 }
 
-interface Choice {
-  label: string;
-  pattern?: number[]; // recall choices show braille
-}
-
-/* ── Helpers ───────────────────────────────────────────── */
-
-const BEGINNER_TYPES: ContractionType[] = ['wordsign'];
-const ALL_TYPES: ContractionType[] = ['wordsign', 'strong', 'groupsign-strong', 'groupsign-lower', 'wordsign-lower'];
-
-function getPool(difficulty: 'beginner' | 'intermediate' | 'advanced'): ContractionEntry[] {
-  const types = difficulty === 'beginner' ? BEGINNER_TYPES : ALL_TYPES;
-  return contractedBrailleEntries.filter((e) => types.includes(e.type));
-}
-
-/** Clean label: "en (enough)" → "en" */
-function cleanLabel(label: string): string {
-  return label.split('(')[0].trim();
-}
-
-function pickDistractors(correct: ContractionEntry, pool: ContractionEntry[]): ContractionEntry[] {
-  const candidates = pool.filter((e) => e.label !== correct.label);
-
-  // Score by similarity, take top 8, pick 3
-  const scored = candidates.map((e) => ({
-    entry: e,
-    sim: computeSimilarity(correct.pattern, e.pattern),
-  }));
-  scored.sort((a, b) => b.sim - a.sim);
-
-  let topPool = scored.slice(0, 8);
-
-  // Fall back to broader pool if not enough same-type entries
-  if (topPool.length < 3) {
-    const broader = contractedBrailleEntries
-      .filter((e) => e.label !== correct.label)
-      .map((e) => ({ entry: e, sim: computeSimilarity(correct.pattern, e.pattern) }));
-    broader.sort((a, b) => b.sim - a.sim);
-    topPool = broader.slice(0, 8);
+/** Every contraction once, by print text (e.g. "be" is listed twice in UEB, with the same cell). */
+const ALL_ITEMS: SprintItem[] = (() => {
+  const seen = new Set<string>();
+  const out: SprintItem[] = [];
+  for (const e of contractedBrailleEntries) {
+    if (seen.has(e.label)) continue;
+    seen.add(e.label);
+    out.push({ text: e.label, dots: fromGrid(e.pattern), type: e.type });
   }
+  return out;
+})();
 
-  // Shuffle and pick 3
-  const shuffled = [...topPool].sort(() => Math.random() - 0.5);
-  return shuffled.slice(0, 3).map((s) => s.entry);
-}
-
-function generateRecognition(pool: ContractionEntry[]): Question {
-  const correct = pool[Math.floor(Math.random() * pool.length)];
-  const distractors = pickDistractors(correct, pool);
-  const allChoices = [correct, ...distractors].sort(() => Math.random() - 0.5);
-  const correctIndex = allChoices.indexOf(correct);
-
-  return {
-    kind: 'recognition',
-    promptLabel: 'What contraction is this?',
-    promptPattern: correct.pattern,
-    choices: allChoices.map((e) => ({ label: cleanLabel(e.label) })),
-    correctIndex,
-  };
-}
-
-function generateRecall(pool: ContractionEntry[]): Question {
-  const correct = pool[Math.floor(Math.random() * pool.length)];
-  const distractors = pickDistractors(correct, pool);
-  const allChoices = [correct, ...distractors].sort(() => Math.random() - 0.5);
-  const correctIndex = allChoices.indexOf(correct);
-
-  return {
-    kind: 'recall',
-    promptLabel: cleanLabel(correct.label),
-    choices: allChoices.map((e) => ({ label: cleanLabel(e.label), pattern: e.pattern })),
-    correctIndex,
-  };
-}
-
-function generateApplication(pool: ContractionEntry[], words: ContractionWord[]): Question | null {
-  // Only use multi-piece words
-  const eligible = words.filter((w) => w.pieces.length > 1);
-  if (eligible.length === 0) return null;
-
-  const word = eligible[Math.floor(Math.random() * eligible.length)];
-
-  // Find the contraction pieces (not single letters)
-  const contractionPieces = word.pieces.filter((p) => !(p.length === 1 && /^[A-Z]$/.test(p)));
-  if (contractionPieces.length === 0) return null;
-
-  const targetPiece = contractionPieces[Math.floor(Math.random() * contractionPieces.length)];
-  const correctEntry = contractedBrailleEntries.find(
-    (e) => cleanLabel(e.label).toLowerCase() === targetPiece.toLowerCase(),
-  );
-  if (!correctEntry) return null;
-
-  const distractors = pickDistractors(correctEntry, pool);
-  const allChoices = [correctEntry, ...distractors].sort(() => Math.random() - 0.5);
-  const correctIndex = allChoices.indexOf(correctEntry);
-
-  return {
-    kind: 'application',
-    promptLabel: word.word,
-    choices: allChoices.map((e) => ({ label: cleanLabel(e.label) })),
-    correctIndex,
-  };
-}
-
-function generateQuestion(
-  pool: ContractionEntry[],
-  words: ContractionWord[],
-  difficulty: 'beginner' | 'intermediate' | 'advanced',
-): Question {
-  const roll = Math.random();
-  let kind: QuestionKind;
-
-  if (difficulty === 'beginner') {
-    // 50/50 recognition/recall, no application
-    kind = roll < 0.5 ? 'recognition' : 'recall';
-  } else if (difficulty === 'intermediate') {
-    // 35/35/30
-    kind = roll < 0.35 ? 'recognition' : roll < 0.7 ? 'recall' : 'application';
-  } else {
-    // 30/30/40
-    kind = roll < 0.3 ? 'recognition' : roll < 0.6 ? 'recall' : 'application';
-  }
-
-  if (kind === 'recognition') return generateRecognition(pool);
-  if (kind === 'recall') return generateRecall(pool);
-
-  // Application — may fail if no eligible words
-  const q = generateApplication(pool, words);
-  if (q) return q;
-  // Fallback to recognition
-  return generateRecognition(pool);
-}
-
-/* ── BrailleCell sub-component ─────────────────────────── */
-
-function BrailleCell({ pattern, size = 'medium' }: { pattern: number[]; size?: 'small' | 'medium' | 'large' }) {
-  return (
-    <div className={`csprint-cell csprint-cell-${size}`} aria-hidden="true">
-      {pattern.map((v, i) => (
-        <span key={i} className={`csprint-dot ${v ? 'filled' : 'empty'}`} />
-      ))}
-    </div>
-  );
-}
-
-/* ── Question labels ───────────────────────────────────── */
-
-const KIND_LABELS: Record<QuestionKind, string> = {
-  recognition: 'Read this braille contraction',
-  recall: 'Find the braille for this contraction',
-  application: 'Which contraction is in this word?',
+const TYPES_BY_LEVEL: Record<Difficulty, ContractionType[]> = {
+  beginner: ['wordsign'],
+  intermediate: ['wordsign', 'strong', 'groupsign-strong'],
+  advanced: ['wordsign', 'strong', 'groupsign-strong', 'groupsign-lower', 'wordsign-lower'],
 };
 
-/* ── Main Component ────────────────────────────────────── */
+export function poolFor(level: Difficulty): SprintItem[] {
+  const types = TYPES_BY_LEVEL[level];
+  return ALL_ITEMS.filter((i) => types.includes(i.type));
+}
+
+const cellKey = (dots: readonly number[]) => [...dots].sort().join('');
+
+/**
+ * The answer plus three distractors. No two options ever share a cell or a print text, so a
+ * question can never have two right answers. Look-alike cells are preferred, so it is a real
+ * reading test.
+ */
+function buildOptions(answer: SprintItem, pool: SprintItem[], exclude: (i: SprintItem) => boolean): SprintItem[] {
+  const usedCells = new Set([cellKey(answer.dots)]);
+  const usedText = new Set([answer.text]);
+  const out: SprintItem[] = [answer];
+  const take = (candidates: SprintItem[]) => {
+    const ranked = shuffle(candidates).sort(
+      (a, b) => dotSimilarity(answer.dots, b.dots) - dotSimilarity(answer.dots, a.dots),
+    );
+    const ordered = [...shuffle(ranked.slice(0, 8)), ...shuffle(ranked.slice(8))];
+    for (const c of ordered) {
+      if (out.length === 4) return;
+      if (exclude(c) || usedCells.has(cellKey(c.dots)) || usedText.has(c.text)) continue;
+      out.push(c);
+      usedCells.add(cellKey(c.dots));
+      usedText.add(c.text);
+    }
+  };
+  take(pool);
+  if (out.length < 4) take(ALL_ITEMS);
+  return shuffle(out);
+}
+
+function pieceDots(piece: string): number[] {
+  if (/^[A-Z]$/.test(piece)) return [...LETTERS[piece.toLowerCase()]];
+  const c = CONTRACTIONS.find((x) => x.text === piece);
+  if (!c) throw new Error(`contraction-sprint: no cell for piece "${piece}"`);
+  return [...c.dots];
+}
+
+function makeApplication(level: Difficulty, pool: SprintItem[], words: ContractionWord[]): SprintQuestion | null {
+  const eligible = words.filter((w) => w.pieces.length > 1 && w.pieces.some((p) => !/^[A-Z]$/.test(p)));
+  if (eligible.length === 0) return null;
+  const word = eligible[Math.floor(Math.random() * eligible.length)];
+  const contractionPieces = word.pieces.filter((p) => !/^[A-Z]$/.test(p));
+  const target = contractionPieces[Math.floor(Math.random() * contractionPieces.length)];
+  const answer = ALL_ITEMS.find((i) => i.text === target);
+  if (!answer) return null;
+  const lower = word.word.toLowerCase();
+  // Never offer another piece of this word, or a letter group that appears in it in print:
+  // either would also look like a right answer.
+  const exclude = (i: SprintItem) => i.text !== answer.text && (word.pieces.includes(i.text) || lower.includes(i.text));
+  return {
+    kind: 'application',
+    answer,
+    options: buildOptions(answer, pool, exclude),
+    word: { print: word.word, cells: word.pieces.map(pieceDots) },
+  };
+}
+
+/** Generate one question for a level. `recent` holds recent answer texts to avoid repeats. */
+export function makeQuestion(level: Difficulty, recent: string[] = []): SprintQuestion {
+  const pool = poolFor(level);
+  const roll = Math.random();
+  const kind: QuestionKind =
+    level === 'beginner'
+      ? roll < 0.5
+        ? 'recognition'
+        : 'recall'
+      : level === 'intermediate'
+        ? roll < 0.35
+          ? 'recognition'
+          : roll < 0.7
+            ? 'recall'
+            : 'application'
+        : roll < 0.3
+          ? 'recognition'
+          : roll < 0.6
+            ? 'recall'
+            : 'application';
+
+  if (kind === 'application') {
+    for (let i = 0; i < 6; i++) {
+      const q = makeApplication(level, pool, getContractionWords(level));
+      if (q && !recent.includes(q.answer.text)) return q;
+    }
+  }
+  const fresh = pool.filter((i) => !recent.includes(i.text));
+  const list = fresh.length > 0 ? fresh : pool;
+  const answer = list[Math.floor(Math.random() * list.length)];
+  return {
+    kind: kind === 'application' ? 'recognition' : kind,
+    answer,
+    options: buildOptions(answer, pool, () => false),
+  };
+}
+
+/* ── Component ───────────────────────────────────────────────────────────── */
+
+const RELAXED_QUESTIONS = 20;
+
+type Pace = 'timed' | 'relaxed';
+type Phase = 'ready' | 'playing' | 'done';
+
+const LEVELS: { value: Difficulty; label: string; hint: string }[] = [
+  { value: 'beginner', label: 'Wordsigns', hint: 'but, can, child…' },
+  { value: 'intermediate', label: 'Plus groupsigns', hint: 'and, the, ch, ing…' },
+  { value: 'advanced', label: 'Everything', hint: 'adds ea, be, con…' },
+];
+
+const PACES: { value: Pace; label: string; hint: string }[] = [
+  { value: 'timed', label: 'Sprint', hint: 'beat the clock' },
+  { value: 'relaxed', label: 'Relaxed', hint: `no timer, ${RELAXED_QUESTIONS} questions` },
+];
+
+const PROMPTS: Record<QuestionKind, string> = {
+  recognition: 'What does this cell stand for?',
+  recall: 'Which cell is this contraction?',
+  application: 'Which contraction is used to write this word?',
+};
 
 export default function BrailleContractionSprint() {
-  const { difficulty, setDifficulty, recordResult } = useGameProgress('contraction-sprint');
+  const { difficulty, setDifficulty, stats, finish, answer: recordAnswer } = useSession('contraction-sprint');
+  const { announce, region } = useAnnouncer();
 
+  const [pace, setPace] = useState<Pace>('timed');
   const [phase, setPhase] = useState<Phase>('ready');
-  const [timeLeft, setTimeLeft] = useState(60);
+  const [question, setQuestion] = useState<SprintQuestion | null>(null);
+  const [picked, setPicked] = useState<string | null>(null);
+  const [count, setCount] = useState(0);
   const [score, setScore] = useState(0);
   const [streak, setStreak] = useState(0);
   const [bestStreak, setBestStreak] = useState(0);
-  const [question, setQuestion] = useState<Question | null>(null);
-  const [feedback, setFeedback] = useState<'correct' | 'wrong' | null>(null);
-  const [selectedIndex, setSelectedIndex] = useState<number | null>(null);
-  const [timeFlash, setTimeFlash] = useState<string | null>(null);
-  const [flashKey, setFlashKey] = useState(0);
-  const [tip, setTip] = useState('');
+  const [timeLeft, setTimeLeft] = useState(60);
+  const [delta, setDelta] = useState<{ text: string; key: number } | null>(null);
+  const [newBest, setNewBest] = useState(false);
 
-  const containerRef = useRef<HTMLDivElement>(null);
-  const visibleRef = useRef(true);
-  const timerRef = useRef<ReturnType<typeof setInterval>>();
-  const feedbackTimerRef = useRef<ReturnType<typeof setTimeout>>();
-  const flashTimerRef = useRef<ReturnType<typeof setTimeout>>();
-  const scoreRef = useRef(score);
-  const recentCorrectRef = useRef<string[]>([]);
-  const poolRef = useRef<ContractionEntry[]>([]);
-  const wordsRef = useRef<ContractionWord[]>([]);
+  const limit = (getDifficultyParams('contraction-sprint', difficulty) as { timeLimit: number }).timeLimit || 60;
+  const recent = useRef<string[]>([]);
+  const timeRef = useRef(60);
+  const scoreRef = useRef(0);
+  const endedRef = useRef(true);
+  const tickRef = useRef<ReturnType<typeof setInterval>>();
+  const advanceRef = useRef<ReturnType<typeof setTimeout>>();
+  const nextBtnRef = useRef<HTMLButtonElement>(null);
 
-  scoreRef.current = score;
-
-  // Visibility-scoped keyboard
-  useEffect(() => {
-    const el = containerRef.current;
-    if (!el) return;
-    const observer = new IntersectionObserver(
-      ([entry]) => {
-        visibleRef.current = entry.isIntersecting;
-      },
-      { threshold: 0.3 },
-    );
-    observer.observe(el);
-    return () => observer.disconnect();
+  const stopTimers = useCallback(() => {
+    if (tickRef.current) clearInterval(tickRef.current);
+    if (advanceRef.current) clearTimeout(advanceRef.current);
   }, []);
+  useEffect(() => stopTimers, [stopTimers]);
 
-  // Load pool and words based on difficulty
-  useEffect(() => {
-    poolRef.current = getPool(difficulty);
-    wordsRef.current = getContractionWords(difficulty);
-  }, [difficulty]);
+  const end = useCallback(() => {
+    if (endedRef.current) return;
+    endedRef.current = true;
+    stopTimers();
+    const s = scoreRef.current;
+    setNewBest(s > stats.bestScore);
+    finish(pace === 'timed' ? s >= 5 : s >= RELAXED_QUESTIONS / 2, s);
+    setPhase('done');
+  }, [stopTimers, stats.bestScore, finish, pace]);
 
   const nextQuestion = useCallback(() => {
-    const pool = poolRef.current;
-    const words = wordsRef.current;
-    if (pool.length === 0) return;
-
-    let q: Question;
-    let attempts = 0;
-    do {
-      q = generateQuestion(pool, words, difficulty);
-      attempts++;
-    } while (attempts < 10 && recentCorrectRef.current.includes(q.choices[q.correctIndex].label));
-
-    // Track recent to prevent repeats
-    recentCorrectRef.current.push(q.choices[q.correctIndex].label);
-    if (recentCorrectRef.current.length > 3) recentCorrectRef.current.shift();
-
+    const q = makeQuestion(difficulty, recent.current);
+    recent.current = [...recent.current, q.answer.text].slice(-4);
     setQuestion(q);
-    setFeedback(null);
-    setSelectedIndex(null);
-    setTimeFlash(null);
+    setPicked(null);
   }, [difficulty]);
 
-  const startGame = useCallback(() => {
-    if (timerRef.current) clearInterval(timerRef.current);
-    if (feedbackTimerRef.current) clearTimeout(feedbackTimerRef.current);
-    if (flashTimerRef.current) clearTimeout(flashTimerRef.current);
-
-    const timeLimit = difficulty === 'beginner' ? 60 : difficulty === 'intermediate' ? 45 : 30;
-    setPhase('playing');
+  const start = useCallback(() => {
+    stopTimers();
+    endedRef.current = false;
+    recent.current = [];
+    scoreRef.current = 0;
+    timeRef.current = limit;
     setScore(0);
     setStreak(0);
     setBestStreak(0);
-    setTimeLeft(timeLimit);
-    recentCorrectRef.current = [];
+    setCount(0);
+    setTimeLeft(limit);
+    setDelta(null);
+    setNewBest(false);
+    setPhase('playing');
     nextQuestion();
-
-    timerRef.current = setInterval(() => {
-      setTimeLeft((t) => {
-        if (t <= 1) {
-          clearInterval(timerRef.current);
-          setPhase('result');
-          return 0;
-        }
-        return t - 1;
-      });
-    }, 1000);
-  }, [difficulty, nextQuestion]);
-
-  // Cleanup timers
-  useEffect(() => {
-    return () => {
-      if (timerRef.current) clearInterval(timerRef.current);
-      if (feedbackTimerRef.current) clearTimeout(feedbackTimerRef.current);
-      if (flashTimerRef.current) clearTimeout(flashTimerRef.current);
-    };
-  }, []);
-
-  // Record result + clear feedback timeout on phase transition to result
-  useEffect(() => {
-    if (phase === 'result') {
-      if (feedbackTimerRef.current) clearTimeout(feedbackTimerRef.current);
-      if (flashTimerRef.current) clearTimeout(flashTimerRef.current);
-      const s = scoreRef.current;
-      const achievements = recordResult(s >= 5, s);
-      pushAchievements(achievements);
-      setTip(getRandomTip().fact);
+    if (pace === 'timed') {
+      tickRef.current = setInterval(() => {
+        timeRef.current = Math.max(0, timeRef.current - 1);
+        setTimeLeft(timeRef.current);
+        if (timeRef.current === 10) announce('10 seconds left.');
+        if (timeRef.current <= 0) end();
+      }, 1000);
     }
-  }, [phase, recordResult]);
+  }, [stopTimers, limit, nextQuestion, pace, announce, end]);
 
-  const handleChoice = useCallback(
-    (choiceIndex: number) => {
-      if (phase !== 'playing' || !question || feedback) return;
+  const advance = useCallback(() => {
+    if (endedRef.current) return;
+    const done = count + 1;
+    setCount(done);
+    if (pace === 'relaxed' && done >= RELAXED_QUESTIONS) {
+      end();
+      return;
+    }
+    nextQuestion();
+  }, [count, pace, end, nextQuestion]);
 
-      setSelectedIndex(choiceIndex);
-      const isCorrect = choiceIndex === question.correctIndex;
-
-      if (isCorrect) {
-        setFeedback('correct');
-        setScore((s) => s + 1);
+  const pick = useCallback(
+    (id: string) => {
+      if (phase !== 'playing' || !question || picked !== null) return;
+      const correct = id === question.answer.text;
+      setPicked(id);
+      recordAnswer(`contraction:${question.answer.text}`, correct);
+      const ans = question.answer;
+      if (correct) {
+        scoreRef.current += 1;
+        setScore(scoreRef.current);
         setStreak((s) => {
-          const next = s + 1;
-          setBestStreak((b) => Math.max(b, next));
-          return next;
+          setBestStreak((b) => Math.max(b, s + 1));
+          return s + 1;
         });
-        // +2s time bonus
-        setTimeLeft((t) => t + 2);
-        setTimeFlash('+2s');
-        setFlashKey((k) => k + 1);
-        flashTimerRef.current = setTimeout(() => setTimeFlash(null), 600);
-        feedbackTimerRef.current = setTimeout(() => nextQuestion(), 300);
+        announce(`Correct! “${ans.text}” is ${describe(ans.dots)}.${pace === 'timed' ? ' Plus 2 seconds.' : ''}`);
       } else {
-        setFeedback('wrong');
         setStreak(0);
-        // -3s time penalty
-        setTimeLeft((t) => {
-          const next = t - 3;
-          if (next <= 0) {
-            clearInterval(timerRef.current);
-            // Delay phase transition slightly so user sees the wrong feedback
-            setTimeout(() => setPhase('result'), 600);
-            return 0;
-          }
-          return next;
-        });
-        setTimeFlash('-3s');
-        setFlashKey((k) => k + 1);
-        flashTimerRef.current = setTimeout(() => setTimeFlash(null), 800);
-        feedbackTimerRef.current = setTimeout(() => nextQuestion(), 800);
+        announce(
+          `Not quite. The answer is “${ans.text}”, ${describe(ans.dots)}.${pace === 'timed' ? ' Minus 3 seconds.' : ''}`,
+        );
+      }
+      if (pace === 'timed') {
+        timeRef.current = Math.max(0, timeRef.current + (correct ? 2 : -3));
+        setTimeLeft(timeRef.current);
+        setDelta({ text: correct ? '+2s' : '−3s', key: Date.now() });
+        if (timeRef.current <= 0) {
+          if (tickRef.current) clearInterval(tickRef.current);
+          advanceRef.current = setTimeout(end, 900);
+          return;
+        }
+        advanceRef.current = setTimeout(advance, correct ? 450 : 1100);
       }
     },
-    [phase, question, feedback, nextQuestion],
+    [phase, question, picked, recordAnswer, announce, pace, end, advance],
   );
 
-  // Keyboard support (1-4)
+  // Relaxed mode: focus "Next" after answering so keyboard users keep their place.
   useEffect(() => {
-    function onKeyDown(e: KeyboardEvent) {
-      if (!visibleRef.current) return;
-      if (e.ctrlKey || e.metaKey || e.altKey) return;
-      const num = parseInt(e.key);
-      if (num >= 1 && num <= 4) {
-        handleChoice(num - 1);
+    if (pace === 'relaxed' && picked !== null) nextBtnRef.current?.focus();
+  }, [pace, picked]);
+
+  useGameKeys(
+    (e) => {
+      if (e.key !== 'Enter' || e.target instanceof HTMLButtonElement) return;
+      if (phase === 'ready') {
+        e.preventDefault();
+        start();
+      } else if (phase === 'playing' && pace === 'relaxed' && picked !== null) {
+        e.preventDefault();
+        advance();
       }
-    }
-    window.addEventListener('keydown', onKeyDown);
-    return () => window.removeEventListener('keydown', onKeyDown);
-  }, [handleChoice]);
+    },
+    { enabled: phase === 'ready' || (phase === 'playing' && picked !== null) },
+  );
 
-  // Timer bar percentage
-  const timeLimit = difficulty === 'beginner' ? 60 : difficulty === 'intermediate' ? 45 : 30;
-  const timerPct = Math.max(0, Math.min(100, (timeLeft / timeLimit) * 100));
-  const timerLow = timeLeft <= 10;
-
-  function getChoiceClass(index: number): string {
-    if (selectedIndex === null || !question) return '';
-    if (index === question.correctIndex) return 'csprint-correct';
-    if (index === selectedIndex && feedback === 'wrong') return 'csprint-wrong';
-    return '';
-  }
+  const answered = picked !== null;
+  const answerOk = answered && question && picked === question.answer.text;
 
   return (
-    <div className="csprint-container" ref={containerRef}>
-      <div className="csprint-header">
-        <span className="section-label">Grade 2</span>
-        <h2>Contraction Sprint</h2>
-        <p>Rapid-fire contraction quiz</p>
-        <DifficultySelector gameId="contraction-sprint" current={difficulty} onChange={setDifficulty} />
-      </div>
+    <div className="game-board cs-board" data-testid="game-board">
+      {region}
 
-      <div className="csprint-body">
-        {phase === 'ready' && (
-          <div className="csprint-ready">
-            <p className="csprint-instructions">
-              Identify braille contractions as fast as you can. Correct answers add time — wrong answers cost time. Keys
-              1–4 to choose.
-            </p>
-            <button className="csprint-start-btn" onClick={startGame}>
-              Start Sprint
-            </button>
+      {phase === 'ready' && (
+        <StartPanel heading="Ready for a contraction sprint?" onStart={start}>
+          <p className="game-prompt-sub">
+            Read a contraction, find its cell, or spot it inside a word. Choose with keys 1–4.
+          </p>
+          <div className="cs-options">
+            <ModePicker
+              legend="Contractions"
+              name="cs-level"
+              value={difficulty}
+              options={LEVELS}
+              onChange={setDifficulty}
+            />
+            <ModePicker legend="Pace" name="cs-pace" value={pace} options={PACES} onChange={setPace} />
           </div>
-        )}
+          {pace === 'timed' && (
+            <p className="cs-rule">You start with {limit} seconds. Right answers add 2 seconds; misses take 3 away.</p>
+          )}
+        </StartPanel>
+      )}
 
-        {phase === 'playing' && question && (
-          <>
-            {/* Timer bar */}
-            <div className={`csprint-timer-bar${timerLow ? ' low' : ''}`}>
-              <div
-                className={`csprint-timer-fill${timerLow ? ' low' : ''}${timeFlash ? ' jumped' : ''}`}
-                style={{ width: `${timerPct}%` }}
-              />
-            </div>
-
-            {/* Status row: timer / score / streak */}
-            <div className="csprint-status" aria-live="polite" aria-atomic="true">
-              <span className={`csprint-timer${timerLow ? ' low' : ''}`}>{timeLeft}s</span>
-              {timeFlash && (
-                <span
-                  key={flashKey}
-                  className={`csprint-time-flash ${timeFlash.startsWith('+') ? 'bonus' : 'penalty'}`}
-                >
-                  {timeFlash}
+      {phase === 'playing' && question && (
+        <>
+          <Hud
+            items={
+              pace === 'timed'
+                ? [
+                    { label: 'Time', value: `${timeLeft}s`, tone: timeLeft <= 10 ? 'warn' : 'timer' },
+                    { label: 'Score', value: score },
+                    { label: 'Streak', value: streak, tone: 'streak' },
+                  ]
+                : [
+                    { label: 'Question', value: `${Math.min(count + 1, RELAXED_QUESTIONS)} of ${RELAXED_QUESTIONS}` },
+                    { label: 'Score', value: score },
+                    { label: 'Streak', value: streak, tone: 'streak' },
+                  ]
+            }
+          />
+          {pace === 'timed' && (
+            <div className="cs-timer-row" aria-hidden="true">
+              <div className={`timer-bar${timeLeft <= 10 ? ' is-low' : ''}`}>
+                <span style={{ width: `${Math.min(100, (timeLeft / limit) * 100)}%` }} />
+              </div>
+              {delta && (
+                <span key={delta.key} className={`cs-delta ${delta.text.startsWith('+') ? 'is-plus' : 'is-minus'}`}>
+                  {delta.text}
                 </span>
               )}
-              <span className="csprint-score">Score: {score}</span>
-              <span className="csprint-streak-inline">Streak: {streak}</span>
             </div>
+          )}
 
-            {/* Prompt */}
-            <div className="csprint-prompt">
-              <span className="csprint-question-label">{KIND_LABELS[question.kind]}</span>
-              {question.kind === 'recognition' && question.promptPattern ? (
-                <BrailleCell pattern={question.promptPattern} size="large" />
-              ) : (
-                <span className="csprint-prompt-text">{question.promptLabel}</span>
+          <div className="cs-question">
+            <h2 className="game-prompt cs-prompt">{PROMPTS[question.kind]}</h2>
+            <div className="game-cell-stage cs-stage">
+              {question.kind === 'recognition' && (
+                <Cell key={question.answer.text} dots={question.answer.dots} size="xl" pop label="Mystery cell" />
+              )}
+              {question.kind === 'recall' && <span className="cs-print">{question.answer.text}</span>}
+              {question.kind === 'application' && question.word && (
+                <div className="cs-word">
+                  <span className="cs-print cs-print--word">{question.word.print.toLowerCase()}</span>
+                  {answered && (
+                    <BrailleText
+                      cells={question.word.cells}
+                      size="md"
+                      label={`${question.word.print.toLowerCase()} in braille: ${describeCells(question.word.cells)}`}
+                    />
+                  )}
+                </div>
               )}
             </div>
-
-            {/* 2×2 choices */}
-            <div className="csprint-choices" role="group" aria-label="Answer choices">
-              {question.choices.map((choice, i) => (
-                <button
-                  key={`${choice.label}-${i}`}
-                  className={`csprint-choice ${getChoiceClass(i)}`}
-                  onClick={() => handleChoice(i)}
-                  disabled={feedback !== null}
-                  aria-label={`Choice ${i + 1}: ${choice.label}`}
-                >
-                  <span className="csprint-choice-number">{i + 1}</span>
-                  {choice.pattern ? (
-                    <BrailleCell pattern={choice.pattern} size="small" />
-                  ) : (
-                    <span className="csprint-choice-label">{choice.label}</span>
-                  )}
-                </button>
-              ))}
-            </div>
-
-            {/* Show correct answer on wrong */}
-            {feedback === 'wrong' && question && (
-              <div className="csprint-answer-reveal" aria-live="polite">
-                Correct: <strong>{question.choices[question.correctIndex].label}</strong>
-              </div>
-            )}
-          </>
-        )}
-
-        {phase === 'result' && (
-          <div className="csprint-result" aria-live="polite">
-            <div className="csprint-result-score">{score}</div>
-            <div className="csprint-result-label">
-              {score === 0 ? 'Keep practicing!' : score < 5 ? 'Good effort!' : score < 10 ? 'Great job!' : 'Amazing!'}
-            </div>
-            <div className="csprint-result-streaks">
-              <div className="csprint-result-streak-item">
-                <span className="csprint-result-streak-value">{bestStreak}</span>
-                <span className="csprint-result-streak-label">Best Streak</span>
-              </div>
-            </div>
-            {tip && <p className="csprint-tip">{tip}</p>}
-            <button className="csprint-start-btn" onClick={startGame}>
-              Play Again
-            </button>
           </div>
-        )}
-      </div>
+
+          <Choices
+            choices={question.options.map((o) =>
+              question.kind === 'recall'
+                ? {
+                    id: o.text,
+                    label: describe(o.dots),
+                    content: <Cell dots={o.dots} size="md" />,
+                  }
+                : { id: o.text, content: <span className="cs-choice-text">{o.text}</span> },
+            )}
+            onPick={pick}
+            correctId={answered ? question.answer.text : null}
+            pickedId={picked}
+            disabled={pace === 'relaxed' && answered}
+            label="Answers"
+          />
+
+          <div
+            className={`feedback${answered ? (answerOk ? ' feedback--good' : ' feedback--bad') : ''}`}
+            aria-hidden="true"
+          >
+            {answered && (
+              <span className="feedback-pill cs-feedback">
+                {answerOk ? '✓ Correct!' : '✗ It’s'} <strong>{question.answer.text}</strong>
+                <Cell dots={question.answer.dots} size="sm" />
+              </span>
+            )}
+          </div>
+
+          {pace === 'relaxed' && answered && (
+            <div className="cs-actions">
+              <button ref={nextBtnRef} type="button" className="btn btn--pine" onClick={advance}>
+                {count + 1 >= RELAXED_QUESTIONS ? 'See results' : 'Next question'}
+              </button>
+            </div>
+          )}
+        </>
+      )}
+
+      {phase === 'done' && (
+        <Results
+          title={
+            score === 0 ? 'Keep practicing!' : score < 5 ? 'Good effort!' : score < 12 ? 'Great sprint!' : 'Amazing!'
+          }
+          summary={
+            pace === 'timed'
+              ? `${score} correct · best streak ${bestStreak}`
+              : `${score} of ${RELAXED_QUESTIONS} correct · best streak ${bestStreak}`
+          }
+          stars={score >= 15 ? 3 : score >= 10 ? 2 : score >= 5 ? 1 : 0}
+          best={Math.max(stats.bestScore, score) > 0 ? `${Math.max(stats.bestScore, score)} correct` : undefined}
+          isNewBest={newBest}
+          onReplay={start}
+        />
+      )}
     </div>
   );
 }

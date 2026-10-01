@@ -1,246 +1,234 @@
 'use client';
 
-import { useState, useEffect, useCallback, useRef } from 'react';
-import { nemethDigits, nemethOperators, nemethEquals, nemethNumericIndicator } from '@/lib/nemeth-map';
-import { generateProblem, generateChoices, type MathProblem } from '@/lib/math-problems';
-import { useGameProgress } from '@/hooks/useGameProgress';
-import { pushAchievements } from '@/components/AchievementToast';
-import { getRandomTip } from '@/lib/learning-tips';
+import '@/styles/games/number-sense.css';
+import { useCallback, useEffect, useRef, useState } from 'react';
+import {
+  Choices,
+  Hud,
+  ModePicker,
+  Results,
+  StartPanel,
+  shuffle,
+  useAnnouncer,
+  useGameKeys,
+  useSession,
+} from '@/components/games/kit';
+import BrailleText from '@/components/ui/BrailleText';
+import Cell from '@/components/ui/Cell';
+import { nemethNumber, nemethProblem, type NemethCell } from '@/lib/nemeth-map';
+import { describe } from '@/lib/ueb';
+import { generateChoices, generateProblem, type MathProblem } from '@/lib/math-problems';
 import { getDifficultyParams } from '@/lib/difficulty-settings';
-import DifficultySelector from '@/components/DifficultySelector';
+import type { Difficulty } from '@/lib/progress-types';
 
-function BrailleCell({ pattern }: { pattern: number[] }) {
-  return (
-    <div className="numsense-cell" aria-hidden="true">
-      {pattern.map((v, i) => (
-        <span key={i} className={`numsense-dot ${v ? 'filled' : 'empty'}`} />
-      ))}
-    </div>
-  );
+const ROUNDS = 10;
+
+const LEVELS: { value: Difficulty; label: string; hint: string }[] = [
+  { value: 'beginner', label: 'Adding', hint: '+ up to 10' },
+  { value: 'intermediate', label: 'Add and subtract', hint: '+ − up to 20' },
+  { value: 'advanced', label: 'All three', hint: '+ − × up to 50' },
+];
+
+const OP_WORDS: Record<string, string> = { '+': 'plus', '-': 'minus', '×': 'times' };
+
+type Phase = 'ready' | 'question' | 'answered' | 'done';
+
+/** "dots 3 4 5 6, then dot 2, then space, …" — describes the braille without saying what it means. */
+function describeRun(cells: NemethCell[]): string {
+  return cells.map((c) => (c.dots.length ? describe(c.dots) : 'space')).join(', then ');
 }
 
-/** Render a number in Nemeth braille: numeric indicator + digit cells */
-function BrailleNumber({ num }: { num: number }) {
-  const digits = String(num).split('');
-  return (
-    <div className="numsense-braille-number" aria-label={`Braille number ${num}`}>
-      <BrailleCell pattern={nemethNumericIndicator} />
-      {digits.map((d, i) => (
-        <BrailleCell key={i} pattern={nemethDigits[d] || [0, 0, 0, 0, 0, 0]} />
-      ))}
-    </div>
-  );
+function spoken(p: MathProblem) {
+  return `${p.operands[0]} ${OP_WORDS[p.operator] ?? p.operator} ${p.operands[1]}`;
 }
 
-/** Render operator as a Nemeth braille cell */
-function BrailleOperator({ op }: { op: string }) {
-  const pattern = nemethOperators[op] || [0, 0, 0, 0, 0, 0];
-  return (
-    <div className="numsense-operator-cell" aria-label={op}>
-      <BrailleCell pattern={pattern} />
-    </div>
-  );
+function starsFor(score: number) {
+  return score >= 9 ? 3 : score >= 7 ? 2 : score >= 5 ? 1 : 0;
 }
 
-/** Render Nemeth equals sign (two cells, each dots 4,6) */
-function BrailleEquals() {
-  return (
-    <div className="numsense-operator-cell" aria-label="equals">
-      <BrailleCell pattern={nemethEquals} />
-      <BrailleCell pattern={nemethEquals} />
-    </div>
-  );
-}
-
+/** Number Sense: read a little sum written in Nemeth Code and pick the answer. */
 export default function BrailleNumberSense() {
-  const { difficulty, setDifficulty, recordResult } = useGameProgress('number-sense');
+  const { difficulty, setDifficulty, stats, finish } = useSession('number-sense');
+  const { announce, region } = useAnnouncer();
+
+  const [phase, setPhase] = useState<Phase>('ready');
   const [problem, setProblem] = useState<MathProblem | null>(null);
   const [choices, setChoices] = useState<number[]>([]);
-  const [selected, setSelected] = useState<number | null>(null);
-  const [isCorrect, setIsCorrect] = useState<boolean | null>(null);
-  const [score, setScore] = useState(0);
+  const [picked, setPicked] = useState<number | null>(null);
   const [round, setRound] = useState(0);
-  const [totalRounds] = useState(10);
-  const [gameOver, setGameOver] = useState(false);
-  const [locked, setLocked] = useState(false);
-  const [tip, setTip] = useState('');
+  const [score, setScore] = useState(0);
+  const [streak, setStreak] = useState(0);
+  const [newBest, setNewBest] = useState(false);
+  const nextRef = useRef<HTMLButtonElement>(null);
+  const lastDisplay = useRef('');
 
-  const containerRef = useRef<HTMLDivElement>(null);
-  const visibleRef = useRef(true);
-  const roundTimerRef = useRef<ReturnType<typeof setTimeout>>();
-  const scoreRef = useRef(score);
-  scoreRef.current = score;
-
-  // Visibility-scoped keyboard
-  useEffect(() => {
-    const el = containerRef.current;
-    if (!el) return;
-    const observer = new IntersectionObserver(
-      ([entry]) => {
-        visibleRef.current = entry.isIntersecting;
-      },
-      { threshold: 0.3 },
-    );
-    observer.observe(el);
-    return () => observer.disconnect();
-  }, []);
-
-  const params = getDifficultyParams('number-sense', difficulty) as {
-    maxNumber: number;
-    operations: string[];
-  };
-
-  const nextRound = useCallback(() => {
-    const p = generateProblem(params.maxNumber, params.operations);
-    const c = generateChoices(p.answer, 3);
+  const newProblem = useCallback(() => {
+    const params = getDifficultyParams('number-sense', difficulty) as { maxNumber: number; operations: string[] };
+    let p = generateProblem(params.maxNumber, params.operations);
+    for (let i = 0; i < 5 && p.display === lastDisplay.current; i++) {
+      p = generateProblem(params.maxNumber, params.operations);
+    }
+    lastDisplay.current = p.display;
     setProblem(p);
-    setChoices(c);
-    setSelected(null);
-    setIsCorrect(null);
-    setLocked(false);
-  }, [params.maxNumber, params.operations]);
+    setChoices(shuffle(generateChoices(p.answer, 3)));
+    setPicked(null);
+    setPhase('question');
+  }, [difficulty]);
 
-  const startGame = useCallback(() => {
-    setScore(0);
+  const start = useCallback(() => {
     setRound(0);
-    setGameOver(false);
-    setTip('');
-    nextRound();
-  }, [nextRound]);
+    setScore(0);
+    setStreak(0);
+    setNewBest(false);
+    newProblem();
+  }, [newProblem]);
 
-  useEffect(() => {
-    startGame();
-  }, []); // eslint-disable-line react-hooks/exhaustive-deps
-
-  const handleChoice = useCallback(
-    (choice: number) => {
-      if (locked || !problem) return;
-      setLocked(true);
-      setSelected(choice);
-      const correct = choice === problem.answer;
-      setIsCorrect(correct);
-
-      if (correct) setScore((s) => s + 1);
-
-      roundTimerRef.current = setTimeout(
-        () => {
-          const nextR = round + 1;
-          setRound(nextR);
-          if (nextR >= totalRounds) {
-            const finalScore = correct ? scoreRef.current + 1 : scoreRef.current;
-            setGameOver(true);
-            const achievements = recordResult(finalScore >= totalRounds / 2, finalScore);
-            pushAchievements(achievements);
-            setTip(getRandomTip().fact);
-          } else {
-            nextRound();
-          }
-        },
-        correct ? 600 : 1200,
-      );
+  const pick = useCallback(
+    (id: string) => {
+      if (phase !== 'question' || !problem) return;
+      const n = Number(id);
+      const correct = n === problem.answer;
+      setPicked(n);
+      setPhase('answered');
+      if (correct) {
+        setScore((s) => s + 1);
+        setStreak((s) => s + 1);
+        announce(`Correct! ${spoken(problem)} is ${problem.answer}.`);
+      } else {
+        setStreak(0);
+        announce(`Not quite. ${spoken(problem)} is ${problem.answer}, not ${n}.`);
+      }
     },
-    [locked, problem, round, totalRounds, nextRound, recordResult],
+    [phase, problem, announce],
   );
 
-  // Cleanup timer
-  useEffect(() => {
-    return () => {
-      if (roundTimerRef.current) clearTimeout(roundTimerRef.current);
-    };
-  }, []);
-
-  // Keyboard support (1-4)
-  useEffect(() => {
-    function onKeyDown(e: KeyboardEvent) {
-      if (!visibleRef.current || gameOver) return;
-      if (e.ctrlKey || e.metaKey || e.altKey) return;
-      const num = parseInt(e.key);
-      if (num >= 1 && num <= 4 && choices[num - 1] !== undefined) {
-        handleChoice(choices[num - 1]);
-      }
+  const next = useCallback(() => {
+    if (phase !== 'answered') return;
+    const nextRound = round + 1;
+    if (nextRound >= ROUNDS) {
+      setNewBest(score > stats.bestScore);
+      finish(score >= ROUNDS / 2, score);
+      setPhase('done');
+      return;
     }
-    window.addEventListener('keydown', onKeyDown);
-    return () => window.removeEventListener('keydown', onKeyDown);
-  }, [handleChoice, choices, gameOver]);
+    setRound(nextRound);
+    newProblem();
+  }, [phase, round, score, stats.bestScore, finish, newProblem]);
+
+  // Move focus to "Next" once the answer buttons lock, so keyboard users never lose their place.
+  useEffect(() => {
+    if (phase === 'answered') nextRef.current?.focus();
+  }, [phase]);
+
+  useGameKeys(
+    (e) => {
+      if (e.key !== 'Enter' || e.target instanceof HTMLButtonElement) return;
+      e.preventDefault();
+      if (phase === 'ready') start();
+      else if (phase === 'answered') next();
+    },
+    { enabled: phase === 'ready' || phase === 'answered' },
+  );
+
+  const cells = problem ? nemethProblem(problem.operands[0], problem.operator, problem.operands[1]) : [];
+  const correct = picked !== null && problem !== null && picked === problem.answer;
 
   return (
-    <div className="numsense-container" ref={containerRef}>
-      <div className="numsense-header">
-        <span className="section-label">Numbers</span>
-        <h2>Number Sense</h2>
-        <p>
-          Solve math in braille <span className="numsense-badge">Nemeth Code</span>{' '}
-          <span className="numsense-kbd-hint">Keys 1–4 to answer</span>
-        </p>
-        <DifficultySelector gameId="number-sense" current={difficulty} onChange={setDifficulty} />
-      </div>
+    <div className="game-board ns-board" data-testid="game-board">
+      {region}
+      <p className="ns-note">Math braille here uses Nemeth Code, used in many US schools.</p>
 
-      <div className="numsense-body">
-        {!gameOver && problem && (
-          <>
-            <div className="numsense-progress">
-              <span>
-                Round {round + 1} / {totalRounds}
-              </span>
-              <span>Score: {score}</span>
-            </div>
+      {phase === 'ready' && (
+        <StartPanel heading="Ready to do some braille math?" onStart={start}>
+          <p className="game-prompt-sub">
+            Read the problem in braille, then choose the answer. Ten problems, no timer.
+          </p>
+          <ModePicker legend="Problems" name="ns-level" value={difficulty} options={LEVELS} onChange={setDifficulty} />
+        </StartPanel>
+      )}
 
-            {/* Problem display in Nemeth braille */}
-            <div className="numsense-problem" aria-live="polite" aria-label={problem.display}>
-              <BrailleNumber num={problem.operands[0]} />
-              <BrailleOperator op={problem.operator} />
-              <BrailleNumber num={problem.operands[1]} />
-              <BrailleEquals />
-              <span className="numsense-answer-blank" aria-hidden="true" />
-            </div>
-
-            {/* Answer choices */}
-            <div className="numsense-choices" role="group" aria-label="Answer choices">
-              {choices.map((choice, i) => {
-                let cls = 'numsense-choice';
-                if (selected !== null) {
-                  if (choice === problem.answer) cls += ' correct';
-                  else if (choice === selected && !isCorrect) cls += ' wrong';
-                }
-                return (
-                  <button
-                    key={`${choice}-${i}`}
-                    className={cls}
-                    onClick={() => handleChoice(choice)}
-                    disabled={locked}
-                    aria-label={`Choice ${i + 1}: ${choice}`}
-                  >
-                    <span className="numsense-choice-number">{i + 1}</span>
-                    <BrailleNumber num={choice} />
-                    <span className="numsense-choice-value">{choice}</span>
-                  </button>
-                );
-              })}
-            </div>
-          </>
-        )}
-
-        {gameOver && (
-          <div className="numsense-result">
-            <div className="numsense-result-score">
-              {score} / {totalRounds}
-            </div>
-            <div className="numsense-result-label">
-              {score === totalRounds
-                ? 'Perfect!'
-                : score >= 7
-                  ? 'Great job!'
-                  : score >= 5
-                    ? 'Good effort!'
-                    : 'Keep practicing!'}
-            </div>
-            {tip && <p className="numsense-tip">{tip}</p>}
-            <button className="numsense-play-again" onClick={startGame}>
-              Play Again
-            </button>
+      {(phase === 'question' || phase === 'answered') && problem && (
+        <>
+          <Hud
+            items={[
+              { label: 'Problem', value: `${round + 1} of ${ROUNDS}` },
+              { label: 'Score', value: score },
+              { label: 'Streak', value: streak, tone: 'streak' },
+            ]}
+          />
+          <h2 className="game-prompt ns-prompt">What is the answer?</h2>
+          <div className="game-cell-stage ns-stage" data-testid="ns-problem">
+            <span className="ns-cells" role="img" aria-label={`Math problem in braille: ${describeRun(cells)}`}>
+              {cells.map((c, i) =>
+                c.dots.length ? <Cell key={i} dots={c.dots} size="lg" /> : <span key={i} className="ns-space" />,
+              )}
+            </span>
+            <span className="ns-blank" aria-hidden="true">
+              ?
+            </span>
           </div>
-        )}
-      </div>
+          {phase === 'answered' && (
+            <p className="ns-print" aria-hidden="true">
+              {problem.display} = {problem.answer}
+            </p>
+          )}
+          <Choices
+            choices={choices.map((n) => ({
+              id: String(n),
+              label: String(n),
+              content: (
+                <span className="ns-choice">
+                  <BrailleText cells={nemethNumber(n).map((c) => c.dots)} size="sm" />
+                  <span className="ns-choice-print">{n}</span>
+                </span>
+              ),
+            }))}
+            onPick={pick}
+            correctId={phase === 'answered' ? String(problem.answer) : null}
+            pickedId={picked !== null ? String(picked) : null}
+            disabled={phase === 'answered'}
+            label="Answers"
+          />
+          <div
+            className={`feedback${phase === 'answered' ? (correct ? ' feedback--good' : ' feedback--bad') : ''}`}
+            aria-hidden="true"
+          >
+            {phase === 'answered' && (
+              <span className="feedback-pill">
+                {correct
+                  ? `✓ Correct! ${problem.display} = ${problem.answer}`
+                  : `✗ Not quite — the answer is ${problem.answer}`}
+              </span>
+            )}
+          </div>
+          {phase === 'answered' && (
+            <div className="ns-actions">
+              <button ref={nextRef} type="button" className="btn btn--pine" onClick={next}>
+                {round + 1 >= ROUNDS ? 'See results' : 'Next problem'}
+              </button>
+            </div>
+          )}
+        </>
+      )}
+
+      {phase === 'done' && (
+        <Results
+          title={
+            score === ROUNDS
+              ? 'Perfect math!'
+              : score >= 7
+                ? 'Great job!'
+                : score >= 5
+                  ? 'Good effort!'
+                  : 'Keep practicing!'
+          }
+          summary={`${score} of ${ROUNDS} correct`}
+          stars={starsFor(score)}
+          best={stats.bestScore > 0 || score > 0 ? `${Math.max(stats.bestScore, score)} of ${ROUNDS}` : undefined}
+          isNewBest={newBest}
+          onReplay={start}
+        />
+      )}
     </div>
   );
 }

@@ -1,0 +1,232 @@
+/* ==========================================================================
+   Dot Builder — raise the dots to write a letter or word.
+   ========================================================================== */
+
+.db-board {
+  overflow: hidden;
+}
+
+/* Start screen */
+.db-intro {
+  max-width: 38rem;
+  font-size: var(--step-0);
+  color: var(--ink-soft);
+}
+.db-options {
+  display: grid;
+  gap: var(--s-5);
+  justify-items: center;
+}
+.db-options .mode-picker-options {
+  justify-content: center;
+}
+.db-options .mode-option {
+  min-height: 3.5rem;
+  min-width: 6.5rem;
+  text-align: center;
+  justify-items: center;
+}
+.db-start-hint {
+  font-size: var(--step--1);
+  color: var(--ink-soft);
+}
+.db-board kbd {
+  display: inline-block;
+  min-width: 1.6em;
+  padding: 0.05em 0.4em;
+  border: 1px solid var(--rule);
+  border-bottom-width: 3px;
+  border-radius: var(--r-1);
+  background: var(--paper);
+  font-family: var(--font-body);
+  font-size: 0.9em;
+  font-weight: 700;
+  line-height: 1.4;
+  text-align: center;
+}
+
+/* Play: target beside the pad on wide screens, stacked on phones */
+.db-layout {
+  display: grid;
+  gap: var(--s-5);
+  align-items: center;
+  justify-items: center;
+}
+@media (min-width: 760px) {
+  .db-layout {
+    grid-template-columns: minmax(0, 1fr) auto;
+    gap: var(--s-7);
+  }
+}
+
+.db-target {
+  display: grid;
+  justify-items: center;
+  gap: var(--s-3);
+  width: 100%;
+  padding: var(--s-5);
+  border-radius: var(--r-3);
+  background: var(--paper-sunk);
+  box-shadow: inset 0 2px 8px rgba(30, 27, 46, 0.08);
+  text-align: center;
+}
+.db-prompt {
+  display: grid;
+  justify-items: center;
+  gap: var(--s-2);
+  margin: 0;
+  font-size: var(--step-1);
+  color: var(--ink-soft);
+}
+.db-prompt-lead {
+  font-size: var(--step-1);
+}
+.db-print {
+  color: var(--ink);
+}
+.db-print--dot {
+  font-size: clamp(2.5rem, 9vw, 4rem);
+}
+
+/* A word: one tile per letter; finished letters show their cell underneath */
+.db-word {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: var(--s-3);
+}
+.db-word-letter {
+  display: grid;
+  justify-items: center;
+  gap: var(--s-2);
+  min-width: 4.5rem;
+  padding: var(--s-3) var(--s-3) var(--s-2);
+  border: 2px solid var(--rule);
+  border-radius: var(--r-3);
+  background: var(--paper);
+  box-shadow: 0 3px 0 var(--rule);
+  transition:
+    transform var(--t-med) var(--ease-pop),
+    border-color var(--t-fast) var(--ease),
+    background var(--t-fast) var(--ease);
+}
+.db-word-print {
+  font-family: var(--font-display);
+  font-size: clamp(2.25rem, 7vw, 3.25rem);
+  font-weight: 800;
+  line-height: 1;
+}
+.db-word-letter.is-current {
+  border-color: var(--tomato);
+  box-shadow: 0 3px 0 var(--tomato-deep);
+  transform: translateY(-3px);
+}
+.db-word-letter.is-done {
+  border-color: var(--pine);
+  background: var(--pine-tint);
+  box-shadow: 0 3px 0 var(--pine);
+}
+.db-word-letter.is-done .db-word-print {
+  color: var(--pine-deep);
+}
+.db-progress {
+  margin: 0;
+  font-weight: 700;
+  color: var(--ink-soft);
+}
+
+/* The pad sits on its own little stage so the burst can fly out from it */
+.db-pad-stage {
+  position: relative;
+  display: grid;
+  place-items: center;
+  padding: var(--s-4);
+}
+.db-pad .dotpad-dot {
+  font-size: 1.15rem;
+}
+.db-pad .dotpad-dot:focus-visible {
+  outline: var(--focus);
+  outline-offset: 4px;
+}
+
+.db-actions {
+  justify-content: center;
+}
+.db-actions .btn {
+  min-height: 3.5rem;
+  min-width: 7rem;
+}
+
+/* "Show me" guidance */
+.db-hint {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: center;
+  gap: var(--s-3);
+  margin: 0 auto;
+  padding: var(--s-3) var(--s-4);
+  border-radius: var(--r-3);
+  background: var(--pine-tint);
+  color: var(--pine-deep);
+  font-weight: 700;
+  text-align: center;
+}
+
+.db-board .feedback {
+  margin: 0;
+}
+.db-board .feedback-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--s-2);
+}
+.feedback--info {
+  color: var(--ink);
+}
+.feedback--info .feedback-pill {
+  background: var(--sky-tint);
+}
+
+/* Results */
+.db-review {
+  display: grid;
+  gap: var(--s-3);
+  justify-items: center;
+}
+.db-review-title,
+.db-perfect {
+  font-weight: 700;
+}
+.db-review-list {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: var(--s-3);
+}
+.db-review-item {
+  display: grid;
+  justify-items: center;
+  gap: var(--s-1);
+  min-width: 5.5rem;
+  padding: var(--s-3);
+  border-radius: var(--r-3);
+  background: var(--paper-sunk);
+}
+.db-review-name {
+  font-family: var(--font-display);
+  font-size: var(--step-1);
+  font-weight: 800;
+  line-height: 1.1;
+}
+.db-review-dots {
+  font-size: var(--step--1);
+  color: var(--ink-soft);
+}
