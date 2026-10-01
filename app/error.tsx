@@ -1,26 +1,28 @@
 'use client';
 
-import Link from 'next/link';
-import Cell from '@/components/ui/Cell';
-import '@/styles/pages/system.css';
-
 export default function GlobalError({ error, reset }: { error: Error & { digest?: string }; reset: () => void }) {
   return (
-    <main id="main-content" tabIndex={-1} className="system-page lattice">
-      <div className="wrap-narrow system-card tile">
-        <Cell dots={[]} size="xl" framed flat="ghost" />
-        <h1>Something slipped</h1>
-        <p className="lead center">Sorry — this page hit an unexpected error. Trying again usually fixes it.</p>
-        {error.digest && <p className="muted">Error reference: {error.digest}</p>}
-        <div className="cluster system-actions">
-          <button type="button" onClick={reset} className="btn">
-            Try again
+    <div className="global-error-page">
+      <div className="global-error-card">
+        <div className="global-error-icon" aria-hidden="true">
+          <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5">
+            <circle cx="12" cy="12" r="10" />
+            <line x1="12" y1="8" x2="12" y2="12" />
+            <circle cx="12" cy="16" r="0.5" fill="currentColor" />
+          </svg>
+        </div>
+        <h1>Something went wrong</h1>
+        <p>An unexpected error occurred. Please try again or return to the home page.</p>
+        {error.digest && <p className="global-error-digest">Error ID: {error.digest}</p>}
+        <div className="global-error-actions">
+          <button onClick={reset} className="global-error-retry">
+            Try Again
           </button>
-          <Link href="/" className="btn btn--paper">
-            Back to home
-          </Link>
+          <a href="/" className="global-error-home">
+            Back to Home
+          </a>
         </div>
       </div>
-    </main>
+    </div>
   );
 }

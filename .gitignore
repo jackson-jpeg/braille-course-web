@@ -12,5 +12,3 @@ tsconfig.tsbuildinfo
 
 .serena/
 firebase-debug.log
-test-results/
-playwright-report/
