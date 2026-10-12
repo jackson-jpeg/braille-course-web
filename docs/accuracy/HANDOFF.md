@@ -123,27 +123,29 @@ is never trusted with braille:
 To refresh the everyday-word list: `npx tsx scripts/braille/dump-candidate-words.ts | python3
 scripts/braille/plain-contracted-words.py`, then `npm run braille:oracle`.
 
-## Vercel preview deployments (investigated October 12)
+## Vercel deployments
 
-- `vercel.json` has only `framework` and `crons`; there is no `ignoreCommand` or `git.deploymentEnabled`
-  anywhere in the repo, so nothing in the code turns previews off.
-- Branch pushes authored by `Claude <noreply@anthropic.com>` got a Vercel deployment that failed about a
-  second after it was created (Vercel rejecting a commit author who is not on the team). The repo's git
-  identity is now `jackson-jpeg <realjacksons@gmail.com>`.
-- Since about 04:13 UTC on October 12 Vercel has posted nothing to GitHub (no deployments, statuses or PR
-  comments), yet the merge of PR #7 is live in production. So Vercel builds, but its GitHub reporting is
-  off. Preview builds may exist unreported; check the Vercel dashboard (Deployments filtered by branch;
-  Settings → Git). Until that is fixed, verify a deploy on the live site, not on GitHub: the browser checks
-  can be pointed at `https://www.teachbraille.org`.
+- **Only `master` deploys.** `vercel.json` sets `git.deploymentEnabled` to `{ "**": false, "master": true }`
+  (if any matching rule is `true`, Vercel deploys), so branch pushes build no preview. Verify changes
+  locally with the "Before every merge" checklist instead. `github.silent: true` stops Vercel bot comments.
+- **Why previews were turned off.** Every preview failed about a second after it was created because the
+  Preview copy of `CRON_SECRET` in the Vercel dashboard has leading or trailing whitespace (Vercel's own
+  email). It was not the commit author, as an earlier version of this file said. The owner chose not to
+  edit the dashboard. `lib/cron-auth.ts` trims the secret and the bearer token.
+- If previews are ever wanted again: first remove the whitespace from the Preview `CRON_SECRET`, then
+  drop the `"**": false` rule.
+- Vercel's deployment statuses on GitHub went quiet for part of October 12. Confirm a deploy with the
+  deployments API, and with the browser checks run against https://www.teachbraille.org.
 
 ## State at handoff
 
-- Branch `claude/teachbraille-accuracy-audit-j6y95w`, merged to `master` through one PR per pass (see the
-  final message of each session for the PR link and the live check). Commits are authored as
-  `jackson-jpeg <realjacksons@gmail.com>` (repo-local git config).
+- All work is merged to `master` (PRs #5–#10); merged branches are deleted, so start new work on a fresh
+  branch from `master`. Commits are authored as `jackson-jpeg <realjacksons@gmail.com>` (repo-local git
+  config).
 - All tests pass, none skipped. Numbers are in `VERIFICATION-RESULTS.md`.
-- The previous attempt (PR #3, a full redesign) was reverted by the owner in PR #4; its branch
-  `redesign-oct-2026` still exists. **This work deliberately keeps the current (pre-redesign) design.**
+- The previous attempt (PR #3, a full redesign) was reverted by the owner in PR #4, and its branches
+  (`redesign-oct-2026`, `ccr-0ffb0bff-cn67bc`) were deleted at the owner's request. **This work
+  deliberately keeps the current (pre-redesign) design.**
 
 ## Open items / ideas (none block accuracy)
 
@@ -154,7 +156,6 @@ scripts/braille/plain-contracted-words.py`, then `npm run braille:oracle`.
   The AI worksheet builder drops a contracted word it cannot verify, so it can only draw words from the
   verified lists.
 - **Typeform indicators** (italic, bold, underline) are in the data and the AI reference but not taught.
-- **Vercel previews**: see above; the remaining check is in the Vercel dashboard.
 
 Resolved in the October 12 cleanup pass: Word Game keyboard at 320px (now checked at 320/390/1280 on
 every page), unused Contraction Sprint / Sentence Decoder difficulty parameters, admin worksheets now draw
