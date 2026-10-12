@@ -51,13 +51,7 @@ export default function BrailleCell({
     ? { role: 'img' as const, 'aria-label': `${label}, ${describeCell(cell)}` }
     : { 'aria-hidden': true as const };
   return (
-    <div
-      className={className}
-      data-braille-cell=""
-      data-dots={cell.join('')}
-      style={style}
-      {...a11y}
-    >
+    <div className={className} data-braille-cell="" data-dots={cell.join('')} style={style} {...a11y}>
       {GRID_ORDER.map((dot) => {
         const raised = cell.includes(dot);
         return (

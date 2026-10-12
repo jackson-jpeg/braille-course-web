@@ -69,10 +69,7 @@ describe('Unicode braille patterns (U+2800 block)', () => {
 });
 
 describe('cell data is well formed', () => {
-  const everyCell: Cell[] = [
-    ...ALL_SIGNS.flatMap((s) => s.cells),
-    ...CONTRACTIONS.flatMap((c) => c.cells),
-  ];
+  const everyCell: Cell[] = [...ALL_SIGNS.flatMap((s) => s.cells), ...CONTRACTIONS.flatMap((c) => c.cells)];
   test('dots are integers 1–6, ascending, without repeats', () => {
     for (const cell of everyCell) {
       expect(cell.every((d) => Number.isInteger(d) && d >= 1 && d <= 6)).toBe(true);
@@ -187,6 +184,12 @@ describe('ICEB Rules of Unified English Braille (2024): symbol tables', () => {
     ['capitalsTerminator', /capitals terminator/],
     ['grade1Symbol', /^grade 1 symbol indicator$/],
     ['grade1Word', /^grade 1 word indicator$/],
+    ['italicSymbol', /^italic symbol indicator$/],
+    ['italicWord', /^italic word indicator$/],
+    ['boldSymbol', /^boldface symbol indicator$/],
+    ['boldWord', /^boldface word indicator$/],
+    ['underlineSymbol', /^underlined symbol indicator$/],
+    ['underlineWord', /^underlined word indicator$/],
     ['period', /^full stop/],
     ['comma', /^comma \(see 7\.1\)/],
     ['question', /^question mark/],
@@ -263,11 +266,14 @@ describe('ICEB Rules of Unified English Braille (2024): contraction tables (sect
     }
   });
 
-  test.each(CONTRACTIONS.map((c) => [c.text, c.kind, c] as const))('%s (%s) matches its section 10 table', (_t, _k, c) => {
-    const section = c.rule.split('.').slice(0, 2).join('.');
-    const e = entries.find((x) => x.section === section && x.text.replace(/ \(see .*\)$/, '') === c.text);
-    expect(e?.braille).toBe(cellsToUnicode(c.cells));
-  });
+  test.each(CONTRACTIONS.map((c) => [c.text, c.kind, c] as const))(
+    '%s (%s) matches its section 10 table',
+    (_t, _k, c) => {
+      const section = c.rule.split('.').slice(0, 2).join('.');
+      const e = entries.find((x) => x.section === section && x.text.replace(/ \(see .*\)$/, '') === c.text);
+      expect(e?.braille).toBe(cellsToUnicode(c.cells));
+    },
+  );
 });
 
 describe('UEB only: no EBAE or Nemeth patterns (trap 1)', () => {

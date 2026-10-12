@@ -14,7 +14,7 @@ import BrailleDotPad, { toggleDot } from '@/components/BrailleDotPad';
  * The learner writes each cell of the target by raising its dots, then checks it. Targets can be
  * several cells long (a capital letter, a number, a two-cell sign); the writer goes cell by cell.
  * Input is checked against the canonical cells from lib/braille. Fully keyboard-operable:
- *   • F D S raise dots 1 2 3 and J K L raise dots 4 5 6 (the Perkins brailler layout)
+ *   • the six-key Perkins layout from lib/braille/perkins.ts (S D F, J K L)
  *   • Number keys 1–6 also toggle their dot
  *   • Enter / Space checks · Backspace / C clears
  *   • Or tap the six dots directly

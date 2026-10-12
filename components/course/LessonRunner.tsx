@@ -23,7 +23,8 @@ function GameSkeleton() {
 }
 
 // Reuse the existing games whole as each lesson's deeper-practice step.
-const GAME_COMPONENTS: Record<GameId, ComponentType> = {
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+const GAME_COMPONENTS: Record<GameId, ComponentType<any>> = {
   wordgame: dynamic(() => import('@/components/BrailleWordGame'), { loading: GameSkeleton }),
   explorer: dynamic(() => import('@/components/BrailleDotExplorer'), { loading: GameSkeleton }),
   hangman: dynamic(() => import('@/components/BrailleHangman'), { loading: GameSkeleton }),
@@ -36,6 +37,10 @@ const GAME_COMPONENTS: Record<GameId, ComponentType> = {
   'sentence-decoder': dynamic(() => import('@/components/BrailleSentenceDecoder'), { loading: GameSkeleton }),
   bingo: dynamic(() => import('@/components/BrailleBingo'), { loading: GameSkeleton }),
   rain: dynamic(() => import('@/components/BrailleRain'), { loading: GameSkeleton }),
+  'capital-quest': dynamic(() => import('@/components/BrailleCapitalQuest'), { loading: GameSkeleton }),
+  'number-lock': dynamic(() => import('@/components/BrailleNumberLock'), { loading: GameSkeleton }),
+  'punctuation-detective': dynamic(() => import('@/components/BraillePunctuationDetective'), { loading: GameSkeleton }),
+  'brailler-challenge': dynamic(() => import('@/components/BraillerChallenge'), { loading: GameSkeleton }),
 };
 
 interface LessonRunnerProps {
@@ -226,7 +231,7 @@ export default function LessonRunner({ lesson, prev, next }: LessonRunnerProps) 
           {lessonFinished ? (
             <div className="lesson-practice-game">
               <GameErrorBoundary gameName={lesson.practiceGameLabel ?? 'Practice'}>
-                <PracticeGame />
+                <PracticeGame {...(lesson.practiceGameProps ?? {})} />
               </GameErrorBoundary>
             </div>
           ) : (

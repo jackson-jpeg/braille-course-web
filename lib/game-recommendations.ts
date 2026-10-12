@@ -18,6 +18,10 @@ const ALL_GAMES: GameId[] = [
   'sentence-decoder',
   'bingo',
   'rain',
+  'capital-quest',
+  'number-lock',
+  'punctuation-detective',
+  'brailler-challenge',
 ];
 
 const GAME_NAMES: Record<GameId, string> = {
@@ -33,6 +37,10 @@ const GAME_NAMES: Record<GameId, string> = {
   'sentence-decoder': 'Sentence Decoder',
   bingo: 'Braille Bingo',
   rain: 'Braille Rain',
+  'capital-quest': 'Capital Quest',
+  'number-lock': 'Number Lock',
+  'punctuation-detective': 'Punctuation Detective',
+  'brailler-challenge': 'Brailler Challenge',
 };
 
 export interface Recommendation {

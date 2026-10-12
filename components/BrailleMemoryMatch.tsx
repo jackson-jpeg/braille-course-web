@@ -1,47 +1,25 @@
 'use client';
 
 import { useState, useEffect, useCallback, useRef } from 'react';
-import { brailleMap } from '@/lib/braille-map';
+import BrailleCell from '@/components/BrailleCell';
 import { useGameProgress } from '@/hooks/useGameProgress';
 import { pushAchievements } from '@/components/AchievementToast';
 import { getRandomTip } from '@/lib/learning-tips';
+import { describeCell } from '@/lib/braille/prose';
+import { type MemoryCard, PAIR_COUNT, cardCell, isMatch as cardsMatch, newDeck } from '@/lib/games/memorymatch';
 
-const ALL_LETTERS = Object.keys(brailleMap);
-
-interface Card {
-  id: number;
-  letter: string;
-  type: 'braille' | 'letter';
+interface Card extends MemoryCard {
   flipped: boolean;
   matched: boolean;
 }
 
-function pickRandomLetters(count: number): string[] {
-  const shuffled = [...ALL_LETTERS].sort(() => Math.random() - 0.5);
-  return shuffled.slice(0, count);
+function dealCards(): Card[] {
+  return newDeck(PAIR_COUNT).map((c) => ({ ...c, flipped: false, matched: false }));
 }
 
-function buildDeck(letters: string[]): Card[] {
-  const cards: Card[] = [];
-  let id = 0;
-  for (const letter of letters) {
-    cards.push({ id: id++, letter, type: 'braille', flipped: false, matched: false });
-    cards.push({ id: id++, letter, type: 'letter', flipped: false, matched: false });
-  }
-  return cards.sort(() => Math.random() - 0.5);
+function BrailleFace({ letter }: { letter: string }) {
+  return <BrailleCell cell={cardCell({ letter })} className="memorymatch-braille" dotClassName="memorymatch-dot" />;
 }
-
-function BrailleFace({ pattern }: { pattern: number[] }) {
-  return (
-    <div className="memorymatch-braille" aria-hidden="true">
-      {pattern.map((v, i) => (
-        <span key={i} className={`memorymatch-dot ${v ? 'filled' : 'empty'}`} />
-      ))}
-    </div>
-  );
-}
-
-const PAIR_COUNT = 6;
 
 export default function BrailleMemoryMatch() {
   const { recordResult } = useGameProgress('memorymatch');
@@ -59,8 +37,7 @@ export default function BrailleMemoryMatch() {
   movesRef.current = moves;
 
   const startGame = useCallback(() => {
-    const letters = pickRandomLetters(PAIR_COUNT);
-    setCards(buildDeck(letters));
+    setCards(dealCards());
     setFlippedIds([]);
     setMoves(0);
     setMatchedPairs(0);
@@ -101,7 +78,7 @@ export default function BrailleMemoryMatch() {
         const first = cards.find((c) => c.id === newFlipped[0])!;
         const second = cards.find((c) => c.id === newFlipped[1])!;
 
-        const isMatch = first.letter === second.letter && first.type !== second.type;
+        const isMatch = cardsMatch(first, second);
 
         if (isMatch) {
           matchTimerRef.current = setTimeout(() => {
@@ -165,15 +142,15 @@ export default function BrailleMemoryMatch() {
               aria-label={
                 card.flipped || card.matched
                   ? card.type === 'letter'
-                    ? `Letter ${card.letter}`
-                    : `Braille pattern for ${card.letter}`
+                    ? `letter ${card.letter}`
+                    : `Braille cell, ${describeCell(cardCell(card))}`
                   : 'Face-down card'
               }
             >
               <div className="memorymatch-card-inner">
                 <div className="memorymatch-card-front">
                   {card.type === 'braille' ? (
-                    <BrailleFace pattern={brailleMap[card.letter]} />
+                    <BrailleFace letter={card.letter} />
                   ) : (
                     <span className="memorymatch-card-letter">{card.letter}</span>
                   )}

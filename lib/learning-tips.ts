@@ -1,68 +1,86 @@
 /**
  * Educational braille facts and tips shown after game wins.
  */
+import { renderProse } from '@/lib/braille/prose';
 
 export interface LearningTip {
   fact: string;
   category: 'history' | 'technique' | 'fun-fact' | 'encouragement';
 }
 
-const tips: LearningTip[] = [
+/**
+ * Tips are written as prose templates: any cell or dot number they mention is rendered from
+ * lib/braille (renderProse), never typed by hand. Sources for the facts are in
+ * docs/accuracy/audit/contractions.md.
+ */
+const templates: LearningTip[] = [
   // History
-  { fact: 'Louis Braille invented the braille system in 1824, when he was just 15 years old.', category: 'history' },
-  { fact: 'Braille was inspired by a military communication system called "night writing."', category: 'history' },
-  { fact: 'The braille cell has remained unchanged since 1824 — still 6 dots in a 2×3 grid.', category: 'history' },
   {
-    fact: 'UEB (Unified English Braille) was formally published in 2010 and adopted by major English-speaking countries starting in 2012.',
+    fact: 'Louis Braille developed his reading system as a teenager in the 1820s; he was 15 in 1824.',
+    category: 'history',
+  },
+  {
+    fact: 'Braille grew out of “night writing,” a raised-dot code by the French army officer Charles Barbier.',
+    category: 'history',
+  },
+  {
+    fact: 'The six-dot cell Louis Braille developed in the 1820s is still the basis of braille today: 2 columns of 3 dots.',
+    category: 'history',
+  },
+  {
+    fact: 'Unified English Braille (UEB) was first adopted by Australia in 2005. The first edition of its rulebook appeared in 2010, and by 2016 every member country of the International Council on English Braille had adopted it.',
     category: 'history',
   },
   { fact: 'Before braille, raised print letters were used, but they were slow to read by touch.', category: 'history' },
 
   // Technique
   {
-    fact: 'The first 10 braille letters (A–J) only use dots 1, 2, 4, and 5 — the top four positions.',
+    fact: 'The first 10 braille letters (a–j) use only {fact:firstDecadeDots}: the top two rows of the cell.',
     category: 'technique',
   },
-  { fact: 'Letters K–T are the same as A–J but with dot 3 added.', category: 'technique' },
+  { fact: 'Letters k–t are the same as a–j with {fact:secondDecadeAdds} added.', category: 'technique' },
   {
-    fact: 'The number indicator (⠼) tells the reader that the following letters represent numbers.',
-    category: 'technique',
-  },
-  {
-    fact: 'In braille, numbers use the same patterns as letters A–J, preceded by a number sign.',
+    fact: 'The {name:numeric} ({braille:numeric}, {dots:numeric}) tells the reader that the letters a–j that follow are digits.',
     category: 'technique',
   },
   {
-    fact: 'Grade 2 braille uses contractions to save space — "the" is written as a single cell (⠮).',
+    fact: 'Digits 1 to 9 and 0 use the same cells as the letters a to j, after the {name:numeric}.',
     category: 'technique',
   },
   {
-    fact: 'Alphabetic wordsigns let you write common words with just one braille cell: B = "but", C = "can".',
+    fact: 'Contracted (grade 2) braille saves space: the word “the” is a single cell ({braille:contraction:the}, {dots:contraction:the}).',
     category: 'technique',
   },
   {
-    fact: 'There are over 180 contractions in Grade 2 braille — mastering them takes practice!',
+    fact: 'Alphabetic wordsigns write a common word with one letter standing alone: b means “but”, c means “can”.',
     category: 'technique',
   },
   {
-    fact: 'Strong contractions like "and" (⠯), "for" (⠿), and "the" (⠮) appear in almost every sentence.',
+    fact: 'The UEB rulebook’s contractions summary (rule 2.2) lists 180 different contractions and shortforms. Mastering them takes practice!',
+    category: 'technique',
+  },
+  {
+    fact: 'Strong contractions like “and” ({braille:contraction:and}), “for” ({braille:contraction:for}) and “the” ({braille:contraction:the}) turn up in almost any paragraph.',
     category: 'technique',
   },
 
   // Fun facts
-  { fact: 'Experienced braille readers can read at speeds of 200+ words per minute.', category: 'fun-fact' },
-  { fact: 'LEGO now makes braille bricks to help children learn braille through play.', category: 'fun-fact' },
-  { fact: 'Braille is used on currency in many countries, including the US, UK, and EU.', category: 'fun-fact' },
+  { fact: 'Skilled braille readers read fluently by touch, often using both hands.', category: 'fun-fact' },
+  { fact: 'LEGO makes braille bricks to help children learn braille through play.', category: 'fun-fact' },
+  {
+    fact: 'Across the European Union, medicine packaging must show the name of the medicine in braille.',
+    category: 'fun-fact',
+  },
   { fact: 'There are braille codes for music, mathematics, and even computer programming.', category: 'fun-fact' },
   { fact: "January 4th is World Braille Day, celebrating Louis Braille's birthday.", category: 'fun-fact' },
   {
-    fact: 'Braille can be written on paper using a slate and stylus, embosser, or braille display.',
+    fact: 'Braille can be written with a slate and stylus, a braillewriter, or a computer and braille embosser.',
     category: 'fun-fact',
   },
 
   // Encouragement
   {
-    fact: 'Every braille pattern you recognize builds your visual literacy — keep practicing!',
+    fact: 'Every braille pattern you recognize builds your braille literacy — keep practicing!',
     category: 'encouragement',
   },
   { fact: 'Learning braille patterns helps you understand how tactile reading works.', category: 'encouragement' },
@@ -79,6 +97,9 @@ const tips: LearningTip[] = [
     category: 'encouragement',
   },
 ];
+
+/** The tips with their braille rendered from lib/braille. */
+export const tips: readonly LearningTip[] = templates.map((t) => ({ ...t, fact: renderProse(t.fact) }));
 
 let lastIndex = -1;
 

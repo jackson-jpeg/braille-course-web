@@ -1,14 +1,13 @@
 import { ImageResponse } from 'next/og';
+import { cellColumns, iconCell } from '@/lib/site-chrome-braille';
 
 export const runtime = 'edge';
 
 export const size = { width: 32, height: 32 };
 export const contentType = 'image/png';
 
-// Braille T: [d1, d4, d2, d5, d3, d6] = [0,1,1,1,1,0]
-// col0 = [d1, d2, d3] = [0, 1, 1]   col1 = [d4, d5, d6] = [1, 1, 0]
-const COL0 = [0, 1, 1];
-const COL1 = [1, 1, 0];
+// The braille letter t (same cell as the nav logo), as two columns laid out by dotPosition.
+const COLUMNS = cellColumns(iconCell());
 
 const NAVY = '#1B2A4A';
 const GOLD = '#D4A853';
@@ -30,11 +29,11 @@ export default function Icon() {
       }}
     >
       <div style={{ display: 'flex', flexDirection: 'row', gap }}>
-        {[COL0, COL1].map((col, ci) => (
+        {COLUMNS.map((col, ci) => (
           <div key={ci} style={{ display: 'flex', flexDirection: 'column', gap }}>
-            {col.map((filled, ri) => (
+            {col.map(({ dot, raised: filled }) => (
               <div
-                key={ri}
+                key={dot}
                 style={{
                   width: dotSize,
                   height: dotSize,

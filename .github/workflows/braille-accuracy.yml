@@ -1,0 +1,41 @@
+name: Braille accuracy
+
+# Every push and pull request: rebuild the liblouis oracle and the ICEB rulebook fixtures from
+# their sources, fail if they differ from the committed copies, then run the full accuracy suite
+# and the real-browser cell geometry check.
+on:
+  push:
+    branches: [master]
+  pull_request:
+
+jobs:
+  accuracy:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+      - name: Install liblouis (UEB tables), Python bindings, poppler
+        run: sudo apt-get update && sudo apt-get install -y liblouis-bin python3-louis poppler-utils
+      - run: npm ci
+      - name: Regenerate liblouis oracle and compare with the committed fixture
+        run: |
+          npm run braille:oracle
+          git diff --exit-code -- __tests__/fixtures/liblouis-oracle.json
+      - name: Re-extract the ICEB rulebook tables and verify the curated examples
+        run: |
+          npm run braille:rulebook
+          git diff --exit-code -- __tests__/fixtures/iceb-rulebook-signs.json
+      - name: Accuracy and unit tests
+        run: npx jest --ci
+      - name: Build
+        run: npm run build
+      - name: Real-browser cell geometry
+        run: |
+          npx playwright install --with-deps chromium
+          npm run start -- -p 3100 &
+          for i in $(seq 1 60); do curl -sf http://localhost:3100 >/dev/null && break; sleep 1; done
+          node scripts/braille/check-rendered-cells.mjs http://localhost:3100

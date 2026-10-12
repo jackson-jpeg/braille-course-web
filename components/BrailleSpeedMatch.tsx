@@ -1,38 +1,22 @@
 'use client';
 
 import { useState, useEffect, useCallback, useRef } from 'react';
-import { brailleMap, computeSimilarity } from '@/lib/braille-map';
-import SharedBrailleCell from '@/components/BrailleCell';
+import BrailleCell from '@/components/BrailleCell';
 import { useGameProgress } from '@/hooks/useGameProgress';
 import { pushAchievements } from '@/components/AchievementToast';
+import { describeCell } from '@/lib/braille/prose';
+import { type SpeedMatchMode, isCorrect as isCorrectChoice, letterCell, makeRound } from '@/lib/games/speedmatch';
+import type { QuestionSpec } from '@/lib/games/quiz';
 
-const LETTERS = Object.keys(brailleMap).filter((k) => /^[A-Z]$/.test(k));
+type Mode = SpeedMatchMode;
 
-type Mode = 'read' | 'write';
-
-function pickRandom<T>(arr: T[], count: number): T[] {
-  const shuffled = [...arr].sort(() => Math.random() - 0.5);
-  return shuffled.slice(0, count);
-}
-
-function getDistractors(correct: string): string[] {
-  const correctPattern = brailleMap[correct];
-  // Score all other letters by similarity
-  const scored = LETTERS.filter((l) => l !== correct)
-    .map((l) => ({ letter: l, sim: computeSimilarity(correctPattern, brailleMap[l]) }))
-    .sort((a, b) => b.sim - a.sim);
-
-  // Take top 8 most similar, pick 3 randomly from that pool
-  const pool = scored.slice(0, 8);
-  return pickRandom(pool, 3).map((p) => p.letter);
-}
-
-function SpeedMatchBrailleCell({ pattern, size }: { pattern: number[]; size: 'large' | 'small' }) {
+function SpeedMatchBrailleCell({ letter, size, label }: { letter: string; size: 'large' | 'small'; label?: string }) {
   return (
-    <SharedBrailleCell
-      pattern={pattern}
+    <BrailleCell
+      cell={letterCell(letter)}
       className={`speedmatch-cell speedmatch-cell-${size}`}
       dotClassName="speedmatch-dot"
+      label={label}
     />
   );
 }
@@ -40,7 +24,8 @@ function SpeedMatchBrailleCell({ pattern, size }: { pattern: number[]; size: 'la
 export default function BrailleSpeedMatch() {
   const { recordResult } = useGameProgress('speedmatch');
   const [mode, setMode] = useState<Mode>('read');
-  const [currentLetter, setCurrentLetter] = useState('');
+  const [spec, setSpec] = useState<QuestionSpec<string, string> | null>(null);
+  const currentLetter = spec?.answer ?? '';
   const [choices, setChoices] = useState<string[]>([]);
   const [selected, setSelected] = useState<string | null>(null);
   const [isCorrect, setIsCorrect] = useState<boolean | null>(null);
@@ -66,11 +51,9 @@ export default function BrailleSpeedMatch() {
   }, []);
 
   const nextRound = useCallback(() => {
-    const letter = LETTERS[Math.floor(Math.random() * LETTERS.length)];
-    const distractors = getDistractors(letter);
-    const allChoices = [letter, ...distractors].sort(() => Math.random() - 0.5);
-    setCurrentLetter(letter);
-    setChoices(allChoices);
+    const round = makeRound('read');
+    setSpec(round.spec);
+    setChoices(round.choices);
     setSelected(null);
     setIsCorrect(null);
     setLocked(false);
@@ -82,10 +65,10 @@ export default function BrailleSpeedMatch() {
 
   const handleChoice = useCallback(
     (choice: string) => {
-      if (locked) return;
+      if (locked || !spec) return;
       setLocked(true);
       setSelected(choice);
-      const correct = choice === currentLetter;
+      const correct = isCorrectChoice(spec, choice);
       setIsCorrect(correct);
 
       if (correct) {
@@ -104,7 +87,7 @@ export default function BrailleSpeedMatch() {
         setTimeout(nextRound, 1500);
       }
     },
-    [locked, currentLetter, nextRound, recordResult],
+    [locked, spec, nextRound, recordResult],
   );
 
   // Keyboard support (1-4)
@@ -127,8 +110,6 @@ export default function BrailleSpeedMatch() {
     if (choice === selected && !isCorrect) return 'speedmatch-wrong';
     return '';
   }
-
-  const pattern = brailleMap[currentLetter] || [0, 0, 0, 0, 0, 0];
 
   return (
     <div className="speedmatch-container" ref={containerRef}>
@@ -166,7 +147,7 @@ export default function BrailleSpeedMatch() {
         {/* Prompt */}
         <div className="speedmatch-prompt" aria-live="polite">
           {mode === 'read' ? (
-            <SpeedMatchBrailleCell pattern={pattern} size="large" />
+            currentLetter && <SpeedMatchBrailleCell letter={currentLetter} size="large" label="Braille cell" />
           ) : (
             <div className="speedmatch-prompt-letter">{currentLetter}</div>
           )}
@@ -181,14 +162,16 @@ export default function BrailleSpeedMatch() {
               onClick={() => handleChoice(choice)}
               disabled={locked}
               aria-label={
-                mode === 'read' ? `Choice ${i + 1}: ${choice}` : `Choice ${i + 1}: braille pattern for ${choice}`
+                mode === 'read'
+                  ? `Choice ${i + 1}: letter ${choice}`
+                  : `Choice ${i + 1}: braille cell, ${describeCell(letterCell(choice))}`
               }
             >
               <span className="speedmatch-choice-number">{i + 1}</span>
               {mode === 'read' ? (
                 <span className="speedmatch-choice-letter">{choice}</span>
               ) : (
-                <SpeedMatchBrailleCell pattern={brailleMap[choice]} size="small" />
+                <SpeedMatchBrailleCell letter={choice} size="small" />
               )}
             </button>
           ))}

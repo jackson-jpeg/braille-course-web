@@ -34,7 +34,8 @@ function offenders(re: RegExp, files = sourceFiles, allow: (file: string, line: 
     const lines = fs.readFileSync(f, 'utf8').split('\n');
     lines.forEach((line, i) => {
       re.lastIndex = 0;
-      if (re.test(line) && !allow(f, line)) out.push(`${path.relative(ROOT, f)}:${i + 1}: ${line.trim().slice(0, 140)}`);
+      if (re.test(line) && !allow(f, line))
+        out.push(`${path.relative(ROOT, f)}:${i + 1}: ${line.trim().slice(0, 140)}`);
     });
   }
   return out;
@@ -67,12 +68,18 @@ describe('no braille outside lib/braille', () => {
   });
 
   test('no EBAE-only terminology ("letter sign", "letter indicator", "English Braille American Edition" as the taught code)', () => {
-    expect(offenders(/letter sign|letter indicator|\bEBAE\b/i)).toEqual([]);
+    expect(offenders(/letter sign|(?<!capital )letter indicator|\bEBAE\b/i)).toEqual([]);
   });
 
   test('only BrailleCell and BrailleDotPad lay out dots (GRID_ORDER / grid adapters)', () => {
-    const allowed = new Set(['components/BrailleCell.tsx', 'components/BrailleDotPad.tsx'].map((p) => path.join(ROOT, p)));
-    expect(offenders(/\bGRID_ORDER\b|\bcellToGrid\b|\bgridToCell\b|\[1, 4, 2, 5, 3, 6\]/, sourceFiles, (f) => allowed.has(f))).toEqual([]);
+    const allowed = new Set(
+      ['components/BrailleCell.tsx', 'components/BrailleDotPad.tsx'].map((p) => path.join(ROOT, p)),
+    );
+    expect(
+      offenders(/\bGRID_ORDER\b|\bcellToGrid\b|\bgridToCell\b|\[1, 4, 2, 5, 3, 6\]/, sourceFiles, (f) =>
+        allowed.has(f),
+      ),
+    ).toEqual([]);
   });
 });
 
@@ -80,8 +87,10 @@ describe('the accuracy suite cannot be silently weakened', () => {
   const testFiles = walk(path.join(ROOT, '__tests__'), ['.ts', '.tsx']);
   test('no skipped, focused or todo tests', () => {
     expect(
-      offenders(/\b(?:it|test|describe)\.(?:skip|only|todo)\b|\bx(?:it|test|describe)\s*\(|\bf(?:it|describe)\s*\(/, testFiles, (f) =>
-        f.endsWith('no-hardcoded-braille.test.ts'),
+      offenders(
+        /\b(?:it|test|describe)\.(?:skip|only|todo)\b|\bx(?:it|test|describe)\s*\(|\bf(?:it|describe)\s*\(/,
+        testFiles,
+        (f) => f.endsWith('no-hardcoded-braille.test.ts'),
       ),
     ).toEqual([]);
   });

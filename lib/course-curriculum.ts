@@ -64,6 +64,8 @@ export interface Lesson {
   examples?: LessonExample[];
   practiceGameId?: GameId;
   practiceGameLabel?: string;
+  /** Props for the practice game, e.g. a fixed level. */
+  practiceGameProps?: Record<string, unknown>;
   tip?: string;
 }
 
@@ -122,7 +124,9 @@ function contractionItem(text: string, kind?: Contraction['kind'], note?: string
 
 const STRONG_WORDSIGN_SENTENCE = (() => {
   const pairs = CONTRACTIONS.filter((c) => c.kind === 'strong-wordsign').map((w) => {
-    const group = CONTRACTIONS.find((g) => g.kind === 'strong-groupsign' && describeCells(g.cells) === describeCells(w.cells));
+    const group = CONTRACTIONS.find(
+      (g) => g.kind === 'strong-groupsign' && describeCells(g.cells) === describeCells(w.cells),
+    );
     if (!group) throw new Error(`course-curriculum: no groupsign shares a cell with ${w.text}`);
     return `${group.text} → ${w.text}`;
   });
@@ -215,7 +219,14 @@ export const COURSE_MODULES: CourseModule[] = [
             'w is the odd one out. Louis Braille designed his code for French, which rarely used w, so w was fitted in later. It is j plus {fact:wAddsToJ}.',
           ),
         ],
-        chars: [letter('u'), letter('v'), letter('x'), letter('y'), letter('z'), letter('w', 'The exception: j plus {fact:wAddsToJ}.')],
+        chars: [
+          letter('u'),
+          letter('v'),
+          letter('x'),
+          letter('y'),
+          letter('z'),
+          letter('w', 'The exception: j plus {fact:wAddsToJ}.'),
+        ],
         practiceGameId: 'memorymatch',
         practiceGameLabel: 'Memory Match',
         tip: 'That’s the whole alphabet! From here, it’s all about reading speed.',
@@ -264,8 +275,8 @@ export const COURSE_MODULES: CourseModule[] = [
           { print: 'I am Ana.', note: 'Each capital gets its own indicator.' },
           { print: 'McKay', note: 'A capital in the middle of a word gets the indicator too.' },
         ],
-        practiceGameId: 'reflex-dots',
-        practiceGameLabel: 'Reflex Dots',
+        practiceGameId: 'capital-quest',
+        practiceGameLabel: 'Capital Quest',
         tip: 'The capital letter indicator and the numeric indicator are both “indicators”: cells that change how the next cells are read.',
       },
       {
@@ -292,12 +303,15 @@ export const COURSE_MODULES: CourseModule[] = [
         examples: [
           { print: 'CAT', note: 'One capitalized word indicator covers the whole word.' },
           { print: 'BIG DOG', note: 'Only two words, so each gets its own capitalized word indicator.' },
-          { print: 'I LOVE YOU', note: 'Three capitalized words: passage indicator at the start, terminator at the end.' },
+          {
+            print: 'I LOVE YOU',
+            note: 'Three capitalized words: passage indicator at the start, terminator at the end.',
+          },
           { print: 'DON’T', note: 'The apostrophe ends the capitals, so T gets its own capital letter indicator.' },
           { print: 'ABCs', note: 'The terminator ends the capitals before the lowercase s.' },
         ],
-        practiceGameId: 'speedmatch',
-        practiceGameLabel: 'Speed Match',
+        practiceGameId: 'capital-quest',
+        practiceGameLabel: 'Capital Quest',
         tip: P('Count the {dots:capitalLetter} cells: one for a letter, two for a word, three for a passage.'),
       },
       {
@@ -327,8 +341,8 @@ export const COURSE_MODULES: CourseModule[] = [
           { print: '2026', note: 'One numeric indicator for the whole number.' },
           { print: 'I am 9.', note: 'The period after the number is an ordinary period.' },
         ],
-        practiceGameId: 'number-sense',
-        practiceGameLabel: 'Number Sense',
+        practiceGameId: 'number-lock',
+        practiceGameLabel: 'Number Lock',
         tip: 'One numeric indicator covers a whole run of digits.',
       },
       {
@@ -344,7 +358,11 @@ export const COURSE_MODULES: CourseModule[] = [
           ),
           'In uncontracted braille this is one of only two places the grade 1 indicator appears. The other is a question mark standing on its own.',
         ],
-        chars: [signItem(INDICATORS.grade1Symbol, 'Before a lowercase a–j right after a number: {dots:grade1Symbol}.'), printItem('3.5'), printItem('3b')],
+        chars: [
+          signItem(INDICATORS.grade1Symbol, 'Before a lowercase a–j right after a number: {dots:grade1Symbol}.'),
+          printItem('3.5'),
+          printItem('3b'),
+        ],
         examples: [
           { print: '1,000', note: 'The comma stays inside the number.' },
           { print: '3.5', note: 'So does the decimal point.' },
@@ -355,8 +373,8 @@ export const COURSE_MODULES: CourseModule[] = [
           { print: '3rd', note: 'r is not one of a–j, so no grade 1 indicator.' },
           { print: '4B', note: 'A capital letter indicator ends the number by itself.' },
         ],
-        practiceGameId: 'number-sense',
-        practiceGameLabel: 'Number Sense',
+        practiceGameId: 'number-lock',
+        practiceGameLabel: 'Number Lock',
         tip: 'If a letter right after a number could be a digit, it needs the grade 1 indicator.',
       },
       {
@@ -387,8 +405,8 @@ export const COURSE_MODULES: CourseModule[] = [
           { print: 'We won!' },
           { print: 'It’s Ben’s hat.', note: 'The apostrophe is one cell.' },
         ],
-        practiceGameId: 'sentence-decoder',
-        practiceGameLabel: 'Sentence Decoder',
+        practiceGameId: 'punctuation-detective',
+        practiceGameLabel: 'Punctuation Detective',
         tip: 'Only one blank cell follows a period in braille, even if print uses two spaces.',
       },
       {
@@ -418,14 +436,17 @@ export const COURSE_MODULES: CourseModule[] = [
         ],
         examples: [
           { print: '“Hi,” said Mom.' },
-          { print: '“Is it time?”', note: 'Opening quotation mark at the start, question mark then closing quotation mark at the end.' },
+          {
+            print: '“Is it time?”',
+            note: 'Opening quotation mark at the start, question mark then closing quotation mark at the end.',
+          },
           { print: 'a well-known song', note: 'Hyphen: one cell.' },
           { print: 'Wait – look!', note: 'Dash: two cells.' },
           { print: 'my dog (Max)' },
           { print: 'Note: bring 2 pens; yes/no.' },
         ],
-        practiceGameId: 'sentence-decoder',
-        practiceGameLabel: 'Sentence Decoder',
+        practiceGameId: 'brailler-challenge',
+        practiceGameLabel: 'Brailler Challenge',
         tip: 'You can now read any uncontracted sentence: letters, capitals, numbers and punctuation.',
       },
     ],
@@ -465,7 +486,13 @@ export const COURSE_MODULES: CourseModule[] = [
           'Some of the most common words in English get their own one-cell contraction: and, for, of, the, and with. These cells don’t match any letter.',
           'They are used for the whole word and inside longer words too, so learning them gives an immediate reading-speed boost.',
         ],
-        chars: [contractionItem('and'), contractionItem('for'), contractionItem('of'), contractionItem('the'), contractionItem('with')],
+        chars: [
+          contractionItem('and'),
+          contractionItem('for'),
+          contractionItem('of'),
+          contractionItem('the'),
+          contractionItem('with'),
+        ],
         practiceGameId: 'contraction-sprint',
         practiceGameLabel: 'Contraction Sprint',
         tip: 'These five words alone make up a big share of everyday text.',
@@ -543,11 +570,12 @@ export const COURSE_MODULES: CourseModule[] = [
         moduleId: 'bring-it-together',
         summary: 'Combine letters and contractions into full sentences.',
         intro: [
-          'Real braille mixes letters and contractions together. Refresh three of the most common contractions below, then move to the Sentence Decoder (choose the contracted level) to read complete sentences the way a braille reader does.',
+          'Real braille mixes letters and contractions together. Refresh three of the most common contractions below, then read complete contracted sentences in the Sentence Decoder below, the way a braille reader does.',
         ],
         chars: [contractionItem('the'), contractionItem('and'), contractionItem('of')],
         practiceGameId: 'sentence-decoder',
         practiceGameLabel: 'Sentence Decoder',
+        practiceGameProps: { fixedLevel: 'advanced' },
         tip: 'Reading fluency comes from meeting the same patterns again and again. Keep going!',
       },
       {
@@ -607,7 +635,8 @@ export function brailleInventory(): InventoryItem[] {
       items.push({ where, print: ex.print, table: 'g1', cells: transcribeTokens(ex.print).flatMap((t) => t.cells) });
     }
     for (const c of lesson.chars) {
-      if (c.source === 'letter' || c.source === 'print') items.push({ where, print: c.print, table: 'g1', cells: c.cells });
+      if (c.source === 'letter' || c.source === 'print')
+        items.push({ where, print: c.print, table: 'g1', cells: c.cells });
       // A wordsign or strong contraction shown for a whole word must be how contracted braille writes that word.
       const wholeWord = ['alphabetic-wordsign', 'strong-contraction', 'strong-wordsign', 'lower-wordsign'];
       if (c.source === 'contraction' && wholeWord.includes(c.contractionKind!))

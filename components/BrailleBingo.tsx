@@ -1,44 +1,25 @@
 'use client';
 
 import { useState, useEffect, useCallback, useRef } from 'react';
-import { brailleMap } from '@/lib/braille-map';
 import BrailleCell from '@/components/BrailleCell';
+import { describeCell } from '@/lib/braille/prose';
 import { useGameProgress } from '@/hooks/useGameProgress';
 import { pushAchievements } from '@/components/AchievementToast';
 import { getRandomTip } from '@/lib/learning-tips';
 import { getDifficultyParams } from '@/lib/difficulty-settings';
 import DifficultySelector from '@/components/DifficultySelector';
-
-const LETTERS = Object.keys(brailleMap).filter((k) => /^[A-Z]$/.test(k));
-const FREE = 'FREE';
-const CENTER = 12; // index of the free centre square on a 5×5 card
+import {
+  CENTER,
+  FREE,
+  bingoCell,
+  canMark,
+  hasWon as cardHasWon,
+  initialMarks,
+  makeCard,
+  nextCall,
+} from '@/lib/games/bingo';
 
 type Phase = 'ready' | 'playing' | 'won';
-
-/** Build a fresh 5×5 card: 24 unique random letters + a free centre. */
-function makeCard(): string[] {
-  const pool = [...LETTERS].sort(() => Math.random() - 0.5).slice(0, 24);
-  const card: string[] = [];
-  let p = 0;
-  for (let i = 0; i < 25; i++) {
-    card.push(i === CENTER ? FREE : pool[p++]);
-  }
-  return card;
-}
-
-/** The 12 winning lines of a 5×5 grid (5 rows, 5 cols, 2 diagonals). */
-const LINES: number[][] = (() => {
-  const lines: number[][] = [];
-  for (let r = 0; r < 5; r++) lines.push([0, 1, 2, 3, 4].map((c) => r * 5 + c));
-  for (let c = 0; c < 5; c++) lines.push([0, 1, 2, 3, 4].map((r) => r * 5 + c));
-  lines.push([0, 6, 12, 18, 24]);
-  lines.push([4, 8, 12, 16, 20]);
-  return lines;
-})();
-
-function countCompletedLines(marked: boolean[]): number {
-  return LINES.filter((line) => line.every((i) => marked[i])).length;
-}
 
 export default function BrailleBingo() {
   const { difficulty, setDifficulty, recordResult } = useGameProgress('bingo');
@@ -49,11 +30,7 @@ export default function BrailleBingo() {
 
   const [phase, setPhase] = useState<Phase>('ready');
   const [card, setCard] = useState<string[]>(() => makeCard());
-  const [marked, setMarked] = useState<boolean[]>(() => {
-    const m = new Array(25).fill(false);
-    m[CENTER] = true;
-    return m;
-  });
+  const [marked, setMarked] = useState<boolean[]>(() => initialMarks());
   const [called, setCalled] = useState<string[]>([]);
   const [currentCall, setCurrentCall] = useState<string | null>(null);
   const [shakeIdx, setShakeIdx] = useState<number | null>(null);
@@ -77,14 +54,7 @@ export default function BrailleBingo() {
         ? 'two lines'
         : 'the whole card (blackout)';
 
-  const hasWon = useCallback(
-    (m: boolean[]): boolean => {
-      if (params.winCondition === 'blackout') return m.every(Boolean);
-      const lines = countCompletedLines(m);
-      return params.winCondition === 'double-line' ? lines >= 2 : lines >= 1;
-    },
-    [params.winCondition],
-  );
+  const hasWon = useCallback((m: boolean[]): boolean => cardHasWon(m, params.winCondition), [params.winCondition]);
 
   const stopCaller = useCallback(() => {
     if (callTimerRef.current) clearInterval(callTimerRef.current);
@@ -92,17 +62,8 @@ export default function BrailleBingo() {
 
   // Pick the next call — biased toward unmarked card letters so games progress.
   const doCall = useCallback(() => {
-    const cardLetters = cardRef.current;
-    const m = markedRef.current;
-    const unmarked = cardLetters.filter((l, i) => l !== FREE && !m[i] && !calledRef.current.has(l));
-    let next: string;
-    if (unmarked.length > 0 && Math.random() < 0.72) {
-      next = unmarked[Math.floor(Math.random() * unmarked.length)];
-    } else {
-      const remaining = LETTERS.filter((l) => !calledRef.current.has(l));
-      if (remaining.length === 0) return;
-      next = remaining[Math.floor(Math.random() * remaining.length)];
-    }
+    const next = nextCall(cardRef.current, markedRef.current, calledRef.current);
+    if (next === null) return;
     calledRef.current.add(next);
     setCurrentCall(next);
     setCalled((prev) => [next, ...prev]);
@@ -119,8 +80,7 @@ export default function BrailleBingo() {
     stopCaller();
     calledRef.current = new Set();
     const fresh = makeCard();
-    const m = new Array(25).fill(false);
-    m[CENTER] = true;
+    const m = initialMarks();
     setCard(fresh);
     setMarked(m);
     setCalled([]);
@@ -166,7 +126,7 @@ export default function BrailleBingo() {
       if (marked[i]) return;
       const letter = card[i];
       if (letter === FREE) return;
-      if (!calledRef.current.has(letter)) {
+      if (!canMark(letter, calledRef.current)) {
         // Not called yet — gentle nudge, no penalty
         setShakeIdx(i);
         if (shakeTimerRef.current) clearTimeout(shakeTimerRef.current);
@@ -221,9 +181,9 @@ export default function BrailleBingo() {
             <div className="bingo-caller" aria-live="polite">
               <span className="bingo-caller-label">Now calling</span>
               {currentCall ? (
-                <div className="bingo-current" aria-label={`Letter ${currentCall}`}>
+                <div className="bingo-current" aria-label={`letter ${currentCall}`}>
                   <BrailleCell
-                    letter={currentCall}
+                    cell={bingoCell(currentCall)}
                     className="bingo-current-braille"
                     dotClassName="bingo-current-dot"
                   />
@@ -253,7 +213,11 @@ export default function BrailleBingo() {
                     className={cls}
                     onClick={() => handleMark(i)}
                     disabled={isFree || isMarked}
-                    aria-label={isFree ? 'Free space' : `${letter}${isMarked ? ', marked' : ''}`}
+                    aria-label={
+                      isFree
+                        ? 'Free space'
+                        : `letter ${letter}, ${describeCell(bingoCell(letter))}${isMarked ? ', marked' : ''}`
+                    }
                   >
                     {isFree ? (
                       <span className="bingo-free-star" aria-hidden="true">
@@ -261,7 +225,11 @@ export default function BrailleBingo() {
                       </span>
                     ) : (
                       <>
-                        <BrailleCell letter={letter} className="bingo-cell-braille" dotClassName="bingo-cell-dot" />
+                        <BrailleCell
+                          cell={bingoCell(letter)}
+                          className="bingo-cell-braille"
+                          dotClassName="bingo-cell-dot"
+                        />
                         <span className="bingo-cell-letter">{letter}</span>
                       </>
                     )}

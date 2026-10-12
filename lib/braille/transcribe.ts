@@ -73,7 +73,13 @@ function signToken(sign: Sign, print: string): BrailleToken {
 
 function letterToken(ch: string): BrailleToken {
   const lower = ch.toLowerCase();
-  return { kind: 'letter', signId: `letter-${lower}`, cells: [LETTER_CELLS[lower]], print: ch, name: `letter ${lower}` };
+  return {
+    kind: 'letter',
+    signId: `letter-${lower}`,
+    cells: [LETTER_CELLS[lower]],
+    print: ch,
+    name: `letter ${lower}`,
+  };
 }
 
 function digitToken(ch: string): BrailleToken {
@@ -224,8 +230,10 @@ export function transcribeTokens(text: string): BrailleToken[] {
     if (passageEndsHere) {
       const [s] = passages.find(([, e]) => e === wi)!;
       const first = [...words[s]];
-      const passageText = [first.slice(first.findIndex((c) => LETTER_RE.test(c))).join(''), ...words.slice(s + 1, wi + 1)]
-        .join(' ');
+      const passageText = [
+        first.slice(first.findIndex((c) => LETTER_RE.test(c))).join(''),
+        ...words.slice(s + 1, wi + 1),
+      ].join(' ');
       terminatorIndex = chars.length - 1;
       while (terminatorIndex > lastLetter) {
         const closer = chars[terminatorIndex];
@@ -300,7 +308,11 @@ export function transcribeTokens(text: string): BrailleToken[] {
       const unusual = before.every((c) => OPENERS.has(c)) || prev === '-' || prev === '–' || prev === '—';
       if (unusual) {
         const t = signToken(PUNCTUATION.question, ch);
-        return { ...t, cells: [...INDICATORS.grade1Symbol.cells, ...t.cells], name: 'grade 1 indicator + question mark' };
+        return {
+          ...t,
+          cells: [...INDICATORS.grade1Symbol.cells, ...t.cells],
+          name: 'grade 1 indicator + question mark',
+        };
       }
       return signToken(PUNCTUATION.question, ch);
     }
@@ -309,6 +321,17 @@ export function transcribeTokens(text: string): BrailleToken[] {
       doubleQuoteOpen = !doubleQuoteOpen;
       return signToken(opening ? PUNCTUATION.openQuote : PUNCTUATION.closeQuote, ch);
     }
+    if (ch === '“' || ch === '‘') {
+      // 7.6.7: a one-cell opening quote is only read as a quote at the start of a word; elsewhere
+      // the rulebook requires a different (two-cell) form, which the site never shows.
+      if (!chars.slice(0, k).every((c) => OPENERS.has(c)))
+        throw new TranscriptionError(`opening quotation mark inside a word is not supported (ICEB 7.6.7): "${text}"`);
+    }
+    if (ch === '”' && (k === 0 || chars.slice(0, k).every((c) => OPENERS.has(c))))
+      // 7.6.8: a closing quote standing alone would be read as the wordsign "was".
+      throw new TranscriptionError(
+        `closing quotation mark at the start of a word is not supported (ICEB 7.6.8): "${text}"`,
+      );
     if (ch === '“') doubleQuoteOpen = true;
     if (ch === '”') doubleQuoteOpen = false;
     if (ch === '‘') singleQuoteOpen = true;

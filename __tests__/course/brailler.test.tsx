@@ -7,7 +7,13 @@ import { fireEvent, render, screen } from '@testing-library/react';
 import BraillerInput, { dotForKey } from '@/components/course/BraillerInput';
 import LessonRunner from '@/components/course/LessonRunner';
 import { ALL_LESSONS, getAdjacentLessons } from '@/lib/course-curriculum';
-import { ChordReader, DOT_TO_SIX_KEY, PERKINS_KEYS_LEFT_TO_RIGHT, SIX_KEY_TO_DOT, keysForCell } from '@/lib/braille/perkins';
+import {
+  ChordReader,
+  DOT_TO_SIX_KEY,
+  PERKINS_KEYS_LEFT_TO_RIGHT,
+  SIX_KEY_TO_DOT,
+  keysForCell,
+} from '@/lib/braille/perkins';
 import { ALL_CELLS, type Cell, type Dot } from '@/lib/braille/ueb';
 import { checkAllCells } from '../helpers/cells';
 

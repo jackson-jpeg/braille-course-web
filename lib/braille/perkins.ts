@@ -31,6 +31,15 @@ export const DOT_TO_SIX_KEY: Readonly<Record<Dot, string>> = Object.fromEntries(
   Object.entries(SIX_KEY_TO_DOT).map(([k, d]) => [d, k]),
 ) as Record<Dot, string>;
 
+/** "S D F = dots 3, 2, 1 · J K L = dots 4, 5, 6", generated from the layout above. */
+export const SIX_KEY_HINT: string = (() => {
+  const left = (PERKINS_KEYS_LEFT_TO_RIGHT.slice(0, 3) as Dot[]).map((d) => [DOT_TO_SIX_KEY[d], d] as const);
+  const right = (PERKINS_KEYS_LEFT_TO_RIGHT.slice(4) as Dot[]).map((d) => [DOT_TO_SIX_KEY[d], d] as const);
+  const side = (xs: readonly (readonly [string, Dot])[]) =>
+    `${xs.map(([k]) => k.toUpperCase()).join(' ')} = dots ${xs.map(([, d]) => d).join(', ')}`;
+  return `${side(left)} · ${side(right)}`;
+})();
+
 /** Keyboard keys (upper case) to press together for a cell, left to right on the keyboard. */
 export function keysForCell(cell: Cell): string[] {
   const order: Dot[] = [3, 2, 1, 4, 5, 6];

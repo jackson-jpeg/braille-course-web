@@ -1,8 +1,9 @@
 /**
  * Number Sense: read a UEB arithmetic problem and pick the answer, written in UEB braille.
  *
- * UEB only (no Nemeth): numbers use the numeric indicator + a–j (ICEB 6.1), and the signs are the
- * UEB plus ⠐⠖, minus ⠐⠤, multiplication ⠐⠦ and equals ⠐⠶ (ICEB 3.17), spaced as in print (3.17.1).
+ * UEB only (no separate math code): numbers use the numeric indicator + a–j (ICEB 6.1), and the
+ * signs are the UEB plus, minus, multiplication and equals signs from lib/braille/ueb.ts SYMBOLS
+ * (ICEB 3.17), spaced as in print (3.17.1).
  * The print minus sign is U+2212 (−), never the hyphen, which is a different braille sign.
  */
 import type { Difficulty } from '@/lib/progress-types';
@@ -24,11 +25,12 @@ export interface MathProblem {
 
 export const OPERATOR_SIGNS = { '+': SYMBOLS.plus, '−': SYMBOLS.minus, '×': SYMBOLS.times } as const;
 
-export const NUMBER_SENSE_LEVELS: Record<Difficulty, { maxNumber: number; operators: Operator[]; maxFactor: number }> = {
-  beginner: { maxNumber: 10, operators: ['+'], maxFactor: 0 },
-  intermediate: { maxNumber: 20, operators: ['+', '−'], maxFactor: 0 },
-  advanced: { maxNumber: 50, operators: ['+', '−', '×'], maxFactor: 12 },
-};
+export const NUMBER_SENSE_LEVELS: Record<Difficulty, { maxNumber: number; operators: Operator[]; maxFactor: number }> =
+  {
+    beginner: { maxNumber: 10, operators: ['+'], maxFactor: 0 },
+    intermediate: { maxNumber: 20, operators: ['+', '−'], maxFactor: 0 },
+    advanced: { maxNumber: 50, operators: ['+', '−', '×'], maxFactor: 12 },
+  };
 
 function problem(a: number, operator: Operator, b: number): MathProblem {
   const answer = operator === '+' ? a + b : operator === '−' ? a - b : a * b;
@@ -40,9 +42,11 @@ export function allProblems(difficulty: Difficulty): MathProblem[] {
   const { maxNumber, operators, maxFactor } = NUMBER_SENSE_LEVELS[difficulty];
   const out: MathProblem[] = [];
   for (const op of operators) {
-    if (op === '+') for (let a = 1; a <= maxNumber; a++) for (let b = 1; b <= maxNumber; b++) out.push(problem(a, op, b));
+    if (op === '+')
+      for (let a = 1; a <= maxNumber; a++) for (let b = 1; b <= maxNumber; b++) out.push(problem(a, op, b));
     if (op === '−') for (let a = 2; a <= maxNumber; a++) for (let b = 1; b < a; b++) out.push(problem(a, op, b));
-    if (op === '×') for (let a = 2; a <= maxFactor; a++) for (let b = 2; b <= maxFactor; b++) out.push(problem(a, op, b));
+    if (op === '×')
+      for (let a = 2; a <= maxFactor; a++) for (let b = 2; b <= maxFactor; b++) out.push(problem(a, op, b));
   }
   return out;
 }

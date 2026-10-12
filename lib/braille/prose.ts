@@ -81,8 +81,7 @@ function dotsUsedBy(letters: string[]): Cell {
 function mirrorPairs(letters: string[]): [string, string][] {
   const pairs: [string, string][] = [];
   for (const a of letters)
-    for (const b of letters)
-      if (a < b && sameCell(mirrorCell(LETTER_CELLS[a]), LETTER_CELLS[b])) pairs.push([a, b]);
+    for (const b of letters) if (a < b && sameCell(mirrorCell(LETTER_CELLS[a]), LETTER_CELLS[b])) pairs.push([a, b]);
   return pairs;
 }
 

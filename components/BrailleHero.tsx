@@ -1,24 +1,34 @@
 'use client';
 
-import { useState, useEffect, useCallback, useRef } from 'react';
-import { brailleMap, dotDescription } from '@/lib/braille-map';
+import { useState, useEffect, useCallback, useRef, useMemo, type CSSProperties } from 'react';
+import BrailleCell from '@/components/BrailleCell';
+import { tokenCaption } from '@/components/BrailleText';
+import { type BrailleToken } from '@/lib/braille/transcribe';
+import { describeCells } from '@/lib/braille/prose';
+import { DEFAULT_HERO_WORD, heroPrint, heroTokens } from '@/lib/games/hero';
+
+/**
+ * Interactive braille banner. `word` is in hero notation (see lib/games/hero.ts): letters are
+ * shown lowercase unless marked with `^` (capital, with the capital indicator).
+ */
+function safeTokens(word: string): BrailleToken[] {
+  try {
+    return heroTokens(word);
+  } catch {
+    // Never draw a made-up cell: print the site cannot transcribe is not shown in braille.
+    return [];
+  }
+}
 
 export default function BrailleHero({
-  word = '^DELANEY ^COSTELLO',
+  word = DEFAULT_HERO_WORD,
   easterEggs = false,
 }: {
   word?: string;
   easterEggs?: boolean;
 }) {
-  const [dots] = useState<Record<string, boolean[]>>(() => {
-    const initial: Record<string, boolean[]> = {};
-    word.split('').forEach((char, i) => {
-      if (char === ' ' || !brailleMap[char]) return;
-      const key = `${char}-${i}`;
-      initial[key] = brailleMap[char].map((v) => v === 1);
-    });
-    return initial;
-  });
+  const print = heroPrint(word);
+  const tokens = useMemo(() => safeTokens(word), [word]);
 
   const [activeGroup, setActiveGroup] = useState<string | null>(null);
   const [hintVisible, setHintVisible] = useState(false);
@@ -32,8 +42,8 @@ export default function BrailleHero({
   const popTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   const longPressTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
-  // Unique letters in the word (excluding spaces)
-  const uniqueLettersRef = useRef<Set<string>>(new Set(word.split('').filter((c) => c !== ' ' && brailleMap[c])));
+  // Unique signs in the word (excluding spaces)
+  const uniqueLettersRef = useRef<Set<string>>(new Set(tokens.filter((t) => t.kind !== 'space').map((t) => t.signId)));
 
   useEffect(() => {
     setIsTouchDevice('ontouchstart' in window || navigator.maxTouchPoints > 0);
@@ -58,8 +68,8 @@ export default function BrailleHero({
       if (!allDiscovered) setHintVisible(false);
 
       if (easterEggs && !allDiscovered) {
-        const char = key.split('-')[0];
-        discoveredRef.current.add(char);
+        const signId = key.slice(0, key.lastIndexOf('-'));
+        discoveredRef.current.add(signId);
         if (discoveredRef.current.size >= uniqueLettersRef.current.size) {
           setAllDiscovered(true);
           setHintVisible(true);
@@ -105,18 +115,16 @@ export default function BrailleHero({
   let letterIndex = 0;
 
   return (
-    <div className="braille-interactive-area" aria-label={`Interactive braille cells spelling ${word}`}>
+    <div className="braille-interactive-area" aria-label={`Interactive braille cells spelling ${print}`}>
       <div
         className={`braille-decoration${allDiscovered ? ' celebration' : ''}`}
         role="group"
         aria-label="Braille letter cells"
       >
-        {word.split('').map((char, i) => {
-          if (char === ' ' || !brailleMap[char]) {
-            return char === ' ' ? <div key={`space-${i}`} className="braille-spacer" /> : null;
-          }
+        {tokens.map((token, i) => {
+          if (token.kind === 'space') return <div key={`space-${i}`} className="braille-spacer" />;
 
-          const groupKey = `${char}-${i}`;
+          const groupKey = `${token.signId}-${i}`;
           const isActive = activeGroup === groupKey;
           const isPop = popKey === groupKey;
           const isLongPress = longPressKey === groupKey;
@@ -127,7 +135,7 @@ export default function BrailleHero({
               key={groupKey}
               className={`braille-letter-group${isActive ? ' active' : ''}${isPop ? ' pop' : ''}`}
               role="button"
-              aria-label={`Braille letter ${char}`}
+              aria-label={`${token.name}, ${describeCells(token.cells)}`}
               tabIndex={0}
               onMouseEnter={() => activate(groupKey)}
               onMouseLeave={() => {
@@ -156,18 +164,19 @@ export default function BrailleHero({
                 }
               }}
             >
-              <div className="braille-cell">
-                {dots[groupKey].map((filled, di) => (
-                  <span
-                    key={di}
-                    className={`braille-dot ${filled ? 'filled' : 'empty'}`}
-                    style={filled ? { animationDelay: `${currentLetterIndex * 0.15 + 0.2}s` } : undefined}
-                    aria-hidden="true"
+              <div style={token.cells.length > 1 ? { display: 'flex', gap: 2 } : undefined}>
+                {token.cells.map((cell, ci) => (
+                  <BrailleCell
+                    key={ci}
+                    cell={cell}
+                    className="braille-cell"
+                    dotClassName="braille-dot"
+                    style={{ '--wave-delay': `${currentLetterIndex * 0.15 + 0.2}s` } as CSSProperties}
                   />
                 ))}
               </div>
               <span className={`braille-letter-label${isLongPress ? ' dot-desc' : ''}`}>
-                {isLongPress ? dotDescription(char) : char}
+                {isLongPress ? describeCells(token.cells) : tokenCaption(token)}
               </span>
             </div>
           );

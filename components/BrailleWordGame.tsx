@@ -1,64 +1,38 @@
 'use client';
 
 import { useState, useEffect, useCallback, useRef } from 'react';
-import { dotDescription } from '@/lib/braille-map';
 import BrailleCell from '@/components/BrailleCell';
-import { answerWords, validGuesses } from '@/lib/game-words';
+import { describeCell } from '@/lib/braille/prose';
+import {
+  type KeyStatus,
+  type TileScore,
+  MAX_GUESSES,
+  WORD_LENGTH,
+  isValidGuess,
+  keyToLetter,
+  pickAnswer,
+  scoreGuess,
+  tileCell,
+  updateKeyStatuses,
+} from '@/lib/games/wordgame';
 import { useGameProgress } from '@/hooks/useGameProgress';
 import { pushAchievements } from '@/components/AchievementToast';
 import { getRandomTip } from '@/lib/learning-tips';
 
-type TileStatus = 'empty' | 'active' | 'correct' | 'present' | 'absent';
-type KeyStatus = 'unused' | 'correct' | 'present' | 'absent';
+type TileStatus = 'empty' | 'active' | TileScore;
 
-const ROWS = 6;
-const COLS = 4;
+const ROWS = MAX_GUESSES;
+const COLS = WORD_LENGTH;
 const KB_ROWS = [
-  ['Q', 'W', 'E', 'R', 'T', 'Y', 'U', 'I', 'O', 'P'],
-  ['A', 'S', 'D', 'F', 'G', 'H', 'J', 'K', 'L'],
-  ['ENTER', 'Z', 'X', 'C', 'V', 'B', 'N', 'M', 'BACK'],
+  ['q', 'w', 'e', 'r', 't', 'y', 'u', 'i', 'o', 'p'],
+  ['a', 's', 'd', 'f', 'g', 'h', 'j', 'k', 'l'],
+  ['ENTER', 'z', 'x', 'c', 'v', 'b', 'n', 'm', 'BACK'],
 ];
-
-function pickWord(): string {
-  return answerWords[Math.floor(Math.random() * answerWords.length)];
-}
-
-function computeStatuses(guess: string, answer: string): TileStatus[] {
-  const statuses: TileStatus[] = Array(COLS).fill('absent');
-  const remaining = answer.split('');
-
-  // First pass: mark correct positions
-  for (let i = 0; i < COLS; i++) {
-    if (guess[i] === answer[i]) {
-      statuses[i] = 'correct';
-      remaining[i] = '';
-    }
-  }
-
-  // Second pass: mark present (right letter, wrong spot)
-  for (let i = 0; i < COLS; i++) {
-    if (statuses[i] === 'correct') continue;
-    const idx = remaining.indexOf(guess[i]);
-    if (idx !== -1) {
-      statuses[i] = 'present';
-      remaining[idx] = '';
-    }
-  }
-
-  return statuses;
-}
 
 function WordGameBrailleCell({ letter, small = false }: { letter: string; small?: boolean }) {
   const prefix = small ? 'key' : 'tile';
-  return <BrailleCell letter={letter} className={`${prefix}-braille`} dotClassName={`${prefix}-dot`} />;
+  return <BrailleCell cell={tileCell(letter)} className={`${prefix}-braille`} dotClassName={`${prefix}-dot`} />;
 }
-
-const KEY_STATUS_PRIORITY: Record<KeyStatus, number> = {
-  unused: 0,
-  absent: 1,
-  present: 2,
-  correct: 3,
-};
 
 const FLIP_DURATION = 500; // ms per tile flip
 const FLIP_STAGGER = 250; // ms between each tile starting
@@ -116,7 +90,7 @@ export default function BrailleWordGame() {
 
   // Pick a word on mount
   useEffect(() => {
-    setAnswer(pickWord());
+    setAnswer(pickAnswer());
   }, []);
 
   const handleKey = useCallback(
@@ -131,7 +105,7 @@ export default function BrailleWordGame() {
       if (key === 'ENTER') {
         if (currentGuess.length !== COLS) return;
 
-        if (!validGuesses.has(currentGuess)) {
+        if (!isValidGuess(currentGuess)) {
           setShakeRow(currentRow);
           scheduleTimeout(() => setShakeRow(null), 500);
           return;
@@ -148,21 +122,8 @@ export default function BrailleWordGame() {
         // After all tiles have flipped, finalize
         const totalRevealTime = FLIP_STAGGER * (COLS - 1) + FLIP_DURATION;
         scheduleTimeout(() => {
-          const statuses = computeStatuses(guess, answer);
-
-          // Update key statuses
-          setKeyStatuses((prev) => {
-            const next = { ...prev };
-            for (let i = 0; i < COLS; i++) {
-              const letter = guess[i];
-              const newStatus = statuses[i] as KeyStatus;
-              const currentStatus = next[letter] || 'unused';
-              if (KEY_STATUS_PRIORITY[newStatus] > KEY_STATUS_PRIORITY[currentStatus]) {
-                next[letter] = newStatus;
-              }
-            }
-            return next;
-          });
+          const statuses = scoreGuess(guess, answer);
+          setKeyStatuses((prev) => updateKeyStatuses(prev, guess, statuses));
 
           setGuesses((prev) => [...prev, guess]);
           setRevealingRow(null);
@@ -192,7 +153,7 @@ export default function BrailleWordGame() {
       }
 
       // Letter key
-      if (/^[A-Z]$/.test(key) && currentGuess.length < COLS) {
+      if (/^[a-z]$/.test(key) && currentGuess.length < COLS) {
         const col = currentGuess.length;
         setPopTile(`${currentRow}-${col}`);
         scheduleTimeout(() => setPopTile(null), 150);
@@ -212,8 +173,9 @@ export default function BrailleWordGame() {
         handleKey('ENTER');
       } else if (k === 'Backspace') {
         handleKey('BACK');
-      } else if (/^[a-zA-Z]$/.test(k)) {
-        handleKey(k.toUpperCase());
+      } else {
+        const letter = keyToLetter(k);
+        if (letter) handleKey(letter);
       }
     }
     window.addEventListener('keydown', onKeyDown);
@@ -221,7 +183,7 @@ export default function BrailleWordGame() {
   }, [handleKey]);
 
   function resetGame() {
-    setAnswer(pickWord());
+    setAnswer(pickAnswer());
     setGuesses([]);
     setCurrentGuess('');
     setCurrentRow(0);
@@ -251,7 +213,7 @@ export default function BrailleWordGame() {
     // CSS handles the flip + color change via data-status
     if (revealingRow === row && revealGuess) {
       const letter = revealGuess[col] || '';
-      const statuses = computeStatuses(revealGuess, answer);
+      const statuses = scoreGuess(revealGuess, answer);
       return {
         letter,
         status: statuses[col],
@@ -264,7 +226,7 @@ export default function BrailleWordGame() {
     if (row < guesses.length) {
       // Submitted row
       const letter = guesses[row][col];
-      const statuses = computeStatuses(guesses[row], answer);
+      const statuses = scoreGuess(guesses[row], answer);
       const isLastGuess = row === guesses.length - 1;
       return {
         letter,
@@ -351,7 +313,7 @@ export default function BrailleWordGame() {
                 ? key === 'ENTER'
                   ? 'Enter'
                   : 'Backspace'
-                : `Letter ${key}, Braille ${dotDescription(key)}`;
+                : `letter ${key}, ${describeCell(tileCell(key))}`;
 
               return (
                 <button

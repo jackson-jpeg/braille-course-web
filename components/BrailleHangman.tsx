@@ -1,27 +1,30 @@
 'use client';
 
 import { useState, useEffect, useCallback, useRef } from 'react';
-import { brailleMap, dotDescription } from '@/lib/braille-map';
 import BrailleCell from '@/components/BrailleCell';
-import { hangmanWords } from '@/lib/hangman-words';
+import { describeCell } from '@/lib/braille/prose';
+import {
+  MAX_WRONG,
+  hangmanCell,
+  isHit,
+  isLost as wordIsLost,
+  isWon as wordIsWon,
+  keyToLetter,
+  pickWord,
+  wrongGuesses as wrongLetters,
+} from '@/lib/games/hangman';
 import { useGameProgress } from '@/hooks/useGameProgress';
 import { pushAchievements } from '@/components/AchievementToast';
 import { getRandomTip } from '@/lib/learning-tips';
 
-const MAX_WRONG = 6;
-
 const KB_ROWS = [
-  ['Q', 'W', 'E', 'R', 'T', 'Y', 'U', 'I', 'O', 'P'],
-  ['A', 'S', 'D', 'F', 'G', 'H', 'J', 'K', 'L'],
-  ['Z', 'X', 'C', 'V', 'B', 'N', 'M'],
+  ['q', 'w', 'e', 'r', 't', 'y', 'u', 'i', 'o', 'p'],
+  ['a', 's', 'd', 'f', 'g', 'h', 'j', 'k', 'l'],
+  ['z', 'x', 'c', 'v', 'b', 'n', 'm'],
 ];
 
-function pickWord(): string {
-  return hangmanWords[Math.floor(Math.random() * hangmanWords.length)];
-}
-
 function HangmanBrailleCell({ letter }: { letter: string }) {
-  return <BrailleCell letter={letter} className="hangman-key-braille" dotClassName="hangman-key-dot" />;
+  return <BrailleCell cell={hangmanCell(letter)} className="hangman-key-braille" dotClassName="hangman-key-dot" />;
 }
 
 function HangmanSvg({ wrongCount }: { wrongCount: number }) {
@@ -92,11 +95,11 @@ export default function BrailleHangman() {
     setAnswer(pickWord());
   }, []);
 
-  const wrongGuesses = [...guessedLetters].filter((l) => !answer.includes(l));
+  const wrongGuesses = wrongLetters(answer, guessedLetters);
   const wrongCount = wrongGuesses.length;
 
-  const isWon = answer ? answer.split('').every((l) => guessedLetters.has(l)) : false;
-  const isLost = wrongCount >= MAX_WRONG;
+  const isWon = wordIsWon(answer, guessedLetters);
+  const isLost = answer ? wordIsLost(answer, guessedLetters) : false;
 
   // Check win/loss after render
   useEffect(() => {
@@ -129,9 +132,8 @@ export default function BrailleHangman() {
     function onKeyDown(e: KeyboardEvent) {
       if (!visibleRef.current) return;
       if (e.ctrlKey || e.metaKey || e.altKey) return;
-      if (/^[a-zA-Z]$/.test(e.key)) {
-        handleGuess(e.key.toUpperCase());
-      }
+      const letter = keyToLetter(e.key);
+      if (letter) handleGuess(letter);
     }
     window.addEventListener('keydown', onKeyDown);
     return () => window.removeEventListener('keydown', onKeyDown);
@@ -147,7 +149,7 @@ export default function BrailleHangman() {
 
   function getLetterStatus(letter: string): 'unused' | 'correct' | 'wrong' {
     if (!guessedLetters.has(letter)) return 'unused';
-    return answer.includes(letter) ? 'correct' : 'wrong';
+    return isHit(answer, letter) ? 'correct' : 'wrong';
   }
 
   return (
@@ -168,11 +170,11 @@ export default function BrailleHangman() {
               <div key={i} className={`hangman-letter-slot${revealed ? ' revealed' : ''}`}>
                 {revealed ? (
                   <>
-                    <div className="hangman-slot-braille">
-                      {brailleMap[letter]?.map((v, di) => (
-                        <span key={di} className={`hangman-slot-dot ${v ? 'filled' : 'empty'}`} />
-                      ))}
-                    </div>
+                    <BrailleCell
+                      cell={hangmanCell(letter)}
+                      className="hangman-slot-braille"
+                      dotClassName="hangman-slot-dot"
+                    />
                     <span className="hangman-slot-letter">{letter}</span>
                   </>
                 ) : (
@@ -198,7 +200,7 @@ export default function BrailleHangman() {
                     className={`hangman-key${status !== 'unused' ? ` ${status}` : ''}`}
                     onClick={() => handleGuess(key)}
                     disabled={status !== 'unused' || gameOver}
-                    aria-label={`Letter ${key}, Braille ${dotDescription(key)}`}
+                    aria-label={`letter ${key}, ${describeCell(hangmanCell(key))}`}
                   >
                     <HangmanBrailleCell letter={key} />
                     <span className="hangman-key-letter">{key}</span>

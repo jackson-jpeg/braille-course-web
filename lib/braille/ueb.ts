@@ -178,6 +178,45 @@ export const INDICATORS = {
     cells: [G1, G1],
     rule: '5.3',
   },
+  italicSymbol: {
+    id: 'italicSymbol',
+    kind: 'indicator',
+    name: 'italic symbol indicator',
+    cells: [
+      [4, 6],
+      [2, 3],
+    ],
+    rule: '9.2',
+  },
+  italicWord: { id: 'italicWord', kind: 'indicator', name: 'italic word indicator', cells: [[4, 6], [2]], rule: '9.3' },
+  boldSymbol: {
+    id: 'boldSymbol',
+    kind: 'indicator',
+    name: 'boldface symbol indicator',
+    cells: [
+      [4, 5],
+      [2, 3],
+    ],
+    rule: '9.2',
+  },
+  boldWord: { id: 'boldWord', kind: 'indicator', name: 'boldface word indicator', cells: [[4, 5], [2]], rule: '9.3' },
+  underlineSymbol: {
+    id: 'underlineSymbol',
+    kind: 'indicator',
+    name: 'underlined symbol indicator',
+    cells: [
+      [4, 5, 6],
+      [2, 3],
+    ],
+    rule: '9.2',
+  },
+  underlineWord: {
+    id: 'underlineWord',
+    kind: 'indicator',
+    name: 'underlined word indicator',
+    cells: [[4, 5, 6], [2]],
+    rule: '9.3',
+  },
 } as const satisfies Record<string, Sign>;
 
 export type IndicatorId = keyof typeof INDICATORS;
@@ -288,13 +327,37 @@ export type PunctuationId = keyof typeof PUNCTUATION;
 /* ── General symbols (ICEB section 3) ─────────────────────────────────────── */
 
 export const SYMBOLS = {
-  ampersand: { id: 'ampersand', kind: 'symbol', name: 'ampersand', print: '&', cells: [[4], [1, 2, 3, 4, 6]], rule: '3.1' },
+  ampersand: {
+    id: 'ampersand',
+    kind: 'symbol',
+    name: 'ampersand',
+    print: '&',
+    cells: [[4], [1, 2, 3, 4, 6]],
+    rule: '3.1',
+  },
   at: { id: 'at', kind: 'symbol', name: 'at sign', print: '@', cells: [[4], [1]], rule: '3.7' },
   dollar: { id: 'dollar', kind: 'symbol', name: 'dollar sign', print: '$', cells: [[4], [2, 3, 4]], rule: '3.10' },
-  percent: { id: 'percent', kind: 'symbol', name: 'percent sign', print: '%', cells: [[4, 6], [3, 5, 6]], rule: '3.21' },
+  percent: {
+    id: 'percent',
+    kind: 'symbol',
+    name: 'percent sign',
+    print: '%',
+    cells: [
+      [4, 6],
+      [3, 5, 6],
+    ],
+    rule: '3.21',
+  },
   plus: { id: 'plus', kind: 'symbol', name: 'plus sign', print: '+', cells: [[5], [2, 3, 5]], rule: '3.17' },
   minus: { id: 'minus', kind: 'symbol', name: 'minus sign', print: '−', cells: [[5], [3, 6]], rule: '3.17' },
-  times: { id: 'times', kind: 'symbol', name: 'multiplication sign', print: '×', cells: [[5], [2, 3, 6]], rule: '3.17' },
+  times: {
+    id: 'times',
+    kind: 'symbol',
+    name: 'multiplication sign',
+    print: '×',
+    cells: [[5], [2, 3, 6]],
+    rule: '3.17',
+  },
   divide: { id: 'divide', kind: 'symbol', name: 'division sign', print: '÷', cells: [[5], [3, 4]], rule: '3.17' },
   equals: { id: 'equals', kind: 'symbol', name: 'equals sign', print: '=', cells: [[5], [2, 3, 5, 6]], rule: '3.17' },
 } as const satisfies Record<string, Sign>;
@@ -349,7 +412,8 @@ export interface Contraction {
 }
 
 const ALONE = 'Means the whole word only when it stands alone.';
-const LOWER_ALONE = 'Means the whole word when it stands alone and does not touch punctuation that uses only lower dots.';
+const LOWER_ALONE =
+  'Means the whole word when it stands alone and does not touch punctuation that uses only lower dots.';
 
 /** ICEB 2.2 / 10.1: the 23 alphabetic wordsigns, as [word, letter]. */
 export const ALPHABETIC_WORDSIGNS: readonly (readonly [string, string])[] = [
@@ -417,7 +481,13 @@ export const CONTRACTIONS: readonly Contraction[] = [
   contraction('enough', [2, 6], 'lower-wordsign', '10.5.2', ALONE),
   contraction('were', [2, 3, 5, 6], 'lower-wordsign', '10.5.1', LOWER_ALONE),
   contraction('his', [2, 3, 6], 'lower-wordsign', '10.5.1', LOWER_ALONE),
-  contraction('in', [3, 5], 'lower-wordsign', '10.5.3', 'Used for the word “in” wherever it occurs, as long as it touches a cell with an upper dot or stands alone.'),
+  contraction(
+    'in',
+    [3, 5],
+    'lower-wordsign',
+    '10.5.3',
+    'Used for the word “in” wherever it occurs, as long as it touches a cell with an upper dot or stands alone.',
+  ),
   contraction('was', [3, 5, 6], 'lower-wordsign', '10.5.1', LOWER_ALONE),
 
   contraction('ea', [2], 'lower-groupsign', '10.6.5', 'Only between two letters inside a word.'),
@@ -427,7 +497,13 @@ export const CONTRACTIONS: readonly Contraction[] = [
   contraction('gg', [2, 3, 5, 6], 'lower-groupsign', '10.6.5', 'Only between two letters inside a word.'),
   contraction('be', [2, 3], 'lower-groupsign', '10.6.2', 'Only at the beginning of a word, followed by more letters.'),
   contraction('con', [2, 5], 'lower-groupsign', '10.6.2', 'Only at the beginning of a word, followed by more letters.'),
-  contraction('dis', [2, 5, 6], 'lower-groupsign', '10.6.2', 'Only at the beginning of a word, followed by more letters.'),
+  contraction(
+    'dis',
+    [2, 5, 6],
+    'lower-groupsign',
+    '10.6.2',
+    'Only at the beginning of a word, followed by more letters.',
+  ),
   contraction('en', [2, 6], 'lower-groupsign', '10.6.8', 'Used anywhere in a word.'),
   contraction('in', [3, 5], 'lower-groupsign', '10.6.8', 'Used anywhere in a word.'),
 ];

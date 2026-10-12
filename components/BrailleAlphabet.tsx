@@ -1,51 +1,55 @@
 'use client';
 
 import { useState } from 'react';
-import { brailleMap, dotDescription } from '@/lib/braille-map';
+import BrailleCell from '@/components/BrailleCell';
+import { ALPHABET, LETTER_CELLS } from '@/lib/braille/ueb';
+import { describeCell } from '@/lib/braille/prose';
 
-const LETTERS = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ'.split('');
-const DOT_NUMBERS = [1, 4, 2, 5, 3, 6];
+/** The letters a–z. Each card shows the lowercase letter: a capital needs the capital indicator first. */
+const LETTERS = ALPHABET;
 
 export default function BrailleAlphabet() {
   const [selected, setSelected] = useState<string | null>(null);
 
-  const pattern = selected ? brailleMap[selected] : null;
-  const desc = selected ? dotDescription(selected) : '';
+  const cell = selected ? LETTER_CELLS[selected] : null;
+  const desc = cell ? describeCell(cell) : '';
 
   return (
     <div className="alpha-container">
       <div className="alpha-grid" role="group" aria-label="Braille alphabet cards">
         {LETTERS.map((letter) => {
-          const dots = brailleMap[letter];
           const isSelected = selected === letter;
           return (
             <button
               key={letter}
               className={`alpha-card${isSelected ? ' active' : ''}`}
               aria-pressed={isSelected}
-              aria-label={`${letter}, ${dotDescription(letter)}`}
+              aria-label={`letter ${letter}, ${describeCell(LETTER_CELLS[letter])}`}
               onClick={() => setSelected(isSelected ? null : letter)}
             >
-              <div className="alpha-card-cell" aria-hidden="true">
-                {dots.map((filled, i) => (
-                  <span key={i} className={`alpha-dot${filled ? ' raised' : ''}`} />
-                ))}
-              </div>
+              <BrailleCell
+                cell={LETTER_CELLS[letter]}
+                className="alpha-card-cell"
+                dotClassName="alpha-dot"
+                raisedClassName="raised"
+                flatClassName="flat"
+              />
               <span className="alpha-card-letter">{letter}</span>
             </button>
           );
         })}
       </div>
 
-      {selected && pattern && (
+      {selected && cell && (
         <div className="alpha-detail" aria-live="polite">
-          <div className="alpha-detail-cell" aria-hidden="true">
-            {pattern.map((filled, i) => (
-              <span key={i} className={`alpha-detail-dot${filled ? ' raised' : ''}`}>
-                {DOT_NUMBERS[i]}
-              </span>
-            ))}
-          </div>
+          <BrailleCell
+            cell={cell}
+            className="alpha-detail-cell"
+            dotClassName="alpha-detail-dot"
+            raisedClassName="raised"
+            flatClassName="flat"
+            showNumbers
+          />
           <div className="alpha-detail-info">
             <div className="alpha-detail-letter">{selected}</div>
             <div className="alpha-detail-desc">{desc.charAt(0).toUpperCase() + desc.slice(1)}</div>

@@ -17,6 +17,10 @@ const SECTIONS: { id: string; gameId: GameId; label: string }[] = [
   { id: 'sentence-decoder', gameId: 'sentence-decoder', label: 'Sentence Decoder' },
   { id: 'bingo', gameId: 'bingo', label: 'Braille Bingo' },
   { id: 'rain', gameId: 'rain', label: 'Braille Rain' },
+  { id: 'capital-quest', gameId: 'capital-quest', label: 'Capital Quest' },
+  { id: 'number-lock', gameId: 'number-lock', label: 'Number Lock' },
+  { id: 'punctuation-detective', gameId: 'punctuation-detective', label: 'Punctuation Detective' },
+  { id: 'brailler-challenge', gameId: 'brailler-challenge', label: 'Brailler Challenge' },
 ];
 
 function MasteryDot({ mastery }: { mastery: number }) {

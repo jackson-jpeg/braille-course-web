@@ -3,6 +3,8 @@
 import { useState, useEffect, useRef, useCallback } from 'react';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
+import BrailleCell from '@/components/BrailleCell';
+import { CHROME_PRINT, chromeCells } from '@/lib/site-chrome-braille';
 
 const NAV_LINKS = [
   { href: '/intro', label: 'Intro to Braille' },
@@ -13,8 +15,8 @@ const NAV_LINKS = [
   { href: '/appointments', label: 'Appointments' },
 ];
 
-// Braille "T" = dots 2,3,4,5 → grid order [d1,d4,d2,d5,d3,d6] = [0,1,1,1,1,0]
-const T_DOTS = [0, 1, 1, 1, 1, 0];
+// Logo: the braille letter t (for TeachBraille), from lib/braille. Decorative: the link has its own label.
+const LOGO_CELL = chromeCells(CHROME_PRINT.logo)[0];
 
 export default function NavBar() {
   const pathname = usePathname();
@@ -73,11 +75,13 @@ export default function NavBar() {
       <nav className={navClass} role="navigation" aria-label="Main navigation">
         <div className="site-nav-inner">
           <Link href="/" className="site-nav-logo" aria-label="TeachBraille home">
-            <span className="site-nav-logo-dots" aria-hidden="true">
-              {T_DOTS.map((filled, i) => (
-                <span key={i} className={`site-nav-logo-dot${filled ? ' filled' : ''}`} />
-              ))}
-            </span>
+            <BrailleCell
+              cell={LOGO_CELL}
+              className="site-nav-logo-dots"
+              dotClassName="site-nav-logo-dot"
+              raisedClassName="filled"
+              flatClassName="flat"
+            />
             TeachBraille
           </Link>
 

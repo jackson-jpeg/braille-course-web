@@ -14,7 +14,10 @@ import { dotPosition, type Cell, type Dot } from '@/lib/braille/ueb';
 export const RAISED_CLASSES = ['filled', 'raised', 'active', 'on'];
 
 export function readCells(container: ParentNode): { dots: string; el: Element }[] {
-  return [...container.querySelectorAll('[data-braille-cell]')].map((el) => ({ dots: el.getAttribute('data-dots') ?? '', el }));
+  return [...container.querySelectorAll('[data-braille-cell]')].map((el) => ({
+    dots: el.getAttribute('data-dots') ?? '',
+    el,
+  }));
 }
 
 export function checkCellElement(el: Element): string[] {

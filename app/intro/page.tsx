@@ -4,7 +4,11 @@ import Footer from '@/components/Footer';
 import BrailleHero from '@/components/BrailleHero';
 import BrailleAlphabet from '@/components/BrailleAlphabet';
 import BrailleNumbers from '@/components/BrailleNumbers';
-import { brailleMap } from '@/lib/braille-map';
+import BrailleCell from '@/components/BrailleCell';
+import { ALL_DOTS, type Cell, getContraction, toCell } from '@/lib/braille/ueb';
+import { transcribeTokens } from '@/lib/braille/transcribe';
+import { contractedWord } from '@/lib/braille/contracted';
+import { describeCell, renderProse } from '@/lib/braille/prose';
 
 export const metadata: Metadata = {
   title: 'Intro to Braille — What Is Braille & How to Read It',
@@ -18,23 +22,35 @@ export const metadata: Metadata = {
   },
 };
 
-const CONTRACTIONS: { word: string; pattern: number[] }[] = [
-  { word: 'AND', pattern: [1, 1, 1, 0, 1, 1] },
-  { word: 'FOR', pattern: [1, 1, 1, 1, 1, 1] },
-  { word: 'OF', pattern: [1, 0, 1, 1, 1, 1] },
-  { word: 'THE', pattern: [0, 1, 1, 0, 1, 1] },
-  { word: 'WITH', pattern: [0, 1, 1, 1, 1, 1] },
-];
+/** A few common strong contractions (ICEB 10.3), from lib/braille. */
+const CONTRACTIONS = ['and', 'for', 'of', 'the', 'with'].map((t) => getContraction(t, 'strong-contraction'));
 
-function BrailleCell({ pattern, label }: { pattern: number[]; label: string }) {
+/** "the" in uncontracted braille (one cell per letter) and in contracted braille (one cell). */
+const THE_UNCONTRACTED = transcribeTokens('the');
+const THE_CONTRACTED = contractedWord('the', ['the']);
+
+const LEFT_COLUMN: Cell = toCell([1, 2, 3]);
+const RIGHT_COLUMN: Cell = toCell([4, 5, 6]);
+const CELL_LAYOUT = `the left column holds ${describeCell(LEFT_COLUMN)} (top to bottom) and the right column holds ${describeCell(RIGHT_COLUMN)}`;
+
+function cellCount(n: number): string {
+  return `${n} ${n === 1 ? 'cell' : 'cells'}`;
+}
+
+function IntroCell({ cell, label, ariaName }: { cell: Cell; label: string; ariaName: string }) {
   return (
     <div className="intro-bcell">
-      <div className="intro-bcell-dots" aria-hidden="true">
-        {pattern.map((f, i) => (
-          <span key={i} className={`intro-bcell-dot${f ? ' raised' : ''}`} />
-        ))}
-      </div>
-      <span className="intro-bcell-lbl">{label}</span>
+      <BrailleCell
+        cell={cell}
+        className="intro-bcell-dots"
+        dotClassName="intro-bcell-dot"
+        raisedClassName="raised"
+        flatClassName=""
+        label={ariaName}
+      />
+      <span className="intro-bcell-lbl" aria-hidden="true">
+        {label}
+      </span>
     </div>
   );
 }
@@ -64,7 +80,7 @@ const introJsonLd = {
           name: 'What is braille?',
           acceptedAnswer: {
             '@type': 'Answer',
-            text: 'Braille is a tactile writing system used by people who are blind or visually impaired. Created by Louis Braille in 1824, each character is formed within a cell of 6 dots arranged in a 3-row, 2-column matrix, giving 64 possible combinations including letters, numbers, punctuation, and music notation.',
+            text: 'Braille is a tactile writing system used by people who are blind or visually impaired. It was developed by Louis Braille in the 1820s. Each character is formed within a cell of 6 dot positions arranged in 3 rows and 2 columns, giving 64 possible patterns (counting the blank cell), used for letters, numbers, punctuation, and music notation.',
           },
         },
         {
@@ -72,7 +88,7 @@ const introJsonLd = {
           name: 'How does the braille cell work?',
           acceptedAnswer: {
             '@type': 'Answer',
-            text: 'Every braille character lives inside a cell of six dot positions. The left column holds dots 1, 2, 3 (top to bottom) and the right column holds dots 4, 5, 6. Different combinations of raised dots form each letter, number, or symbol.',
+            text: `Every braille character lives inside a cell of six dot positions: ${CELL_LAYOUT}. Different combinations of raised dots form each letter, number, or symbol.`,
           },
         },
         {
@@ -80,7 +96,7 @@ const introJsonLd = {
           name: 'What are the grades of braille?',
           acceptedAnswer: {
             '@type': 'Answer',
-            text: 'There are two main grades: Grade 1 (uncontracted) spells out every word letter by letter, while Grade 2 (contracted) uses over 180 abbreviations and contractions to save space and increase reading speed. Grade 2 is the standard for published braille materials.',
+            text: 'Unified English Braille is written in two grades: Grade 1 (uncontracted) spells out every word letter by letter, while Grade 2 (contracted) also uses contractions and shortforms (the UEB rulebook lists 180 of them) to save space and speed up reading. Most braille books for adult readers are in Grade 2.',
           },
         },
         {
@@ -88,7 +104,9 @@ const introJsonLd = {
           name: 'How do numbers work in braille?',
           acceptedAnswer: {
             '@type': 'Answer',
-            text: 'Braille uses a number indicator (dots 3, 4, 5, 6) placed before letter patterns to represent numbers. Numbers 1 through 9 reuse the same dot patterns as letters A through I, and 0 uses the pattern for J.',
+            text: renderProse(
+              'Braille uses the {name:numeric} ({dots:numeric}) before a number. The digits 1 through 9 use the same cells as the letters a through i, and 0 uses the cell for j.',
+            ),
           },
         },
         {
@@ -96,7 +114,7 @@ const introJsonLd = {
           name: 'Why does braille matter?',
           acceptedAnswer: {
             '@type': 'Answer',
-            text: 'Braille is essential for literacy and independence. Over 39 million blind people worldwide rely on braille. Research shows that 90% of braille-literate adults are employed, compared to roughly 30% of non-readers. Braille has been adapted for 133 languages worldwide.',
+            text: 'Braille is essential for literacy and independence. About 43 million people worldwide were blind in 2020, and braille gives them direct access to reading and writing. Since 2019 the United Nations has marked January 4, Louis Braille’s birthday, as World Braille Day.',
           },
         },
       ],
@@ -132,14 +150,16 @@ export default function IntroPage() {
           <div className="intro-history-grid reveal">
             <p className="intro-history-text">
               Braille is a tactile writing system used by people who are blind or visually impaired. It was created by{' '}
-              <strong>Louis Braille in 1824</strong> when he was just 15 years old, while studying at the Royal
-              Institute for Blind Youth in Paris. Louis lost his sight at age 3 after an accident in his father&apos;s
-              workshop.
+              <strong>Louis Braille</strong>, who devised it as a teenager &mdash; he was 15 in 1824 &mdash; while
+              studying at the Royal Institute for Blind Youth in Paris. An accident in his father&apos;s workshop when
+              he was 3 led to his blindness by about age 5.
             </p>
             <div className="intro-history-stat-card">
               <span className="intro-stat-number">15</span>
               <span className="intro-stat-label">Years Old</span>
-              <span className="intro-stat-detail">Louis Braille&apos;s age when he invented the system</span>
+              <span className="intro-stat-detail">
+                Louis Braille&apos;s age in 1824, when he devised his dot system
+              </span>
             </div>
           </div>
 
@@ -149,15 +169,15 @@ export default function IntroPage() {
               <polyline points="12 6 12 12 16 14" />
             </svg>
             <p>
-              <strong>1824:</strong> Louis adapted Charles Barbier&apos;s military &ldquo;night writing&rdquo; system
-              into the elegant 6-dot code we know today.
+              <strong>1820s:</strong> Louis adapted Charles Barbier&apos;s &ldquo;night writing,&rdquo; a raised-dot
+              code devised for the French army, into the 6-dot code that is still the basis of braille today.
             </p>
           </div>
 
           <div className="intro-history-grid intro-history-grid--reversed reveal">
             <p className="intro-history-text">
-              Each braille character is formed within a <strong>cell of 6 dots</strong> arranged in a 3-row, 2-column
-              matrix &mdash; giving <strong>64 possible combinations</strong> including the blank cell. This compact
+              Each braille character is formed within a <strong>cell of 6 dot positions</strong> arranged in 3 rows and
+              2 columns &mdash; giving <strong>64 possible patterns</strong> including the blank cell. This compact
               system can represent letters, numbers, punctuation, and even music notation.
             </p>
             <div className="intro-history-stat-card">
@@ -174,22 +194,17 @@ export default function IntroPage() {
         <div className="intro-cell-inner reveal">
           <h2 id="intro-cell-heading">The Braille Cell</h2>
           <p className="intro-history-text">
-            Every braille character lives inside a cell of six dot positions. The left column holds dots{' '}
-            <strong>1, 2, 3</strong> (top to bottom) and the right column holds dots <strong>4, 5, 6</strong>. Different
-            combinations of raised dots form each letter, number, or symbol.
+            Every braille character lives inside a cell of six dot positions: {CELL_LAYOUT}. Different combinations of
+            raised dots form each letter, number, or symbol.
           </p>
-          <div
-            className="intro-cell-diagram"
-            role="img"
-            aria-label="Braille cell diagram showing dot positions: dot 1 top-left, dot 4 top-right, dot 2 middle-left, dot 5 middle-right, dot 3 bottom-left, dot 6 bottom-right"
-          >
-            <div className="intro-cell-grid">
-              {[1, 4, 2, 5, 3, 6].map((num, idx) => (
-                <span key={num} className="intro-cell-dot" style={{ animationDelay: `${idx * 0.1}s` }}>
-                  {num}
-                </span>
-              ))}
-            </div>
+          <div className="intro-cell-diagram" role="img" aria-label={`Braille cell diagram: ${CELL_LAYOUT}.`}>
+            <BrailleCell
+              cell={ALL_DOTS}
+              showNumbers
+              className="intro-cell-grid"
+              dotClassName="intro-cell-dot"
+              raisedClassName="on"
+            />
           </div>
         </div>
       </section>
@@ -215,23 +230,26 @@ export default function IntroPage() {
 
           <div className="intro-impact-stats reveal">
             <div className="intro-history-stat-card">
-              <span className="intro-stat-number">39M+</span>
+              <span className="intro-stat-number">43M</span>
               <span className="intro-stat-label">Blind People</span>
               <span className="intro-stat-detail">
-                worldwide, with over 250&nbsp;million experiencing vision impairment
+                worldwide in 2020, with about 295&nbsp;million more living with moderate or severe vision impairment
               </span>
             </div>
             <div className="intro-history-stat-card">
-              <span className="intro-stat-number">90%</span>
-              <span className="intro-stat-label">Employment</span>
+              <span className="intro-stat-number">2016</span>
+              <span className="intro-stat-label">One English Code</span>
               <span className="intro-stat-detail">
-                of braille-literate adults are employed, compared to roughly 30% of non-readers
+                by 2016, every member country of the International Council on English Braille had adopted Unified
+                English Braille
               </span>
             </div>
             <div className="intro-history-stat-card">
-              <span className="intro-stat-number">133</span>
-              <span className="intro-stat-label">Languages</span>
-              <span className="intro-stat-detail">have braille codes adapted for their writing system</span>
+              <span className="intro-stat-number">Jan 4</span>
+              <span className="intro-stat-label">World Braille Day</span>
+              <span className="intro-stat-detail">
+                Louis Braille&apos;s birthday, marked by the United Nations since 2019
+              </span>
             </div>
           </div>
 
@@ -240,9 +258,9 @@ export default function IntroPage() {
               <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z" />
             </svg>
             <p>
-              <strong>Braille is knowledge, and knowledge is power.</strong> &mdash; Louis Braille. From reading
-              medication labels and elevator buttons to using refreshable braille displays with computers and
-              smartphones &mdash; braille remains essential for daily independence and professional success.
+              <strong>Braille is literacy.</strong> From reading medication labels and elevator buttons to using
+              refreshable braille displays with computers and smartphones &mdash; braille remains essential for daily
+              independence and professional success.
             </p>
           </div>
         </div>
@@ -254,8 +272,8 @@ export default function IntroPage() {
           <h2 id="intro-grades-heading">Grades of Braille</h2>
           <p className="intro-history-text">
             There are two main grades of braille. <strong>Grade&nbsp;1</strong> spells out every word letter by letter
-            &mdash; just like the alphabet you explored above. <strong>Grade&nbsp;2</strong> uses contractions and
-            abbreviations to save space and speed up reading.
+            &mdash; just like the alphabet you explored above. <strong>Grade&nbsp;2</strong> also uses contractions and
+            shortforms to save space and speed up reading.
           </p>
 
           <div className="intro-grades-compare reveal">
@@ -263,36 +281,42 @@ export default function IntroPage() {
               <h3>Grade 1</h3>
               <p>Uncontracted &mdash; letter for letter</p>
               <div className="intro-grades-cells">
-                <BrailleCell pattern={brailleMap['T']} label="T" />
-                <BrailleCell pattern={brailleMap['H']} label="H" />
-                <BrailleCell pattern={brailleMap['E']} label="E" />
+                {THE_UNCONTRACTED.map((t) => (
+                  <IntroCell key={t.print} cell={t.cells[0]} label={t.print} ariaName={t.name} />
+                ))}
               </div>
-              <div className="intro-grades-card-count">3 cells</div>
+              <div className="intro-grades-card-count">{cellCount(THE_UNCONTRACTED.length)}</div>
             </div>
             <div className="intro-grades-card intro-grades-card--g2">
               <h3>Grade 2</h3>
               <p>Contracted &mdash; one cell for the whole word</p>
               <div className="intro-grades-cells">
-                <BrailleCell pattern={[0, 1, 1, 0, 1, 1]} label="THE" />
+                <IntroCell cell={THE_CONTRACTED.cells[0]} label="the" ariaName="the word “the” in contracted braille" />
               </div>
-              <div className="intro-grades-card-count">1 cell</div>
+              <div className="intro-grades-card-count">{cellCount(THE_CONTRACTED.cells.length)}</div>
             </div>
           </div>
 
           <p className="intro-history-text">
-            Grade&nbsp;2 is the standard for published braille. It includes <strong>180+ contractions</strong> that
-            experienced readers recognize instantly. Here are a few common ones:
+            Grade&nbsp;2 is used for most braille books for adult readers. The UEB rulebook lists{' '}
+            <strong>180 contractions and shortforms</strong> that experienced readers recognize instantly. Here are a
+            few common ones:
           </p>
 
           <div className="intro-grades-examples reveal">
             {CONTRACTIONS.map((c) => (
-              <div key={c.word} className="intro-grades-example">
-                <div className="intro-bcell-dots" aria-hidden="true">
-                  {c.pattern.map((f, i) => (
-                    <span key={i} className={`intro-bcell-dot${f ? ' raised' : ''}`} />
-                  ))}
-                </div>
-                <span className="intro-grades-example-word">{c.word}</span>
+              <div key={c.text} className="intro-grades-example">
+                <BrailleCell
+                  cell={c.cells[0]}
+                  className="intro-bcell-dots"
+                  dotClassName="intro-bcell-dot"
+                  raisedClassName="raised"
+                  flatClassName=""
+                  label={`the word “${c.text}”`}
+                />
+                <span className="intro-grades-example-word" style={{ textTransform: 'none' }} aria-hidden="true">
+                  {c.text}
+                </span>
               </div>
             ))}
           </div>
@@ -304,8 +328,9 @@ export default function IntroPage() {
         <div className="intro-numbers-inner">
           <h2 id="intro-numbers-heading">Numbers in Braille</h2>
           <p className="intro-history-text">
-            Braille cleverly reuses letter patterns for numbers. A special <strong>number indicator</strong> tells the
-            reader that the following characters are digits, not letters. Tap any number below to see how it works.
+            Braille reuses the cells of the letters a&ndash;j for the digits 1&ndash;9 and 0. The{' '}
+            <strong>numeric indicator</strong> ({renderProse('{dots:numeric}')}) tells the reader that the cells that
+            follow are digits, not letters. Tap any number below to see how it works.
           </p>
           <BrailleNumbers />
         </div>

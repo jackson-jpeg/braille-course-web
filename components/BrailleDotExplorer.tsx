@@ -1,28 +1,13 @@
 'use client';
 
-import { useState, useMemo, useEffect, useRef } from 'react';
-import { brailleMap } from '@/lib/braille-map';
-import { buildContractedReverseLookup } from '@/lib/contracted-braille-map';
-
-type ExplorerMode = 'alphabetic' | 'contracted';
-
-// Build reverse lookup: dot pattern string → letter
-function buildReverseLookup(): Map<string, string> {
-  const map = new Map<string, string>();
-  for (const [letter, pattern] of Object.entries(brailleMap)) {
-    map.set(pattern.join(','), letter);
-  }
-  return map;
-}
-
-// Standard dot numbers for display: grid positions [d1, d4, d2, d5, d3, d6]
-const DOT_NUMBERS = [1, 4, 2, 5, 3, 6];
+import { useState, useEffect, useRef } from 'react';
+import type { Cell } from '@/lib/braille/ueb';
+import BrailleDotPad, { toggleDot } from '@/components/BrailleDotPad';
+import { type ExplorerMode, DOT_KEYS, cellMeanings, dotsCaption, headline } from '@/lib/games/explorer';
 
 export default function BrailleDotExplorer() {
-  const [dots, setDots] = useState<number[]>([0, 0, 0, 0, 0, 0]);
+  const [cell, setCell] = useState<Cell>([]);
   const [mode, setMode] = useState<ExplorerMode>('alphabetic');
-  const reverseLookup = useMemo(() => buildReverseLookup(), []);
-  const contractedLookup = useMemo(() => buildContractedReverseLookup(), []);
 
   const containerRef = useRef<HTMLDivElement>(null);
   const visibleRef = useRef(true);
@@ -41,65 +26,24 @@ export default function BrailleDotExplorer() {
     return () => observer.disconnect();
   }, []);
 
-  // Keyboard: 1-6 to toggle dots, C to clear
+  // Keyboard: number keys toggle the matching dot, C clears
   useEffect(() => {
-    const dotKeyMap: Record<string, number> = {
-      '1': 0,
-      '4': 1,
-      '2': 2,
-      '5': 3,
-      '3': 4,
-      '6': 5,
-    };
     function onKeyDown(e: KeyboardEvent) {
       if (!visibleRef.current) return;
       if (e.ctrlKey || e.metaKey || e.altKey) return;
-      if (e.key in dotKeyMap) {
-        const idx = dotKeyMap[e.key];
-        setDots((prev) => {
-          const next = [...prev];
-          next[idx] = next[idx] === 1 ? 0 : 1;
-          return next;
-        });
-      }
-      if (e.key.toLowerCase() === 'c') {
-        setDots([0, 0, 0, 0, 0, 0]);
-      }
+      const target = e.target as HTMLElement | null;
+      if (target && (target.tagName === 'INPUT' || target.tagName === 'TEXTAREA' || target.isContentEditable)) return;
+      const dot = DOT_KEYS[e.key];
+      if (dot) setCell((prev) => toggleDot(prev, dot));
+      if (e.key.toLowerCase() === 'c') setCell([]);
     }
     window.addEventListener('keydown', onKeyDown);
     return () => window.removeEventListener('keydown', onKeyDown);
   }, []);
 
-  const patternKey = dots.join(',');
-  const matchedLetter = reverseLookup.get(patternKey) || null;
-  const matchedContraction = contractedLookup.get(patternKey) || null;
-  const anyActive = dots.some((d) => d === 1);
-
-  function toggleDot(index: number) {
-    setDots((prev) => {
-      const next = [...prev];
-      next[index] = next[index] === 1 ? 0 : 1;
-      return next;
-    });
-  }
-
-  function clearAll() {
-    setDots([0, 0, 0, 0, 0, 0]);
-  }
-
-  const contractionTypeLabels: Record<string, string> = {
-    wordsign: 'Alphabetic wordsign',
-    strong: 'Strong contraction',
-    'groupsign-strong': 'Strong groupsign',
-    'groupsign-lower': 'Lower groupsign',
-    'wordsign-lower': 'Lower wordsign',
-  };
-
-  // Which dot numbers are currently raised
-  const raisedDots = dots
-    .map((v, i) => (v ? DOT_NUMBERS[i] : null))
-    .filter(Boolean)
-    .sort((a, b) => a! - b!) as number[];
+  const anyActive = cell.length > 0;
+  const meanings = cellMeanings(cell, mode);
+  const big = headline(cell, mode);
 
   return (
     <div className="explorer-container" ref={containerRef}>
@@ -107,8 +51,8 @@ export default function BrailleDotExplorer() {
         <span className="section-label">Explore</span>
         <h2>Dot Explorer</h2>
         <p>
-          Toggle dots to discover braille {mode === 'contracted' ? 'contractions' : 'letters'}{' '}
-          <span className="explorer-kbd-hint">Keys 1–6 toggle dots</span>
+          Toggle dots to discover what each braille cell means{mode === 'contracted' ? ', including contractions' : ''}{' '}
+          <span className="explorer-kbd-hint">Keys 1–6 toggle dots, C clears</span>
         </p>
       </div>
 
@@ -119,7 +63,7 @@ export default function BrailleDotExplorer() {
           aria-checked={mode === 'alphabetic'}
           onClick={() => setMode('alphabetic')}
         >
-          Alphabetic
+          Uncontracted
         </button>
         <button
           className={`explorer-mode-pill${mode === 'contracted' ? ' active' : ''}`}
@@ -132,52 +76,49 @@ export default function BrailleDotExplorer() {
       </div>
 
       <div className="explorer-body">
-        <div className="explorer-cell" role="group" aria-label="Interactive braille cell">
-          {dots.map((filled, i) => (
-            <button
-              key={i}
-              className={`explorer-dot${filled ? ' active' : ''}`}
-              onClick={() => toggleDot(i)}
-              aria-pressed={filled === 1}
-              aria-label={`Dot ${DOT_NUMBERS[i]}${filled ? ', raised' : ', lowered'}`}
-            >
-              <span className="explorer-dot-number">{DOT_NUMBERS[i]}</span>
-            </button>
-          ))}
-        </div>
+        <BrailleDotPad
+          cell={cell}
+          onToggle={(d) => setCell((prev) => toggleDot(prev, d))}
+          className="explorer-cell"
+          dotClassName="explorer-dot"
+          raisedClassName="active"
+          label="Interactive braille cell"
+          renderDot={(d) => <span className="explorer-dot-number">{d}</span>}
+        />
 
-        <div className="explorer-result">
+        <div className="explorer-result" aria-live="polite" aria-atomic="true">
           {anyActive ? (
-            mode === 'alphabetic' ? (
-              matchedLetter ? (
-                <>
-                  <div className="explorer-letter">{matchedLetter}</div>
-                  <div className="explorer-dots-label">Dots {raisedDots.join(', ')}</div>
-                </>
+            <>
+              {big ? (
+                <div className={mode === 'contracted' ? 'explorer-contraction' : 'explorer-letter'}>{big}</div>
               ) : (
-                <>
-                  <div className="explorer-letter explorer-no-match">?</div>
-                  <div className="explorer-dots-label">Dots {raisedDots.join(', ')} — No match</div>
-                </>
-              )
-            ) : matchedContraction ? (
-              <>
-                <div className="explorer-contraction">{matchedContraction.label}</div>
-                <div className="explorer-contraction-type">{contractionTypeLabels[matchedContraction.type]}</div>
-                <div className="explorer-dots-label">Dots {raisedDots.join(', ')}</div>
-              </>
-            ) : (
-              <>
                 <div className="explorer-letter explorer-no-match">?</div>
-                <div className="explorer-dots-label">Dots {raisedDots.join(', ')} — No match</div>
-              </>
-            )
+              )}
+              <div className="explorer-dots-label">
+                {dotsCaption(cell)}
+                {meanings.length === 0 ? ' — no single-cell sign on this site' : ''}
+              </div>
+              {meanings.map((m, i) => (
+                <div key={i} className="explorer-contraction-type" data-meaning={m.kind}>
+                  <strong>{m.title}</strong>
+                  {m.detail ? ` — ${m.detail}` : ''} <span className="explorer-rule">(UEB rule {m.rule})</span>
+                </div>
+              ))}
+              {mode === 'alphabetic' && cellMeanings(cell, 'contracted').length > meanings.length && (
+                <div className="explorer-contraction-type">Switch to Contracted to see its contractions.</div>
+              )}
+            </>
           ) : (
             <div className="explorer-prompt">Tap dots to begin</div>
           )}
         </div>
 
-        <button className="explorer-clear" onClick={clearAll} disabled={!anyActive} aria-label="Clear all dots">
+        <button
+          className="explorer-clear"
+          onClick={() => setCell([])}
+          disabled={!anyActive}
+          aria-label="Clear all dots"
+        >
           Clear
         </button>
       </div>

@@ -1,0 +1,957 @@
+{
+  "liblouis": "3.29.0",
+  "items": {
+    "g1\tAdd 1.5 cups of milk.": {
+      "braille": "⠠⠁⠙⠙⠀⠼⠁⠲⠑⠀⠉⠥⠏⠎⠀⠕⠋⠀⠍⠊⠇⠅⠲",
+      "back": "Add 1.5 cups of milk."
+    },
+    "g1\tBEN WON!": {
+      "braille": "⠠⠠⠃⠑⠝⠀⠠⠠⠺⠕⠝⠖",
+      "back": "BEN WON!"
+    },
+    "g1\tBen likes jam.": {
+      "braille": "⠠⠃⠑⠝⠀⠇⠊⠅⠑⠎⠀⠚⠁⠍⠲",
+      "back": "Ben likes jam."
+    },
+    "g1\tCan you hop?": {
+      "braille": "⠠⠉⠁⠝⠀⠽⠕⠥⠀⠓⠕⠏⠦",
+      "back": "Can you hop?"
+    },
+    "g1\tDad’s bus left at 10.": {
+      "braille": "⠠⠙⠁⠙⠄⠎⠀⠃⠥⠎⠀⠇⠑⠋⠞⠀⠁⠞⠀⠼⠁⠚⠲",
+      "back": "Dad's bus left at 10."
+    },
+    "g1\tGo to room 3b.": {
+      "braille": "⠠⠛⠕⠀⠞⠕⠀⠗⠕⠕⠍⠀⠼⠉⠰⠃⠲",
+      "back": "Go to room 3b."
+    },
+    "g1\tI have 3 cats and 2 dogs.": {
+      "braille": "⠠⠊⠀⠓⠁⠧⠑⠀⠼⠉⠀⠉⠁⠞⠎⠀⠁⠝⠙⠀⠼⠃⠀⠙⠕⠛⠎⠲",
+      "back": "I have 3 cats and 2 dogs."
+    },
+    "g1\tI love NYC!": {
+      "braille": "⠠⠊⠀⠇⠕⠧⠑⠀⠠⠠⠝⠽⠉⠖",
+      "back": "I love NYC!"
+    },
+    "g1\tI see a cat.": {
+      "braille": "⠠⠊⠀⠎⠑⠑⠀⠁⠀⠉⠁⠞⠲",
+      "back": "I see a cat."
+    },
+    "g1\tIs it 3.5 or 4?": {
+      "braille": "⠠⠊⠎⠀⠊⠞⠀⠼⠉⠲⠑⠀⠕⠗⠀⠼⠙⠦",
+      "back": "Is it 3.5 or 4?"
+    },
+    "g1\tIs it hot?": {
+      "braille": "⠠⠊⠎⠀⠊⠞⠀⠓⠕⠞⠦",
+      "back": "Is it hot?"
+    },
+    "g1\tIt’s a well-known song.": {
+      "braille": "⠠⠊⠞⠄⠎⠀⠁⠀⠺⠑⠇⠇⠤⠅⠝⠕⠺⠝⠀⠎⠕⠝⠛⠲",
+      "back": "It's a well-known song."
+    },
+    "g1\tIt’s fun.": {
+      "braille": "⠠⠊⠞⠄⠎⠀⠋⠥⠝⠲",
+      "back": "It's fun."
+    },
+    "g1\tKim (my sister) is 12.": {
+      "braille": "⠠⠅⠊⠍⠀⠐⠣⠍⠽⠀⠎⠊⠎⠞⠑⠗⠐⠜⠀⠊⠎⠀⠼⠁⠃⠲",
+      "back": "Kim (my sister) is 12."
+    },
+    "g1\tLook at the bird!": {
+      "braille": "⠠⠇⠕⠕⠅⠀⠁⠞⠀⠞⠓⠑⠀⠃⠊⠗⠙⠖",
+      "back": "Look at the bird!"
+    },
+    "g1\tMax ran fast.": {
+      "braille": "⠠⠍⠁⠭⠀⠗⠁⠝⠀⠋⠁⠎⠞⠲",
+      "back": "Max ran fast."
+    },
+    "g1\tMom said, “Come here!”": {
+      "braille": "⠠⠍⠕⠍⠀⠎⠁⠊⠙⠂⠀⠦⠠⠉⠕⠍⠑⠀⠓⠑⠗⠑⠖⠴",
+      "back": "Mom said, \"Come here!\""
+    },
+    "g1\tMy code is 4j.": {
+      "braille": "⠠⠍⠽⠀⠉⠕⠙⠑⠀⠊⠎⠀⠼⠙⠰⠚⠲",
+      "back": "My code is 4j."
+    },
+    "g1\tMy dog is big.": {
+      "braille": "⠠⠍⠽⠀⠙⠕⠛⠀⠊⠎⠀⠃⠊⠛⠲",
+      "back": "My dog is big."
+    },
+    "g1\tOK, let us go.": {
+      "braille": "⠠⠠⠕⠅⠂⠀⠇⠑⠞⠀⠥⠎⠀⠛⠕⠲",
+      "back": "OK, let us go."
+    },
+    "g1\tSam has a red hat.": {
+      "braille": "⠠⠎⠁⠍⠀⠓⠁⠎⠀⠁⠀⠗⠑⠙⠀⠓⠁⠞⠲",
+      "back": "Sam has a red hat."
+    },
+    "g1\tThe sun is up.": {
+      "braille": "⠠⠞⠓⠑⠀⠎⠥⠝⠀⠊⠎⠀⠥⠏⠲",
+      "back": "The sun is up."
+    },
+    "g1\tThe year is 2026.": {
+      "braille": "⠠⠞⠓⠑⠀⠽⠑⠁⠗⠀⠊⠎⠀⠼⠃⠚⠃⠋⠲",
+      "back": "The year is 2026."
+    },
+    "g1\tTurn to page 9.": {
+      "braille": "⠠⠞⠥⠗⠝⠀⠞⠕⠀⠏⠁⠛⠑⠀⠼⠊⠲",
+      "back": "Turn to page 9."
+    },
+    "g1\tWe can go now!": {
+      "braille": "⠠⠺⠑⠀⠉⠁⠝⠀⠛⠕⠀⠝⠕⠺⠖",
+      "back": "We can go now!"
+    },
+    "g1\tWe have 1,000 beads.": {
+      "braille": "⠠⠺⠑⠀⠓⠁⠧⠑⠀⠼⠁⠂⠚⠚⠚⠀⠃⠑⠁⠙⠎⠲",
+      "back": "We have 1,000 beads."
+    },
+    "g1\tWhere is Tom?": {
+      "braille": "⠠⠺⠓⠑⠗⠑⠀⠊⠎⠀⠠⠞⠕⠍⠦",
+      "back": "Where is Tom?"
+    },
+    "g1\tWho won? We did!": {
+      "braille": "⠠⠺⠓⠕⠀⠺⠕⠝⠦⠀⠠⠺⠑⠀⠙⠊⠙⠖",
+      "back": "Who won? We did!"
+    },
+    "g1\tYes, I can.": {
+      "braille": "⠠⠽⠑⠎⠂⠀⠠⠊⠀⠉⠁⠝⠲",
+      "back": "Yes, I can."
+    },
+    "g1\t“Can we go?” asked Jo.": {
+      "braille": "⠦⠠⠉⠁⠝⠀⠺⠑⠀⠛⠕⠦⠴⠀⠁⠎⠅⠑⠙⠀⠠⠚⠕⠲",
+      "back": "\"Can we go?\" asked Jo."
+    },
+    "g2\tBread and cheese are for us.": {
+      "braille": "⠠⠃⠗⠂⠙⠀⠯⠀⠡⠑⠑⠎⠑⠀⠜⠑⠀⠿⠀⠥⠲",
+      "back": "Bread and cheese are for us."
+    },
+    "g2\tCan you see the star?": {
+      "braille": "⠠⠉⠀⠽⠀⠎⠑⠑⠀⠮⠀⠌⠜⠦",
+      "back": "Can you see the star?"
+    },
+    "g2\tDad will begin the concert.": {
+      "braille": "⠠⠙⠁⠙⠀⠺⠀⠆⠛⠔⠀⠮⠀⠒⠉⠻⠞⠲",
+      "back": "Dad will begin the concert."
+    },
+    "g2\tDo not chase the rabbit.": {
+      "braille": "⠠⠙⠀⠝⠀⠡⠁⠎⠑⠀⠮⠀⠗⠁⠆⠊⠞⠲",
+      "back": "Do not chase the rabbit."
+    },
+    "g2\tEvery bird can sing.": {
+      "braille": "⠠⠑⠀⠃⠊⠗⠙⠀⠉⠀⠎⠬⠲",
+      "back": "Every bird can sing."
+    },
+    "g2\tGo and get his hat.": {
+      "braille": "⠠⠛⠀⠯⠀⠛⠑⠞⠀⠦⠀⠓⠁⠞⠲",
+      "back": "Go and get his hat."
+    },
+    "g2\tHave you seen this?": {
+      "braille": "⠠⠓⠀⠽⠀⠎⠑⠢⠀⠹⠦",
+      "back": "Have you seen this?"
+    },
+    "g2\tHis teacher can sing.": {
+      "braille": "⠠⠦⠀⠞⠂⠡⠻⠀⠉⠀⠎⠬⠲",
+      "back": "His teacher can sing."
+    },
+    "g2\tI shall bring the cake.": {
+      "braille": "⠠⠊⠀⠩⠀⠃⠗⠬⠀⠮⠀⠉⠁⠅⠑⠲",
+      "back": "I shall bring the cake."
+    },
+    "g2\tIt is so cold.": {
+      "braille": "⠠⠭⠀⠊⠎⠀⠎⠀⠉⠕⠇⠙⠲",
+      "back": "It is so cold."
+    },
+    "g2\tJust do it now.": {
+      "braille": "⠠⠚⠀⠙⠀⠭⠀⠝⠪⠲",
+      "back": "Just do it now."
+    },
+    "g2\tMore people will be at the farm.": {
+      "braille": "⠠⠍⠀⠏⠀⠺⠀⠆⠀⠁⠞⠀⠮⠀⠋⠜⠍⠲",
+      "back": "More people will be at the farm."
+    },
+    "g2\tPeople like to read.": {
+      "braille": "⠠⠏⠀⠇⠀⠞⠕⠀⠗⠂⠙⠲",
+      "back": "People like to read."
+    },
+    "g2\tRather than sit, we stand.": {
+      "braille": "⠠⠗⠀⠹⠁⠝⠀⠎⠊⠞⠂⠀⠺⠑⠀⠌⠯⠲",
+      "back": "Rather than sit, we stand."
+    },
+    "g2\tShe was in the park.": {
+      "braille": "⠠⠩⠑⠀⠴⠀⠔⠀⠮⠀⠏⠜⠅⠲",
+      "back": "She was in the park."
+    },
+    "g2\tStill, the ship is very big.": {
+      "braille": "⠠⠌⠂⠀⠮⠀⠩⠊⠏⠀⠊⠎⠀⠧⠀⠃⠊⠛⠲",
+      "back": "Still, the ship is very big."
+    },
+    "g2\tThat bird has a nest.": {
+      "braille": "⠠⠞⠀⠃⠊⠗⠙⠀⠓⠁⠎⠀⠁⠀⠝⠑⠌⠲",
+      "back": "That bird has a nest."
+    },
+    "g2\tThe child can go out.": {
+      "braille": "⠠⠮⠀⠡⠀⠉⠀⠛⠀⠳⠲",
+      "back": "The child can go out."
+    },
+    "g2\tThe fish swam with us.": {
+      "braille": "⠠⠮⠀⠋⠊⠩⠀⠎⠺⠁⠍⠀⠾⠀⠥⠲",
+      "back": "The fish swam with us."
+    },
+    "g2\tWas it enough for you?": {
+      "braille": "⠠⠴⠀⠭⠀⠢⠀⠿⠀⠽⠦",
+      "back": "Was it enough for you?"
+    },
+    "g2\tWe can do it!": {
+      "braille": "⠠⠺⠑⠀⠉⠀⠙⠀⠭⠖",
+      "back": "We can do it!"
+    },
+    "g2\tWe were in the shop.": {
+      "braille": "⠠⠺⠑⠀⠶⠀⠔⠀⠮⠀⠩⠕⠏⠲",
+      "back": "We were in the shop."
+    },
+    "g2\tWhich way did she go?": {
+      "braille": "⠠⠱⠀⠺⠁⠽⠀⠙⠊⠙⠀⠩⠑⠀⠛⠦",
+      "back": "Which way did she go?"
+    },
+    "g2\tYou will like this.": {
+      "braille": "⠠⠽⠀⠺⠀⠇⠀⠹⠲",
+      "back": "You will like this."
+    },
+    "g2\taccent": {
+      "braille": "⠁⠒⠢⠞",
+      "back": "accent"
+    },
+    "g2\taccept": {
+      "braille": "⠁⠒⠑⠏⠞",
+      "back": "accept"
+    },
+    "g2\tand": {
+      "braille": "⠯",
+      "back": "and"
+    },
+    "g2\tas": {
+      "braille": "⠵",
+      "back": "as"
+    },
+    "g2\tbath": {
+      "braille": "⠃⠁⠹",
+      "back": "bath"
+    },
+    "g2\tbe": {
+      "braille": "⠆",
+      "back": "be"
+    },
+    "g2\tbecame": {
+      "braille": "⠆⠉⠁⠍⠑",
+      "back": "became"
+    },
+    "g2\tbed": {
+      "braille": "⠃⠫",
+      "back": "bed"
+    },
+    "g2\tbegin": {
+      "braille": "⠆⠛⠔",
+      "back": "begin"
+    },
+    "g2\tbelieve": {
+      "braille": "⠆⠇⠊⠑⠧⠑",
+      "back": "believe"
+    },
+    "g2\tbench": {
+      "braille": "⠃⠢⠡",
+      "back": "bench"
+    },
+    "g2\tbigger": {
+      "braille": "⠃⠊⠶⠻",
+      "back": "bigger"
+    },
+    "g2\tbread": {
+      "braille": "⠃⠗⠂⠙",
+      "back": "bread"
+    },
+    "g2\tbring": {
+      "braille": "⠃⠗⠬",
+      "back": "bring"
+    },
+    "g2\tbrother": {
+      "braille": "⠃⠗⠕⠮⠗",
+      "back": "brother"
+    },
+    "g2\tbrush": {
+      "braille": "⠃⠗⠥⠩",
+      "back": "brush"
+    },
+    "g2\tbubble": {
+      "braille": "⠃⠥⠆⠇⠑",
+      "back": "bubble"
+    },
+    "g2\tbut": {
+      "braille": "⠃",
+      "back": "but"
+    },
+    "g2\tcan": {
+      "braille": "⠉",
+      "back": "can"
+    },
+    "g2\tcandy": {
+      "braille": "⠉⠯⠽",
+      "back": "candy"
+    },
+    "g2\tcar": {
+      "braille": "⠉⠜",
+      "back": "car"
+    },
+    "g2\tcard": {
+      "braille": "⠉⠜⠙",
+      "back": "card"
+    },
+    "g2\tcash": {
+      "braille": "⠉⠁⠩",
+      "back": "cash"
+    },
+    "g2\tcenter": {
+      "braille": "⠉⠢⠞⠻",
+      "back": "center"
+    },
+    "g2\tchange": {
+      "braille": "⠡⠁⠝⠛⠑",
+      "back": "change"
+    },
+    "g2\tchat": {
+      "braille": "⠡⠁⠞",
+      "back": "chat"
+    },
+    "g2\tcheer": {
+      "braille": "⠡⠑⠻",
+      "back": "cheer"
+    },
+    "g2\tchild": {
+      "braille": "⠡",
+      "back": "child"
+    },
+    "g2\tchin": {
+      "braille": "⠡⠔",
+      "back": "chin"
+    },
+    "g2\tchip": {
+      "braille": "⠡⠊⠏",
+      "back": "chip"
+    },
+    "g2\tchop": {
+      "braille": "⠡⠕⠏",
+      "back": "chop"
+    },
+    "g2\tchurch": {
+      "braille": "⠡⠥⠗⠡",
+      "back": "church"
+    },
+    "g2\tclean": {
+      "braille": "⠉⠇⠂⠝",
+      "back": "clean"
+    },
+    "g2\tconcert": {
+      "braille": "⠒⠉⠻⠞",
+      "back": "concert"
+    },
+    "g2\tconnect": {
+      "braille": "⠒⠝⠑⠉⠞",
+      "back": "connect"
+    },
+    "g2\tcontain": {
+      "braille": "⠒⠞⠁⠔",
+      "back": "contain"
+    },
+    "g2\tcontest": {
+      "braille": "⠒⠞⠑⠌",
+      "back": "contest"
+    },
+    "g2\tcontrol": {
+      "braille": "⠒⠞⠗⠕⠇",
+      "back": "control"
+    },
+    "g2\tcow": {
+      "braille": "⠉⠪",
+      "back": "cow"
+    },
+    "g2\tdifferent": {
+      "braille": "⠙⠊⠖⠻⠢⠞",
+      "back": "different"
+    },
+    "g2\tdiscover": {
+      "braille": "⠲⠉⠕⠧⠻",
+      "back": "discover"
+    },
+    "g2\tdislike": {
+      "braille": "⠲⠇⠊⠅⠑",
+      "back": "dislike"
+    },
+    "g2\tdismiss": {
+      "braille": "⠲⠍⠊⠎⠎",
+      "back": "dismiss"
+    },
+    "g2\tdistant": {
+      "braille": "⠲⠞⠁⠝⠞",
+      "back": "distant"
+    },
+    "g2\tdo": {
+      "braille": "⠙",
+      "back": "do"
+    },
+    "g2\tdragged": {
+      "braille": "⠙⠗⠁⠶⠫",
+      "back": "dragged"
+    },
+    "g2\tdream": {
+      "braille": "⠙⠗⠂⠍",
+      "back": "dream"
+    },
+    "g2\teggs": {
+      "braille": "⠑⠶⠎",
+      "back": "eggs"
+    },
+    "g2\tenjoy": {
+      "braille": "⠢⠚⠕⠽",
+      "back": "enjoy"
+    },
+    "g2\tenough": {
+      "braille": "⠢",
+      "back": "enough"
+    },
+    "g2\tenter": {
+      "braille": "⠢⠞⠻",
+      "back": "enter"
+    },
+    "g2\tevery": {
+      "braille": "⠑",
+      "back": "every"
+    },
+    "g2\tfarm": {
+      "braille": "⠋⠜⠍",
+      "back": "farm"
+    },
+    "g2\tfast": {
+      "braille": "⠋⠁⠌",
+      "back": "fast"
+    },
+    "g2\tfind": {
+      "braille": "⠋⠔⠙",
+      "back": "find"
+    },
+    "g2\tfinish": {
+      "braille": "⠋⠔⠊⠩",
+      "back": "finish"
+    },
+    "g2\tfish": {
+      "braille": "⠋⠊⠩",
+      "back": "fish"
+    },
+    "g2\tfor": {
+      "braille": "⠿",
+      "back": "for"
+    },
+    "g2\tforest": {
+      "braille": "⠿⠑⠌",
+      "back": "forest"
+    },
+    "g2\tforget": {
+      "braille": "⠿⠛⠑⠞",
+      "back": "forget"
+    },
+    "g2\tform": {
+      "braille": "⠿⠍",
+      "back": "form"
+    },
+    "g2\tfrom": {
+      "braille": "⠋",
+      "back": "from"
+    },
+    "g2\tghost": {
+      "braille": "⠣⠕⠌",
+      "back": "ghost"
+    },
+    "g2\tgiggle": {
+      "braille": "⠛⠊⠶⠇⠑",
+      "back": "giggle"
+    },
+    "g2\tgiraffe": {
+      "braille": "⠛⠊⠗⠁⠖⠑",
+      "back": "giraffe"
+    },
+    "g2\tgo": {
+      "braille": "⠛",
+      "back": "go"
+    },
+    "g2\tgrow": {
+      "braille": "⠛⠗⠪",
+      "back": "grow"
+    },
+    "g2\thand": {
+      "braille": "⠓⠯",
+      "back": "hand"
+    },
+    "g2\thave": {
+      "braille": "⠓",
+      "back": "have"
+    },
+    "g2\thead": {
+      "braille": "⠓⠂⠙",
+      "back": "head"
+    },
+    "g2\ther": {
+      "braille": "⠓⠻",
+      "back": "her"
+    },
+    "g2\thigh": {
+      "braille": "⠓⠊⠣",
+      "back": "high"
+    },
+    "g2\this": {
+      "braille": "⠦",
+      "back": "his"
+    },
+    "g2\thobby": {
+      "braille": "⠓⠕⠆⠽",
+      "back": "hobby"
+    },
+    "g2\thouse": {
+      "braille": "⠓⠳⠎⠑",
+      "back": "house"
+    },
+    "g2\tin": {
+      "braille": "⠔",
+      "back": "in"
+    },
+    "g2\tinside": {
+      "braille": "⠔⠎⠊⠙⠑",
+      "back": "inside"
+    },
+    "g2\tinterest": {
+      "braille": "⠔⠞⠻⠑⠌",
+      "back": "interest"
+    },
+    "g2\tinto": {
+      "braille": "⠔⠞⠕",
+      "back": "into"
+    },
+    "g2\tit": {
+      "braille": "⠭",
+      "back": "it"
+    },
+    "g2\tjumped": {
+      "braille": "⠚⠥⠍⠏⠫",
+      "back": "jumped"
+    },
+    "g2\tjust": {
+      "braille": "⠚",
+      "back": "just"
+    },
+    "g2\tking": {
+      "braille": "⠅⠬",
+      "back": "king"
+    },
+    "g2\tknowledge": {
+      "braille": "⠅",
+      "back": "knowledge"
+    },
+    "g2\tleaf": {
+      "braille": "⠇⠂⠋",
+      "back": "leaf"
+    },
+    "g2\tlight": {
+      "braille": "⠇⠊⠣⠞",
+      "back": "light"
+    },
+    "g2\tlike": {
+      "braille": "⠇",
+      "back": "like"
+    },
+    "g2\tloud": {
+      "braille": "⠇⠳⠙",
+      "back": "loud"
+    },
+    "g2\tlunch": {
+      "braille": "⠇⠥⠝⠡",
+      "back": "lunch"
+    },
+    "g2\tmeat": {
+      "braille": "⠍⠂⠞",
+      "back": "meat"
+    },
+    "g2\tmore": {
+      "braille": "⠍",
+      "back": "more"
+    },
+    "g2\tnest": {
+      "braille": "⠝⠑⠌",
+      "back": "nest"
+    },
+    "g2\tnight": {
+      "braille": "⠝⠊⠣⠞",
+      "back": "night"
+    },
+    "g2\tnot": {
+      "braille": "⠝",
+      "back": "not"
+    },
+    "g2\toccur": {
+      "braille": "⠕⠒⠥⠗",
+      "back": "occur"
+    },
+    "g2\tof": {
+      "braille": "⠷",
+      "back": "of"
+    },
+    "g2\toff": {
+      "braille": "⠷⠋",
+      "back": "off"
+    },
+    "g2\toffer": {
+      "braille": "⠷⠋⠻",
+      "back": "offer"
+    },
+    "g2\toften": {
+      "braille": "⠷⠞⠢",
+      "back": "often"
+    },
+    "g2\topen": {
+      "braille": "⠕⠏⠢",
+      "back": "open"
+    },
+    "g2\tother": {
+      "braille": "⠕⠮⠗",
+      "back": "other"
+    },
+    "g2\tout": {
+      "braille": "⠳",
+      "back": "out"
+    },
+    "g2\tover": {
+      "braille": "⠕⠧⠻",
+      "back": "over"
+    },
+    "g2\town": {
+      "braille": "⠪⠝",
+      "back": "own"
+    },
+    "g2\tpaper": {
+      "braille": "⠏⠁⠏⠻",
+      "back": "paper"
+    },
+    "g2\tpark": {
+      "braille": "⠏⠜⠅",
+      "back": "park"
+    },
+    "g2\tpen": {
+      "braille": "⠏⠢",
+      "back": "pen"
+    },
+    "g2\tpeople": {
+      "braille": "⠏",
+      "back": "people"
+    },
+    "g2\tplayed": {
+      "braille": "⠏⠇⠁⠽⠫",
+      "back": "played"
+    },
+    "g2\tprint": {
+      "braille": "⠏⠗⠔⠞",
+      "back": "print"
+    },
+    "g2\tquite": {
+      "braille": "⠟",
+      "back": "quite"
+    },
+    "g2\trabbit": {
+      "braille": "⠗⠁⠆⠊⠞",
+      "back": "rabbit"
+    },
+    "g2\trather": {
+      "braille": "⠗",
+      "back": "rather"
+    },
+    "g2\treach": {
+      "braille": "⠗⠂⠡",
+      "back": "reach"
+    },
+    "g2\tread": {
+      "braille": "⠗⠂⠙",
+      "back": "read"
+    },
+    "g2\tred": {
+      "braille": "⠗⠫",
+      "back": "red"
+    },
+    "g2\tribbon": {
+      "braille": "⠗⠊⠆⠕⠝",
+      "back": "ribbon"
+    },
+    "g2\trich": {
+      "braille": "⠗⠊⠡",
+      "back": "rich"
+    },
+    "g2\trobber": {
+      "braille": "⠗⠕⠆⠻",
+      "back": "robber"
+    },
+    "g2\tsand": {
+      "braille": "⠎⠯",
+      "back": "sand"
+    },
+    "g2\tseven": {
+      "braille": "⠎⠑⠧⠢",
+      "back": "seven"
+    },
+    "g2\tshall": {
+      "braille": "⠩",
+      "back": "shall"
+    },
+    "g2\tshed": {
+      "braille": "⠩⠫",
+      "back": "shed"
+    },
+    "g2\tsheep": {
+      "braille": "⠩⠑⠑⠏",
+      "back": "sheep"
+    },
+    "g2\tship": {
+      "braille": "⠩⠊⠏",
+      "back": "ship"
+    },
+    "g2\tshop": {
+      "braille": "⠩⠕⠏",
+      "back": "shop"
+    },
+    "g2\tshout": {
+      "braille": "⠩⠳⠞",
+      "back": "shout"
+    },
+    "g2\tshow": {
+      "braille": "⠩⠪",
+      "back": "show"
+    },
+    "g2\tshower": {
+      "braille": "⠩⠪⠻",
+      "back": "shower"
+    },
+    "g2\tshowing": {
+      "braille": "⠩⠪⠬",
+      "back": "showing"
+    },
+    "g2\tsing": {
+      "braille": "⠎⠬",
+      "back": "sing"
+    },
+    "g2\tskin": {
+      "braille": "⠎⠅⠔",
+      "back": "skin"
+    },
+    "g2\tsnow": {
+      "braille": "⠎⠝⠪",
+      "back": "snow"
+    },
+    "g2\tso": {
+      "braille": "⠎",
+      "back": "so"
+    },
+    "g2\tsoccer": {
+      "braille": "⠎⠕⠒⠻",
+      "back": "soccer"
+    },
+    "g2\tspend": {
+      "braille": "⠎⠏⠢⠙",
+      "back": "spend"
+    },
+    "g2\tstand": {
+      "braille": "⠌⠯",
+      "back": "stand"
+    },
+    "g2\tstar": {
+      "braille": "⠌⠜",
+      "back": "star"
+    },
+    "g2\tstaring": {
+      "braille": "⠌⠜⠬",
+      "back": "staring"
+    },
+    "g2\tstart": {
+      "braille": "⠌⠜⠞",
+      "back": "start"
+    },
+    "g2\tstill": {
+      "braille": "⠌",
+      "back": "still"
+    },
+    "g2\tsting": {
+      "braille": "⠌⠬",
+      "back": "sting"
+    },
+    "g2\tstop": {
+      "braille": "⠌⠕⠏",
+      "back": "stop"
+    },
+    "g2\tstring": {
+      "braille": "⠌⠗⠬",
+      "back": "string"
+    },
+    "g2\tsuggest": {
+      "braille": "⠎⠥⠶⠑⠌",
+      "back": "suggest"
+    },
+    "g2\tteach": {
+      "braille": "⠞⠂⠡",
+      "back": "teach"
+    },
+    "g2\tteaching": {
+      "braille": "⠞⠂⠡⠬",
+      "back": "teaching"
+    },
+    "g2\ttent": {
+      "braille": "⠞⠢⠞",
+      "back": "tent"
+    },
+    "g2\tthan": {
+      "braille": "⠹⠁⠝",
+      "back": "than"
+    },
+    "g2\tthat": {
+      "braille": "⠞",
+      "back": "that"
+    },
+    "g2\tthe": {
+      "braille": "⠮",
+      "back": "the"
+    },
+    "g2\tthem": {
+      "braille": "⠮⠍",
+      "back": "them"
+    },
+    "g2\tthen": {
+      "braille": "⠮⠝",
+      "back": "then"
+    },
+    "g2\tthey": {
+      "braille": "⠮⠽",
+      "back": "they"
+    },
+    "g2\tthin": {
+      "braille": "⠹⠔",
+      "back": "thin"
+    },
+    "g2\tthing": {
+      "braille": "⠹⠬",
+      "back": "thing"
+    },
+    "g2\tthink": {
+      "braille": "⠹⠔⠅",
+      "back": "think"
+    },
+    "g2\tthinking": {
+      "braille": "⠹⠔⠅⠬",
+      "back": "thinking"
+    },
+    "g2\tthis": {
+      "braille": "⠹",
+      "back": "this"
+    },
+    "g2\tthousand": {
+      "braille": "⠹⠳⠎⠯",
+      "back": "thousand"
+    },
+    "g2\ttown": {
+      "braille": "⠞⠪⠝",
+      "back": "town"
+    },
+    "g2\tus": {
+      "braille": "⠥",
+      "back": "us"
+    },
+    "g2\tvery": {
+      "braille": "⠧",
+      "back": "very"
+    },
+    "g2\twas": {
+      "braille": "⠴",
+      "back": "was"
+    },
+    "g2\twater": {
+      "braille": "⠺⠁⠞⠻",
+      "back": "water"
+    },
+    "g2\tweather": {
+      "braille": "⠺⠂⠮⠗",
+      "back": "weather"
+    },
+    "g2\twent": {
+      "braille": "⠺⠢⠞",
+      "back": "went"
+    },
+    "g2\twere": {
+      "braille": "⠶",
+      "back": "were"
+    },
+    "g2\twhat": {
+      "braille": "⠱⠁⠞",
+      "back": "what"
+    },
+    "g2\twheat": {
+      "braille": "⠱⠂⠞",
+      "back": "wheat"
+    },
+    "g2\twhether": {
+      "braille": "⠱⠑⠮⠗",
+      "back": "whether"
+    },
+    "g2\twhich": {
+      "braille": "⠱",
+      "back": "which"
+    },
+    "g2\twhip": {
+      "braille": "⠱⠊⠏",
+      "back": "whip"
+    },
+    "g2\twhite": {
+      "braille": "⠱⠊⠞⠑",
+      "back": "white"
+    },
+    "g2\twhy": {
+      "braille": "⠱⠽",
+      "back": "why"
+    },
+    "g2\twill": {
+      "braille": "⠺",
+      "back": "will"
+    },
+    "g2\twind": {
+      "braille": "⠺⠔⠙",
+      "back": "wind"
+    },
+    "g2\twish": {
+      "braille": "⠺⠊⠩",
+      "back": "wish"
+    },
+    "g2\twished": {
+      "braille": "⠺⠊⠩⠫",
+      "back": "wished"
+    },
+    "g2\twith": {
+      "braille": "⠾",
+      "back": "with"
+    },
+    "g2\twithin": {
+      "braille": "⠾⠔",
+      "back": "within"
+    },
+    "g2\twithout": {
+      "braille": "⠾⠳⠞",
+      "back": "without"
+    },
+    "g2\twomen": {
+      "braille": "⠺⠕⠍⠢",
+      "back": "women"
+    },
+    "g2\tyou": {
+      "braille": "⠽",
+      "back": "you"
+    }
+  }
+}

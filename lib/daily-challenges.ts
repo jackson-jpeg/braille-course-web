@@ -45,6 +45,10 @@ const GAME_LABELS: Record<GameId, string> = {
   'sentence-decoder': 'Sentence Decoder',
   bingo: 'Braille Bingo',
   rain: 'Braille Rain',
+  'capital-quest': 'Capital Quest',
+  'number-lock': 'Number Lock',
+  'punctuation-detective': 'Punctuation Detective',
+  'brailler-challenge': 'Brailler Challenge',
 };
 
 /** Simple seeded pseudo-random number generator */

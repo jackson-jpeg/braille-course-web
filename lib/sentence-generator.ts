@@ -1,154 +1,88 @@
 /**
- * Generate sentences using Grade 2 braille contractions for the Sentence Decoder game.
+ * Turns the curated sentences of lib/sentence-bank.ts into braille tokens for the Sentence
+ * Decoder. Nothing is generated at random: every sentence the game can show is in the bank.
  *
- * Contractions in {braces} are rendered as single-cell contracted braille.
- * Everything else is spelled letter-by-letter.
- *
- * UEB rules: wordsigns and strong contractions used only as standalone words.
+ * - Uncontracted sentences: transcribeTokens() from lib/braille/transcribe.ts.
+ * - Contracted sentences: each word is built with contractedWord() from its listed pieces; a
+ *   capitalized word gets the capital indicator for one letter (ICEB 8.3.1) or, for a whole word in
+ *   capitals, the capitalized word indicator (8.4); punctuation comes from lib/braille/ueb.ts.
  */
+import { type Cell, type Sign, INDICATORS, PUNCTUATION } from '@/lib/braille/ueb';
+import { transcribeTokens } from '@/lib/braille/transcribe';
+import { contractedWord } from '@/lib/braille/contracted';
+import type { ContractedSentenceSpec } from './sentence-bank';
 
-import { contractedBrailleEntries, type ContractionEntry } from './contracted-braille-map';
-import { brailleMap } from './braille-map';
-import { frames, type SentenceFrame, type SlotRef, type Word } from './sentence-bank';
+export type DecoderTokenKind = 'letter' | 'digit' | 'indicator' | 'punctuation' | 'symbol' | 'space' | 'contraction';
 
-export interface SentenceData {
-  /** The plain English sentence */
-  plainText: string;
-  /** Array of tokens: each is a braille cell or space */
-  brailleTokens: BrailleToken[];
+export interface DecoderToken {
+  kind: DecoderTokenKind;
+  cells: Cell[];
+  /** Print this token stands for ("" for indicators). */
+  print: string;
 }
 
-export interface BrailleToken {
-  type: 'contraction' | 'letter' | 'space' | 'number-indicator';
-  value: string;
-  pattern: number[];
-  /** The English text this represents */
-  meaning: string;
+export interface DecoderSentence {
+  /** The print sentence (the answer). */
+  print: string;
+  table: 'g1' | 'g2';
+  tokens: DecoderToken[];
+  cells: Cell[];
 }
 
-// Build contraction lookup
-const contractionLookup = new Map<string, ContractionEntry>();
-for (const entry of contractedBrailleEntries) {
-  contractionLookup.set(entry.label.toLowerCase(), entry);
+export function uncontractedSentence(print: string): DecoderSentence {
+  const tokens: DecoderToken[] = transcribeTokens(print).map((t) => ({ kind: t.kind, cells: t.cells, print: t.print }));
+  return { print, table: 'g1', tokens, cells: tokens.flatMap((t) => t.cells) };
 }
 
-// ── Deduplication ──
+const PUNCT: Readonly<Record<string, Sign>> = {
+  '.': PUNCTUATION.period,
+  ',': PUNCTUATION.comma,
+  '?': PUNCTUATION.question,
+  '!': PUNCTUATION.exclamation,
+  '“': PUNCTUATION.openQuote,
+  '”': PUNCTUATION.closeQuote,
+  '(': PUNCTUATION.openParen,
+  ')': PUNCTUATION.closeParen,
+};
 
-const usedSentences = new Set<string>();
-
-/** Clear sentence history (call when starting a new game session) */
-export function resetSentenceHistory(): void {
-  usedSentences.clear();
+function punct(ch: string): DecoderToken {
+  const sign = PUNCT[ch];
+  if (!sign) throw new Error(`sentence-generator: no punctuation sign for "${ch}"`);
+  return { kind: 'punctuation', cells: [...sign.cells], print: ch };
 }
 
-// ── Frame-based generation ──
-
-function isSlotRef(slot: SlotRef | Word): slot is SlotRef {
-  return 'list' in slot;
+function pieceSpecs(spec: string): string[] {
+  const parts = spec.trim().split(/\s+/);
+  // Inside a longer word "be" and "in" are the lower groupsigns (ICEB 10.6); alone, the wordsigns (10.5).
+  return parts.map((p) => (parts.length > 1 && (p === 'be' || p === 'in') ? `${p}/lower-groupsign` : p));
 }
 
-function pickRandom<T>(arr: T[]): T {
-  return arr[Math.floor(Math.random() * arr.length)];
-}
-
-/** Generate a template string from a sentence frame */
-function generateFromFrame(frame: SentenceFrame): string {
-  const words: string[] = [];
-  for (const slot of frame.slots) {
-    let word: Word;
-    if (isSlotRef(slot)) {
-      const candidates = slot.filter ? slot.list.filter(slot.filter) : slot.list;
-      word = pickRandom(candidates);
-    } else {
-      word = slot;
-    }
-    const text = word.text === 'I' ? 'I' : word.text.toLowerCase();
-    words.push(word.contraction ? `{${text}}` : text);
+export function contractedSentence({ print, pieces }: ContractedSentenceSpec): DecoderSentence {
+  const chunks = print.split(' ');
+  const wordSpecs = pieces.split('|');
+  if (chunks.length !== wordSpecs.length) {
+    throw new Error(`sentence-generator: "${print}" has ${chunks.length} words but ${wordSpecs.length} piece lists`);
   }
-  // Capitalize first character (handle possible leading brace)
-  const result = words.join(' ');
-  return result.replace(/^(\{?)(\w)/, (_m, brace, ch) => brace + ch.toUpperCase());
-}
+  const tokens: DecoderToken[] = [];
+  chunks.forEach((chunk, i) => {
+    if (i > 0) tokens.push({ kind: 'space', cells: [[]], print: ' ' });
+    const m = chunk.match(/^([“(]*)([A-Za-z]+)([.,?!”)]*)$/);
+    if (!m) throw new Error(`sentence-generator: cannot split "${chunk}" in "${print}"`);
+    const [, lead, letters, trail] = m;
+    for (const ch of lead) tokens.push(punct(ch));
 
-/** Convert a sentence template to braille tokens */
-function templateToTokens(template: string): BrailleToken[] {
-  const tokens: BrailleToken[] = [];
-  const parts = template.split(' ');
-
-  for (let i = 0; i < parts.length; i++) {
-    if (i > 0) {
-      tokens.push({ type: 'space', value: ' ', pattern: [], meaning: ' ' });
+    const lower = letters.toLowerCase();
+    if (letters.length > 1 && letters === letters.toUpperCase()) {
+      tokens.push({ kind: 'indicator', cells: [...INDICATORS.capitalWord.cells], print: '' });
+    } else if (letters[0] !== lower[0]) {
+      if (letters.slice(1) !== lower.slice(1)) throw new Error(`sentence-generator: mixed capitals in "${chunk}"`);
+      tokens.push({ kind: 'indicator', cells: [...INDICATORS.capitalLetter.cells], print: '' });
     }
-
-    const part = parts[i];
-    // Check if this is a contraction marker
-    const match = part.match(/^\{(.+)\}$/);
-    if (match) {
-      const word = match[1].toLowerCase();
-      const entry = contractionLookup.get(word);
-      if (entry) {
-        tokens.push({
-          type: 'contraction',
-          value: entry.label,
-          pattern: entry.pattern,
-          meaning: word,
-        });
-        continue;
-      }
+    const w = contractedWord(lower, pieceSpecs(wordSpecs[i]));
+    for (const p of w.pieces) {
+      tokens.push({ kind: p.contraction ? 'contraction' : 'letter', cells: [...p.cells], print: p.print });
     }
-
-    // Regular word — spell out letter by letter
-    const cleanWord = part.replace(/[{}]/g, '');
-    for (let j = 0; j < cleanWord.length; j++) {
-      const ch = cleanWord[j].toUpperCase();
-      const pattern = brailleMap[ch] || [0, 0, 0, 0, 0, 0];
-      tokens.push({
-        type: 'letter',
-        value: ch,
-        pattern,
-        meaning: cleanWord[j],
-      });
-    }
-  }
-
-  return tokens;
-}
-
-/** Get a random sentence for the given difficulty */
-export function getRandomSentence(maxWords: number = 5): SentenceData {
-  // Filter frames by word count
-  const eligible = frames.filter((f) => f.wordCount <= maxWords);
-
-  if (eligible.length === 0) {
-    // Fallback: use the smallest frame
-    const fallback = frames.reduce((a, b) => (a.wordCount < b.wordCount ? a : b));
-    const template = generateFromFrame(fallback);
-    return {
-      plainText: template.replace(/[{}]/g, ''),
-      brailleTokens: templateToTokens(template),
-    };
-  }
-
-  // Try to generate a non-duplicate sentence (max 10 attempts)
-  for (let attempt = 0; attempt < 10; attempt++) {
-    const frame = pickRandom(eligible);
-    const template = generateFromFrame(frame);
-    const plain = template.replace(/[{}]/g, '');
-
-    if (!usedSentences.has(plain) || attempt === 9) {
-      usedSentences.add(plain);
-      return {
-        plainText: plain,
-        brailleTokens: templateToTokens(template),
-      };
-    }
-  }
-
-  // Unreachable, but TypeScript needs it
-  const frame = pickRandom(eligible);
-  const template = generateFromFrame(frame);
-  return {
-    plainText: template.replace(/[{}]/g, ''),
-    brailleTokens: templateToTokens(template),
-  };
+    for (const ch of trail) tokens.push(punct(ch));
+  });
+  return { print, table: 'g2', tokens, cells: tokens.flatMap((t) => t.cells) };
 }

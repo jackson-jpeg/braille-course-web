@@ -1,6 +1,9 @@
 import PptxGenJS from 'pptxgenjs';
 import PDFDocument from 'pdfkit';
-import { brailleMap, dotDescription } from '@/lib/braille-map';
+import { type Cell, ALL_DOTS, LETTER_CELLS, dotPosition } from '@/lib/braille/ueb';
+import { describeCell } from '@/lib/braille/prose';
+import { transcribeTokens } from '@/lib/braille/transcribe';
+import { parseDotSpec } from '@/lib/braille-validator';
 
 /* ── Interfaces ── */
 
@@ -95,45 +98,59 @@ export interface BrailleCellOptions {
   ghostDots?: boolean;
 }
 
+export interface BrailleCellGeometry {
+  width: number;
+  height: number;
+  dotRadius: number;
+  /** Every dot of the cell with its centre, relative to the cell's top-left corner. */
+  dots: { dot: (typeof ALL_DOTS)[number]; column: 1 | 2; row: 1 | 2 | 3; cx: number; cy: number }[];
+}
+
+/**
+ * Where each dot of a PDF braille cell is drawn. Column and row come from `dotPosition`
+ * (the left column top to bottom, then the right column), so the PDF matches every other
+ * renderer on the site.
+ */
+export function brailleCellGeometry(size: 'small' | 'medium' = 'small'): BrailleCellGeometry {
+  const dotRadius = size === 'medium' ? 3 : 2;
+  const dotSpacingX = size === 'medium' ? 12 : 8;
+  const dotSpacingY = size === 'medium' ? 12 : 8;
+  const padding = size === 'medium' ? 6 : 4;
+  return {
+    width: dotSpacingX + padding * 2,
+    height: dotSpacingY * 2 + padding * 2,
+    dotRadius,
+    dots: ALL_DOTS.map((dot) => {
+      const { column, row } = dotPosition(dot);
+      return { dot, column, row, cx: padding + (column - 1) * dotSpacingX, cy: padding + (row - 1) * dotSpacingY };
+    }),
+  };
+}
+
+/** Draw one braille cell (cells come from lib/braille). Returns the cell width. */
 export function drawBrailleCell(
   doc: PDFKit.PDFDocument,
-  pattern: number[],
+  cell: Cell,
   x: number,
   y: number,
   options: BrailleCellOptions = {},
 ) {
   const size = options.size || 'small';
-  const dotRadius = size === 'medium' ? 3 : 2;
-  const dotSpacingX = size === 'medium' ? 12 : 8;
-  const dotSpacingY = size === 'medium' ? 12 : 8;
-  const padding = size === 'medium' ? 6 : 4;
-  const cellW = dotSpacingX + padding * 2;
-  const cellH = dotSpacingY * 2 + padding * 2;
+  const g = brailleCellGeometry(size);
 
   // Rounded rectangle background
   doc.save();
-  doc.roundedRect(x, y, cellW, cellH, 3).strokeColor('#CCCCCC').lineWidth(0.5).stroke();
+  doc.roundedRect(x, y, g.width, g.height, 3).strokeColor('#CCCCCC').lineWidth(0.5).stroke();
 
-  // Dot positions: pattern is [d1, d4, d2, d5, d3, d6]
-  // Grid layout: col 0 = dots 1,2,3  col 1 = dots 4,5,6
-  const dotMap = [
-    { col: 0, row: 0, idx: 0 }, // dot 1
-    { col: 1, row: 0, idx: 1 }, // dot 4
-    { col: 0, row: 1, idx: 2 }, // dot 2
-    { col: 1, row: 1, idx: 3 }, // dot 5
-    { col: 0, row: 2, idx: 4 }, // dot 3
-    { col: 1, row: 2, idx: 5 }, // dot 6
-  ];
-
-  for (const dot of dotMap) {
-    const cx = x + padding + dot.col * dotSpacingX;
-    const cy = y + padding + dot.row * dotSpacingY;
-    if (pattern[dot.idx]) {
-      doc.circle(cx, cy, dotRadius).fillColor('#1B2A4A').fill();
+  for (const d of g.dots) {
+    const cx = x + d.cx;
+    const cy = y + d.cy;
+    if (cell.includes(d.dot)) {
+      doc.circle(cx, cy, g.dotRadius).fillColor('#1B2A4A').fill();
     } else if (options.ghostDots) {
-      doc.circle(cx, cy, dotRadius).fillColor('#E0E0E0').fill();
+      doc.circle(cx, cy, g.dotRadius).fillColor('#E0E0E0').fill();
     } else {
-      doc.circle(cx, cy, dotRadius).strokeColor('#DDDDDD').lineWidth(0.5).stroke();
+      doc.circle(cx, cy, g.dotRadius).strokeColor('#DDDDDD').lineWidth(0.5).stroke();
     }
   }
 
@@ -145,10 +162,40 @@ export function drawBrailleCell(
       .fontSize(size === 'medium' ? 9 : 7)
       .fillColor('#1B2A4A')
       .font('Helvetica-Bold')
-      .text(options.label, x, y + cellH + 2, { width: cellW, align: 'center' });
+      .text(options.label, x, y + g.height + 2, { width: g.width, align: 'center' });
   }
 
-  return cellW; // return width for positioning
+  return g.width; // return width for positioning
+}
+
+/**
+ * The cells to draw for a print word, in uncontracted UEB (capital and numeric indicators
+ * included), each with the print it stands for ("" for indicators). Spaces are null. Returns
+ * null when the text cannot be transcribed.
+ */
+export function brailleWordCells(word: string): ({ cell: Cell; print: string } | null)[] | null {
+  try {
+    return transcribeTokens(word).flatMap((t) =>
+      t.kind === 'space' ? [null] : t.cells.map((cell, i) => ({ cell, print: i === 0 ? t.print : '' })),
+    );
+  } catch {
+    return null;
+  }
+}
+
+/**
+ * Cells for a worksheet answer: a single letter is drawn as that letter's cell; a dot description
+ * ("dots N, N") as the cells it describes; anything else as its uncontracted UEB transcription.
+ */
+export function answerCells(answer: string): Cell[] | null {
+  const text = answer.trim();
+  if (/^[A-Za-z]$/.test(text)) return [LETTER_CELLS[text.toLowerCase()]];
+  if (/^dots?\b/i.test(text)) {
+    const cells = parseDotSpec(text);
+    return cells.length > 0 ? cells : null;
+  }
+  const cells = brailleWordCells(text);
+  return cells ? cells.map((c) => (c ? c.cell : [])) : null;
 }
 
 export function drawBrailleWord(
@@ -160,12 +207,14 @@ export function drawBrailleWord(
 ): number {
   let curX = x;
   const gap = options.size === 'medium' ? 4 : 3;
-  for (const char of word.toUpperCase()) {
-    const pattern = brailleMap[char];
-    if (pattern) {
-      const w = drawBrailleCell(doc, pattern, curX, y, { ...options, label: char });
-      curX += w + gap;
+  const cells = brailleWordCells(word) ?? [];
+  for (const c of cells) {
+    if (c === null) {
+      curX += brailleCellGeometry(options.size).width + gap;
+      continue;
     }
+    const w = drawBrailleCell(doc, c.cell, curX, y, { ...options, label: c.print || undefined });
+    curX += w + gap;
   }
   return curX - x; // total width
 }
@@ -366,15 +415,15 @@ export function generatePdfBuffer(
           const trimmed = term.trim();
           // If the term is a single letter A-Z, draw its braille cell inline
           if (trimmed.length === 1 && /^[A-Za-z]$/.test(trimmed)) {
-            const pattern = brailleMap[trimmed.toUpperCase()];
-            if (pattern) {
+            const cell = LETTER_CELLS[trimmed.toLowerCase()];
+            if (cell) {
               const textY = doc.y;
               doc
                 .fontSize(11)
                 .fillColor('#555555')
                 .font('Helvetica')
                 .text(trimmed.toUpperCase(), 70, textY, { continued: false });
-              drawBrailleCell(doc, pattern, 90, textY - 2, { size: 'small', label: dotDescription(trimmed) });
+              drawBrailleCell(doc, cell, 90, textY - 2, { size: 'small', label: describeCell(cell) });
               doc.y = textY + 22;
               doc.moveDown(0.15);
               continue;
@@ -507,19 +556,20 @@ export function generateWorksheetPdfBuffer(data: WorksheetResponse, title: strin
           doc.text(`${itemCounter}. ${item.prompt}`);
           doc.moveDown(0.15);
 
-          // Draw ghost dot cells for student to fill in
-          const answerText = item.answer.trim().toUpperCase();
-          const letters = answerText.replace(/[^A-Z]/g, '');
-          if (letters.length > 0 && letters.length <= 10) {
+          // Draw one empty cell per braille cell of the answer (uncontracted UEB, so capitals
+          // and numbers get their indicator cells) for the student to fill in.
+          const cells = answerCells(item.answer);
+          if (cells && cells.length > 0 && cells.length <= 12) {
             const startX = 80;
             let curX = startX;
-            for (const ch of letters) {
-              const pattern = brailleMap[ch];
-              if (pattern) {
-                const emptyPattern = [0, 0, 0, 0, 0, 0];
-                const w = drawBrailleCell(doc, emptyPattern, curX, doc.y, { size: 'medium', ghostDots: true });
-                curX += w + 6;
+            const cellW = brailleCellGeometry('medium').width;
+            for (const cell of cells) {
+              if (cell.length === 0) {
+                curX += cellW + 6; // a space between words
+                continue;
               }
+              const w = drawBrailleCell(doc, [], curX, doc.y, { size: 'medium', ghostDots: true });
+              curX += w + 6;
             }
             doc.y = doc.y + 38; // move past the cells
           } else {
@@ -572,10 +622,12 @@ export function generateWorksheetPdfBuffer(data: WorksheetResponse, title: strin
 
         // Draw braille cell next to answer for braille-specific sections
         if (isBrailleSection) {
-          const answerText = item.answer.trim().toUpperCase();
-          // If answer is a single letter, draw its cell
-          if (answerText.length === 1 && brailleMap[answerText]) {
-            drawBrailleCell(doc, brailleMap[answerText], doc.x + 200, doc.y - 12, { size: 'small' });
+          // Draw the answer's cells (a letter, a number with its numeric indicator, or the
+          // dots the answer describes), when it is short enough to fit.
+          const cells = answerCells(item.answer);
+          if (cells && cells.length > 0 && cells.length <= 6) {
+            let curX = doc.x + 200;
+            for (const cell of cells) curX += drawBrailleCell(doc, cell, curX, doc.y - 12, { size: 'small' }) + 3;
           }
         }
 

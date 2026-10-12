@@ -165,7 +165,6 @@ export default function BrailleNumberSense() {
               <span className="numsense-answer-blank" aria-hidden="true" />
             </div>
 
-
             {/* Answer choices */}
             <div className="numsense-choices" role="group" aria-label="Answer choices">
               {choices.map((choice, i) => {

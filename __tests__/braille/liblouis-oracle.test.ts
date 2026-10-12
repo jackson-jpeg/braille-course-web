@@ -41,10 +41,14 @@ describe('liblouis oracle', () => {
       const louis = translations[key];
       const d = discrepancyByKey.get(key);
       if (d) {
-        if (louis !== d.liblouis || site !== d.site) mismatches.push(`${item.where}: discrepancy entry is stale for ${JSON.stringify(item.print)}`);
+        if (louis !== d.liblouis || site !== d.site)
+          mismatches.push(`${item.where}: discrepancy entry is stale for ${JSON.stringify(item.print)}`);
         continue;
       }
-      if (site !== louis) mismatches.push(`${item.where}: ${item.table} ${JSON.stringify(item.print)}\n  site:     ${site}\n  liblouis: ${louis}`);
+      if (site !== louis)
+        mismatches.push(
+          `${item.where}: ${item.table} ${JSON.stringify(item.print)}\n  site:     ${site}\n  liblouis: ${louis}`,
+        );
     }
     expect(mismatches).toEqual([]);
   });
