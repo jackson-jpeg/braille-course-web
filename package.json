@@ -3,7 +3,7 @@
   "private": true,
   "scripts": {
     "dev": "next dev",
-    "build": "prisma generate && next build",
+    "build": "npm run test:accuracy && prisma generate && next build",
     "start": "next start",
     "postinstall": "prisma generate",
     "db:push": "prisma db push",
@@ -14,9 +14,10 @@
     "format:check": "prettier --check .",
     "test": "jest",
     "test:watch": "jest --watch",
-    "test:braille": "jest --ci __tests__/braille __tests__/games",
     "braille:oracle": "tsx scripts/braille/dump-site-braille.ts | python3 scripts/braille/liblouis-oracle.py",
-    "braille:rulebook": "python3 scripts/braille/extract-rulebook-signs.py && python3 scripts/braille/verify-rulebook-examples.py"
+    "braille:rulebook": "python3 scripts/braille/extract-rulebook-signs.py && python3 scripts/braille/verify-rulebook-examples.py",
+    "test:accuracy": "jest --ci",
+    "braille:geometry": "node scripts/braille/check-rendered-cells.mjs"
   },
   "dependencies": {
     "@anthropic-ai/sdk": "^0.73.0",
