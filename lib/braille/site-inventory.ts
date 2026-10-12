@@ -3,6 +3,8 @@
  * lesson and game module. See lib/braille/inventory.ts.
  */
 import { type InventoryItem, g1Item } from './inventory';
+import { brailleInventory as numberSenseInventory } from '../games/number-sense';
+import { brailleInventory as courseInventory } from '../course-curriculum';
 import { brailleInventory as wordgameInventory } from '../games/wordgame';
 import { brailleInventory as hangmanInventory } from '../games/hangman';
 import { brailleInventory as speedmatchInventory } from '../games/speedmatch';
@@ -72,6 +74,8 @@ export function verificationInventory(): InventoryItem[] {
 const SOURCES: (() => InventoryItem[])[] = [
   baseInventory,
   verificationInventory,
+  numberSenseInventory,
+  courseInventory,
   wordgameInventory,
   hangmanInventory,
   speedmatchInventory,

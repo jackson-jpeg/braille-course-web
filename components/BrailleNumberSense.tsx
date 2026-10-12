@@ -1,54 +1,31 @@
 'use client';
 
 import { useState, useEffect, useCallback, useRef } from 'react';
-import { nemethDigits, nemethOperators, nemethEquals, nemethNumericIndicator } from '@/lib/nemeth-map';
-import { generateProblem, generateChoices, type MathProblem } from '@/lib/math-problems';
+import {
+  type MathProblem,
+  OPERATOR_SIGNS,
+  choicesFor,
+  isCorrect as isCorrectAnswer,
+  randomProblem,
+} from '@/lib/games/number-sense';
+import BrailleText from '@/components/BrailleText';
 import { useGameProgress } from '@/hooks/useGameProgress';
 import { pushAchievements } from '@/components/AchievementToast';
 import { getRandomTip } from '@/lib/learning-tips';
-import { getDifficultyParams } from '@/lib/difficulty-settings';
 import DifficultySelector from '@/components/DifficultySelector';
 
-function BrailleCell({ pattern }: { pattern: number[] }) {
-  return (
-    <div className="numsense-cell" aria-hidden="true">
-      {pattern.map((v, i) => (
-        <span key={i} className={`numsense-dot ${v ? 'filled' : 'empty'}`} />
-      ))}
-    </div>
-  );
-}
+const OPERATOR_WORDS = { '+': 'plus', '−': 'minus', '×': 'times' } as const;
 
-/** Render a number in Nemeth braille: numeric indicator + digit cells */
-function BrailleNumber({ num }: { num: number }) {
-  const digits = String(num).split('');
+/** A number or problem in UEB braille, drawn with the shared cell styles of this game. */
+function BrailleMath({ text, label }: { text: string; label: string }) {
   return (
-    <div className="numsense-braille-number" aria-label={`Braille number ${num}`}>
-      <BrailleCell pattern={nemethNumericIndicator} />
-      {digits.map((d, i) => (
-        <BrailleCell key={i} pattern={nemethDigits[d] || [0, 0, 0, 0, 0, 0]} />
-      ))}
-    </div>
-  );
-}
-
-/** Render operator as a Nemeth braille cell */
-function BrailleOperator({ op }: { op: string }) {
-  const pattern = nemethOperators[op] || [0, 0, 0, 0, 0, 0];
-  return (
-    <div className="numsense-operator-cell" aria-label={op}>
-      <BrailleCell pattern={pattern} />
-    </div>
-  );
-}
-
-/** Render Nemeth equals sign (two cells, each dots 4,6) */
-function BrailleEquals() {
-  return (
-    <div className="numsense-operator-cell" aria-label="equals">
-      <BrailleCell pattern={nemethEquals} />
-      <BrailleCell pattern={nemethEquals} />
-    </div>
+    <BrailleText
+      text={text}
+      label={label}
+      className="numsense-braille-number"
+      cellClassName="numsense-cell"
+      dotClassName="numsense-dot"
+    />
   );
 }
 
@@ -85,20 +62,14 @@ export default function BrailleNumberSense() {
     return () => observer.disconnect();
   }, []);
 
-  const params = getDifficultyParams('number-sense', difficulty) as {
-    maxNumber: number;
-    operations: string[];
-  };
-
   const nextRound = useCallback(() => {
-    const p = generateProblem(params.maxNumber, params.operations);
-    const c = generateChoices(p.answer, 3);
+    const p = randomProblem(difficulty);
     setProblem(p);
-    setChoices(c);
+    setChoices(choicesFor(p));
     setSelected(null);
     setIsCorrect(null);
     setLocked(false);
-  }, [params.maxNumber, params.operations]);
+  }, [difficulty]);
 
   const startGame = useCallback(() => {
     setScore(0);
@@ -117,7 +88,7 @@ export default function BrailleNumberSense() {
       if (locked || !problem) return;
       setLocked(true);
       setSelected(choice);
-      const correct = choice === problem.answer;
+      const correct = isCorrectAnswer(problem, choice);
       setIsCorrect(correct);
 
       if (correct) setScore((s) => s + 1);
@@ -169,7 +140,7 @@ export default function BrailleNumberSense() {
         <span className="section-label">Numbers</span>
         <h2>Number Sense</h2>
         <p>
-          Solve math in braille <span className="numsense-badge">Nemeth Code</span>{' '}
+          Solve math written in braille <span className="numsense-badge">UEB math signs</span>{' '}
           <span className="numsense-kbd-hint">Keys 1–4 to answer</span>
         </p>
         <DifficultySelector gameId="number-sense" current={difficulty} onChange={setDifficulty} />
@@ -185,14 +156,15 @@ export default function BrailleNumberSense() {
               <span>Score: {score}</span>
             </div>
 
-            {/* Problem display in Nemeth braille */}
-            <div className="numsense-problem" aria-live="polite" aria-label={problem.display}>
-              <BrailleNumber num={problem.operands[0]} />
-              <BrailleOperator op={problem.operator} />
-              <BrailleNumber num={problem.operands[1]} />
-              <BrailleEquals />
+            {/* Problem display in UEB braille (numeric indicator + a–j, UEB plus/minus/times/equals) */}
+            <div className="numsense-problem" aria-live="polite">
+              <BrailleMath
+                text={problem.print}
+                label={`${problem.a} ${OPERATOR_WORDS[problem.operator]} ${problem.b} equals what? The ${OPERATOR_SIGNS[problem.operator].name} and equals sign are each two cells.`}
+              />
               <span className="numsense-answer-blank" aria-hidden="true" />
             </div>
+
 
             {/* Answer choices */}
             <div className="numsense-choices" role="group" aria-label="Answer choices">
@@ -211,7 +183,7 @@ export default function BrailleNumberSense() {
                     aria-label={`Choice ${i + 1}: ${choice}`}
                   >
                     <span className="numsense-choice-number">{i + 1}</span>
-                    <BrailleNumber num={choice} />
+                    <BrailleMath text={String(choice)} label={`${choice} in braille`} />
                     <span className="numsense-choice-value">{choice}</span>
                   </button>
                 );

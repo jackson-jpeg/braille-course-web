@@ -18494,3 +18494,145 @@ details.faq-item.reveal:nth-child(6) {
     height: 48px;
   }
 }
+
+/* ===================================================================
+   Braille text runs (components/BrailleText.tsx), lesson examples,
+   multi-cell writing drill
+   =================================================================== */
+.braille-text {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: flex-start;
+  gap: 10px 6px;
+}
+.braille-text-token {
+  display: inline-flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+  padding: 4px;
+  border-radius: var(--radius-sm);
+}
+.braille-text-token--space {
+  min-width: 18px;
+}
+.braille-text-token--indicator {
+  background: var(--gold-soft);
+}
+.braille-text-token--highlight {
+  outline: 2px solid var(--gold);
+  outline-offset: 2px;
+  background: var(--gold-soft);
+}
+.braille-text-cells {
+  display: inline-flex;
+  gap: 6px;
+}
+.braille-text-cell {
+  display: grid;
+  grid-template-columns: repeat(2, 12px);
+  grid-auto-rows: 12px;
+  gap: 4px;
+}
+.braille-text-dot {
+  width: 12px;
+  height: 12px;
+  border-radius: 50%;
+}
+.braille-text-dot.filled {
+  background: var(--navy);
+  box-shadow: inset 0 -1px 2px rgba(0, 0, 0, 0.25);
+}
+.braille-text-dot.empty {
+  border: 1.5px solid rgba(27, 42, 74, 0.14);
+}
+.braille-text-caption {
+  font-size: 0.68rem;
+  color: var(--gold-text);
+  font-weight: 600;
+  text-align: center;
+  max-width: 72px;
+  line-height: 1.2;
+}
+.braille-text-token--space .braille-text-caption {
+  color: rgba(27, 42, 74, 0.35);
+}
+
+.lesson-char-cells {
+  display: inline-flex;
+  gap: 10px;
+}
+
+.lesson-examples {
+  margin-top: 36px;
+}
+.lesson-examples-heading {
+  font-size: 1.25rem;
+  margin-bottom: 6px;
+}
+.lesson-example-list {
+  list-style: none;
+  margin: 16px 0 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+.lesson-example {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  padding: 16px 18px;
+  background: #fff;
+  border: 1px solid rgba(212, 168, 83, 0.15);
+  border-radius: var(--radius-md);
+}
+.lesson-example-print {
+  font-family: var(--font-heading), 'DM Serif Display', serif;
+  font-size: 1.2rem;
+  color: var(--text-primary);
+}
+.lesson-example-braille .lesson-char-cell {
+  grid-template-columns: repeat(2, 14px);
+  grid-auto-rows: 14px;
+  gap: 5px;
+}
+.lesson-example-braille .lesson-char-dot {
+  width: 14px;
+  height: 14px;
+}
+.lesson-example-note {
+  font-size: 0.85rem;
+  color: var(--text-secondary);
+  line-height: 1.5;
+}
+
+.brailler-prompt-progress {
+  margin-left: auto;
+  font-size: 0.78rem;
+  color: var(--text-secondary);
+  font-weight: 600;
+}
+.brailler-written {
+  display: flex;
+  justify-content: center;
+  gap: 10px;
+  margin-bottom: 14px;
+  min-height: 74px;
+}
+.brailler-written-slot {
+  display: grid;
+  place-items: center;
+  padding: 6px;
+  border-radius: var(--radius-sm);
+  border: 1.5px dashed rgba(27, 42, 74, 0.14);
+  min-width: 56px;
+}
+.brailler-written-slot.current {
+  border-color: var(--gold);
+  box-shadow: 0 0 0 3px var(--gold-glow);
+}
+.brailler-written-empty {
+  width: 42px;
+  height: 66px;
+}

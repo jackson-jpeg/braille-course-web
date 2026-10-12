@@ -10,8 +10,10 @@
 import {
   type Cell,
   type Dot,
+  ALL_DOTS,
   ALPHABET,
   CONTRACTIONS,
+  dotPosition,
   DIGIT_LETTER,
   LETTER_CELLS,
   cellsToUnicode,
@@ -142,6 +144,8 @@ export function renderProse(template: string): string {
       }
       case 'fact':
         return renderFact(arg);
+      case 'lowered':
+        return loweredLetter(arg);
       default:
         throw new Error(`prose: unknown token {${kind}:${arg}}`);
     }
@@ -159,12 +163,39 @@ function renderFact(name: string): string {
         ? `dots ${FACTS.thirdDecadeAdds[0]} and ${FACTS.thirdDecadeAdds[1]}`
         : describeCell(FACTS.thirdDecadeAdds);
     case 'firstDecadeMirrors':
-      return FACTS.firstDecadeMirrors.map(([a, b]) => `${a.toUpperCase()} and ${b.toUpperCase()}`).join(', ');
+      return FACTS.firstDecadeMirrors.map(([a, b]) => `${a} and ${b}`).join(', ');
+    case 'leftColumn':
+    case 'rightColumn': {
+      const col = name === 'leftColumn' ? 1 : 2;
+      const dots = ALL_DOTS.filter((d) => dotPosition(d).column === col);
+      return `dots ${dots.slice(0, -1).join(', ')} and ${dots[dots.length - 1]}`;
+    }
+    case 'topRow': {
+      const dots = ALL_DOTS.filter((d) => dotPosition(d).row === 1);
+      return `dots ${dots.join(' and ')}`;
+    }
     case 'wAddsToJ':
       return describeCell(toCell(difference(LETTER_CELLS.w, LETTER_CELLS.j)));
     default:
       throw new Error(`prose: unknown fact "${name}"`);
   }
+}
+
+/**
+ * The letter from a–j whose shape, moved down one row, is this one-cell sign (e.g. the period is
+ * a lowered d). Throws when there is none, so a template cannot make the claim falsely.
+ */
+export function loweredLetter(signId: string): string {
+  const cells = signCells(signId);
+  if (cells.length !== 1) throw new Error(`prose: ${signId} is not one cell`);
+  const target = cells[0];
+  for (const l of firstDecade) {
+    const cell = LETTER_CELLS[l];
+    if (cell.some((d) => d === 3 || d === 6)) continue;
+    const lowered = toCell(cell.map((d) => (d + 1) as Dot));
+    if (sameCell(lowered, target)) return l;
+  }
+  throw new Error(`prose: ${signId} is not a lowered letter a–j`);
 }
 
 /** Screen-reader label for a cell: "dots 1, 2, 5" (or a name first when known). */

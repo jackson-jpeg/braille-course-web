@@ -1,38 +1,24 @@
 /**
- * Accuracy suite for the free braille course.
+ * Accuracy suite for the free braille course (lib/course-curriculum.ts).
  *
- * The course promises "100% accurate" braille. These tests encode the real
- * structural facts of Unified English Braille (UEB) *independently* of the app's
- * data maps, then assert the curriculum agrees with them. If any lesson ever
- * drifts from correct braille — or from the canonical maps the rest of the site
- * uses — this suite fails.
+ * Every cell a lesson teaches must equal the canonical data (which is itself checked against the
+ * ICEB rulebook, Unicode and liblouis in __tests__/braille/), every sentence must be fully
+ * rendered from templates, and the structural claims the lessons make must hold for the data.
+ * The liblouis oracle test separately checks every example and print drill item cell by cell.
  */
-import { brailleMap, dotDescription } from '@/lib/braille-map';
-import { contractedBrailleEntries } from '@/lib/contracted-braille-map';
 import {
-  COURSE_MODULES,
   ALL_LESSONS,
+  BATH,
+  COURSE_MODULES,
   LESSON_SLUGS,
   TOTAL_LESSONS,
-  describeDots,
-  getLessonBySlug,
   getAdjacentLessons,
+  getLessonBySlug,
 } from '@/lib/course-curriculum';
+import { CONTRACTIONS, INDICATORS, LETTER_CELLS, PUNCTUATION, cellsKey, dotPosition, type Cell } from '@/lib/braille/ueb';
+import { transcribe } from '@/lib/braille/transcribe';
+import oracle from '../fixtures/liblouis-oracle.json';
 import type { GameId } from '@/lib/progress-types';
-
-/** Grid order is [d1, d4, d2, d5, d3, d6]; convert to a set of dot numbers. */
-const GRID_TO_DOT = [1, 4, 2, 5, 3, 6];
-function dotsOf(pattern: number[]): Set<number> {
-  const s = new Set<number>();
-  pattern.forEach((v, i) => {
-    if (v) s.add(GRID_TO_DOT[i]);
-  });
-  return s;
-}
-function setsEqual(a: Set<number>, b: Set<number>): boolean {
-  return a.size === b.size && [...a].every((x) => b.has(x));
-}
-const patternKey = (p: number[]) => p.join(',');
 
 const VALID_GAME_IDS: GameId[] = [
   'wordgame',
@@ -49,136 +35,129 @@ const VALID_GAME_IDS: GameId[] = [
   'rain',
 ];
 
-describe('UEB structural facts (independent ground truth)', () => {
-  it('A–J use only the top four dots (1, 2, 4, 5)', () => {
-    for (const ch of 'ABCDEFGHIJ') {
-      const dots = dotsOf(brailleMap[ch]);
-      [...dots].forEach((d) => expect([1, 2, 4, 5]).toContain(d));
-    }
-  });
+const allText = (l: (typeof ALL_LESSONS)[number]) => [
+  l.title,
+  l.summary,
+  ...l.intro,
+  l.tip ?? '',
+  ...l.chars.map((c) => c.note ?? ''),
+  ...(l.examples ?? []).flatMap((e) => [e.print, e.note ?? '']),
+];
 
-  it('K–T are exactly A–J with dot 3 added', () => {
-    const firstTen = 'ABCDEFGHIJ'.split('');
-    const secondTen = 'KLMNOPQRST'.split('');
-    firstTen.forEach((base, i) => {
-      const expected = new Set(dotsOf(brailleMap[base]));
-      expected.add(3);
-      expect(setsEqual(dotsOf(brailleMap[secondTen[i]]), expected)).toBe(true);
-    });
-  });
-
-  it('U, V, X, Y, Z are A, B, C, D, E with dots 3 and 6 added', () => {
-    const pairs: [string, string][] = [
-      ['U', 'A'],
-      ['V', 'B'],
-      ['X', 'C'],
-      ['Y', 'D'],
-      ['Z', 'E'],
-    ];
-    for (const [letter, base] of pairs) {
-      const expected = new Set(dotsOf(brailleMap[base]));
-      expected.add(3);
-      expected.add(6);
-      expect(setsEqual(dotsOf(brailleMap[letter]), expected)).toBe(true);
-    }
-  });
-
-  it('W is the exception — dots 2, 4, 5, 6 (does not follow the U–Z pattern)', () => {
-    expect(setsEqual(dotsOf(brailleMap.W), new Set([2, 4, 5, 6]))).toBe(true);
-    // If W followed the sequence it would be J + {3,6}; confirm it does not.
-    const asIfSequenced = new Set(dotsOf(brailleMap.J));
-    asIfSequenced.add(3);
-    asIfSequenced.add(6);
-    expect(setsEqual(dotsOf(brailleMap.W), asIfSequenced)).toBe(false);
-  });
-
-  it('digits 1–9 and 0 reuse the shapes of A–I and J', () => {
-    const digits = ['1', '2', '3', '4', '5', '6', '7', '8', '9', '0'];
-    const letters = 'ABCDEFGHIJ'.split('');
-    digits.forEach((d, i) => {
-      expect(patternKey(brailleMap[d])).toBe(patternKey(brailleMap[letters[i]]));
-    });
-  });
-
-  it('the number sign is dots 3, 4, 5, 6 and the capital sign is dot 6', () => {
-    expect(setsEqual(dotsOf(brailleMap['#']), new Set([3, 4, 5, 6]))).toBe(true);
-    expect(setsEqual(dotsOf(brailleMap['^']), new Set([6]))).toBe(true);
-  });
-});
-
-describe('describeDots matches the canonical dotDescription', () => {
-  it('agrees with lib/braille-map for every letter A–Z', () => {
-    for (const ch of 'ABCDEFGHIJKLMNOPQRSTUVWXYZ') {
-      expect(describeDots(brailleMap[ch])).toBe(dotDescription(ch));
-    }
-  });
-});
-
-describe('every character taught is drawn from the canonical maps', () => {
-  const canonicalPatterns = new Set<string>([
-    ...Object.values(brailleMap).map(patternKey),
-    ...contractedBrailleEntries.map((e) => patternKey(e.pattern)),
-  ]);
-
-  it('has no lesson character with a hand-invented pattern', () => {
-    for (const lesson of ALL_LESSONS) {
-      for (const c of lesson.chars) {
-        expect(c.pattern).toHaveLength(6);
-        c.pattern.forEach((v) => expect(v === 0 || v === 1).toBe(true));
-        expect(canonicalPatterns.has(patternKey(c.pattern))).toBe(true);
-      }
-    }
-  });
-});
-
-describe('Grade 2 lessons match the canonical contraction map exactly', () => {
-  const byLabel = new Map<string, number[]>();
-  for (const e of contractedBrailleEntries) {
-    byLabel.set(e.label, e.pattern);
-    byLabel.set(e.label.split(' ')[0], e.pattern);
-  }
-
-  it('each contraction taught equals its canonical pattern', () => {
-    const grade2 = COURSE_MODULES.find((m) => m.id === 'grade2');
-    expect(grade2).toBeDefined();
-    for (const lesson of grade2!.lessons) {
-      for (const c of lesson.chars) {
-        const canonical = byLabel.get(c.print);
-        expect(canonical).toBeDefined();
-        expect(patternKey(c.pattern)).toBe(patternKey(canonical!));
-      }
-    }
-  });
-});
-
-describe('curriculum integrity', () => {
-  it('loads without throwing and has lessons', () => {
-    expect(TOTAL_LESSONS).toBeGreaterThan(0);
-    expect(ALL_LESSONS).toHaveLength(TOTAL_LESSONS);
-  });
-
-  it('has unique, URL-safe lesson slugs', () => {
+describe('course structure', () => {
+  test('slugs are unique and every lesson is reachable', () => {
     expect(new Set(LESSON_SLUGS).size).toBe(LESSON_SLUGS.length);
-    for (const slug of LESSON_SLUGS) {
-      expect(slug).toMatch(/^[a-z0-9-]+$/);
-    }
+    expect(TOTAL_LESSONS).toBe(ALL_LESSONS.length);
+    for (const slug of LESSON_SLUGS) expect(getLessonBySlug(slug)?.slug).toBe(slug);
   });
 
-  it('references only real games and real modules', () => {
-    for (const lesson of ALL_LESSONS) {
-      if (lesson.practiceGameId) {
-        expect(VALID_GAME_IDS).toContain(lesson.practiceGameId);
+  test('every lesson belongs to its module and links a real practice game', () => {
+    for (const m of COURSE_MODULES)
+      for (const l of m.lessons) {
+        expect(l.moduleId).toBe(m.id);
+        if (l.practiceGameId) expect(VALID_GAME_IDS).toContain(l.practiceGameId);
       }
-      expect(COURSE_MODULES.some((m) => m.id === lesson.moduleId)).toBe(true);
+  });
+
+  test('prev/next navigation runs through the lessons in order', () => {
+    expect(getAdjacentLessons(LESSON_SLUGS[0]).prev).toBeNull();
+    expect(getAdjacentLessons(LESSON_SLUGS[LESSON_SLUGS.length - 1]).next).toBeNull();
+    for (let i = 1; i < LESSON_SLUGS.length; i++) expect(getAdjacentLessons(LESSON_SLUGS[i]).prev?.slug).toBe(LESSON_SLUGS[i - 1]);
+  });
+
+  test('capitals, numbers and punctuation come after the alphabet and before contractions, in a logical order', () => {
+    const order = [
+      'reading-words',
+      'capitals',
+      'capital-words',
+      'numbers',
+      'numbers-in-text',
+      'punctuation',
+      'punctuation-more',
+      'alphabet-wordsigns',
+    ];
+    const idx = order.map((s) => LESSON_SLUGS.indexOf(s));
+    expect(idx.every((i) => i >= 0)).toBe(true);
+    expect([...idx].sort((a, b) => a - b)).toEqual(idx);
+  });
+});
+
+describe('every taught cell comes from the canonical data', () => {
+  test.each(ALL_LESSONS.flatMap((l) => l.chars.map((c) => [l.slug, c.print, c] as const)))('%s: %s', (_slug, _print, c) => {
+    expect(c.cells.length).toBeGreaterThan(0);
+    expect(c.cellNames).toHaveLength(c.cells.length);
+    switch (c.source) {
+      case 'letter':
+        expect(c.cells).toEqual([LETTER_CELLS[c.print]]);
+        expect(c.print).toBe(c.print.toLowerCase()); // a plain letter cell is a lowercase letter (ICEB 4.1)
+        break;
+      case 'print':
+        expect(cellsKey(c.cells)).toBe(cellsKey(transcribe(c.print)));
+        break;
+      case 'sign': {
+        const sign = [...Object.values(INDICATORS), ...Object.values(PUNCTUATION)].find((s) => s.name === c.print);
+        expect(sign).toBeDefined();
+        expect(c.cells).toEqual(sign!.cells);
+        break;
+      }
+      case 'contraction': {
+        const found = CONTRACTIONS.find((x) => x.text === c.print && x.kind === c.contractionKind);
+        expect(found).toBeDefined();
+        expect(c.cells).toEqual(found!.cells);
+        break;
+      }
     }
   });
 
-  it('links lessons into a consistent prev/next chain', () => {
-    ALL_LESSONS.forEach((lesson, i) => {
-      const { prev, next } = getAdjacentLessons(lesson.slug);
-      expect(prev?.slug ?? null).toBe(i > 0 ? ALL_LESSONS[i - 1].slug : null);
-      expect(next?.slug ?? null).toBe(i < ALL_LESSONS.length - 1 ? ALL_LESSONS[i + 1].slug : null);
-      expect(getLessonBySlug(lesson.slug)).toBe(lesson);
-    });
+  test('digits are taught with their numeric indicator, never as a bare letter cell', () => {
+    for (const l of ALL_LESSONS)
+      for (const c of l.chars)
+        if (/^[0-9]/.test(c.print)) expect(c.cells[0]).toEqual(INDICATORS.numeric.cells[0]);
+  });
+
+  test('capital letters are taught with the capital letter indicator', () => {
+    for (const l of ALL_LESSONS)
+      for (const c of l.chars)
+        if (/^[A-Z]$/.test(c.print)) expect(c.cells).toEqual([INDICATORS.capitalLetter.cells[0], LETTER_CELLS[c.print.toLowerCase()]]);
+  });
+});
+
+describe('every sentence is rendered from data, and the claims are true', () => {
+  test('no template token is left unrendered', () => {
+    for (const l of ALL_LESSONS) for (const t of allText(l)) expect(t).not.toMatch(/\{\w+:[^}]*\}/);
+  });
+
+  const cellWith = (pred: (d: 1 | 2 | 3 | 4 | 5 | 6) => boolean): Cell =>
+    ([1, 2, 3, 4, 5, 6] as const).filter(pred);
+
+  test('“c is the whole top row” and “l is the whole left column”', () => {
+    expect(LETTER_CELLS.c).toEqual(cellWith((d) => dotPosition(d).row === 1));
+    expect(LETTER_CELLS.l).toEqual(cellWith((d) => dotPosition(d).column === 1));
+  });
+
+  test('“lower groupsigns never use the top row”', () => {
+    for (const c of CONTRACTIONS.filter((x) => x.kind === 'lower-groupsign'))
+      expect(c.cells[0].some((d) => dotPosition(d).row === 1)).toBe(false);
+  });
+
+  test('“bath is b, a, then the th groupsign” matches contracted UEB (liblouis g2)', () => {
+    expect(BATH.cells.length).toBe(3);
+    const louis = (oracle.translations as Record<string, string>)['g2\tbath'];
+    expect(louis).toBe(BATH.cells.map((c) => String.fromCharCode(0x2800 + c.reduce((a, d) => a | (1 << (d - 1)), 0))).join(''));
+  });
+
+  test('no lesson says “this” is spelled with the th groupsign plus i and s (it is one cell standing alone)', () => {
+    for (const l of ALL_LESSONS) for (const t of allText(l)) expect(t).not.toMatch(/“this” uses the “th” groupsign/);
+  });
+
+  test('the uncontracted convention is stated in the course (trap 5)', () => {
+    const text = ALL_LESSONS.flatMap(allText).join(' ');
+    expect(text).toContain('A single letter on its own');
+    expect(text).toContain('uncontracted');
+  });
+
+  test('UEB terminology: numeric indicator, not “number sign”; no EBAE “letter sign”', () => {
+    const text = ALL_LESSONS.flatMap(allText).join(' ');
+    expect(text).not.toMatch(/number sign|letter sign|Nemeth/i);
   });
 });
