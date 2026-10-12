@@ -1,0 +1,3757 @@
+{
+ "source": {
+  "title": "Rules of Unified English Braille",
+  "edition": "Third Edition 2024",
+  "url": "https://iceb.org/wp-content/uploads/2025/10/Rules-of-Unified-English-Braille-2024.pdf",
+  "sha256": "bf742499ee2eb3cbdf4914d97bbf0b2857bd3e91621f04a4990091b64e5a105e"
+ },
+ "headings": [
+  {
+   "section": "1.1",
+   "title": "Definition of braille",
+   "braille": []
+  },
+  {
+   "section": "1.2",
+   "title": "Principles of Unified English Braille",
+   "braille": []
+  },
+  {
+   "section": "1.3",
+   "title": "Basic signs found in other forms of English braille",
+   "braille": []
+  },
+  {
+   "section": "2.1",
+   "title": "Terminology",
+   "braille": []
+  },
+  {
+   "section": "2.2",
+   "title": "Contractions summary",
+   "braille": []
+  },
+  {
+   "section": "2.3",
+   "title": "Following print",
+   "braille": []
+  },
+  {
+   "section": "2.4",
+   "title": "Indicators and modes",
+   "braille": []
+  },
+  {
+   "section": "2.5",
+   "title": "Grades of braille",
+   "braille": []
+  },
+  {
+   "section": "2.6",
+   "title": "Standing alone",
+   "braille": []
+  },
+  {
+   "section": "3.1",
+   "title": "Ampersand",
+   "braille": [
+    "⠈⠯"
+   ]
+  },
+  {
+   "section": "3.2",
+   "title": "Arrows",
+   "braille": [
+    "⠳",
+    "⠳⠕",
+    "⠳⠩",
+    "⠳⠪",
+    "⠳⠬"
+   ]
+  },
+  {
+   "section": "3.3",
+   "title": "Asterisk dagger and double dagger",
+   "braille": [
+    "⠐⠔",
+    "⠈⠠⠹",
+    "⠈⠠⠻"
+   ]
+  },
+  {
+   "section": "3.4",
+   "title": "Braille grouping indicators",
+   "braille": [
+    "⠣",
+    "⠜"
+   ]
+  },
+  {
+   "section": "3.5",
+   "title": "Bullet",
+   "braille": [
+    "⠸⠲"
+   ]
+  },
+  {
+   "section": "3.6",
+   "title": "Caret",
+   "braille": [
+    "⠈⠢"
+   ]
+  },
+  {
+   "section": "3.7",
+   "title": "Commercial at sign",
+   "braille": [
+    "⠈⠁"
+   ]
+  },
+  {
+   "section": "3.8",
+   "title": "Copyright registered and trademark signs",
+   "braille": [
+    "⠘⠉",
+    "⠘⠗",
+    "⠘⠞"
+   ]
+  },
+  {
+   "section": "3.9",
+   "title": "Crosses",
+   "braille": [
+    "⠈⠠⠹",
+    "⠰⠭",
+    "⠰⠠⠭",
+    "⠐⠦"
+   ]
+  },
+  {
+   "section": "3.10",
+   "title": "Currency signs",
+   "braille": [
+    "⠈⠉",
+    "⠈⠑",
+    "⠈⠋",
+    "⠈⠇",
+    "⠈⠝",
+    "⠈⠎",
+    "⠈⠽"
+   ]
+  },
+  {
+   "section": "3.11",
+   "title": "Degrees minutes and seconds",
+   "braille": [
+    "⠘⠚",
+    "⠶",
+    "⠄",
+    "⠶⠶",
+    "⠠⠶"
+   ]
+  },
+  {
+   "section": "3.12",
+   "title": "Ditto mark",
+   "braille": [
+    "⠐⠂"
+   ]
+  },
+  {
+   "section": "3.13",
+   "title": "Dot locator for \"mention\"",
+   "braille": [
+    "⠨⠿"
+   ]
+  },
+  {
+   "section": "3.14",
+   "title": "Dot locator for \"use\"",
+   "braille": [
+    "⠐⠐⠿"
+   ]
+  },
+  {
+   "section": "3.15",
+   "title": "Feet and inches",
+   "braille": [
+    "⠶",
+    "⠄",
+    "⠶⠶",
+    "⠠⠶"
+   ]
+  },
+  {
+   "section": "3.16",
+   "title": "Female (Venus) and male (Mars) signs",
+   "braille": [
+    "⠘⠭",
+    "⠘⠽"
+   ]
+  },
+  {
+   "section": "3.17",
+   "title": "Mathematical signs: plus equals",
+   "braille": [
+    "⠐⠖",
+    "⠐⠶"
+   ]
+  },
+  {
+   "section": "3.18",
+   "title": "Music accidentals: natural flat sharp",
+   "braille": [
+    "⠼⠡",
+    "⠼⠣",
+    "⠼⠩"
+   ]
+  },
+  {
+   "section": "3.19",
+   "title": "Number sign (crosshatch, hash, pound sign)",
+   "braille": [
+    "⠸⠹"
+   ]
+  },
+  {
+   "section": "3.20",
+   "title": "Paragraph and section signs",
+   "braille": [
+    "⠘⠏",
+    "⠘⠎"
+   ]
+  },
+  {
+   "section": "3.21",
+   "title": "Percent sign",
+   "braille": [
+    "⠨⠴"
+   ]
+  },
+  {
+   "section": "3.22",
+   "title": "Shapes",
+   "braille": [
+    "⠫"
+   ]
+  },
+  {
+   "section": "3.23",
+   "title": "Space",
+   "braille": []
+  },
+  {
+   "section": "3.24",
+   "title": "Subscript and superscript indicators",
+   "braille": [
+    "⠢",
+    "⠔"
+   ]
+  },
+  {
+   "section": "3.25",
+   "title": "Tilde (swung dash)",
+   "braille": [
+    "⠈⠔"
+   ]
+  },
+  {
+   "section": "3.26",
+   "title": "Transcriber-defined symbols",
+   "braille": [
+    "⠹",
+    "⠼⠹",
+    "⠈⠼⠹",
+    "⠘⠼⠹"
+   ]
+  },
+  {
+   "section": "3.27",
+   "title": "Transcriber's note indicators",
+   "braille": [
+    "⠈⠨⠣",
+    "⠈⠨⠜"
+   ]
+  },
+  {
+   "section": "3.28",
+   "title": "Check mark, tick",
+   "braille": [
+    "⠈⠩"
+   ]
+  },
+  {
+   "section": "4.1",
+   "title": "English alphabet",
+   "braille": []
+  },
+  {
+   "section": "4.2",
+   "title": "Modifiers",
+   "braille": []
+  },
+  {
+   "section": "4.3",
+   "title": "Ligatured letters",
+   "braille": []
+  },
+  {
+   "section": "4.4",
+   "title": "Eng and schwa",
+   "braille": []
+  },
+  {
+   "section": "4.5",
+   "title": "Greek letters",
+   "braille": []
+  },
+  {
+   "section": "4.6",
+   "title": "German letter sharp s (eszett)",
+   "braille": []
+  },
+  {
+   "section": "5.1",
+   "title": "Mode indicators",
+   "braille": []
+  },
+  {
+   "section": "5.2",
+   "title": "Grade 1 symbol indicator",
+   "braille": [
+    "⠰"
+   ]
+  },
+  {
+   "section": "5.3",
+   "title": "Grade 1 word indicator",
+   "braille": [
+    "⠰⠰"
+   ]
+  },
+  {
+   "section": "5.4",
+   "title": "Grade 1 passage indicator",
+   "braille": [
+    "⠰⠰⠰"
+   ]
+  },
+  {
+   "section": "5.5",
+   "title": "Grade 1 terminator",
+   "braille": [
+    "⠰⠄"
+   ]
+  },
+  {
+   "section": "5.6",
+   "title": "Numeric indicator",
+   "braille": [
+    "⠼"
+   ]
+  },
+  {
+   "section": "5.7",
+   "title": "Grade 1 mode avoids confusion with contractions",
+   "braille": []
+  },
+  {
+   "section": "5.8",
+   "title": "Grade 1 indicators and capitalisation",
+   "braille": []
+  },
+  {
+   "section": "5.9",
+   "title": "Choice of indicators",
+   "braille": []
+  },
+  {
+   "section": "5.10",
+   "title": "Optional use of the grade 1 indicator",
+   "braille": []
+  },
+  {
+   "section": "5.11",
+   "title": "Use of grade 1 indicators in grade 1 text",
+   "braille": []
+  },
+  {
+   "section": "6.1",
+   "title": "Numeric indicators",
+   "braille": [
+    "⠼⠁",
+    "⠼⠃",
+    "⠼⠉",
+    "⠼⠙",
+    "⠼⠑",
+    "⠼⠋",
+    "⠼⠛"
+   ]
+  },
+  {
+   "section": "6.2",
+   "title": "Numeric mode symbols",
+   "braille": []
+  },
+  {
+   "section": "6.3",
+   "title": "Termination of numeric mode",
+   "braille": []
+  },
+  {
+   "section": "6.4",
+   "title": "Placement of numeric prefix with full stop (period)",
+   "braille": []
+  },
+  {
+   "section": "6.5",
+   "title": "Numeric indicators set grade 1 mode",
+   "braille": []
+  },
+  {
+   "section": "6.6",
+   "title": "The numeric space",
+   "braille": [
+    "⠐⠁",
+    "⠐⠃",
+    "⠐⠉",
+    "⠐⠙",
+    "⠐⠑",
+    "⠐⠋",
+    "⠐⠛"
+   ]
+  },
+  {
+   "section": "6.7",
+   "title": "Treatment of dates, time, coinage, etc.",
+   "braille": []
+  },
+  {
+   "section": "6.8",
+   "title": "Spaced numeric indicator",
+   "braille": [
+    "⠼"
+   ]
+  },
+  {
+   "section": "6.9",
+   "title": "Numeric passage indicator and numeric",
+   "braille": [
+    "⠼⠼"
+   ]
+  },
+  {
+   "section": "6.10",
+   "title": "Division of a number between lines",
+   "braille": []
+  },
+  {
+   "section": "7.1",
+   "title": "General",
+   "braille": []
+  },
+  {
+   "section": "7.2",
+   "title": "Dash low line (underscore) long dash",
+   "braille": [
+    "⠠⠤",
+    "⠨⠤",
+    "⠐⠠⠤"
+   ]
+  },
+  {
+   "section": "7.3",
+   "title": "Ellipsis",
+   "braille": [
+    "⠲⠲⠲"
+   ]
+  },
+  {
+   "section": "7.4",
+   "title": "Solidus (forward slash)",
+   "braille": [
+    "⠸⠌"
+   ]
+  },
+  {
+   "section": "7.5",
+   "title": "Question mark",
+   "braille": [
+    "⠦"
+   ]
+  },
+  {
+   "section": "7.6",
+   "title": "Quotation marks, apostrophe",
+   "braille": []
+  },
+  {
+   "section": "7.7",
+   "title": "Multi-line brackets",
+   "braille": [
+    "⠠⠐⠣",
+    "⠠⠐⠜",
+    "⠠⠨⠣",
+    "⠠⠨⠜"
+   ]
+  },
+  {
+   "section": "8.1",
+   "title": "Use of capitals",
+   "braille": []
+  },
+  {
+   "section": "8.2",
+   "title": "Extent of capitals mode",
+   "braille": []
+  },
+  {
+   "section": "8.3",
+   "title": "Defining a capital letter",
+   "braille": []
+  },
+  {
+   "section": "8.4",
+   "title": "Capitalised word indicator",
+   "braille": [
+    "⠠⠠"
+   ]
+  },
+  {
+   "section": "8.5",
+   "title": "Capitalised passage indicator",
+   "braille": [
+    "⠠⠠⠠"
+   ]
+  },
+  {
+   "section": "8.6",
+   "title": "Capitals terminator",
+   "braille": [
+    "⠠⠄"
+   ]
+  },
+  {
+   "section": "8.7",
+   "title": "Placement of indicators",
+   "braille": []
+  },
+  {
+   "section": "8.8",
+   "title": "Choice of capitalised indicators",
+   "braille": []
+  },
+  {
+   "section": "8.9",
+   "title": "Accented letters in fully capitalised words",
+   "braille": []
+  },
+  {
+   "section": "9.1",
+   "title": "Deciding when to use typeform indicators",
+   "braille": []
+  },
+  {
+   "section": "9.2",
+   "title": "Typeform symbol indicators",
+   "braille": [
+    "⠨⠆",
+    "⠘⠆",
+    "⠸⠆",
+    "⠈⠆",
+    "⠈⠼⠆"
+   ]
+  },
+  {
+   "section": "9.3",
+   "title": "Typeform word indicators",
+   "braille": [
+    "⠨⠂",
+    "⠘⠂",
+    "⠸⠂",
+    "⠈⠂",
+    "⠈⠼⠂"
+   ]
+  },
+  {
+   "section": "9.4",
+   "title": "Typeform passage indicators and terminators",
+   "braille": []
+  },
+  {
+   "section": "9.5",
+   "title": "Transcriber-defined typeform indicators",
+   "braille": [
+    "⠈⠼⠆",
+    "⠈⠼⠂"
+   ]
+  },
+  {
+   "section": "9.6",
+   "title": "Small capitals",
+   "braille": []
+  },
+  {
+   "section": "9.7",
+   "title": "Placement of typeform symbols with punctuation",
+   "braille": []
+  },
+  {
+   "section": "9.8",
+   "title": "Multiple typeform indicators for the same text",
+   "braille": []
+  },
+  {
+   "section": "9.9",
+   "title": "Typeform passages extending across consecutive",
+   "braille": []
+  },
+  {
+   "section": "10.1",
+   "title": "Alphabetic wordsigns",
+   "braille": []
+  },
+  {
+   "section": "10.2",
+   "title": "Strong wordsigns",
+   "braille": []
+  },
+  {
+   "section": "10.3",
+   "title": "Strong contractions",
+   "braille": []
+  },
+  {
+   "section": "10.4",
+   "title": "Strong groupsigns",
+   "braille": []
+  },
+  {
+   "section": "10.5",
+   "title": "Lower wordsigns",
+   "braille": []
+  },
+  {
+   "section": "10.6",
+   "title": "Lower groupsigns",
+   "braille": []
+  },
+  {
+   "section": "10.7",
+   "title": "Initial-letter contractions",
+   "braille": []
+  },
+  {
+   "section": "10.8",
+   "title": "Final-letter groupsigns",
+   "braille": []
+  },
+  {
+   "section": "10.9",
+   "title": "Shortforms",
+   "braille": []
+  },
+  {
+   "section": "11.1",
+   "title": "Introduction",
+   "braille": []
+  },
+  {
+   "section": "11.2",
+   "title": "Signs of operation and comparison",
+   "braille": []
+  },
+  {
+   "section": "11.3",
+   "title": "Fractions",
+   "braille": []
+  },
+  {
+   "section": "11.4",
+   "title": "Superscripts and subscripts",
+   "braille": []
+  },
+  {
+   "section": "11.5",
+   "title": "Square roots and other radicals",
+   "braille": []
+  },
+  {
+   "section": "11.6",
+   "title": "Arrows",
+   "braille": []
+  },
+  {
+   "section": "11.7",
+   "title": "Shape symbols",
+   "braille": []
+  },
+  {
+   "section": "11.8",
+   "title": "Matrices and vectors",
+   "braille": []
+  },
+  {
+   "section": "11.9",
+   "title": "Chemistry",
+   "braille": []
+  },
+  {
+   "section": "12.1",
+   "title": "Follow the provisions of Sections 4.2 and 4.3, Letters and Their",
+   "braille": []
+  },
+  {
+   "section": "12.2",
+   "title": "Use uncontracted braille for Old English, that is, English written",
+   "braille": []
+  },
+  {
+   "section": "12.3",
+   "title": "In Middle English (c. 1100 to c. 1450) the use of contractions is",
+   "braille": []
+  },
+  {
+   "section": "12.4",
+   "title": "Use contracted braille for Early Modern English (c. 1450 to c. 1650)",
+   "braille": []
+  },
+  {
+   "section": "13.1",
+   "title": "Determining what is foreign",
+   "braille": []
+  },
+  {
+   "section": "13.2",
+   "title": "Using UEB contractions",
+   "braille": []
+  },
+  {
+   "section": "13.3",
+   "title": "Guidelines for contracting anglicised words derived",
+   "braille": []
+  },
+  {
+   "section": "13.4",
+   "title": "Representing accented letters",
+   "braille": []
+  },
+  {
+   "section": "13.5",
+   "title": "Using UEB signs",
+   "braille": []
+  },
+  {
+   "section": "13.6",
+   "title": "Using foreign code signs",
+   "braille": []
+  },
+  {
+   "section": "13.7",
+   "title": "Code switch indicators",
+   "braille": []
+  },
+  {
+   "section": "13.8",
+   "title": "Mixed-language literature",
+   "braille": []
+  },
+  {
+   "section": "14.1",
+   "title": "Purpose of code switching",
+   "braille": []
+  },
+  {
+   "section": "14.2",
+   "title": "When to use code switching indicators",
+   "braille": []
+  },
+  {
+   "section": "14.3",
+   "title": "How to use code switching indicators",
+   "braille": []
+  },
+  {
+   "section": "14.4",
+   "title": "IPA Braille within UEB text",
+   "braille": []
+  },
+  {
+   "section": "14.5",
+   "title": "Music braille within UEB text",
+   "braille": []
+  },
+  {
+   "section": "14.6",
+   "title": "Nemeth Code within UEB text",
+   "braille": []
+  },
+  {
+   "section": "15.1",
+   "title": "Scansion, Line Marking",
+   "braille": []
+  },
+  {
+   "section": "15.2",
+   "title": "Stress",
+   "braille": []
+  },
+  {
+   "section": "15.3",
+   "title": "Tone",
+   "braille": []
+  },
+  {
+   "section": "15.4",
+   "title": "Phonetic scansion, stress and tone",
+   "braille": []
+  },
+  {
+   "section": "16.1",
+   "title": "When to use line mode",
+   "braille": []
+  },
+  {
+   "section": "16.2",
+   "title": "Horizontal line mode",
+   "braille": []
+  },
+  {
+   "section": "16.3",
+   "title": "Diagonal and vertical lines",
+   "braille": []
+  },
+  {
+   "section": "16.4",
+   "title": "Combining lines",
+   "braille": []
+  },
+  {
+   "section": "16.5",
+   "title": "Guide dots",
+   "braille": []
+  }
+ ],
+ "entries": [
+  {
+   "section": "3",
+   "braille": "⠣",
+   "text": "opening braille grouping indicator (see 3.4)",
+   "see": "3.4"
+  },
+  {
+   "section": "3",
+   "braille": "⠹",
+   "text": "first transcriber-defined print symbol (see 3.26)",
+   "see": "3.26"
+  },
+  {
+   "section": "3",
+   "braille": "⠫",
+   "text": "shape indicator (see 3.22)",
+   "see": "3.22"
+  },
+  {
+   "section": "3",
+   "braille": "⠳",
+   "text": "arrow indicator (see 3.2)",
+   "see": "3.2"
+  },
+  {
+   "section": "3",
+   "braille": "⠳⠕",
+   "text": "simple right pointing arrow (east) (see 3.2)",
+   "print": "→",
+   "see": "3.2"
+  },
+  {
+   "section": "3",
+   "braille": "⠳⠩",
+   "text": "simple down pointing arrow (south) (see 3.2)",
+   "print": "↓",
+   "see": "3.2"
+  },
+  {
+   "section": "3",
+   "braille": "⠳⠪",
+   "text": "simple left pointing arrow (west) (see 3.2)",
+   "print": "←",
+   "see": "3.2"
+  },
+  {
+   "section": "3",
+   "braille": "⠳⠬",
+   "text": "simple up pointing arrow (north) (see 3.2)",
+   "print": "↑",
+   "see": "3.2"
+  },
+  {
+   "section": "3",
+   "braille": "⠒",
+   "text": "ratio (see 3.17)",
+   "print": "∶",
+   "see": "3.17"
+  },
+  {
+   "section": "3",
+   "braille": "⠒⠒",
+   "text": "proportion (see 3.17)",
+   "print": "∷",
+   "see": "3.17"
+  },
+  {
+   "section": "3",
+   "braille": "⠢",
+   "text": "subscript indicator (see 3.24)",
+   "see": "3.24"
+  },
+  {
+   "section": "3",
+   "braille": "⠶",
+   "text": "prime (see 3.11 and 3.15)",
+   "print": "′",
+   "see": "3.11"
+  },
+  {
+   "section": "3",
+   "braille": "⠶⠶",
+   "text": "double prime (see 3.11 and 3.15)",
+   "print": "″",
+   "see": "3.11"
+  },
+  {
+   "section": "3",
+   "braille": "⠔",
+   "text": "superscript indicator (see 3.24)",
+   "see": "3.24"
+  },
+  {
+   "section": "3",
+   "braille": "⠼⠡",
+   "text": "natural (see 3.18)",
+   "print": "♮",
+   "see": "3.18"
+  },
+  {
+   "section": "3",
+   "braille": "⠼⠣",
+   "text": "flat (see 3.18)",
+   "print": "♭",
+   "see": "3.18"
+  },
+  {
+   "section": "3",
+   "braille": "⠼⠩",
+   "text": "sharp (see 3.18)",
+   "print": "♯",
+   "see": "3.18"
+  },
+  {
+   "section": "3",
+   "braille": "⠼⠹",
+   "text": "second transcriber-defined print symbol"
+  },
+  {
+   "section": "3",
+   "braille": "⠜",
+   "text": "closing braille grouping indicator (see 3.4)",
+   "see": "3.4"
+  },
+  {
+   "section": "3",
+   "braille": "⠈⠁",
+   "text": "commercial at sign (see 3.7)",
+   "print": "@",
+   "see": "3.7"
+  },
+  {
+   "section": "3",
+   "braille": "⠈⠉",
+   "text": "cent sign (see 3.10)",
+   "print": "¢",
+   "see": "3.10"
+  },
+  {
+   "section": "3",
+   "braille": "⠈⠑",
+   "text": "euro sign (see 3.10)",
+   "print": "€",
+   "see": "3.10"
+  },
+  {
+   "section": "3",
+   "braille": "⠈⠋",
+   "text": "French franc sign (see 3.10)",
+   "print": "₣",
+   "see": "3.10"
+  },
+  {
+   "section": "3",
+   "braille": "⠈⠇",
+   "text": "pound sign (pound sterling) (see 3.10)",
+   "print": "£",
+   "see": "3.10"
+  },
+  {
+   "section": "3",
+   "braille": "⠈⠝",
+   "text": "naira sign (see 3.10)",
+   "print": "₦",
+   "see": "3.10"
+  },
+  {
+   "section": "3",
+   "braille": "⠈⠎",
+   "text": "dollar sign (see 3.10)",
+   "print": "$",
+   "see": "3.10"
+  },
+  {
+   "section": "3",
+   "braille": "⠈⠽",
+   "text": "yen sign (yuan sign) (see 3.10)",
+   "print": "¥",
+   "see": "3.10"
+  },
+  {
+   "section": "3",
+   "braille": "⠈⠯",
+   "text": "ampersand (see 3.1)",
+   "print": "&",
+   "see": "3.1"
+  },
+  {
+   "section": "3",
+   "braille": "⠈⠣",
+   "text": "less-than sign (see 3.17)",
+   "print": "<",
+   "see": "3.17"
+  },
+  {
+   "section": "3",
+   "braille": "⠈⠩",
+   "text": "checkmark, tick (see 3.28)",
+   "print": "✓",
+   "see": "3.28"
+  },
+  {
+   "section": "3",
+   "braille": "⠈⠢",
+   "text": "caret (see 3.6)",
+   "print": "^",
+   "see": "3.6"
+  },
+  {
+   "section": "3",
+   "braille": "⠈⠔",
+   "text": "tilde (swung dash) (see 3.25)",
+   "print": "~",
+   "see": "3.25"
+  },
+  {
+   "section": "3",
+   "braille": "⠈⠼⠹",
+   "text": "third transcriber-defined print symbol (see 3.26)",
+   "see": "3.26"
+  },
+  {
+   "section": "3",
+   "braille": "⠈⠜",
+   "text": "greater-than sign (see 3.17)",
+   "print": ">",
+   "see": "3.17"
+  },
+  {
+   "section": "3",
+   "braille": "⠈⠨⠣",
+   "text": "opening transcriber's note indicator (see 3.27)",
+   "see": "3.27"
+  },
+  {
+   "section": "3",
+   "braille": "⠈⠨⠜",
+   "text": "closing transcriber's note indicator (see 3.27)",
+   "see": "3.27"
+  },
+  {
+   "section": "3",
+   "braille": "⠈⠠⠹",
+   "text": "dagger (see 3.3)",
+   "print": "†",
+   "see": "3.3"
+  },
+  {
+   "section": "3",
+   "braille": "⠈⠠⠻",
+   "text": "double dagger (see 3.3)",
+   "print": "‡",
+   "see": "3.3"
+  },
+  {
+   "section": "3",
+   "braille": "⠘⠉",
+   "text": "copyright sign (see 3.8)",
+   "print": "©",
+   "see": "3.8"
+  },
+  {
+   "section": "3",
+   "braille": "⠘⠚",
+   "text": "degree sign (see 3.11)",
+   "print": "°",
+   "see": "3.11"
+  },
+  {
+   "section": "3",
+   "braille": "⠘⠏",
+   "text": "paragraph sign (see 3.20)",
+   "print": "¶",
+   "see": "3.20"
+  },
+  {
+   "section": "3",
+   "braille": "⠘⠗",
+   "text": "registered sign (see 3.8)",
+   "print": "®",
+   "see": "3.8"
+  },
+  {
+   "section": "3",
+   "braille": "⠘⠎",
+   "text": "section sign (see 3.20)",
+   "print": "§",
+   "see": "3.20"
+  },
+  {
+   "section": "3",
+   "braille": "⠘⠞",
+   "text": "trademark sign (see 3.8)",
+   "print": "™",
+   "see": "3.8"
+  },
+  {
+   "section": "3",
+   "braille": "⠘⠭",
+   "text": "female sign (Venus) (see 3.16)",
+   "print": "♀",
+   "see": "3.16"
+  },
+  {
+   "section": "3",
+   "braille": "⠘⠽",
+   "text": "male sign (Mars) (see 3.16)",
+   "print": "♂",
+   "see": "3.16"
+  },
+  {
+   "section": "3",
+   "braille": "⠘⠼⠹",
+   "text": "fourth transcriber-defined print symbol (see 3.26)",
+   "see": "3.26"
+  },
+  {
+   "section": "3",
+   "braille": "⠸⠹",
+   "text": "number sign (crosshatch, hash, pound sign)",
+   "print": "#"
+  },
+  {
+   "section": "3",
+   "braille": "⠸⠲",
+   "text": "bullet (see 3.5)",
+   "print": "•",
+   "see": "3.5"
+  },
+  {
+   "section": "3",
+   "braille": "⠸⠼⠹",
+   "text": "fifth transcriber-defined print symbol (see 3.26)",
+   "see": "3.26"
+  },
+  {
+   "section": "3",
+   "braille": "⠐⠂",
+   "text": "ditto mark (see 3.12)",
+   "print": "〃",
+   "see": "3.12"
+  },
+  {
+   "section": "3",
+   "braille": "⠐⠖",
+   "text": "plus sign (see 3.17)",
+   "print": "+",
+   "see": "3.17"
+  },
+  {
+   "section": "3",
+   "braille": "⠐⠶",
+   "text": "equals sign (see 3.17)",
+   "print": "=",
+   "see": "3.17"
+  },
+  {
+   "section": "3",
+   "braille": "⠐⠦",
+   "text": "multiplication sign (see 3.17)",
+   "print": "×",
+   "see": "3.17"
+  },
+  {
+   "section": "3",
+   "braille": "⠐⠔",
+   "text": "asterisk (star) (see 3.3)",
+   "print": "*",
+   "see": "3.3"
+  },
+  {
+   "section": "3",
+   "braille": "⠐⠌",
+   "text": "division sign (see 3.17)",
+   "print": "÷",
+   "see": "3.17"
+  },
+  {
+   "section": "3",
+   "braille": "⠐⠼⠹",
+   "text": "sixth transcriber-defined print symbol (see 3.26)",
+   "see": "3.26"
+  },
+  {
+   "section": "3",
+   "braille": "⠐⠤",
+   "text": "minus sign (see 3.17)",
+   "print": "−",
+   "see": "3.17"
+  },
+  {
+   "section": "3",
+   "braille": "⠐⠐⠿",
+   "text": "dot locator for \"use\" (see 3.14)",
+   "see": "3.14"
+  },
+  {
+   "section": "3",
+   "braille": "⠨⠿",
+   "text": "dot locator for \"mention\" (see 3.13)",
+   "see": "3.13"
+  },
+  {
+   "section": "3",
+   "braille": "⠨⠴",
+   "text": "percent sign (see 3.21)",
+   "print": "%",
+   "see": "3.21"
+  },
+  {
+   "section": "3",
+   "braille": "⠨⠼⠹",
+   "text": "seventh transcriber-defined print symbol"
+  },
+  {
+   "section": "4.1",
+   "braille": "⠁",
+   "text": "letter a"
+  },
+  {
+   "section": "4.1",
+   "braille": "⠠⠁",
+   "text": "capital letter A"
+  },
+  {
+   "section": "4.1",
+   "braille": "⠃",
+   "text": "letter b"
+  },
+  {
+   "section": "4.1",
+   "braille": "⠠⠃",
+   "text": "capital letter B"
+  },
+  {
+   "section": "4.1",
+   "braille": "⠉",
+   "text": "letter c"
+  },
+  {
+   "section": "4.1",
+   "braille": "⠠⠉",
+   "text": "capital letter C"
+  },
+  {
+   "section": "4.1",
+   "braille": "⠙",
+   "text": "letter d"
+  },
+  {
+   "section": "4.1",
+   "braille": "⠠⠙",
+   "text": "capital letter D"
+  },
+  {
+   "section": "4.1",
+   "braille": "⠑",
+   "text": "letter e"
+  },
+  {
+   "section": "4.1",
+   "braille": "⠠⠑",
+   "text": "capital letter E"
+  },
+  {
+   "section": "4.1",
+   "braille": "⠋",
+   "text": "letter f"
+  },
+  {
+   "section": "4.1",
+   "braille": "⠠⠋",
+   "text": "capital letter F"
+  },
+  {
+   "section": "4.1",
+   "braille": "⠛",
+   "text": "letter g"
+  },
+  {
+   "section": "4.1",
+   "braille": "⠠⠛",
+   "text": "capital letter G"
+  },
+  {
+   "section": "4.1",
+   "braille": "⠓",
+   "text": "letter h"
+  },
+  {
+   "section": "4.1",
+   "braille": "⠠⠓",
+   "text": "capital letter H"
+  },
+  {
+   "section": "4.1",
+   "braille": "⠊",
+   "text": "letter i"
+  },
+  {
+   "section": "4.1",
+   "braille": "⠠⠊",
+   "text": "capital letter I"
+  },
+  {
+   "section": "4.1",
+   "braille": "⠚",
+   "text": "letter j"
+  },
+  {
+   "section": "4.1",
+   "braille": "⠠⠚",
+   "text": "capital letter J"
+  },
+  {
+   "section": "4.1",
+   "braille": "⠅",
+   "text": "letter k"
+  },
+  {
+   "section": "4.1",
+   "braille": "⠠⠅",
+   "text": "capital letter K"
+  },
+  {
+   "section": "4.1",
+   "braille": "⠇",
+   "text": "letter l"
+  },
+  {
+   "section": "4.1",
+   "braille": "⠠⠇",
+   "text": "capital letter L"
+  },
+  {
+   "section": "4.1",
+   "braille": "⠍",
+   "text": "letter m"
+  },
+  {
+   "section": "4.1",
+   "braille": "⠠⠍",
+   "text": "capital letter M"
+  },
+  {
+   "section": "4.1",
+   "braille": "⠝",
+   "text": "letter n"
+  },
+  {
+   "section": "4.1",
+   "braille": "⠠⠝",
+   "text": "capital letter N"
+  },
+  {
+   "section": "4.1",
+   "braille": "⠕",
+   "text": "letter o"
+  },
+  {
+   "section": "4.1",
+   "braille": "⠠⠕",
+   "text": "capital letter O"
+  },
+  {
+   "section": "4.1",
+   "braille": "⠏",
+   "text": "letter p"
+  },
+  {
+   "section": "4.1",
+   "braille": "⠠⠏",
+   "text": "capital letter P"
+  },
+  {
+   "section": "4.1",
+   "braille": "⠟",
+   "text": "letter q"
+  },
+  {
+   "section": "4.1",
+   "braille": "⠠⠟",
+   "text": "capital letter Q"
+  },
+  {
+   "section": "4.1",
+   "braille": "⠗",
+   "text": "letter r"
+  },
+  {
+   "section": "4.1",
+   "braille": "⠠⠗",
+   "text": "capital letter R"
+  },
+  {
+   "section": "4.1",
+   "braille": "⠎",
+   "text": "letter s"
+  },
+  {
+   "section": "4.1",
+   "braille": "⠠⠎",
+   "text": "capital letter S"
+  },
+  {
+   "section": "4.1",
+   "braille": "⠞",
+   "text": "letter t"
+  },
+  {
+   "section": "4.1",
+   "braille": "⠠⠞",
+   "text": "capital letter T"
+  },
+  {
+   "section": "4.1",
+   "braille": "⠥",
+   "text": "letter u"
+  },
+  {
+   "section": "4.1",
+   "braille": "⠠⠥",
+   "text": "capital letter U"
+  },
+  {
+   "section": "4.1",
+   "braille": "⠧",
+   "text": "letter v"
+  },
+  {
+   "section": "4.1",
+   "braille": "⠠⠧",
+   "text": "capital letter V"
+  },
+  {
+   "section": "4.1",
+   "braille": "⠺",
+   "text": "letter w"
+  },
+  {
+   "section": "4.1",
+   "braille": "⠠⠺",
+   "text": "capital letter W"
+  },
+  {
+   "section": "4.1",
+   "braille": "⠭",
+   "text": "letter x"
+  },
+  {
+   "section": "4.1",
+   "braille": "⠠⠭",
+   "text": "capital letter X"
+  },
+  {
+   "section": "4.1",
+   "braille": "⠽",
+   "text": "letter y"
+  },
+  {
+   "section": "4.1",
+   "braille": "⠠⠽",
+   "text": "capital letter Y"
+  },
+  {
+   "section": "4.1",
+   "braille": "⠵",
+   "text": "letter z"
+  },
+  {
+   "section": "4.1",
+   "braille": "⠠⠵",
+   "text": "capital letter Z"
+  },
+  {
+   "section": "4.2",
+   "braille": "⠈⠡",
+   "text": "solidus (forward slash) overlay on following letter",
+   "print": "̸"
+  },
+  {
+   "section": "4.2",
+   "braille": "⠈⠒",
+   "text": "̶ horizontal stroke overlay on following letter"
+  },
+  {
+   "section": "4.2",
+   "braille": "⠈⠬",
+   "text": "breve above following letter",
+   "print": "̆"
+  },
+  {
+   "section": "4.2",
+   "braille": "⠈⠤",
+   "text": "macron above following letter",
+   "print": "̄"
+  },
+  {
+   "section": "4.2",
+   "braille": "⠘⠯",
+   "text": "cedilla below following letter",
+   "print": "̧"
+  },
+  {
+   "section": "4.2",
+   "braille": "⠘⠡",
+   "text": "̀ grave accent above following letter"
+  },
+  {
+   "section": "4.2",
+   "braille": "⠘⠩",
+   "text": "circumflex above following letter",
+   "print": "̂"
+  },
+  {
+   "section": "4.2",
+   "braille": "⠘⠫",
+   "text": "ring (circle) above following letter",
+   "print": "̊"
+  },
+  {
+   "section": "4.2",
+   "braille": "⠘⠻",
+   "text": "̃ tilde above following letter"
+  },
+  {
+   "section": "4.2",
+   "braille": "⠘⠒",
+   "text": "diaeresis (umlaut) above following letter",
+   "print": "̈"
+  },
+  {
+   "section": "4.2",
+   "braille": "⠘⠌",
+   "text": "́ acute accent above following letter"
+  },
+  {
+   "section": "4.2",
+   "braille": "⠘⠬",
+   "text": "caron (hacek, wedge) above following letter",
+   "print": "̌"
+  },
+  {
+   "section": "4.2",
+   "braille": "⠘⠸⠂",
+   "text": "first transcriber-defined modifier on following letter"
+  },
+  {
+   "section": "4.2",
+   "braille": "⠘⠸⠆",
+   "text": "second transcriber-defined modifier on following letter"
+  },
+  {
+   "section": "4.2",
+   "braille": "⠘⠸⠤",
+   "text": "third transcriber-defined modifier on following letter"
+  },
+  {
+   "section": "4.2",
+   "braille": "⠠⠘⠸⠆",
+   "text": "second transcriber-defined modifier on following capital"
+  },
+  {
+   "section": "4.2",
+   "braille": "⠠⠘⠸⠤",
+   "text": "third transcriber-defined modifier on following capital"
+  },
+  {
+   "section": "4.3",
+   "braille": "⠘⠖",
+   "text": "ligature indicator"
+  },
+  {
+   "section": "4.3",
+   "braille": "⠠⠘⠖",
+   "text": "ligature indicator where only following letter is capitalised"
+  },
+  {
+   "section": "4.4",
+   "braille": "⠘⠝",
+   "text": "capital eng",
+   "print": "ŋ"
+  },
+  {
+   "section": "4.4",
+   "braille": "⠸⠢",
+   "text": "capital schwa",
+   "print": "ə"
+  },
+  {
+   "section": "4.5",
+   "braille": "⠨⠁",
+   "text": "Greek alpha",
+   "print": "α"
+  },
+  {
+   "section": "4.5",
+   "braille": "⠨⠃",
+   "text": "Greek beta",
+   "print": "β"
+  },
+  {
+   "section": "4.5",
+   "braille": "⠨⠛",
+   "text": "Greek gamma",
+   "print": "γ"
+  },
+  {
+   "section": "4.5",
+   "braille": "⠨⠙",
+   "text": "Greek delta",
+   "print": "δ"
+  },
+  {
+   "section": "4.5",
+   "braille": "⠨⠑",
+   "text": "Greek epsilon",
+   "print": "ε"
+  },
+  {
+   "section": "4.5",
+   "braille": "⠨⠵",
+   "text": "Greek zeta",
+   "print": "ζ"
+  },
+  {
+   "section": "4.5",
+   "braille": "⠨⠱",
+   "text": "Greek eta",
+   "print": "η"
+  },
+  {
+   "section": "4.5",
+   "braille": "⠨⠹",
+   "text": "Greek theta",
+   "print": "θ"
+  },
+  {
+   "section": "4.5",
+   "braille": "⠨⠊",
+   "text": "Greek iota",
+   "print": "ι"
+  },
+  {
+   "section": "4.5",
+   "braille": "⠨⠅",
+   "text": "Greek kappa",
+   "print": "κ"
+  },
+  {
+   "section": "4.5",
+   "braille": "⠨⠇",
+   "text": "Greek lambda",
+   "print": "λ"
+  },
+  {
+   "section": "4.5",
+   "braille": "⠨⠍",
+   "text": "Greek mu",
+   "print": "μ"
+  },
+  {
+   "section": "4.5",
+   "braille": "⠨⠝",
+   "text": "Greek nu",
+   "print": "ν"
+  },
+  {
+   "section": "4.5",
+   "braille": "⠨⠭",
+   "text": "Greek xi",
+   "print": "ξ"
+  },
+  {
+   "section": "4.5",
+   "braille": "⠨⠕",
+   "text": "Greek omicron",
+   "print": "ο"
+  },
+  {
+   "section": "4.5",
+   "braille": "⠨⠏",
+   "text": "Greek pi",
+   "print": "π"
+  },
+  {
+   "section": "4.5",
+   "braille": "⠨⠗",
+   "text": "Greek rho",
+   "print": "ρ"
+  },
+  {
+   "section": "4.5",
+   "braille": "⠨⠎",
+   "text": "Greek sigma",
+   "print": "ς or σ"
+  },
+  {
+   "section": "4.5",
+   "braille": "⠨⠞",
+   "text": "Greek tau",
+   "print": "τ"
+  },
+  {
+   "section": "4.5",
+   "braille": "⠨⠥",
+   "text": "Greek upsilon",
+   "print": "υ"
+  },
+  {
+   "section": "4.5",
+   "braille": "⠨⠋",
+   "text": "Greek phi",
+   "print": "φ"
+  },
+  {
+   "section": "4.5",
+   "braille": "⠨⠯",
+   "text": "Greek chi",
+   "print": "χ"
+  },
+  {
+   "section": "4.5",
+   "braille": "⠨⠽",
+   "text": "Greek psi",
+   "print": "ψ"
+  },
+  {
+   "section": "4.5",
+   "braille": "⠨⠺",
+   "text": "Greek omega",
+   "print": "ω"
+  },
+  {
+   "section": "4.5",
+   "braille": "⠠⠨⠁",
+   "text": "capital Greek alpha",
+   "print": "Α"
+  },
+  {
+   "section": "4.5",
+   "braille": "⠠⠨⠃",
+   "text": "capital Greek beta",
+   "print": "Β"
+  },
+  {
+   "section": "4.5",
+   "braille": "⠠⠨⠛",
+   "text": "capital Greek gamma",
+   "print": "Γ"
+  },
+  {
+   "section": "4.5",
+   "braille": "⠠⠨⠙",
+   "text": "capital Greek delta",
+   "print": "Δ"
+  },
+  {
+   "section": "4.5",
+   "braille": "⠠⠨⠑",
+   "text": "capital Greek epsilon",
+   "print": "Ε"
+  },
+  {
+   "section": "4.5",
+   "braille": "⠠⠨⠵",
+   "text": "capital Greek zeta",
+   "print": "Ζ"
+  },
+  {
+   "section": "4.5",
+   "braille": "⠠⠨⠱",
+   "text": "capital Greek eta",
+   "print": "Η"
+  },
+  {
+   "section": "4.5",
+   "braille": "⠠⠨⠹",
+   "text": "capital Greek theta",
+   "print": "Θ"
+  },
+  {
+   "section": "4.5",
+   "braille": "⠠⠨⠊",
+   "text": "capital Greek iota",
+   "print": "Ι"
+  },
+  {
+   "section": "4.5",
+   "braille": "⠠⠨⠅",
+   "text": "capital Greek kappa",
+   "print": "Κ"
+  },
+  {
+   "section": "4.5",
+   "braille": "⠠⠨⠇",
+   "text": "capital Greek lambda",
+   "print": "Λ"
+  },
+  {
+   "section": "4.5",
+   "braille": "⠠⠨⠍",
+   "text": "capital Greek mu",
+   "print": "Μ"
+  },
+  {
+   "section": "4.5",
+   "braille": "⠠⠨⠝",
+   "text": "capital Greek nu",
+   "print": "Ν"
+  },
+  {
+   "section": "4.5",
+   "braille": "⠠⠨⠭",
+   "text": "capital Greek xi",
+   "print": "Ξ"
+  },
+  {
+   "section": "4.5",
+   "braille": "⠠⠨⠕",
+   "text": "capital Greek omicron",
+   "print": "Ο"
+  },
+  {
+   "section": "4.5",
+   "braille": "⠠⠨⠏",
+   "text": "capital Greek pi",
+   "print": "Π"
+  },
+  {
+   "section": "4.5",
+   "braille": "⠠⠨⠗",
+   "text": "capital Greek rho",
+   "print": "Ρ"
+  },
+  {
+   "section": "4.5",
+   "braille": "⠠⠨⠎",
+   "text": "capital Greek sigma",
+   "print": "Σ"
+  },
+  {
+   "section": "4.5",
+   "braille": "⠠⠨⠞",
+   "text": "capital Greek tau",
+   "print": "Τ"
+  },
+  {
+   "section": "4.5",
+   "braille": "⠠⠨⠥",
+   "text": "capital Greek upsilon",
+   "print": "Υ"
+  },
+  {
+   "section": "4.5",
+   "braille": "⠠⠨⠋",
+   "text": "capital Greek phi",
+   "print": "Φ"
+  },
+  {
+   "section": "4.5",
+   "braille": "⠠⠨⠯",
+   "text": "capital Greek chi",
+   "print": "Χ"
+  },
+  {
+   "section": "4.5",
+   "braille": "⠠⠨⠽",
+   "text": "capital Greek psi",
+   "print": "Ψ"
+  },
+  {
+   "section": "4.5",
+   "braille": "⠠⠨⠺",
+   "text": "capital Greek omega",
+   "print": "Ω"
+  },
+  {
+   "section": "4.6",
+   "braille": "⠨⠮",
+   "text": "German letter sharp s (eszett)",
+   "print": "ß"
+  },
+  {
+   "section": "4.6",
+   "braille": "⠠⠨⠮",
+   "text": "capital German letter sharp s (eszett)",
+   "print": "ẞ"
+  },
+  {
+   "section": "5",
+   "braille": "⠰",
+   "text": "grade 1 symbol indicator"
+  },
+  {
+   "section": "5",
+   "braille": "⠰⠰",
+   "text": "grade 1 word indicator"
+  },
+  {
+   "section": "5",
+   "braille": "⠰⠰⠰",
+   "text": "grade 1 passage indicator"
+  },
+  {
+   "section": "5",
+   "braille": "⠰⠄",
+   "text": "grade 1 terminator"
+  },
+  {
+   "section": "6",
+   "braille": "⠼⠁",
+   "text": "digit one"
+  },
+  {
+   "section": "6",
+   "braille": "⠼⠃",
+   "text": "digit two"
+  },
+  {
+   "section": "6",
+   "braille": "⠼⠉",
+   "text": "digit three"
+  },
+  {
+   "section": "6",
+   "braille": "⠼⠙",
+   "text": "digit four"
+  },
+  {
+   "section": "6",
+   "braille": "⠼⠑",
+   "text": "digit five"
+  },
+  {
+   "section": "6",
+   "braille": "⠼⠋",
+   "text": "digit six"
+  },
+  {
+   "section": "6",
+   "braille": "⠼⠛",
+   "text": "digit seven"
+  },
+  {
+   "section": "6",
+   "braille": "⠼⠓",
+   "text": "digit eight"
+  },
+  {
+   "section": "6",
+   "braille": "⠼⠊",
+   "text": "digit nine"
+  },
+  {
+   "section": "6",
+   "braille": "⠼⠚",
+   "text": "digit zero"
+  },
+  {
+   "section": "6",
+   "braille": "⠼⠂",
+   "text": "comma (decimal sign)"
+  },
+  {
+   "section": "6",
+   "braille": "⠼⠲",
+   "text": "full stop (period, decimal sign)"
+  },
+  {
+   "section": "6",
+   "braille": "⠁ to ⠚",
+   "text": "digit (in numeric mode only)"
+  },
+  {
+   "section": "6",
+   "braille": "⠐⠁ to ⠐⠚",
+   "text": "numeric space plus digit (in numeric mode only)"
+  },
+  {
+   "section": "6",
+   "braille": "⠬",
+   "text": "visible space"
+  },
+  {
+   "section": "6",
+   "braille": "⠼",
+   "text": "spaced numeric indicator (before space)"
+  },
+  {
+   "section": "6",
+   "braille": "⠼⠼",
+   "text": "numeric passage indicator (before space)"
+  },
+  {
+   "section": "6",
+   "braille": "⠼⠄",
+   "text": "numeric passage terminator"
+  },
+  {
+   "section": "6",
+   "braille": "⠐",
+   "text": "line continuation indicator (at end of line)"
+  },
+  {
+   "section": "6",
+   "braille": "⠐⠐",
+   "text": "line continuation indicator with space (at end of"
+  },
+  {
+   "section": "6",
+   "braille": "⠌",
+   "text": "simple numeric fraction line (in numeric mode"
+  },
+  {
+   "section": "7",
+   "braille": "⠂",
+   "text": "comma (see 7.1)",
+   "print": ",",
+   "see": "7.1"
+  },
+  {
+   "section": "7",
+   "braille": "⠆",
+   "text": "semicolon (see 7.1)",
+   "print": ";",
+   "see": "7.1"
+  },
+  {
+   "section": "7",
+   "braille": "⠒",
+   "text": "colon (see 7.1)",
+   "print": ":",
+   "see": "7.1"
+  },
+  {
+   "section": "7",
+   "braille": "⠲",
+   "text": "full stop (period, dot, decimal point) (see 7.1)",
+   "print": ".",
+   "see": "7.1"
+  },
+  {
+   "section": "7",
+   "braille": "⠲⠲⠲",
+   "text": "ellipsis (see 7.3)",
+   "print": "...",
+   "see": "7.3"
+  },
+  {
+   "section": "7",
+   "braille": "⠖",
+   "text": "exclamation mark (see 7.1)",
+   "print": "!",
+   "see": "7.1"
+  },
+  {
+   "section": "7",
+   "braille": "⠦",
+   "text": "question mark (see 7.5) [also]",
+   "print": "?",
+   "see": "7.5"
+  },
+  {
+   "section": "7",
+   "braille": "⠦",
+   "text": "opening double quotation mark (see 7.6)",
+   "print": "“",
+   "see": "7.6"
+  },
+  {
+   "section": "7",
+   "braille": "⠴",
+   "text": "closing double quotation mark (see 7.6)",
+   "print": "”",
+   "see": "7.6"
+  },
+  {
+   "section": "7",
+   "braille": "⠘⠦",
+   "text": "two-cell opening double quotation mark (see 7.6)",
+   "print": "“",
+   "see": "7.6"
+  },
+  {
+   "section": "7",
+   "braille": "⠘⠴",
+   "text": "two-cell closing double quotation mark (see 7.6)",
+   "print": "”",
+   "see": "7.6"
+  },
+  {
+   "section": "7",
+   "braille": "⠠⠦",
+   "text": "opening single quotation mark (see 7.6)",
+   "print": "‘",
+   "see": "7.6"
+  },
+  {
+   "section": "7",
+   "braille": "⠠⠴",
+   "text": "closing single quotation mark (see 7.6)",
+   "print": "’",
+   "see": "7.6"
+  },
+  {
+   "section": "7",
+   "braille": "⠸⠦",
+   "text": "left-pointing double angle quotation mark",
+   "print": "«"
+  },
+  {
+   "section": "7",
+   "braille": "⠸⠴",
+   "text": "right-pointing double angle quotation mark",
+   "print": "»"
+  },
+  {
+   "section": "7",
+   "braille": "⠠⠶",
+   "text": "nondirectional double quotation mark (see 7.6)",
+   "print": "\"",
+   "see": "7.6"
+  },
+  {
+   "section": "7",
+   "braille": "⠄",
+   "text": "nondirectional single quotation mark (see 7.6)",
+   "print": "'",
+   "see": "7.6"
+  },
+  {
+   "section": "7",
+   "braille": "⠄",
+   "text": "apostrophe (see 7.6)",
+   "print": "’",
+   "see": "7.6"
+  },
+  {
+   "section": "7",
+   "braille": "⠐⠣",
+   "text": "opening parenthesis (round bracket) (see 7.1)",
+   "print": "(",
+   "see": "7.1"
+  },
+  {
+   "section": "7",
+   "braille": "⠐⠜",
+   "text": "closing parenthesis (round bracket) (see 7.1)",
+   "print": ")",
+   "see": "7.1"
+  },
+  {
+   "section": "7",
+   "braille": "⠨⠣",
+   "text": "opening square bracket (see 7.1)",
+   "print": "[",
+   "see": "7.1"
+  },
+  {
+   "section": "7",
+   "braille": "⠨⠜",
+   "text": "closing square bracket (see 7.1)",
+   "print": "]",
+   "see": "7.1"
+  },
+  {
+   "section": "7",
+   "braille": "⠈⠣",
+   "text": "opening angle bracket (see 7.1)",
+   "print": "<",
+   "see": "7.1"
+  },
+  {
+   "section": "7",
+   "braille": "⠈⠜",
+   "text": "closing angle bracket (see 7.1)",
+   "print": ">",
+   "see": "7.1"
+  },
+  {
+   "section": "7",
+   "braille": "⠸⠣",
+   "text": "opening curly bracket (brace bracket) (see 7.1)",
+   "print": "{",
+   "see": "7.1"
+  },
+  {
+   "section": "7",
+   "braille": "⠸⠜",
+   "text": "closing curly bracket (brace bracket) (see 7.1)",
+   "print": "}",
+   "see": "7.1"
+  },
+  {
+   "section": "7",
+   "braille": "⠸⠌",
+   "text": "solidus (forward slash) (see 7.4)",
+   "print": "/",
+   "see": "7.4"
+  },
+  {
+   "section": "7",
+   "braille": "⠸⠡",
+   "text": "reverse solidus (backslash) (see 7.1)",
+   "print": "\\",
+   "see": "7.1"
+  },
+  {
+   "section": "7",
+   "braille": "⠤",
+   "text": "hyphen (see 7.2)",
+   "print": "-",
+   "see": "7.2"
+  },
+  {
+   "section": "7",
+   "braille": "⠠⠤",
+   "text": "dash (when distinguished from hyphen(s) in",
+   "print": "–"
+  },
+  {
+   "section": "7",
+   "braille": "⠐⠠⠤",
+   "text": "long dash (see 7.2)",
+   "print": "—",
+   "see": "7.2"
+  },
+  {
+   "section": "7",
+   "braille": "⠨⠤",
+   "text": "low line (underscore) (see 7.2)",
+   "print": "_",
+   "see": "7.2"
+  },
+  {
+   "section": "7",
+   "braille": "⠠⠐⠣",
+   "text": "multi-line opening parenthesis (round bracket)"
+  },
+  {
+   "section": "7",
+   "braille": "⠠⠐⠜",
+   "text": "multi-line closing parenthesis (round bracket)"
+  },
+  {
+   "section": "7",
+   "braille": "⠠⠨⠣",
+   "text": "multi-line opening square bracket (see 7.7)",
+   "see": "7.7"
+  },
+  {
+   "section": "7",
+   "braille": "⠠⠨⠜",
+   "text": "multi-line closing square bracket (see 7.7)",
+   "see": "7.7"
+  },
+  {
+   "section": "7",
+   "braille": "⠠⠸⠣",
+   "text": "multi-line opening curly bracket (see 7.7)",
+   "see": "7.7"
+  },
+  {
+   "section": "7",
+   "braille": "⠠⠸⠜",
+   "text": "multi-line closing curly bracket (see 7.7)",
+   "see": "7.7"
+  },
+  {
+   "section": "8",
+   "braille": "⠠⠁ to ⠠⠵",
+   "text": "capital letters A to Z"
+  },
+  {
+   "section": "8",
+   "braille": "⠠⠨⠁ to ⠠⠨⠺",
+   "text": "capital Greek letters Α [Alpha] to Ω [Omega]"
+  },
+  {
+   "section": "8",
+   "braille": "⠠⠠",
+   "text": "capitals word indicator"
+  },
+  {
+   "section": "8",
+   "braille": "⠠⠠⠠",
+   "text": "capitals passage indicator"
+  },
+  {
+   "section": "8",
+   "braille": "⠠⠄",
+   "text": "capitals terminator"
+  },
+  {
+   "section": "9",
+   "braille": "⠨⠆",
+   "text": "italic symbol indicator"
+  },
+  {
+   "section": "9",
+   "braille": "⠨⠂",
+   "text": "italic word indicator"
+  },
+  {
+   "section": "9",
+   "braille": "⠨⠶",
+   "text": "italic passage indicator"
+  },
+  {
+   "section": "9",
+   "braille": "⠨⠄",
+   "text": "italic terminator"
+  },
+  {
+   "section": "9",
+   "braille": "⠘⠆",
+   "text": "boldface symbol indicator"
+  },
+  {
+   "section": "9",
+   "braille": "⠘⠂",
+   "text": "boldface word indicator"
+  },
+  {
+   "section": "9",
+   "braille": "⠘⠶",
+   "text": "boldface passage indicator"
+  },
+  {
+   "section": "9",
+   "braille": "⠘⠄",
+   "text": "boldface terminator"
+  },
+  {
+   "section": "9",
+   "braille": "⠸⠆",
+   "text": "underlined symbol indicator"
+  },
+  {
+   "section": "9",
+   "braille": "⠸⠂",
+   "text": "underlined word indicator"
+  },
+  {
+   "section": "9",
+   "braille": "⠸⠶",
+   "text": "underlined passage indicator"
+  },
+  {
+   "section": "9",
+   "braille": "⠸⠄",
+   "text": "underlined terminator"
+  },
+  {
+   "section": "9",
+   "braille": "⠈⠆",
+   "text": "script symbol indicator"
+  },
+  {
+   "section": "9",
+   "braille": "⠈⠂",
+   "text": "script word indicator"
+  },
+  {
+   "section": "9",
+   "braille": "⠈⠶",
+   "text": "script passage indicator"
+  },
+  {
+   "section": "9",
+   "braille": "⠈⠄",
+   "text": "script terminator"
+  },
+  {
+   "section": "9",
+   "braille": "⠈⠼⠆",
+   "text": "first transcriber-defined typeform symbol indicator"
+  },
+  {
+   "section": "9",
+   "braille": "⠈⠼⠂",
+   "text": "first transcriber-defined typeform word indicator"
+  },
+  {
+   "section": "9",
+   "braille": "⠈⠼⠶",
+   "text": "first transcriber-defined typeform passage indicator"
+  },
+  {
+   "section": "9",
+   "braille": "⠈⠼⠄",
+   "text": "first transcriber-defined typeform terminator"
+  },
+  {
+   "section": "10.1",
+   "braille": "⠃",
+   "text": "but",
+   "print": "⠃⠥⠞"
+  },
+  {
+   "section": "10.1",
+   "braille": "⠉",
+   "text": "can",
+   "print": "⠉⠁⠝"
+  },
+  {
+   "section": "10.1",
+   "braille": "⠙",
+   "text": "do",
+   "print": "⠙⠕"
+  },
+  {
+   "section": "10.1",
+   "braille": "⠑",
+   "text": "every",
+   "print": "⠑⠧⠑⠗⠽"
+  },
+  {
+   "section": "10.1",
+   "braille": "⠋",
+   "text": "from",
+   "print": "⠋⠗⠕⠍"
+  },
+  {
+   "section": "10.1",
+   "braille": "⠛",
+   "text": "go",
+   "print": "⠛⠕"
+  },
+  {
+   "section": "10.1",
+   "braille": "⠓",
+   "text": "have",
+   "print": "⠓⠁⠧⠑"
+  },
+  {
+   "section": "10.1",
+   "braille": "⠚",
+   "text": "just",
+   "print": "⠚⠥⠎⠞"
+  },
+  {
+   "section": "10.1",
+   "braille": "⠅",
+   "text": "knowledge",
+   "print": "⠅⠝⠕⠺⠇⠑⠙⠛⠑"
+  },
+  {
+   "section": "10.1",
+   "braille": "⠇",
+   "text": "like",
+   "print": "⠇⠊⠅⠑"
+  },
+  {
+   "section": "10.1",
+   "braille": "⠍",
+   "text": "more",
+   "print": "⠍⠕⠗⠑"
+  },
+  {
+   "section": "10.1",
+   "braille": "⠝",
+   "text": "not",
+   "print": "⠝⠕⠞"
+  },
+  {
+   "section": "10.1",
+   "braille": "⠏",
+   "text": "people",
+   "print": "⠏⠑⠕⠏⠇⠑"
+  },
+  {
+   "section": "10.1",
+   "braille": "⠟",
+   "text": "quite",
+   "print": "⠟⠥⠊⠞⠑"
+  },
+  {
+   "section": "10.1",
+   "braille": "⠗",
+   "text": "rather",
+   "print": "⠗⠁⠞⠓⠑⠗"
+  },
+  {
+   "section": "10.1",
+   "braille": "⠎",
+   "text": "so",
+   "print": "⠎⠕"
+  },
+  {
+   "section": "10.1",
+   "braille": "⠞",
+   "text": "that",
+   "print": "⠞⠓⠁⠞"
+  },
+  {
+   "section": "10.1",
+   "braille": "⠥",
+   "text": "us",
+   "print": "⠥⠎"
+  },
+  {
+   "section": "10.1",
+   "braille": "⠧",
+   "text": "very",
+   "print": "⠧⠑⠗⠽"
+  },
+  {
+   "section": "10.1",
+   "braille": "⠭",
+   "text": "it",
+   "print": "⠊⠞"
+  },
+  {
+   "section": "10.1",
+   "braille": "⠽",
+   "text": "you",
+   "print": "⠽⠕⠥"
+  },
+  {
+   "section": "10.1",
+   "braille": "⠵",
+   "text": "as",
+   "print": "⠁⠎"
+  },
+  {
+   "section": "10.1",
+   "braille": "⠺",
+   "text": "will",
+   "print": "⠺⠊⠇⠇"
+  },
+  {
+   "section": "10.2",
+   "braille": "⠡",
+   "text": "child",
+   "print": "⠉⠓⠊⠇⠙"
+  },
+  {
+   "section": "10.2",
+   "braille": "⠩",
+   "text": "shall",
+   "print": "⠎⠓⠁⠇⠇"
+  },
+  {
+   "section": "10.2",
+   "braille": "⠹",
+   "text": "this",
+   "print": "⠞⠓⠊⠎"
+  },
+  {
+   "section": "10.2",
+   "braille": "⠱",
+   "text": "which",
+   "print": "⠺⠓⠊⠉⠓"
+  },
+  {
+   "section": "10.2",
+   "braille": "⠳",
+   "text": "out",
+   "print": "⠕⠥⠞"
+  },
+  {
+   "section": "10.2",
+   "braille": "⠌",
+   "text": "still",
+   "print": "⠎⠞⠊⠇⠇"
+  },
+  {
+   "section": "10.3",
+   "braille": "⠯",
+   "text": "and",
+   "print": "⠁⠝⠙"
+  },
+  {
+   "section": "10.3",
+   "braille": "⠿",
+   "text": "for",
+   "print": "⠋⠕⠗"
+  },
+  {
+   "section": "10.3",
+   "braille": "⠷",
+   "text": "of",
+   "print": "⠕⠋"
+  },
+  {
+   "section": "10.3",
+   "braille": "⠮",
+   "text": "the",
+   "print": "⠞⠓⠑"
+  },
+  {
+   "section": "10.3",
+   "braille": "⠾",
+   "text": "with",
+   "print": "⠺⠊⠞⠓"
+  },
+  {
+   "section": "10.4",
+   "braille": "⠡",
+   "text": "ch (see 10.4.2)",
+   "print": "⠉⠓",
+   "see": "10.4.2"
+  },
+  {
+   "section": "10.4",
+   "braille": "⠣",
+   "text": "gh (see 10.4.1)",
+   "print": "⠛⠓",
+   "see": "10.4.1"
+  },
+  {
+   "section": "10.4",
+   "braille": "⠩",
+   "text": "sh (see 10.4.2)",
+   "print": "⠎⠓",
+   "see": "10.4.2"
+  },
+  {
+   "section": "10.4",
+   "braille": "⠹",
+   "text": "th (see 10.4.2)",
+   "print": "⠞⠓",
+   "see": "10.4.2"
+  },
+  {
+   "section": "10.4",
+   "braille": "⠱",
+   "text": "wh (see 10.4.2)",
+   "print": "⠺⠓",
+   "see": "10.4.2"
+  },
+  {
+   "section": "10.4",
+   "braille": "⠫",
+   "text": "ed (see 10.4.1)",
+   "print": "⠑⠙",
+   "see": "10.4.1"
+  },
+  {
+   "section": "10.4",
+   "braille": "⠻",
+   "text": "er (see 10.4.1)",
+   "print": "⠑⠗",
+   "see": "10.4.1"
+  },
+  {
+   "section": "10.4",
+   "braille": "⠳",
+   "text": "ou (see 10.4.2)",
+   "print": "⠕⠥",
+   "see": "10.4.2"
+  },
+  {
+   "section": "10.4",
+   "braille": "⠪",
+   "text": "ow (see 10.4.1)",
+   "print": "⠕⠺",
+   "see": "10.4.1"
+  },
+  {
+   "section": "10.4",
+   "braille": "⠌",
+   "text": "st (see 10.4.2)",
+   "print": "⠎⠞",
+   "see": "10.4.2"
+  },
+  {
+   "section": "10.4",
+   "braille": "⠬",
+   "text": "ing (see 10.4.3)",
+   "print": "⠊⠝⠛",
+   "see": "10.4.3"
+  },
+  {
+   "section": "10.4",
+   "braille": "⠜",
+   "text": "ar (see 10.4.1)",
+   "print": "⠁⠗",
+   "see": "10.4.1"
+  },
+  {
+   "section": "10.5",
+   "braille": "⠆",
+   "text": "be (see 10.5.1)",
+   "print": "⠃⠑",
+   "see": "10.5.1"
+  },
+  {
+   "section": "10.5",
+   "braille": "⠢",
+   "text": "enough (see 10.5.2)",
+   "print": "⠑⠝⠕⠥⠛⠓",
+   "see": "10.5.2"
+  },
+  {
+   "section": "10.5",
+   "braille": "⠶",
+   "text": "were (see 10.5.1)",
+   "print": "⠺⠑⠗⠑",
+   "see": "10.5.1"
+  },
+  {
+   "section": "10.5",
+   "braille": "⠦",
+   "text": "his (see 10.5.1)",
+   "print": "⠓⠊⠎",
+   "see": "10.5.1"
+  },
+  {
+   "section": "10.5",
+   "braille": "⠔",
+   "text": "in (see 10.5.3)",
+   "print": "⠊⠝",
+   "see": "10.5.3"
+  },
+  {
+   "section": "10.5",
+   "braille": "⠴",
+   "text": "was (see 10.5.1)",
+   "print": "⠺⠁⠎",
+   "see": "10.5.1"
+  },
+  {
+   "section": "10.6",
+   "braille": "⠂",
+   "text": "ea (see 10.6.5-10.6.7)",
+   "print": "⠑⠁",
+   "see": "10.6.5"
+  },
+  {
+   "section": "10.6",
+   "braille": "⠆",
+   "text": "be (see 10.6.1-10.6.4)",
+   "print": "⠃⠑",
+   "see": "10.6.1"
+  },
+  {
+   "section": "10.6",
+   "braille": "⠆",
+   "text": "bb (see 10.6.5-10.6.6)",
+   "print": "⠃⠃",
+   "see": "10.6.5"
+  },
+  {
+   "section": "10.6",
+   "braille": "⠒",
+   "text": "con (see 10.6.1-10.6.4)",
+   "print": "⠉⠕⠝",
+   "see": "10.6.1"
+  },
+  {
+   "section": "10.6",
+   "braille": "⠒",
+   "text": "cc (see 10.6.5-10.6.6)",
+   "print": "⠉⠉",
+   "see": "10.6.5"
+  },
+  {
+   "section": "10.6",
+   "braille": "⠲",
+   "text": "dis (see 10.6.1-10.6.4)",
+   "print": "⠙⠊⠎",
+   "see": "10.6.1"
+  },
+  {
+   "section": "10.6",
+   "braille": "⠢",
+   "text": "en (see 10.6.8-10.6.9)",
+   "print": "⠑⠝",
+   "see": "10.6.8"
+  },
+  {
+   "section": "10.6",
+   "braille": "⠖",
+   "text": "ff (see 10.6.5-10.6.6)",
+   "print": "⠋⠋",
+   "see": "10.6.5"
+  },
+  {
+   "section": "10.6",
+   "braille": "⠶",
+   "text": "gg (see 10.6.5-10.6.6)",
+   "print": "⠛⠛",
+   "see": "10.6.5"
+  },
+  {
+   "section": "10.6",
+   "braille": "⠔",
+   "text": "in (see 10.6.8-10.6.9)",
+   "print": "⠊⠝",
+   "see": "10.6.8"
+  },
+  {
+   "section": "10.7",
+   "braille": "⠘⠥",
+   "text": "upon (see 10.7.2)",
+   "print": "⠥⠏⠕⠝",
+   "see": "10.7.2"
+  },
+  {
+   "section": "10.7",
+   "braille": "⠘⠮",
+   "text": "these (see 10.7.2)",
+   "print": "⠞⠓⠑⠎⠑",
+   "see": "10.7.2"
+  },
+  {
+   "section": "10.7",
+   "braille": "⠘⠹",
+   "text": "those (see 10.7.2)",
+   "print": "⠞⠓⠕⠎⠑",
+   "see": "10.7.2"
+  },
+  {
+   "section": "10.7",
+   "braille": "⠘⠱",
+   "text": "whose (see 10.7.2)",
+   "print": "⠺⠓⠕⠎⠑",
+   "see": "10.7.2"
+  },
+  {
+   "section": "10.7",
+   "braille": "⠘⠺",
+   "text": "word (see 10.7.1)",
+   "print": "⠺⠕⠗⠙",
+   "see": "10.7.1"
+  },
+  {
+   "section": "10.7",
+   "braille": "⠸⠉",
+   "text": "cannot (see 10.7.1)",
+   "print": "⠉⠁⠝⠝⠕⠞",
+   "see": "10.7.1"
+  },
+  {
+   "section": "10.7",
+   "braille": "⠸⠓",
+   "text": "had (see 10.7.3)",
+   "print": "⠓⠁⠙",
+   "see": "10.7.3"
+  },
+  {
+   "section": "10.7",
+   "braille": "⠸⠍",
+   "text": "many (see 10.7.1)",
+   "print": "⠍⠁⠝⠽",
+   "see": "10.7.1"
+  },
+  {
+   "section": "10.7",
+   "braille": "⠸⠎",
+   "text": "spirit (see 10.7.1)",
+   "print": "⠎⠏⠊⠗⠊⠞",
+   "see": "10.7.1"
+  },
+  {
+   "section": "10.7",
+   "braille": "⠸⠮",
+   "text": "their (see 10.7.1)",
+   "print": "⠞⠓⠑⠊⠗",
+   "see": "10.7.1"
+  },
+  {
+   "section": "10.7",
+   "braille": "⠸⠺",
+   "text": "world (see 10.7.1)",
+   "print": "⠺⠕⠗⠇⠙",
+   "see": "10.7.1"
+  },
+  {
+   "section": "10.7",
+   "braille": "⠐⠙",
+   "text": "day (see 10.7.1)",
+   "print": "⠙⠁⠽",
+   "see": "10.7.1"
+  },
+  {
+   "section": "10.7",
+   "braille": "⠐⠑",
+   "text": "ever (see 10.7.4)",
+   "print": "⠑⠧⠑⠗",
+   "see": "10.7.4"
+  },
+  {
+   "section": "10.7",
+   "braille": "⠐⠋",
+   "text": "father (see 10.7.1)",
+   "print": "⠋⠁⠞⠓⠑⠗",
+   "see": "10.7.1"
+  },
+  {
+   "section": "10.7",
+   "braille": "⠐⠓",
+   "text": "here (see 10.7.5)",
+   "print": "⠓⠑⠗⠑",
+   "see": "10.7.5"
+  },
+  {
+   "section": "10.7",
+   "braille": "⠐⠅",
+   "text": "know (see 10.7.1)",
+   "print": "⠅⠝⠕⠺",
+   "see": "10.7.1"
+  },
+  {
+   "section": "10.7",
+   "braille": "⠐⠇",
+   "text": "lord (see 10.7.1)",
+   "print": "⠇⠕⠗⠙",
+   "see": "10.7.1"
+  },
+  {
+   "section": "10.7",
+   "braille": "⠐⠍",
+   "text": "mother (see 10.7.1)",
+   "print": "⠍⠕⠞⠓⠑⠗",
+   "see": "10.7.1"
+  },
+  {
+   "section": "10.7",
+   "braille": "⠐⠝",
+   "text": "name (see 10.7.5)",
+   "print": "⠝⠁⠍⠑",
+   "see": "10.7.5"
+  },
+  {
+   "section": "10.7",
+   "braille": "⠐⠕",
+   "text": "one (see 10.7.6)",
+   "print": "⠕⠝⠑",
+   "see": "10.7.6"
+  },
+  {
+   "section": "10.7",
+   "braille": "⠐⠏",
+   "text": "part (see 10.7.1)",
+   "print": "⠏⠁⠗⠞",
+   "see": "10.7.1"
+  },
+  {
+   "section": "10.7",
+   "braille": "⠐⠟",
+   "text": "question (see 10.7.1)",
+   "print": "⠟⠥⠑⠎⠞⠊⠕⠝",
+   "see": "10.7.1"
+  },
+  {
+   "section": "10.7",
+   "braille": "⠐⠗",
+   "text": "right (see 10.7.1)",
+   "print": "⠗⠊⠛⠓⠞",
+   "see": "10.7.1"
+  },
+  {
+   "section": "10.7",
+   "braille": "⠐⠎",
+   "text": "some (see 10.7.7)",
+   "print": "⠎⠕⠍⠑",
+   "see": "10.7.7"
+  },
+  {
+   "section": "10.7",
+   "braille": "⠐⠞",
+   "text": "time (see 10.7.8)",
+   "print": "⠞⠊⠍⠑",
+   "see": "10.7.8"
+  },
+  {
+   "section": "10.7",
+   "braille": "⠐⠥",
+   "text": "under (see 10.7.9)",
+   "print": "⠥⠝⠙⠑⠗",
+   "see": "10.7.9"
+  },
+  {
+   "section": "10.7",
+   "braille": "⠐⠽",
+   "text": "young (see 10.7.1)",
+   "print": "⠽⠕⠥⠝⠛",
+   "see": "10.7.1"
+  },
+  {
+   "section": "10.7",
+   "braille": "⠐⠮",
+   "text": "there (see 10.7.2)",
+   "print": "⠞⠓⠑⠗⠑",
+   "see": "10.7.2"
+  },
+  {
+   "section": "10.7",
+   "braille": "⠐⠡",
+   "text": "character (see 10.7.1)",
+   "print": "⠉⠓⠁⠗⠁⠉⠞⠑⠗",
+   "see": "10.7.1"
+  },
+  {
+   "section": "10.7",
+   "braille": "⠐⠹",
+   "text": "through (see 10.7.1)",
+   "print": "⠞⠓⠗⠕⠥⠛⠓",
+   "see": "10.7.1"
+  },
+  {
+   "section": "10.7",
+   "braille": "⠐⠱",
+   "text": "where (see 10.7.1)",
+   "print": "⠺⠓⠑⠗⠑",
+   "see": "10.7.1"
+  },
+  {
+   "section": "10.7",
+   "braille": "⠐⠳",
+   "text": "ought (see 10.7.1)",
+   "print": "⠕⠥⠛⠓⠞",
+   "see": "10.7.1"
+  },
+  {
+   "section": "10.7",
+   "braille": "⠐⠺",
+   "text": "work (see 10.7.1)",
+   "print": "⠺⠕⠗⠅",
+   "see": "10.7.1"
+  },
+  {
+   "section": "10.8",
+   "braille": "⠨⠙",
+   "text": "ound (see 10.8.1)",
+   "print": "⠕⠥⠝⠙",
+   "see": "10.8.1"
+  },
+  {
+   "section": "10.8",
+   "braille": "⠨⠑",
+   "text": "ance (see 10.8.1)",
+   "print": "⠁⠝⠉⠑",
+   "see": "10.8.1"
+  },
+  {
+   "section": "10.8",
+   "braille": "⠨⠝",
+   "text": "sion (see 10.8.1)",
+   "print": "⠎⠊⠕⠝",
+   "see": "10.8.1"
+  },
+  {
+   "section": "10.8",
+   "braille": "⠨⠎",
+   "text": "less (see 10.8.1)",
+   "print": "⠇⠑⠎⠎",
+   "see": "10.8.1"
+  },
+  {
+   "section": "10.8",
+   "braille": "⠨⠞",
+   "text": "ount (see 10.8.1)",
+   "print": "⠕⠥⠝⠞",
+   "see": "10.8.1"
+  },
+  {
+   "section": "10.8",
+   "braille": "⠰⠑",
+   "text": "ence (see 10.8.1)",
+   "print": "⠑⠝⠉⠑",
+   "see": "10.8.1"
+  },
+  {
+   "section": "10.8",
+   "braille": "⠰⠛",
+   "text": "ong (see 10.8.1)",
+   "print": "⠕⠝⠛",
+   "see": "10.8.1"
+  },
+  {
+   "section": "10.8",
+   "braille": "⠰⠇",
+   "text": "ful (see 10.8.1)",
+   "print": "⠋⠥⠇",
+   "see": "10.8.1"
+  },
+  {
+   "section": "10.8",
+   "braille": "⠰⠝",
+   "text": "tion (see 10.8.1)",
+   "print": "⠞⠊⠕⠝",
+   "see": "10.8.1"
+  },
+  {
+   "section": "10.8",
+   "braille": "⠰⠎",
+   "text": "ness (see 10.8.4)",
+   "print": "⠝⠑⠎⠎",
+   "see": "10.8.4"
+  },
+  {
+   "section": "10.8",
+   "braille": "⠰⠞",
+   "text": "ment (see 10.8.1)",
+   "print": "⠍⠑⠝⠞",
+   "see": "10.8.1"
+  },
+  {
+   "section": "10.8",
+   "braille": "⠰⠽",
+   "text": "ity (see 10.8.3)",
+   "print": "⠊⠞⠽",
+   "see": "10.8.3"
+  },
+  {
+   "section": "11.2",
+   "braille": "⠐⠖",
+   "text": "plus",
+   "print": "+"
+  },
+  {
+   "section": "11.2",
+   "braille": "⠐⠤",
+   "text": "minus (when distinguished from hyphen)",
+   "print": "−"
+  },
+  {
+   "section": "11.2",
+   "braille": "⠐⠦",
+   "text": "multiplication, times (cross)",
+   "print": "×"
+  },
+  {
+   "section": "11.2",
+   "braille": "⠐⠌",
+   "text": "division, divided by (horizontal line dotted above",
+   "print": "÷"
+  },
+  {
+   "section": "11.2",
+   "braille": "⠐⠶",
+   "text": "equals",
+   "print": "="
+  },
+  {
+   "section": "11.2",
+   "braille": "⠈⠣",
+   "text": "less-than",
+   "print": "<"
+  },
+  {
+   "section": "11.2",
+   "braille": "⠈⠜",
+   "text": "greater-than",
+   "print": ">"
+  },
+  {
+   "section": "11.3",
+   "braille": "⠌",
+   "text": "simple numeric fraction line"
+  },
+  {
+   "section": "11.3",
+   "braille": "⠨⠌",
+   "text": "general fraction line"
+  },
+  {
+   "section": "11.3",
+   "braille": "⠷",
+   "text": "general fraction open indicator"
+  },
+  {
+   "section": "11.3",
+   "braille": "⠾",
+   "text": "general fraction close indicator"
+  },
+  {
+   "section": "11.4",
+   "braille": "⠢",
+   "text": "level change down (subscript)"
+  },
+  {
+   "section": "11.4",
+   "braille": "⠔",
+   "text": "level change up (superscript, exponent or power)"
+  },
+  {
+   "section": "11.4",
+   "braille": "⠣",
+   "text": "braille grouping open"
+  },
+  {
+   "section": "11.4",
+   "braille": "⠜",
+   "text": "braille grouping close"
+  },
+  {
+   "section": "11.5",
+   "braille": "⠩",
+   "text": "open radical (root)"
+  },
+  {
+   "section": "11.5",
+   "braille": "⠬",
+   "text": "close radical (root)"
+  },
+  {
+   "section": "11.6",
+   "braille": "⠳",
+   "text": "arrow indicator"
+  },
+  {
+   "section": "11.6",
+   "braille": "⠳⠕",
+   "text": "simple right pointing arrow [east]",
+   "print": "→"
+  },
+  {
+   "section": "11.6",
+   "braille": "⠳⠪",
+   "text": "simple left pointing arrow [west]",
+   "print": "←"
+  },
+  {
+   "section": "11.6",
+   "braille": "⠳⠬",
+   "text": "simple up pointing arrow [north]",
+   "print": "↑"
+  },
+  {
+   "section": "11.6",
+   "braille": "⠳⠩",
+   "text": "simple down pointing arrow [south]",
+   "print": "↓"
+  },
+  {
+   "section": "11.7",
+   "braille": "⠫",
+   "text": "shape indicator"
+  },
+  {
+   "section": "11.7",
+   "braille": "⠈⠫",
+   "text": "transcriber-defined shape indicator"
+  },
+  {
+   "section": "11.7",
+   "braille": "⠱",
+   "text": "shape terminator"
+  },
+  {
+   "section": "11.7",
+   "braille": "⠫⠼⠉",
+   "text": "regular (equilateral) triangle"
+  },
+  {
+   "section": "11.7",
+   "braille": "⠫⠼⠙",
+   "text": "square"
+  },
+  {
+   "section": "11.7",
+   "braille": "⠫⠿",
+   "text": "circle"
+  },
+  {
+   "section": "11.8",
+   "braille": "⠠⠐⠣",
+   "text": "big (multi-line) opening round parenthesis"
+  },
+  {
+   "section": "11.8",
+   "braille": "⠠⠐⠜",
+   "text": "big (multi-line) closing round parenthesis"
+  },
+  {
+   "section": "12",
+   "braille": "⠼⠽",
+   "text": "lowercase yogh",
+   "print": "ȝ"
+  },
+  {
+   "section": "12",
+   "braille": "⠠⠼⠽",
+   "text": "capital yogh",
+   "print": "Ȝ"
+  },
+  {
+   "section": "12",
+   "braille": "⠼⠮",
+   "text": "lowercase thorn",
+   "print": "þ"
+  },
+  {
+   "section": "12",
+   "braille": "⠠⠼⠮",
+   "text": "capital thorn",
+   "print": "Þ"
+  },
+  {
+   "section": "12",
+   "braille": "⠼⠫",
+   "text": "lowercase eth",
+   "print": "ð"
+  },
+  {
+   "section": "12",
+   "braille": "⠠⠼⠫",
+   "text": "capital eth",
+   "print": "Ð"
+  },
+  {
+   "section": "12",
+   "braille": "⠼⠺",
+   "text": "lowercase wynn (wen)",
+   "print": "ƿ"
+  },
+  {
+   "section": "12",
+   "braille": "⠠⠼⠺",
+   "text": "capital wynn (wen)",
+   "print": "Ƿ"
+  },
+  {
+   "section": "12",
+   "braille": "⠁⠘⠖⠑",
+   "text": "ligature ae (ash)",
+   "print": "æ"
+  },
+  {
+   "section": "12",
+   "braille": "⠠⠁⠠⠘⠖⠑",
+   "text": "capital ligature AE (ash)",
+   "print": "Æ"
+  },
+  {
+   "section": "12",
+   "braille": "⠕⠘⠖⠑",
+   "text": "ligature oe",
+   "print": "œ"
+  },
+  {
+   "section": "12",
+   "braille": "⠠⠕⠠⠘⠖⠑",
+   "text": "capital ligature OE",
+   "print": "Œ"
+  },
+  {
+   "section": "12",
+   "braille": "⠈⠤",
+   "text": "macron above following letter"
+  },
+  {
+   "section": "13",
+   "braille": "⠑",
+   "text": "Greek epsilon",
+   "print": "ε"
+  },
+  {
+   "section": "13",
+   "braille": "⠍",
+   "text": "Greek mu",
+   "print": "μ"
+  },
+  {
+   "section": "13",
+   "braille": "⠥",
+   "text": "Greek omikron ypsilon",
+   "print": "ου"
+  },
+  {
+   "section": "13",
+   "braille": "⠯",
+   "text": "French c-cedilla",
+   "print": "ç"
+  },
+  {
+   "section": "13",
+   "braille": "⠿",
+   "text": "French e-acute",
+   "print": "é"
+  },
+  {
+   "section": "13",
+   "braille": "⠷",
+   "text": "French a-grave",
+   "print": "à"
+  },
+  {
+   "section": "13",
+   "braille": "⠷",
+   "text": "Spanish a-acute",
+   "print": "á"
+  },
+  {
+   "section": "13",
+   "braille": "⠮",
+   "text": "French e-grave",
+   "print": "è"
+  },
+  {
+   "section": "13",
+   "braille": "⠮",
+   "text": "Spanish e-acute",
+   "print": "é"
+  },
+  {
+   "section": "13",
+   "braille": "⠾",
+   "text": "Spanish u-acute",
+   "print": "ú"
+  },
+  {
+   "section": "13",
+   "braille": "⠩",
+   "text": "French i-circumflex",
+   "print": "î"
+  },
+  {
+   "section": "13",
+   "braille": "⠹",
+   "text": "French o-circumflex",
+   "print": "ô"
+  },
+  {
+   "section": "13",
+   "braille": "⠳",
+   "text": "Igbo u-dot-under",
+   "print": "ụ"
+  },
+  {
+   "section": "13",
+   "braille": "⠪",
+   "text": "Greek omikron iota",
+   "print": "οι"
+  },
+  {
+   "section": "13",
+   "braille": "⠪",
+   "text": "Igbo o-dot-under",
+   "print": "ọ"
+  },
+  {
+   "section": "13",
+   "braille": "⠒⠸",
+   "text": "French opening italic passage"
+  },
+  {
+   "section": "13",
+   "braille": "⠢",
+   "text": "Spanish question mark [opening question mark is",
+   "print": "¿"
+  },
+  {
+   "section": "13",
+   "braille": "⠶",
+   "text": "French parenthesis (round bracket), opening and",
+   "print": "()"
+  },
+  {
+   "section": "13",
+   "braille": "⠌",
+   "text": "Spanish i-acute",
+   "print": "í"
+  },
+  {
+   "section": "13",
+   "braille": "⠬",
+   "text": "Spanish o-acute",
+   "print": "ó"
+  },
+  {
+   "section": "13",
+   "braille": "⠸",
+   "text": "French closing italic passage"
+  },
+  {
+   "section": "13",
+   "braille": "⠨",
+   "text": "French capital sign"
+  },
+  {
+   "section": "13.5",
+   "braille": "⠘⠰⠖",
+   "text": "inverted exclamation mark",
+   "print": "¡"
+  },
+  {
+   "section": "13.5",
+   "braille": "⠘⠰⠦",
+   "text": "inverted question mark",
+   "print": "¿"
+  },
+  {
+   "section": "14",
+   "braille": "⠘⠷",
+   "text": "non-UEB word indicator"
+  },
+  {
+   "section": "14",
+   "braille": "⠘⠾",
+   "text": "non-UEB word terminator"
+  },
+  {
+   "section": "14",
+   "braille": "⠐⠷⠄",
+   "text": "opening non-UEB passage indicator"
+  },
+  {
+   "section": "14",
+   "braille": "⠠⠐⠾",
+   "text": "closing non-UEB passage indicator"
+  },
+  {
+   "section": "15.1",
+   "braille": "⠸",
+   "text": "line indicator"
+  },
+  {
+   "section": "15.1",
+   "braille": "⠸⠳",
+   "text": "vertical line",
+   "print": "|"
+  },
+  {
+   "section": "15.1",
+   "braille": "⠸⠳⠸⠳",
+   "text": "double vertical line",
+   "print": "‖"
+  },
+  {
+   "section": "15.1",
+   "braille": "⠸⠌",
+   "text": "solidus (forward slash)",
+   "print": "/"
+  },
+  {
+   "section": "15.1",
+   "braille": "⠸⠌⠸⠌",
+   "text": "double solidus",
+   "print": "//"
+  },
+  {
+   "section": "15.2",
+   "braille": "⠘⠨⠃",
+   "text": "primary stress sign"
+  },
+  {
+   "section": "15.2",
+   "braille": "⠘⠨⠆",
+   "text": "secondary stress sign"
+  },
+  {
+   "section": "15.3",
+   "braille": "⠘⠨⠉",
+   "text": "high tone",
+   "print": "e.g. ˦"
+  },
+  {
+   "section": "15.3",
+   "braille": "⠘⠨⠒",
+   "text": "mid tone",
+   "print": "e.g. ˧"
+  },
+  {
+   "section": "15.3",
+   "braille": "⠘⠨⠤",
+   "text": "low tone",
+   "print": "e.g. ˨"
+  },
+  {
+   "section": "15.3",
+   "braille": "⠘⠨⠊",
+   "text": "high rising",
+   "print": "e.g. ➚"
+  },
+  {
+   "section": "15.3",
+   "braille": "⠘⠨⠔",
+   "text": "low rising",
+   "print": "e.g. ➚"
+  },
+  {
+   "section": "15.3",
+   "braille": "⠘⠨⠑",
+   "text": "high falling",
+   "print": "e.g. ➘"
+  },
+  {
+   "section": "15.3",
+   "braille": "⠘⠨⠢",
+   "text": "low falling",
+   "print": "e.g. ➘"
+  },
+  {
+   "section": "15.3",
+   "braille": "⠘⠨⠙",
+   "text": "global rise",
+   "print": "e.g. ↗"
+  },
+  {
+   "section": "15.3",
+   "braille": "⠘⠨⠴",
+   "text": "global fall",
+   "print": "e.g. ↘"
+  },
+  {
+   "section": "15.3",
+   "braille": "⠘⠨⠡",
+   "text": "rise-fall",
+   "print": "e.g."
+  },
+  {
+   "section": "15.3",
+   "braille": "⠘⠨⠌",
+   "text": "fall-rise",
+   "print": "e.g."
+  },
+  {
+   "section": "15.3",
+   "braille": "⠘⠨⠮",
+   "text": "down step",
+   "print": "e.g. ↓"
+  },
+  {
+   "section": "15.3",
+   "braille": "⠘⠨⠫",
+   "text": "up step",
+   "print": "e.g. ↑"
+  },
+  {
+   "section": "16.2",
+   "braille": "⠐⠒",
+   "text": "horizontal line mode indicator"
+  },
+  {
+   "section": "16.2",
+   "braille": "⠒",
+   "text": "simple (solid single) horizontal line segment"
+  },
+  {
+   "section": "16.2",
+   "braille": "⠂",
+   "text": "variant horizontal line segment (e.g. dotted or dashed)"
+  },
+  {
+   "section": "16.2",
+   "braille": "⠶",
+   "text": "double horizontal line segment"
+  },
+  {
+   "section": "16.2",
+   "braille": "⠿",
+   "text": "triple horizontal line segment"
+  },
+  {
+   "section": "16.2",
+   "braille": "⠚",
+   "text": "corner with upward vertical"
+  },
+  {
+   "section": "16.2",
+   "braille": "⠲",
+   "text": "corner with downward vertical"
+  },
+  {
+   "section": "16.2",
+   "braille": "⠣",
+   "text": "crossing with left-leaning diagonal line"
+  },
+  {
+   "section": "16.2",
+   "braille": "⠺",
+   "text": "crossing with vertical line"
+  },
+  {
+   "section": "16.2",
+   "braille": "⠜",
+   "text": "crossing with right-leaning diagonal line"
+  },
+  {
+   "section": "16.2",
+   "braille": "⠄",
+   "text": "horizontal line mode terminator"
+  },
+  {
+   "section": "16.3",
+   "braille": "⠸",
+   "text": "vertical single solid line segment"
+  },
+  {
+   "section": "16.3",
+   "braille": "⠘",
+   "text": "first variant vertical line segment (e.g. dotted or dashed)"
+  },
+  {
+   "section": "16.3",
+   "braille": "⠠⠸",
+   "text": "second variant vertical line segment (e.g. double line)"
+  },
+  {
+   "section": "16.3",
+   "braille": "⠣",
+   "text": "left-leaning single solid diagonal line segment"
+  },
+  {
+   "section": "16.3",
+   "braille": "⠜",
+   "text": "right-leaning single solid diagonal line segment"
+  },
+  {
+   "section": "16.3",
+   "braille": "⠠⠣",
+   "text": "variant left-leaning diagonal line segment"
+  },
+  {
+   "section": "16.3",
+   "braille": "⠠⠜",
+   "text": "variant right-leaning diagonal line segment"
+  },
+  {
+   "section": "16.5",
+   "braille": "⠐⠐",
+   "text": "guide dots (with space before and after)"
+  }
+ ]
+}

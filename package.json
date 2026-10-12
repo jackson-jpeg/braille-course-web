@@ -13,7 +13,10 @@
     "format": "prettier --write .",
     "format:check": "prettier --check .",
     "test": "jest",
-    "test:watch": "jest --watch"
+    "test:watch": "jest --watch",
+    "test:braille": "jest --ci __tests__/braille __tests__/games",
+    "braille:oracle": "tsx scripts/braille/dump-site-braille.ts | python3 scripts/braille/liblouis-oracle.py",
+    "braille:rulebook": "python3 scripts/braille/extract-rulebook-signs.py && python3 scripts/braille/verify-rulebook-examples.py"
   },
   "dependencies": {
     "@anthropic-ai/sdk": "^0.73.0",
