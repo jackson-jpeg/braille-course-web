@@ -19,8 +19,10 @@ pattern teaches a parent something false. Accuracy is the top priority; design s
 2. **No hand-typed braille anywhere else**: no Unicode braille characters, no `[0,1,1,...]` arrays, no
    literal cell arrays, no prose like "dots 1 2" or "dot 6" typed by hand (generate it with prose.ts),
    no `brailleMap` / `nemeth-map` / `contracted-braille-map` imports (these legacy files will be deleted),
-   no EBAE terms ("letter sign", "letter indicator"), no Nemeth. Enforced by
-   `__tests__/braille/no-hardcoded-braille.test.ts`.
+   no superseded EBAE terms ("number indicator", "number sign" for the numeric indicator, "letter sign",
+   "double capital"; the list is `lib/braille/terminology.ts`), no Nemeth, and no digit paired with an
+   uppercase letter as its cell ("1(A)"). Enforced by `__tests__/braille/no-hardcoded-braille.test.ts`
+   (source) and `scripts/braille/check-rendered-cells.mjs` (rendered page text).
 3. **Drawing cells**: only `components/BrailleCell.tsx` (`<BrailleCell cell={...} className dotClassName
 raisedClassName flatClassName label? />`) and `components/BrailleDotPad.tsx` (interactive six buttons,
    `toggleDot` helper). Keep each component's existing CSS class names so the look does not change
@@ -35,8 +37,16 @@ raisedClassName flatClassName label? />`) and `components/BrailleDotPad.tsx` (in
    You can check a word quickly with:
    `python3 -c "import louis; print(louis.translateString(['unicode.dis','en-ueb-g2.ctb'], 'mother'))"`.
 6. **Accessibility**: real text alternatives; keyboard play; screen-reader labels that state the dot
-   numbers (use `describeCell`/`describeCells`, or `<BrailleCell label="Letter H" />`, which appends
-   "dots 1, 2, 5").
+   numbers (use `describeCell`/`describeCells`, or `<BrailleCell label="letter h" />`, which appends
+   "dots 1, 2, 5"). Every lesson and game page must pass axe-core (`npm run a11y:axe -- <url>`, also in CI).
+7. **Captions say what the cell is.** A plain letter cell is lowercase: caption it "h", never "H" (a
+   capital needs the capital letter indicator in front, and that cell gets its own caption). The rule is
+   `lib/braille/labels.ts`; the jsdom helper `checkAllCells` and the real-browser check apply it to every
+   drawn cell.
+8. **AI-generated documents** (admin "Create" tab) never take braille from the model. The model writes
+   print and tokens (`{dots:numeric}`, `{letter:b}`); braille worksheet items carry only `print`.
+   `lib/ai-content-sanitizer.ts` regenerates or removes everything else, and `lib/worksheet-braille.ts`
+   draws items in the worksheet's grade (contracted words only from liblouis-verified lists).
 
 ## Per-game structure
 

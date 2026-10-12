@@ -1,0 +1,163 @@
+/**
+ * Words that must never appear in any word list on this family site (games, worksheets),
+ * whether as answers or as accepted guesses. Checked by __tests__/games/word-blocklist.test.ts.
+ * Plain-language categories: profanity and slurs, sexual content, violence and weapons,
+ * drugs and alcohol, and words that are hurtful to children (e.g. insults, slavery).
+ */
+export const WORD_BLOCKLIST: readonly string[] = [
+  // profanity / vulgar
+  'damn',
+  'hell',
+  'crap',
+  'piss',
+  'shit',
+  'fuck',
+  'cunt',
+  'dick',
+  'cock',
+  'twat',
+  'arse',
+  'arses',
+  'butt',
+  'bitch',
+  'bastard',
+  'turd',
+  'fart',
+  'farts',
+  'jerk',
+  'jerks',
+  'idiot',
+  'moron',
+  'dumb',
+  'stupid',
+  'loser',
+  'freak',
+  'fatso',
+  'retard',
+  'spaz',
+  'lame',
+  'tits',
+  'boob',
+  'boobs',
+  'slut',
+  'whore',
+  'pimp',
+  'hoe',
+  'hoes',
+  'skank',
+  'prick',
+  'wank',
+  'balls',
+  'nude',
+  'nudes',
+  'naked',
+  'porn',
+  'sexy',
+  'sex',
+  'horny',
+  'rape',
+  'raped',
+  'grope',
+  'stripper',
+  // violence / weapons / death
+  'kill',
+  'kills',
+  'killed',
+  'murder',
+  'stab',
+  'stabs',
+  'shoot',
+  'gun',
+  'guns',
+  'rifle',
+  'bomb',
+  'bombs',
+  'nuke',
+  'knife',
+  'knives',
+  'blood',
+  'bloody',
+  'dead',
+  'death',
+  'die',
+  'dies',
+  'died',
+  'dying',
+  'corpse',
+  'suicide',
+  'slay',
+  'slain',
+  'gore',
+  'torture',
+  'war',
+  'wars',
+  'assault',
+  'abuse',
+  'hanged',
+  'noose',
+  'coffin',
+  'execute',
+  // drugs / alcohol / tobacco
+  'drug',
+  'drugs',
+  'drunk',
+  'beer',
+  'beers',
+  'wine',
+  'wines',
+  'vodka',
+  'booze',
+  'meth',
+  'cocaine',
+  'heroin',
+  'cigar',
+  'vape',
+  'stoned',
+  // hurtful
+  'slave',
+  'slaves',
+  'nazi',
+  'nazis',
+  'hate',
+  'hates',
+  'ugly',
+  'fat',
+  // found in the frequent-word candidates for worksheets (scripts/braille/data/common-words.json)
+  'fucking',
+  'fucked',
+  'bullshit',
+  'wtf',
+  'pissed',
+  'ass',
+  'asshole',
+  'pussy',
+  'sext',
+  'sexual',
+  'sexually',
+  'alcohol',
+  'alcoholic',
+  'weapon',
+  'weapons',
+  'murdered',
+  'shooting',
+];
+
+const SET = new Set(WORD_BLOCKLIST);
+
+/**
+ * True when a word is on the blocklist or is a plain inflection of a blocked word (plural, past
+ * tense, -ing, -er), so "kills" or "hated" are caught without listing every form.
+ */
+export function isBlockedWord(word: string): boolean {
+  const w = word.toLowerCase();
+  if (SET.has(w)) return true;
+  for (const suffix of ['s', 'es', 'd', 'ed', 'ing', 'er', 'ers']) {
+    if (!w.endsWith(suffix)) continue;
+    const stem = w.slice(0, -suffix.length);
+    if (suffix === 'd' && !stem.endsWith('e')) continue; // "hated", but not "ward"
+    if (SET.has(stem)) return true;
+    // doubled consonant: "stabbed", "shooting" style
+    if (stem.length > 2 && stem[stem.length - 1] === stem[stem.length - 2] && SET.has(stem.slice(0, -1))) return true;
+  }
+  return false;
+}

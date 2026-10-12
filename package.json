@@ -17,7 +17,8 @@
     "braille:oracle": "tsx scripts/braille/dump-site-braille.ts | python3 scripts/braille/liblouis-oracle.py",
     "braille:rulebook": "python3 scripts/braille/extract-rulebook-signs.py && python3 scripts/braille/verify-rulebook-examples.py",
     "test:accuracy": "NODE_ENV=test jest --ci",
-    "braille:geometry": "node scripts/braille/check-rendered-cells.mjs"
+    "braille:geometry": "tsx scripts/braille/check-rendered-cells.mjs",
+    "a11y:axe": "node scripts/a11y/check-axe.mjs"
   },
   "dependencies": {
     "@anthropic-ai/sdk": "^0.73.0",
@@ -37,6 +38,7 @@
     "stripe": "^17.0.0"
   },
   "devDependencies": {
+    "@axe-core/playwright": "4.13.0",
     "@jest/types": "^30.2.0",
     "@testing-library/jest-dom": "^6.9.1",
     "@testing-library/react": "^16.3.2",

@@ -6,6 +6,7 @@ import { type InventoryItem, g1Item } from './inventory';
 import { brailleInventory as numberSenseInventory } from '../games/number-sense';
 import { brailleInventory as courseInventory } from '../course-curriculum';
 import { brailleInventory as siteChromeInventory } from '../site-chrome-braille';
+import { brailleInventory as worksheetInventory } from '../worksheet-braille';
 import { brailleInventory as capitalQuestInventory } from '../games/capital-quest';
 import { brailleInventory as numberLockInventory } from '../games/number-lock';
 import { brailleInventory as punctuationDetectiveInventory } from '../games/punctuation-detective';
@@ -82,6 +83,7 @@ const SOURCES: (() => InventoryItem[])[] = [
   numberSenseInventory,
   courseInventory,
   siteChromeInventory,
+  worksheetInventory,
   capitalQuestInventory,
   numberLockInventory,
   punctuationDetectiveInventory,

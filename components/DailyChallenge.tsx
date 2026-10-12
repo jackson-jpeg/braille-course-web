@@ -30,7 +30,8 @@ export default function DailyChallengeBanner() {
         </span>
       </div>
 
-      <div className="daily-challenge-list">
+      {/* Scrolls sideways on phones, so it takes keyboard focus (WCAG 2.1.1). */}
+      <div className="daily-challenge-list" tabIndex={0} role="region" aria-label="Today’s challenges">
         {challenges.map((challenge, i) => (
           <div key={challenge.id} className={`daily-challenge-item ${completed[i] ? 'completed' : ''}`}>
             <span className="daily-challenge-check">{completed[i] ? '✓' : '○'}</span>

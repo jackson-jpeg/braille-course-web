@@ -163,6 +163,7 @@ export default function BraillerChallenge() {
 
             <div
               className={`bchal-paper${flash ? ` bchal-paper--${flash}` : ''}`}
+              role="img"
               aria-label={`Written so far: ${written.length} of ${writer.expected.length} cells`}
             >
               {writer.expected.map((e, i) => (
