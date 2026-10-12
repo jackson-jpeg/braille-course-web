@@ -105,16 +105,14 @@ scripts/braille/plain-contracted-words.py`, then `npm run braille:oracle`.
 
 - `vercel.json` has only `framework` and `crons`; there is no `ignoreCommand` or `git.deploymentEnabled`
   anywhere in the repo, so nothing in the code turns previews off.
-- Every branch push authored by `Claude <noreply@anthropic.com>` got a Vercel deployment that failed
-  within about a second of being created (before any build ran). That is how Vercel rejects a commit
-  whose author is not a member of the Vercel team.
-- A test commit authored as `jackson-jpeg <realjacksons@gmail.com>` (the repo's git identity is now set
-  to that) got no Vercel deployment at all, not even a failed one, in over 30 minutes. See the cleanup
-  report for what the pull request push showed.
-- Production deploys from `master` work (the merge author is Jackson).
-- What to check in the Vercel dashboard (not reachable from the cloud session): Project → Settings → Git
-  (are preview deployments for non-production branches enabled?) and Settings → Build and Deployment
-  (Ignored Build Step).
+- Branch pushes authored by `Claude <noreply@anthropic.com>` got a Vercel deployment that failed about a
+  second after it was created (Vercel rejecting a commit author who is not on the team). The repo's git
+  identity is now `jackson-jpeg <realjacksons@gmail.com>`.
+- Since about 04:13 UTC on October 12 Vercel has posted nothing to GitHub (no deployments, statuses or PR
+  comments), yet the merge of PR #7 is live in production. So Vercel builds, but its GitHub reporting is
+  off. Preview builds may exist unreported; check the Vercel dashboard (Deployments filtered by branch;
+  Settings → Git). Until that is fixed, verify a deploy on the live site, not on GitHub: the browser checks
+  can be pointed at `https://www.teachbraille.org`.
 
 ## State at handoff
 

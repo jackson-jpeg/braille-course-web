@@ -25,6 +25,7 @@ for (const width of [1280, 390]) {
   const page = await context.newPage();
   for (const path of pages) {
     await page.goto(base + path, { waitUntil: 'networkidle' });
+    await page.waitForFunction(() => document.title.length > 0 && document.body.innerText.length > 0);
     const close = page.locator('.onboarding-close');
     if (await close.count()) await close.first().click();
     const height = await page.evaluate(() => document.body.scrollHeight);
@@ -32,7 +33,8 @@ for (const width of [1280, 390]) {
       await page.evaluate((yy) => window.scrollTo(0, yy), y);
       await page.waitForTimeout(60);
     }
-    await page.waitForTimeout(500);
+    // Delayed content (e.g. the hero's hint fades in after 1.5 s) must be on screen when measured.
+    await page.waitForTimeout(2500);
     // Let entrance animations finish so colours are measured at rest.
     await page.evaluate(() =>
       document.getAnimations().forEach((a) => {
