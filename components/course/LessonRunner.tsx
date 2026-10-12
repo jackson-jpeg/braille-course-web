@@ -8,7 +8,10 @@ import GameErrorBoundary from '@/components/GameErrorBoundary';
 import BraillerInput from '@/components/course/BraillerInput';
 import LessonNav from '@/components/course/LessonNav';
 import { useCourseProgress } from '@/hooks/useCourseProgress';
-import { describeDots, type Lesson } from '@/lib/course-curriculum';
+import { type Lesson } from '@/lib/course-curriculum';
+import { describeCells } from '@/lib/braille/prose';
+import BrailleText from '@/components/BrailleText';
+import { transcribe as transcribeCells } from '@/lib/braille/transcribe';
 import type { GameId } from '@/lib/progress-types';
 
 function GameSkeleton() {
@@ -20,7 +23,8 @@ function GameSkeleton() {
 }
 
 // Reuse the existing games whole as each lesson's deeper-practice step.
-const GAME_COMPONENTS: Record<GameId, ComponentType> = {
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+const GAME_COMPONENTS: Record<GameId, ComponentType<any>> = {
   wordgame: dynamic(() => import('@/components/BrailleWordGame'), { loading: GameSkeleton }),
   explorer: dynamic(() => import('@/components/BrailleDotExplorer'), { loading: GameSkeleton }),
   hangman: dynamic(() => import('@/components/BrailleHangman'), { loading: GameSkeleton }),
@@ -33,6 +37,10 @@ const GAME_COMPONENTS: Record<GameId, ComponentType> = {
   'sentence-decoder': dynamic(() => import('@/components/BrailleSentenceDecoder'), { loading: GameSkeleton }),
   bingo: dynamic(() => import('@/components/BrailleBingo'), { loading: GameSkeleton }),
   rain: dynamic(() => import('@/components/BrailleRain'), { loading: GameSkeleton }),
+  'capital-quest': dynamic(() => import('@/components/BrailleCapitalQuest'), { loading: GameSkeleton }),
+  'number-lock': dynamic(() => import('@/components/BrailleNumberLock'), { loading: GameSkeleton }),
+  'punctuation-detective': dynamic(() => import('@/components/BraillePunctuationDetective'), { loading: GameSkeleton }),
+  'brailler-challenge': dynamic(() => import('@/components/BraillerChallenge'), { loading: GameSkeleton }),
 };
 
 interface LessonRunnerProps {
@@ -107,15 +115,44 @@ export default function LessonRunner({ lesson, prev, next }: LessonRunnerProps) 
 
           {hasChars && (
             <ul className="lesson-chars" role="list">
-              {lesson.chars.map((c) => (
-                <li key={c.print} className="lesson-char">
-                  <BrailleCell pattern={c.pattern} className="lesson-char-cell" dotClassName="lesson-char-dot" />
+              {lesson.chars.map((c, i) => (
+                <li key={i} className="lesson-char">
+                  <span className="lesson-char-cells">
+                    {c.cells.map((cell, j) => (
+                      <BrailleCell key={j} cell={cell} className="lesson-char-cell" dotClassName="lesson-char-dot" />
+                    ))}
+                  </span>
                   <span className="lesson-char-print">{c.print}</span>
-                  <span className="lesson-char-dots">{describeDots(c.pattern)}</span>
+                  <span className="lesson-char-dots">{describeCells(c.cells)}</span>
                   {c.note && <span className="lesson-char-note">{c.note}</span>}
                 </li>
               ))}
             </ul>
+          )}
+
+          {lesson.examples && lesson.examples.length > 0 && (
+            <div className="lesson-examples">
+              <h3 className="lesson-examples-heading">Examples</h3>
+              <p className="lesson-text lesson-examples-intro">
+                Each example is shown cell by cell, with what each cell stands for underneath.
+              </p>
+              <ul className="lesson-example-list" role="list">
+                {lesson.examples.map((ex, i) => (
+                  <li key={i} className="lesson-example">
+                    <span className="lesson-example-print">{ex.print}</span>
+                    <BrailleText
+                      text={ex.print}
+                      showLabels
+                      className="lesson-example-braille"
+                      cellClassName="lesson-char-cell"
+                      dotClassName="lesson-char-dot"
+                      label={`${ex.print} in braille: ${describeCells(transcribeCells(ex.print))}`}
+                    />
+                    {ex.note && <span className="lesson-example-note">{ex.note}</span>}
+                  </li>
+                ))}
+              </ul>
+            </div>
           )}
         </div>
       </section>
@@ -136,7 +173,7 @@ export default function LessonRunner({ lesson, prev, next }: LessonRunnerProps) 
             <ol className="lesson-drill-chips" aria-label="Drill progress">
               {lesson.chars.map((c, i) => (
                 <li
-                  key={c.print}
+                  key={i}
                   className={`lesson-drill-chip${solved[i] ? ' done' : ''}${i === current && !drillDone ? ' active' : ''}`}
                 >
                   <span aria-hidden="true">{c.print}</span>
@@ -194,7 +231,7 @@ export default function LessonRunner({ lesson, prev, next }: LessonRunnerProps) 
           {lessonFinished ? (
             <div className="lesson-practice-game">
               <GameErrorBoundary gameName={lesson.practiceGameLabel ?? 'Practice'}>
-                <PracticeGame />
+                <PracticeGame {...(lesson.practiceGameProps ?? {})} />
               </GameErrorBoundary>
             </div>
           ) : (

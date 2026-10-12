@@ -1,38 +1,19 @@
 'use client';
 
 import { useState, useEffect, useCallback, useRef } from 'react';
-import { brailleMap, computeSimilarity } from '@/lib/braille-map';
 import BrailleCell from '@/components/BrailleCell';
 import { useGameProgress } from '@/hooks/useGameProgress';
 import { pushAchievements } from '@/components/AchievementToast';
 import { getRandomTip } from '@/lib/learning-tips';
 import { getDifficultyParams } from '@/lib/difficulty-settings';
 import DifficultySelector from '@/components/DifficultySelector';
+import { type Drop, dropForKey, keyToLetter, pickLetter, rainCell } from '@/lib/games/rain';
 
-const LETTERS = Object.keys(brailleMap).filter((k) => /^[A-Z]$/.test(k));
 const AREA_H = 340; // play-area height in px; a cell "lands" when it passes this
 const MAX_LIVES = 3;
 const WIN_SCORE = 10; // a solid run — counts as a win for streaks/achievements
 
 type Phase = 'ready' | 'playing' | 'over';
-interface Drop {
-  id: number;
-  letter: string;
-  x: number; // percent from left
-  y: number; // px from top
-}
-
-/** Pick a letter, optionally biased toward one visually similar to `near`. */
-function pickLetter(near: string | null, similar: boolean): string {
-  if (similar && near && Math.random() < 0.5) {
-    const scored = LETTERS.filter((l) => l !== near)
-      .map((l) => ({ l, sim: computeSimilarity(brailleMap[near], brailleMap[l]) }))
-      .sort((a, b) => b.sim - a.sim)
-      .slice(0, 6);
-    return scored[Math.floor(Math.random() * scored.length)].l;
-  }
-  return LETTERS[Math.floor(Math.random() * LETTERS.length)];
-}
 
 export default function BrailleRain() {
   const { difficulty, setDifficulty, recordResult } = useGameProgress('rain');
@@ -192,17 +173,15 @@ export default function BrailleRain() {
     function onKeyDown(e: KeyboardEvent) {
       if (!visibleRef.current || phaseRef.current !== 'playing') return;
       if (e.ctrlKey || e.metaKey || e.altKey) return;
-      if (e.key.length !== 1 || !/[a-zA-Z]/.test(e.key)) return;
-      const letter = e.key.toUpperCase();
-      const matches = dropsRef.current.filter((d) => d.letter === letter);
-      if (matches.length === 0) {
+      if (keyToLetter(e.key) === null) return;
+      const target = dropForKey(e.key, dropsRef.current);
+      if (!target) {
         setWrongFlash(true);
         if (flashTimerRef.current) clearTimeout(flashTimerRef.current);
         flashTimerRef.current = setTimeout(() => setWrongFlash(false), 200);
         return;
       }
       // Clear the lowest (closest to landing) match
-      const target = matches.reduce((a, b) => (b.y > a.y ? b : a));
       dropsRef.current = dropsRef.current.filter((d) => d.id !== target.id);
       setDrops(dropsRef.current);
       scoreRef.current += 1;
@@ -221,7 +200,7 @@ export default function BrailleRain() {
         <span className="section-label">Read &amp; Type</span>
         <h2>Braille Rain</h2>
         <p>
-          Braille cells fall — type each letter before it lands. <span className="rain-kbd-hint">Type A–Z</span>
+          Braille cells fall — type each letter before it lands. <span className="rain-kbd-hint">Type a–z</span>
         </p>
         <DifficultySelector gameId="rain" current={difficulty} onChange={setDifficulty} />
       </div>
@@ -258,13 +237,13 @@ export default function BrailleRain() {
             aria-label="Falling braille cells"
           >
             {drops.map((d) => (
-              <div
-                key={d.id}
-                className="rain-drop"
-                style={{ left: `${d.x}%`, top: `${d.y}px` }}
-                aria-label={`Falling letter ${d.letter}`}
-              >
-                <BrailleCell letter={d.letter} className="rain-drop-braille" dotClassName="rain-drop-dot" />
+              <div key={d.id} className="rain-drop" style={{ left: `${d.x}%`, top: `${d.y}px` }}>
+                <BrailleCell
+                  cell={rainCell(d.letter)}
+                  className="rain-drop-braille"
+                  dotClassName="rain-drop-dot"
+                  label="Falling braille cell"
+                />
               </div>
             ))}
             <div className="rain-baseline" aria-hidden="true" />

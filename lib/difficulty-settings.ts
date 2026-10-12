@@ -29,6 +29,10 @@ export interface GameDifficultyParams {
   'sentence-decoder': { maxWords: number };
   bingo: { winCondition: 'line' | 'double-line' | 'blackout'; callIntervalMs: number };
   rain: { fallSpeed: number; spawnMs: number; similarLetters: boolean };
+  'capital-quest': Record<string, never>;
+  'number-lock': Record<string, never>;
+  'punctuation-detective': Record<string, never>;
+  'brailler-challenge': Record<string, never>;
 }
 
 /** Get difficulty parameters for a game */
@@ -94,6 +98,10 @@ export function getDifficultyParams(gameId: GameId, difficulty: Difficulty): Rec
       intermediate: { fallSpeed: 34, spawnMs: 1900, similarLetters: false },
       advanced: { fallSpeed: 48, spawnMs: 1400, similarLetters: true },
     },
+    'capital-quest': { beginner: {}, intermediate: {}, advanced: {} },
+    'number-lock': { beginner: {}, intermediate: {}, advanced: {} },
+    'punctuation-detective': { beginner: {}, intermediate: {}, advanced: {} },
+    'brailler-challenge': { beginner: {}, intermediate: {}, advanced: {} },
   };
 
   return params[gameId]?.[difficulty] || params[gameId]?.['beginner'] || {};

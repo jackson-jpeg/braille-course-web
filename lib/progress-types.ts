@@ -12,7 +12,11 @@ export type GameId =
   | 'sequence'
   | 'sentence-decoder'
   | 'bingo'
-  | 'rain';
+  | 'rain'
+  | 'capital-quest'
+  | 'number-lock'
+  | 'punctuation-detective'
+  | 'brailler-challenge';
 
 export type Difficulty = 'beginner' | 'intermediate' | 'advanced';
 
@@ -102,6 +106,10 @@ export const DEFAULT_SETTINGS: UserSettings = {
     'sentence-decoder': 'beginner',
     bingo: 'beginner',
     rain: 'beginner',
+    'capital-quest': 'beginner',
+    'number-lock': 'beginner',
+    'punctuation-detective': 'beginner',
+    'brailler-challenge': 'beginner',
   },
   trackingEnabled: true,
   hasSeenOnboarding: false,

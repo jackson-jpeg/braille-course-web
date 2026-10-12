@@ -1,19 +1,11 @@
 import { ImageResponse } from 'next/og';
+import { type DotSlot, ogImageCells } from '@/lib/site-chrome-braille';
 
 export const runtime = 'edge';
 
 export const alt = 'TeachBraille.org — Delaney Costello, Teacher of the Visually Impaired';
 export const size = { width: 1200, height: 630 };
 export const contentType = 'image/png';
-
-// Braille dot patterns: [d1, d4, d2, d5, d3, d6]
-const patterns: Record<string, number[]> = {
-  T: [0, 1, 1, 1, 1, 0],
-  E: [1, 0, 0, 1, 0, 0],
-  A: [1, 0, 0, 0, 0, 0],
-  C: [1, 1, 0, 0, 0, 0],
-  H: [1, 0, 1, 1, 0, 0],
-};
 
 const NAVY = '#1B2A4A';
 const GOLD = '#D4A853';
@@ -22,24 +14,20 @@ const DOT_SIZE = 20;
 const DOT_GAP = 10;
 const CELL_GAP = 32;
 
-function BrailleCell({ pattern }: { pattern: number[] }) {
-  // pattern is [d1, d4, d2, d5, d3, d6]
-  // Render as 2 columns x 3 rows: col0=[d1,d2,d3], col1=[d4,d5,d6]
-  const col0 = [pattern[0], pattern[2], pattern[4]];
-  const col1 = [pattern[1], pattern[3], pattern[5]];
-
+/** One braille cell as two flex columns (left and right column, from dotPosition), from lib/site-chrome-braille. */
+function OgCell({ columns }: { columns: [DotSlot[], DotSlot[]] }) {
   return (
     <div style={{ display: 'flex', flexDirection: 'row', gap: DOT_GAP }}>
-      {[col0, col1].map((col, ci) => (
+      {columns.map((col, ci) => (
         <div key={ci} style={{ display: 'flex', flexDirection: 'column', gap: DOT_GAP }}>
-          {col.map((filled, ri) => (
+          {col.map(({ dot, raised }) => (
             <div
-              key={ri}
+              key={dot}
               style={{
                 width: DOT_SIZE,
                 height: DOT_SIZE,
                 borderRadius: '50%',
-                backgroundColor: filled ? GOLD : 'rgba(253,248,240,0.15)',
+                backgroundColor: raised ? GOLD : 'rgba(253,248,240,0.15)',
               }}
             />
           ))}
@@ -67,7 +55,7 @@ export default async function OGImage() {
         padding: '60px',
       }}
     >
-      {/* Braille cells spelling TEACH */}
+      {/* Braille cells spelling "teach" (uncontracted, lowercase: no capital indicators) */}
       <div
         style={{
           display: 'flex',
@@ -76,8 +64,8 @@ export default async function OGImage() {
           marginBottom: 48,
         }}
       >
-        {'TEACH'.split('').map((letter) => (
-          <BrailleCell key={letter} pattern={patterns[letter]} />
+        {ogImageCells().map(({ columns }, i) => (
+          <OgCell key={i} columns={columns} />
         ))}
       </div>
 

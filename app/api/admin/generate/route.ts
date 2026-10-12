@@ -2,152 +2,18 @@ import { NextRequest } from 'next/server';
 import { isAuthorized } from '@/lib/admin-auth';
 import { anthropic } from '@/lib/anthropic';
 import { getSettings, getSetting } from '@/lib/settings';
-import { dotDescription } from '@/lib/braille-map';
-import { contractedBrailleEntries } from '@/lib/contracted-braille-map';
+import {
+  type Difficulty,
+  PROMPT_EXAMPLES,
+  buildBrailleReference,
+  buildPedagogicalPreamble,
+} from '@/lib/ai-braille-reference';
 import { validateContentJson } from '@/lib/braille-validator';
 import { buildPreview, sseEncode } from '@/lib/document-builders';
 
 export const maxDuration = 60;
 
-type Difficulty = 'beginner' | 'intermediate' | 'advanced';
-
-/* ── Braille reference context builder ── */
-
-function buildBrailleContext(difficulty: Difficulty): string {
-  const lines: string[] = [
-    '=== BRAILLE REFERENCE DATA (use this as ground truth — do NOT guess dot patterns) ===',
-    '',
-    'The braille cell has 6 dots arranged in 2 columns of 3:',
-    '  1 4',
-    '  2 5',
-    '  3 6',
-    '',
-    '--- Letter-to-Dot Mappings (A-Z) ---',
-  ];
-
-  for (const letter of 'ABCDEFGHIJKLMNOPQRSTUVWXYZ') {
-    lines.push(`  ${letter}: ${dotDescription(letter)}`);
-  }
-
-  lines.push('');
-  lines.push('--- Numbers ---');
-  lines.push('  Number indicator (#): dots 3 4 5 6');
-  lines.push('  After the number indicator, letters A-J become digits 1-9 and 0:');
-  for (let i = 1; i <= 9; i++) {
-    const letter = String.fromCharCode(64 + i); // A=1 ... I=9
-    lines.push(`  ${i}: ${dotDescription(letter)} (same as ${letter})`);
-  }
-  lines.push(`  0: ${dotDescription('J')} (same as J)`);
-
-  lines.push('');
-  lines.push('--- Formatting Indicators ---');
-  lines.push('  Capital indicator: dot 6');
-  lines.push('  Double capital (all-caps): dot 6, dot 6');
-  lines.push('  Letter indicator: dots 5 6');
-
-  if (difficulty === 'intermediate' || difficulty === 'advanced') {
-    lines.push('');
-    lines.push('--- Grade 2 Contractions ---');
-
-    const wordsigns = contractedBrailleEntries.filter((e) => e.type === 'wordsign');
-    const strong = contractedBrailleEntries.filter((e) => e.type === 'strong');
-    const groupsignsStrong = contractedBrailleEntries.filter((e) => e.type === 'groupsign-strong');
-    const groupsignsLower = contractedBrailleEntries.filter((e) => e.type === 'groupsign-lower');
-    const wordsignsLower = contractedBrailleEntries.filter((e) => e.type === 'wordsign-lower');
-
-    const dotNums = [1, 4, 2, 5, 3, 6];
-    const describeDots = (pattern: number[]) => {
-      const raised = pattern
-        .map((v, i) => (v ? dotNums[i] : null))
-        .filter(Boolean)
-        .sort((a, b) => a! - b!);
-      return `dots ${raised.join(' ')}`;
-    };
-
-    lines.push('');
-    lines.push('  Strong contractions (unique patterns):');
-    for (const e of strong) {
-      lines.push(`    "${e.label}": ${describeDots(e.pattern)}`);
-    }
-
-    lines.push('');
-    lines.push('  Alphabetic wordsigns (same pattern as the letter, used as whole word):');
-    for (const e of wordsigns) {
-      lines.push(`    "${e.label}": same pattern as ${e.label.charAt(0).toUpperCase()}`);
-    }
-
-    lines.push('');
-    lines.push('  Strong groupsigns (can appear within words):');
-    for (const e of groupsignsStrong) {
-      lines.push(`    "${e.label}": ${describeDots(e.pattern)}`);
-    }
-
-    if (difficulty === 'advanced') {
-      lines.push('');
-      lines.push('  Lower groupsigns:');
-      for (const e of groupsignsLower) {
-        lines.push(`    "${e.label}": ${describeDots(e.pattern)}`);
-      }
-
-      lines.push('');
-      lines.push('  Lower wordsigns:');
-      for (const e of wordsignsLower) {
-        lines.push(`    "${e.label}": ${describeDots(e.pattern)}`);
-      }
-    }
-  }
-
-  lines.push('');
-  lines.push('=== END BRAILLE REFERENCE DATA ===');
-  return lines.join('\n');
-}
-
-function buildPedagogicalPreamble(difficulty: Difficulty): string {
-  const common = [
-    'CRITICAL ACCURACY RULES (apply to all content you generate):',
-    '- ALWAYS verify dot patterns against the reference data provided above.',
-    '- NEVER guess or invent dot patterns from memory — use ONLY the reference data.',
-    '- ALWAYS include dot numbers alongside braille characters (e.g., "The letter A is dots 1").',
-    '- When describing a braille cell, specify which dots are raised.',
-    '',
-  ].join('\n');
-
-  const levelGuidelines: Record<Difficulty, string> = {
-    beginner: [
-      'PEDAGOGICAL GUIDELINES — BEGINNER LEVEL:',
-      '- Use ONLY Grade 1 (uncontracted) braille. Do NOT introduce any contractions.',
-      '- Always include dot numbers for every letter or symbol introduced.',
-      '- Start with simple, familiar letters (A, B, C, L) before moving to complex ones.',
-      '- Use short, familiar words (cat, bag, bed, all) for practice.',
-      '- Limit to 3-5 new characters or concepts per section.',
-      '- Build from single letters → short words → simple sentences.',
-      '- Include the 6-dot cell diagram explanation early in the material.',
-      '',
-    ].join('\n'),
-    intermediate: [
-      'PEDAGOGICAL GUIDELINES — INTERMEDIATE LEVEL:',
-      '- Mix Grade 1 and common Grade 2 contractions.',
-      '- Introduce alphabetic wordsigns (e.g., b="but", c="can") and strong contractions (e.g., "and", "the", "for").',
-      '- Relate contractions to their letter origins (e.g., "The wordsign for \'but\' uses the same dots as the letter B").',
-      '- Include 5-8 new concepts per section.',
-      '- Provide context for when contractions are used vs. spelled out.',
-      '- Include dot numbers for all new contractions introduced.',
-      '',
-    ].join('\n'),
-    advanced: [
-      'PEDAGOGICAL GUIDELINES — ADVANCED LEVEL:',
-      '- Emphasize Grade 2 (contracted) braille throughout.',
-      '- Include groupsigns (ch, sh, th, wh, ed, er, ou, ow, st, ar, ing) and lower groupsigns.',
-      '- Cover context-dependent rules and exceptions (e.g., when a contraction cannot be used).',
-      '- Use full sentences and longer passages for practice.',
-      '- Include 8-12 concepts per section.',
-      '- Address real-world reading and writing scenarios.',
-      '',
-    ].join('\n'),
-  };
-
-  return levelGuidelines[difficulty] + common;
-}
+/* Braille reference data and accuracy rules: generated from lib/braille (see lib/ai-braille-reference.ts). */
 
 /* ── Helpers ── */
 
@@ -254,9 +120,9 @@ Create 3-5 sections with 4-8 items each. Include at least one braille-specific s
 - fill-in-the-blank: Use ___ in the prompt to indicate blanks.
 - matching: Prompts are left-column items and answers are right-column items.
 - practice-drill: Prompts are instructions and answers are the expected results.
-- braille-to-print: Prompt gives a dot pattern description (e.g., "dots 1 2"), answer is the print character or word. Example: { "prompt": "What letter is represented by dots 1 2?", "answer": "B" }
-- print-to-braille: Prompt gives a print letter or word, answer is the dot pattern. Example: { "prompt": "Write the dot numbers for the letter F.", "answer": "dots 1 2 4" }
-- dot-identification: Prompt describes a cell configuration, answer lists the dot numbers. Example: { "prompt": "A cell has the top-left and middle-left dots raised. Which dot numbers are these?", "answer": "dots 1 2" }
+- braille-to-print: Prompt gives a dot pattern description (e.g., ${PROMPT_EXAMPLES.dotDescription}), answer is the print character or word. Example: ${PROMPT_EXAMPLES.brailleToPrint}
+- print-to-braille: Prompt gives a print letter or word, answer is the dot pattern. Example: ${PROMPT_EXAMPLES.printToBraille}
+- dot-identification: Prompt describes a cell configuration, answer lists the dot numbers. Example: ${PROMPT_EXAMPLES.dotIdentification}
 Always use the reference data above to ensure dot patterns are correct.`,
 
   quiz: `You are creating a quiz/assessment for a braille course. Given the user's notes, create a mixed-format assessment. Return ONLY valid JSON (no markdown fences) with this shape:
@@ -333,7 +199,7 @@ export async function POST(req: NextRequest) {
         // Stage 1: AI generation
         send({ stage: 'ai' });
 
-        const brailleContext = buildBrailleContext(difficulty);
+        const brailleContext = buildBrailleReference(difficulty);
         const pedagogicalPreamble = buildPedagogicalPreamble(difficulty);
 
         // Inject course context from settings

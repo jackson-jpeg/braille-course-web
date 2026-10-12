@@ -1,113 +1,112 @@
 'use client';
 
 import { useCallback, useEffect, useRef, useState } from 'react';
-import { describeDots, type CharItem } from '@/lib/course-curriculum';
+import type { CharItem } from '@/lib/course-curriculum';
+import { type Cell, type Dot, sameCell } from '@/lib/braille/ueb';
+import { describeCell } from '@/lib/braille/prose';
+import { SIX_KEY_TO_DOT } from '@/lib/braille/perkins';
+import BrailleCell from '@/components/BrailleCell';
+import BrailleDotPad, { toggleDot } from '@/components/BrailleDotPad';
 
 /**
- * Perkins-style six-key chorded cell writer — the course's signature mechanic.
+ * Perkins-style six-key cell writer, the course's signature mechanic.
  *
- * The learner *writes* a character by raising its dots, then checks it. Input is
- * validated against the canonical pattern (`target.pattern`), so the drill can
- * never disagree with the rest of the site. Fully keyboard-operable:
- *   • Dot keys — F D S (left column, dots 1-2-3) and J K L (right column, dots 4-5-6)
+ * The learner writes each cell of the target by raising its dots, then checks it. Targets can be
+ * several cells long (a capital letter, a number, a two-cell sign); the writer goes cell by cell.
+ * Input is checked against the canonical cells from lib/braille. Fully keyboard-operable:
+ *   • the six-key Perkins layout from lib/braille/perkins.ts (S D F, J K L)
  *   • Number keys 1–6 also toggle their dot
  *   • Enter / Space checks · Backspace / C clears
- *   • Or tap the six dots directly (touch / mouse)
+ *   • Or tap the six dots directly
  */
 
-// Grid order is [d1, d4, d2, d5, d3, d6]. Map each key to its grid index.
-const DOT_NUMBERS = [1, 4, 2, 5, 3, 6];
-const KEY_TO_INDEX: Record<string, number> = {
-  f: 0, // dot 1
-  d: 2, // dot 2
-  s: 4, // dot 3
-  j: 1, // dot 4
-  k: 3, // dot 5
-  l: 5, // dot 6
-  '1': 0,
-  '2': 2,
-  '3': 4,
-  '4': 1,
-  '5': 3,
-  '6': 5,
-};
+const DIGIT_TO_DOT: Record<string, Dot> = { '1': 1, '2': 2, '3': 3, '4': 4, '5': 5, '6': 6 };
 
-function patternsEqual(a: number[], b: number[]): boolean {
-  return a.length === b.length && a.every((v, i) => v === b[i]);
+/** Keyboard key → dot (Perkins six-key layout, plus number keys). Exported for tests. */
+export function dotForKey(key: string): Dot | undefined {
+  const k = key.toLowerCase();
+  return SIX_KEY_TO_DOT[k] ?? DIGIT_TO_DOT[k];
 }
 
 interface BraillerInputProps {
   target: CharItem;
-  /** Called once when the learner writes the target correctly. `firstTry` is
-   *  true if they got it with no wrong checks (used for lesson scoring). */
+  /** Called once when the learner writes every cell of the target. `firstTry` is true if no check was wrong. */
   onSolved: (firstTry: boolean) => void;
-  /** Whether this target has already been solved (locks the input). */
   solved: boolean;
 }
 
 export default function BraillerInput({ target, onSolved, solved }: BraillerInputProps) {
-  const [dots, setDots] = useState<number[]>([0, 0, 0, 0, 0, 0]);
+  const [dots, setDots] = useState<Cell>([]);
+  const [cellIndex, setCellIndex] = useState(0);
   const [status, setStatus] = useState<'idle' | 'correct' | 'wrong'>('idle');
   const [message, setMessage] = useState('');
-  const groupRef = useRef<HTMLDivElement>(null);
   const missedRef = useRef(false);
+  const total = target.cells.length;
+  const multi = total > 1;
 
-  // Reset when the target changes.
   useEffect(() => {
-    setDots([0, 0, 0, 0, 0, 0]);
+    setDots([]);
+    setCellIndex(0);
     setStatus('idle');
     setMessage('');
     missedRef.current = false;
   }, [target]);
 
   const toggle = useCallback(
-    (index: number) => {
+    (dot: Dot) => {
       if (solved) return;
       setStatus('idle');
       setMessage('');
-      setDots((prev) => {
-        const next = [...prev];
-        next[index] = next[index] ? 0 : 1;
-        return next;
-      });
+      setDots((prev) => toggleDot(prev, dot));
     },
     [solved],
   );
 
   const clear = useCallback(() => {
     if (solved) return;
-    setDots([0, 0, 0, 0, 0, 0]);
+    setDots([]);
     setStatus('idle');
     setMessage('');
   }, [solved]);
 
   const check = useCallback(() => {
     if (solved) return;
-    if (patternsEqual(dots, target.pattern)) {
+    const want = target.cells[cellIndex];
+    const name = target.cellNames[cellIndex];
+    if (sameCell(dots, want)) {
       setStatus('correct');
-      setMessage(`Correct! “${target.print}” is ${describeDots(target.pattern)}.`);
-      onSolved(!missedRef.current);
+      setDots([]);
+      if (cellIndex === total - 1) {
+        setMessage(
+          multi
+            ? `Correct! “${target.print}” is ${total} cells: ${target.cells.map(describeCell).join(', then ')}.`
+            : `Correct! “${target.print}” is ${describeCell(want)}.`,
+        );
+        onSolved(!missedRef.current);
+      } else {
+        setMessage(`Cell ${cellIndex + 1} is right: the ${name}. Now write cell ${cellIndex + 2} of ${total}.`);
+        setCellIndex(cellIndex + 1);
+      }
     } else {
       missedRef.current = true;
       setStatus('wrong');
-      const entered = describeDots(dots);
       setMessage(
-        `Not quite — you wrote ${entered}. “${target.print}” is ${describeDots(target.pattern)}. Adjust the dots and check again.`,
+        `Not quite. You wrote ${describeCell(dots)}. ${multi ? `Cell ${cellIndex + 1} (the ${name})` : `“${target.print}”`} is ${describeCell(want)}. Adjust the dots and check again.`,
       );
     }
-  }, [dots, target, onSolved, solved]);
+  }, [dots, target, cellIndex, total, multi, onSolved, solved]);
 
   const handleKeyDown = useCallback(
     (e: React.KeyboardEvent) => {
-      if (solved) return;
-      const key = e.key.toLowerCase();
-      if (key in KEY_TO_INDEX) {
+      if (solved || e.ctrlKey || e.metaKey || e.altKey) return;
+      const dot = dotForKey(e.key);
+      if (dot) {
         e.preventDefault();
-        toggle(KEY_TO_INDEX[key]);
+        toggle(dot);
       } else if (e.key === 'Enter' || e.key === ' ') {
         e.preventDefault();
         check();
-      } else if (e.key === 'Backspace' || key === 'c') {
+      } else if (e.key === 'Backspace' || e.key.toLowerCase() === 'c') {
         e.preventDefault();
         clear();
       }
@@ -115,39 +114,49 @@ export default function BraillerInput({ target, onSolved, solved }: BraillerInpu
     [toggle, check, clear, solved],
   );
 
+  const writtenCells = target.cells.slice(0, solved ? total : cellIndex);
+
   return (
     <div className={`brailler${solved ? ' brailler--solved' : ''} brailler--${status}`}>
       <div className="brailler-prompt">
         <span className="brailler-prompt-label">Write:</span>
         <span className="brailler-prompt-char">{target.print}</span>
+        {multi && (
+          <span className="brailler-prompt-progress">
+            {solved ? `${total} cells` : `cell ${cellIndex + 1} of ${total}`}
+          </span>
+        )}
       </div>
 
-      <div
-        ref={groupRef}
+      {multi && (
+        <div className="brailler-written" aria-label={`Cells written so far: ${writtenCells.length} of ${total}`}>
+          {target.cells.map((c, i) => (
+            <span key={i} className={`brailler-written-slot${i === cellIndex && !solved ? ' current' : ''}`}>
+              {i < writtenCells.length ? (
+                <BrailleCell cell={c} className="lesson-char-cell" dotClassName="lesson-char-dot" />
+              ) : (
+                <span className="brailler-written-empty" aria-hidden="true" />
+              )}
+            </span>
+          ))}
+        </div>
+      )}
+
+      <BrailleDotPad
+        cell={dots}
+        onToggle={toggle}
         className="brailler-cell"
-        role="group"
+        dotClassName="brailler-dot"
+        raisedClassName="raised"
+        disabled={solved}
         tabIndex={0}
-        aria-label={`Braille writer for ${target.print}. Use keys F D S and J K L, number keys 1 to 6, or tap the dots to raise them, then press Enter to check.`}
         onKeyDown={handleKeyDown}
-      >
-        {dots.map((raised, i) => (
-          <button
-            key={i}
-            type="button"
-            className={`brailler-dot${raised ? ' raised' : ''}`}
-            aria-pressed={raised === 1}
-            aria-label={`Dot ${DOT_NUMBERS[i]}`}
-            onClick={() => toggle(i)}
-            disabled={solved}
-          >
-            <span aria-hidden="true">{DOT_NUMBERS[i]}</span>
-          </button>
-        ))}
-      </div>
+        label={`Braille writer for ${target.print}${multi ? `, cell ${cellIndex + 1} of ${total}` : ''}. Use keys F D S and J K L, number keys 1 to 6, or tap the dots to raise them, then press Enter to check.`}
+      />
 
       <div className="brailler-actions">
         <button type="button" className="brailler-btn brailler-btn--check" onClick={check} disabled={solved}>
-          Check
+          {multi && cellIndex < total - 1 ? 'Check cell' : 'Check'}
         </button>
         <button type="button" className="brailler-btn brailler-btn--clear" onClick={clear} disabled={solved}>
           Clear

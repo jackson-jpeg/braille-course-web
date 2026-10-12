@@ -24,6 +24,12 @@ const BrailleSequence = dynamic(() => import('@/components/BrailleSequence'), { 
 const BrailleSentenceDecoder = dynamic(() => import('@/components/BrailleSentenceDecoder'), { loading: GameSkeleton });
 const BrailleBingo = dynamic(() => import('@/components/BrailleBingo'), { loading: GameSkeleton });
 const BrailleRain = dynamic(() => import('@/components/BrailleRain'), { loading: GameSkeleton });
+const BrailleCapitalQuest = dynamic(() => import('@/components/BrailleCapitalQuest'), { loading: GameSkeleton });
+const BrailleNumberLock = dynamic(() => import('@/components/BrailleNumberLock'), { loading: GameSkeleton });
+const BraillePunctuationDetective = dynamic(() => import('@/components/BraillePunctuationDetective'), {
+  loading: GameSkeleton,
+});
+const BraillerChallenge = dynamic(() => import('@/components/BraillerChallenge'), { loading: GameSkeleton });
 import GamesNav from '@/components/GamesNav';
 import Footer from '@/components/Footer';
 import OnboardingModal from '@/components/OnboardingModal';
@@ -35,14 +41,14 @@ import GameErrorBoundary from '@/components/GameErrorBoundary';
 import StreakBadge from '@/components/StreakBadge';
 
 export const metadata: Metadata = {
-  title: 'Free Braille Practice Games — 12 Interactive Activities',
+  title: 'Free Braille Practice Games — 16 Interactive Activities',
   description:
-    'Teach and learn braille with 12 free interactive games. Practice letters, numbers, contractions, and sentences with Word Game, Dot Explorer, Hangman, Speed Match, Memory Match, Braille Bingo, Braille Rain, and more.',
+    'Teach and learn braille with 16 free interactive games. Practice letters, capitals, numbers, punctuation, contractions, and sentences with Word Game, Dot Explorer, Hangman, Speed Match, Memory Match, Braille Bingo, Braille Rain, and more.',
   alternates: { canonical: 'https://teachbraille.org/games' },
   openGraph: {
-    title: 'Free Braille Practice Games — 12 Interactive Activities | TeachBraille.org',
+    title: 'Free Braille Practice Games — 16 Interactive Activities | TeachBraille.org',
     description:
-      'Learn braille with 12 free interactive games — from letter recognition to full sentence decoding. No account needed.',
+      'Learn braille with 16 free interactive games — from letter recognition to full sentence decoding. No account needed.',
   },
 };
 
@@ -61,7 +67,7 @@ export default function GamesPage() {
           <h1>
             Braille <em>Interactive</em>
           </h1>
-          <p className="games-hero-sub">Practice and build your braille skills with 12 interactive activities.</p>
+          <p className="games-hero-sub">Practice and build your braille skills with 16 interactive activities.</p>
           <StreakBadge />
         </div>
       </section>
@@ -121,6 +127,34 @@ export default function GamesPage() {
       <section className="numsense-section" id="number-sense" aria-label="Number Sense">
         <GameErrorBoundary gameName="Number Sense">
           <BrailleNumberSense />
+        </GameErrorBoundary>
+      </section>
+
+      {/* ========== CAPITAL QUEST ========== */}
+      <section className="cgame-section" id="capital-quest" aria-label="Capital Quest">
+        <GameErrorBoundary gameName="Capital Quest">
+          <BrailleCapitalQuest />
+        </GameErrorBoundary>
+      </section>
+
+      {/* ========== NUMBER LOCK ========== */}
+      <section className="cgame-section cgame-section--alt" id="number-lock" aria-label="Number Lock">
+        <GameErrorBoundary gameName="Number Lock">
+          <BrailleNumberLock />
+        </GameErrorBoundary>
+      </section>
+
+      {/* ========== PUNCTUATION DETECTIVE ========== */}
+      <section className="cgame-section" id="punctuation-detective" aria-label="Punctuation Detective">
+        <GameErrorBoundary gameName="Punctuation Detective">
+          <BraillePunctuationDetective />
+        </GameErrorBoundary>
+      </section>
+
+      {/* ========== BRAILLER CHALLENGE ========== */}
+      <section className="cgame-section cgame-section--alt" id="brailler-challenge" aria-label="Brailler Challenge">
+        <GameErrorBoundary gameName="Brailler Challenge">
+          <BraillerChallenge />
         </GameErrorBoundary>
       </section>
 

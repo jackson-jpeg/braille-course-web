@@ -15918,6 +15918,11 @@ details.faq-item.reveal:nth-child(6) {
 }
 .numsense-braille-number {
   display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 8px 12px;
+}
+.numsense-braille-number .braille-text-word {
   gap: 4px;
 }
 .numsense-cell {
@@ -18492,5 +18497,682 @@ details.faq-item.reveal:nth-child(6) {
   .brailler-dot {
     width: 48px;
     height: 48px;
+  }
+}
+
+/* ===================================================================
+   Braille text runs (components/BrailleText.tsx), lesson examples,
+   multi-cell writing drill
+   =================================================================== */
+.braille-text {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: flex-start;
+  gap: 10px 6px;
+}
+.braille-text-token {
+  display: inline-flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+  padding: 4px;
+  border-radius: var(--radius-sm);
+}
+.braille-text-token--space {
+  min-width: 18px;
+}
+.braille-text-token--indicator {
+  background: var(--gold-soft);
+}
+.braille-text-token--highlight {
+  outline: 2px solid var(--gold);
+  outline-offset: 2px;
+  background: var(--gold-soft);
+}
+.braille-text-cells {
+  display: inline-flex;
+  gap: 6px;
+}
+.braille-text-cell {
+  display: grid;
+  grid-template-columns: repeat(2, 12px);
+  grid-auto-rows: 12px;
+  gap: 4px;
+}
+.braille-text-dot {
+  width: 12px;
+  height: 12px;
+  border-radius: 50%;
+}
+.braille-text-dot.filled {
+  background: var(--navy);
+  box-shadow: inset 0 -1px 2px rgba(0, 0, 0, 0.25);
+}
+.braille-text-dot.empty {
+  border: 1.5px solid rgba(27, 42, 74, 0.14);
+}
+.braille-text-caption {
+  font-size: 0.68rem;
+  color: var(--gold-text);
+  font-weight: 600;
+  text-align: center;
+  max-width: 72px;
+  line-height: 1.2;
+}
+.braille-text-token--space .braille-text-caption {
+  color: rgba(27, 42, 74, 0.35);
+}
+
+.lesson-char-cells {
+  display: inline-flex;
+  gap: 10px;
+}
+
+.lesson-examples {
+  margin-top: 36px;
+}
+.lesson-examples-heading {
+  font-size: 1.25rem;
+  margin-bottom: 6px;
+}
+.lesson-example-list {
+  list-style: none;
+  margin: 16px 0 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+.lesson-example {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  padding: 16px 18px;
+  background: #fff;
+  border: 1px solid rgba(212, 168, 83, 0.15);
+  border-radius: var(--radius-md);
+}
+.lesson-example-print {
+  font-family: var(--font-heading), 'DM Serif Display', serif;
+  font-size: 1.2rem;
+  color: var(--text-primary);
+}
+.lesson-example-braille .lesson-char-cell {
+  grid-template-columns: repeat(2, 14px);
+  grid-auto-rows: 14px;
+  gap: 5px;
+}
+.lesson-example-braille .lesson-char-dot {
+  width: 14px;
+  height: 14px;
+}
+.lesson-example-note {
+  font-size: 0.85rem;
+  color: var(--text-secondary);
+  line-height: 1.5;
+}
+
+.brailler-prompt-progress {
+  margin-left: auto;
+  font-size: 0.78rem;
+  color: var(--text-secondary);
+  font-weight: 600;
+}
+.brailler-written {
+  display: flex;
+  justify-content: center;
+  gap: 10px;
+  margin-bottom: 14px;
+  min-height: 74px;
+}
+.brailler-written-slot {
+  display: grid;
+  place-items: center;
+  padding: 6px;
+  border-radius: var(--radius-sm);
+  border: 1.5px dashed rgba(27, 42, 74, 0.14);
+  min-width: 56px;
+}
+.brailler-written-slot.current {
+  border-color: var(--gold);
+  box-shadow: 0 0 0 3px var(--gold-glow);
+}
+.brailler-written-empty {
+  width: 42px;
+  height: 66px;
+}
+.braille-letter-group .braille-dot.filled {
+  animation-delay: var(--wave-delay, 0s);
+}
+
+/* ===================================================================
+   New reading games: Capital Quest, Number Lock, Punctuation Detective
+   (components/games/ChoiceGame.tsx) and Brailler Challenge
+   =================================================================== */
+.cgame-section {
+  position: relative;
+  z-index: 1;
+  padding: 80px 24px;
+  background: white;
+}
+.cgame-section--alt {
+  background: var(--cream);
+}
+.cgame,
+.bchal {
+  max-width: 640px;
+  margin: 0 auto;
+  text-align: center;
+}
+.cgame-header {
+  margin-bottom: 28px;
+}
+.cgame-header h2 {
+  font-family: var(--font-heading), 'DM Serif Display', serif;
+  font-size: 2rem;
+  color: var(--navy);
+  margin-top: 8px;
+}
+.cgame-header p {
+  color: var(--text-secondary);
+  font-size: 0.95rem;
+  margin: 6px auto 0;
+  max-width: 520px;
+}
+.cgame-kbd-hint {
+  display: block;
+  margin-top: 6px;
+  font-size: 0.78rem;
+  color: var(--gold-text);
+  font-weight: 600;
+}
+.cgame-body {
+  background: white;
+  border: 1px solid rgba(212, 168, 83, 0.15);
+  border-radius: var(--radius-lg);
+  padding: 28px 22px;
+  box-shadow: 0 2px 12px rgba(27, 42, 74, 0.06);
+}
+.cgame-modes {
+  display: flex;
+  gap: 4px;
+  background: var(--cream);
+  border-radius: var(--radius-full);
+  padding: 4px;
+  margin-bottom: 22px;
+}
+.cgame-mode {
+  flex: 1;
+  padding: 10px 14px;
+  font-family: var(--font-body), 'Outfit', sans-serif;
+  font-size: 0.85rem;
+  font-weight: 600;
+  border: none;
+  border-radius: var(--radius-full);
+  cursor: pointer;
+  background: transparent;
+  color: var(--text-secondary);
+  transition: all 0.25s ease;
+}
+.cgame-mode.active {
+  background: var(--navy);
+  color: var(--gold-light);
+  box-shadow: 0 2px 8px rgba(27, 42, 74, 0.2);
+}
+.cgame-status {
+  display: flex;
+  justify-content: space-between;
+  gap: 12px;
+  font-size: 0.82rem;
+  font-weight: 600;
+  color: var(--text-secondary);
+  margin-bottom: 18px;
+}
+.cgame-streak.hot {
+  color: var(--gold-text);
+}
+.cgame-question {
+  font-weight: 600;
+  color: var(--navy);
+  margin-bottom: 14px;
+}
+.cgame-prompt {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: 110px;
+  margin-bottom: 22px;
+}
+.cgame-print-lg {
+  font-family: var(--font-heading), 'DM Serif Display', serif;
+  font-size: 2.4rem;
+  color: var(--navy);
+  line-height: 1.15;
+}
+.cgame-braille-lg {
+  justify-content: center;
+}
+.cgame-braille-lg .braille-text-cell {
+  grid-template-columns: repeat(2, 18px);
+  grid-auto-rows: 18px;
+  gap: 6px;
+}
+.cgame-braille-lg .braille-text-dot {
+  width: 18px;
+  height: 18px;
+}
+.cgame-braille-md {
+  justify-content: center;
+}
+.cgame-braille-md .braille-text-cell {
+  grid-template-columns: repeat(2, 13px);
+  grid-auto-rows: 13px;
+  gap: 4px;
+}
+.cgame-braille-md .braille-text-dot {
+  width: 13px;
+  height: 13px;
+}
+.cgame-braille-sm {
+  justify-content: center;
+  gap: 4px 3px;
+}
+.cgame-braille-sm .braille-text-token {
+  padding: 2px;
+}
+.cgame-braille-sm .braille-text-cell {
+  grid-template-columns: repeat(2, 9px);
+  grid-auto-rows: 9px;
+  gap: 3px;
+}
+.cgame-braille-sm .braille-text-dot {
+  width: 9px;
+  height: 9px;
+}
+.cgame-choices {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 10px;
+  margin-bottom: 18px;
+}
+.cgame-choice {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 72px;
+  padding: 18px 12px 14px;
+  background: var(--cream);
+  border: 2px solid rgba(212, 168, 83, 0.15);
+  border-radius: var(--radius-md);
+  cursor: pointer;
+  font-family: var(--font-body), 'Outfit', sans-serif;
+  transition: all 0.2s ease;
+}
+.cgame-choice:hover:not(:disabled),
+.cgame-choice:focus-visible {
+  border-color: var(--gold);
+  background: var(--gold-soft);
+  transform: translateY(-1px);
+}
+.cgame-choice:disabled {
+  cursor: default;
+}
+.cgame-choice.correct {
+  border-color: var(--sage-dark);
+  background: rgba(122, 155, 109, 0.15);
+  animation: speedmatch-flash-correct 0.4s ease;
+}
+.cgame-choice.wrong {
+  border-color: var(--game-wrong);
+  background: var(--game-wrong-bg);
+  animation: speedmatch-flash-wrong 0.4s ease;
+}
+.cgame-choice-num {
+  position: absolute;
+  top: 6px;
+  left: 8px;
+  font-size: 0.7rem;
+  font-weight: 700;
+  color: var(--text-secondary);
+  opacity: 0.6;
+}
+.cgame-choice-print {
+  font-family: var(--font-heading), 'DM Serif Display', serif;
+  font-size: 1.45rem;
+  color: var(--navy);
+}
+.cgame-feedback {
+  min-height: 8px;
+}
+.cgame-feedback-box {
+  text-align: left;
+  padding: 16px 18px;
+  border-radius: var(--radius-md);
+  border: 1.5px solid rgba(212, 168, 83, 0.25);
+  background: var(--gold-soft);
+}
+.cgame-feedback-box.correct {
+  border-color: var(--sage-dark);
+  background: rgba(122, 155, 109, 0.12);
+}
+.cgame-feedback-box.wrong {
+  border-color: var(--game-wrong);
+  background: var(--game-wrong-bg);
+}
+.cgame-explain {
+  margin-top: 10px;
+  color: var(--text-secondary);
+  font-size: 0.92rem;
+  line-height: 1.55;
+}
+.cgame-explain p {
+  margin-top: 8px;
+}
+.cgame-explain-braille {
+  margin-top: 6px;
+}
+.cgame-next,
+.cgame-again {
+  margin-top: 14px;
+  padding: 10px 24px;
+  border-radius: var(--radius-full);
+  border: none;
+  background: var(--navy);
+  color: var(--gold-light);
+  font-weight: 600;
+  cursor: pointer;
+}
+.cgame-next:disabled {
+  opacity: 0.45;
+  cursor: default;
+}
+.cgame-next:hover:not(:disabled),
+.cgame-again:hover {
+  background: var(--navy-light);
+}
+.cgame-result-score {
+  font-family: var(--font-heading), 'DM Serif Display', serif;
+  font-size: 3rem;
+  color: var(--navy);
+}
+.cgame-result-label {
+  color: var(--gold-text);
+  font-weight: 600;
+  margin-top: 4px;
+}
+.cgame-tip {
+  margin: 14px auto 0;
+  max-width: 440px;
+  font-size: 0.9rem;
+  color: var(--text-secondary);
+}
+
+/* Number Lock: the code sits on a padlock face */
+.nlock-lock {
+  position: relative;
+  display: inline-flex;
+  flex-direction: column;
+  align-items: center;
+  padding-top: 34px;
+}
+.nlock-shackle {
+  position: absolute;
+  top: 0;
+  width: 92px;
+  height: 64px;
+  border: 10px solid var(--gold);
+  border-bottom: none;
+  border-radius: 46px 46px 0 0;
+}
+.nlock-face {
+  position: relative;
+  min-width: 200px;
+  padding: 22px 26px;
+  border-radius: 18px;
+  background: var(--navy);
+  box-shadow:
+    inset 0 -4px 0 rgba(0, 0, 0, 0.25),
+    0 6px 18px rgba(27, 42, 74, 0.25);
+}
+.nlock-braille .braille-text-dot.filled {
+  background: var(--gold-light);
+}
+.nlock-braille .braille-text-dot.empty {
+  border-color: rgba(240, 222, 180, 0.22);
+}
+.nlock-braille .braille-text-token--indicator {
+  background: rgba(212, 168, 83, 0.18);
+}
+.nlock-print {
+  color: var(--gold-light);
+}
+
+/* Punctuation Detective */
+.pdetect-case {
+  width: 100%;
+  padding: 18px;
+  border-radius: var(--radius-md);
+  background: var(--cream);
+  border: 1px dashed rgba(212, 168, 83, 0.45);
+}
+.pdetect-clue {
+  margin-top: 14px;
+  font-size: 1.05rem;
+  color: var(--navy);
+}
+.pdetect-clue-label {
+  display: block;
+  font-size: 0.75rem;
+  text-transform: uppercase;
+  letter-spacing: 1.5px;
+  color: var(--gold-text);
+  font-weight: 700;
+}
+.pdetect-choice {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 2px;
+}
+.pdetect-glyph {
+  font-family: var(--font-heading), 'DM Serif Display', serif;
+  font-size: 1.6rem;
+  color: var(--navy);
+  line-height: 1;
+}
+.pdetect-name {
+  font-size: 0.82rem;
+  color: var(--text-secondary);
+  font-weight: 600;
+}
+.pdetect-full {
+  font-style: italic;
+}
+
+/* Brailler Challenge */
+.bchal-target {
+  margin-bottom: 16px;
+}
+.bchal-paper {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 6px;
+  min-height: 56px;
+  padding: 12px;
+  margin-bottom: 16px;
+  border-radius: var(--radius-md);
+  background: var(--cream);
+  border: 1px solid rgba(212, 168, 83, 0.25);
+  transition: box-shadow 0.2s ease;
+}
+.bchal-paper--ok {
+  box-shadow: 0 0 0 3px rgba(122, 155, 109, 0.35);
+}
+.bchal-paper--bad {
+  box-shadow: 0 0 0 3px var(--game-wrong-bg);
+  animation: speedmatch-flash-wrong 0.35s ease;
+}
+.bchal-slot {
+  display: grid;
+  place-items: center;
+  min-width: 28px;
+  min-height: 42px;
+  border-radius: 6px;
+}
+.bchal-slot.current {
+  outline: 2px solid var(--gold);
+  outline-offset: 1px;
+}
+.bchal-slot-empty {
+  width: 16px;
+  height: 2px;
+  background: rgba(27, 42, 74, 0.2);
+  align-self: end;
+  margin-bottom: 6px;
+}
+.bchal-keys {
+  padding: 18px;
+  border-radius: var(--radius-md);
+  border: 2px dashed rgba(27, 42, 74, 0.2);
+  color: var(--text-secondary);
+  font-weight: 600;
+  cursor: text;
+  margin-bottom: 16px;
+}
+.bchal-keys:focus-visible,
+.bchal-keys:focus {
+  outline: none;
+  border-color: var(--gold);
+  background: var(--gold-soft);
+  color: var(--gold-text);
+}
+.bchal-touch {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 20px;
+  flex-wrap: wrap;
+}
+.bchal-pad {
+  display: grid;
+  grid-template-columns: repeat(2, 44px);
+  gap: 10px;
+}
+.bchal-pad-dot {
+  width: 44px;
+  height: 44px;
+  border-radius: 50%;
+  border: 2px solid rgba(27, 42, 74, 0.18);
+  background: var(--cream);
+  color: rgba(27, 42, 74, 0.4);
+  font-weight: 700;
+  cursor: pointer;
+}
+.bchal-pad-dot.raised {
+  background: var(--navy);
+  border-color: var(--navy-deep);
+  color: var(--gold-light);
+}
+.bchal-touch-actions {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+.bchal-space {
+  padding: 10px 24px;
+  border-radius: var(--radius-full);
+  border: 1.5px solid rgba(27, 42, 74, 0.2);
+  background: white;
+  font-weight: 600;
+  cursor: pointer;
+}
+.bchal-status {
+  margin-top: 16px;
+  min-height: 1.5em;
+  color: var(--text-secondary);
+}
+.bchal-status.done {
+  color: var(--sage-dark);
+  font-weight: 600;
+}
+@media (max-width: 520px) {
+  .cgame-choices {
+    grid-template-columns: 1fr;
+  }
+  .cgame-print-lg {
+    font-size: 1.9rem;
+  }
+}
+.num-card-cells {
+  display: inline-flex;
+  gap: 5px;
+  justify-content: center;
+}
+.braille-text-word {
+  display: inline-flex;
+  flex-wrap: nowrap;
+  align-items: flex-start;
+  gap: 6px;
+}
+.cgame-braille-sm .braille-text-word {
+  gap: 3px;
+}
+@media (max-width: 520px) {
+  .nlock-face {
+    min-width: 0;
+    padding: 18px 14px;
+  }
+  .nlock-braille .braille-text-cell,
+  .cgame-braille-lg .braille-text-cell {
+    grid-template-columns: repeat(2, 12px);
+    grid-auto-rows: 12px;
+    gap: 4px;
+  }
+  .nlock-braille .braille-text-dot,
+  .cgame-braille-lg .braille-text-dot {
+    width: 12px;
+    height: 12px;
+  }
+  .cgame-braille-md .braille-text-cell {
+    grid-template-columns: repeat(2, 9px);
+    grid-auto-rows: 9px;
+    gap: 3px;
+  }
+  .cgame-braille-md .braille-text-dot {
+    width: 9px;
+    height: 9px;
+  }
+}
+.lesson-example-braille .braille-text-word {
+  flex-wrap: wrap;
+}
+.braille-decoration {
+  flex-wrap: wrap;
+  row-gap: 12px;
+}
+.lesson-char-cells {
+  flex-wrap: wrap;
+  justify-content: center;
+}
+@media (max-width: 520px) {
+  .num-grid {
+    grid-template-columns: repeat(auto-fill, minmax(72px, 1fr));
+  }
+  .numsense-choice {
+    padding: 12px 6px;
+    min-width: 0;
+  }
+  .numsense-choice .braille-text-word {
+    gap: 2px;
+  }
+  .numsense-choice .numsense-cell {
+    width: 20px;
+    gap: 2px;
+  }
+  .numsense-choice .numsense-dot {
+    width: 8px;
+    height: 8px;
   }
 }

@@ -1,40 +1,29 @@
 'use client';
 
 import { useState, useEffect, useCallback, useRef } from 'react';
-import { brailleMap, computeSimilarity } from '@/lib/braille-map';
-import SharedBrailleCell from '@/components/BrailleCell';
+import BrailleCell from '@/components/BrailleCell';
 import { useGameProgress } from '@/hooks/useGameProgress';
 import { pushAchievements } from '@/components/AchievementToast';
 import { getRandomTip } from '@/lib/learning-tips';
 import { getDifficultyParams } from '@/lib/difficulty-settings';
 import DifficultySelector from '@/components/DifficultySelector';
-
-const ALL_LETTERS = Object.keys(brailleMap).filter((k) => /^[A-Z]$/.test(k));
+import { describeCell } from '@/lib/braille/prose';
+import {
+  checkOrder as checkLetterOrder,
+  correctOrder as alphabeticalOrder,
+  pickLetters,
+  scramble,
+  sequenceCell,
+} from '@/lib/games/sequence';
 
 type Phase = 'playing' | 'checking' | 'result';
 
 interface SequenceCard {
   letter: string;
-  pattern: number[];
 }
 
-/** Pick N unique letters; harder difficulty picks visually similar ones */
-function pickLetters(count: number, difficulty: string): string[] {
-  if (difficulty === 'advanced') {
-    const anchor = ALL_LETTERS[Math.floor(Math.random() * ALL_LETTERS.length)];
-    const scored = ALL_LETTERS.filter((l) => l !== anchor)
-      .map((l) => ({ letter: l, sim: computeSimilarity(brailleMap[anchor], brailleMap[l]) }))
-      .sort((a, b) => b.sim - a.sim);
-    const pool = scored.slice(0, count * 2);
-    const shuffled = pool.sort(() => Math.random() - 0.5).slice(0, count - 1);
-    return [anchor, ...shuffled.map((p) => p.letter)].sort(() => Math.random() - 0.5);
-  }
-  const shuffled = [...ALL_LETTERS].sort(() => Math.random() - 0.5);
-  return shuffled.slice(0, count);
-}
-
-function SeqBrailleCell({ pattern }: { pattern: number[] }) {
-  return <SharedBrailleCell pattern={pattern} className="seq-cell" dotClassName="seq-dot" />;
+function SeqBrailleCell({ letter }: { letter: string }) {
+  return <BrailleCell cell={sequenceCell(letter)} className="seq-cell" dotClassName="seq-dot" />;
 }
 
 export default function BrailleSequence() {
@@ -64,23 +53,8 @@ export default function BrailleSequence() {
 
   const startRound = useCallback(() => {
     const letters = pickLetters(params.letterCount, difficulty);
-    const sorted = [...letters].sort();
-    setCorrectOrder(sorted);
-
-    // Scramble — ensure not already in order
-    let scrambled = [...letters].sort(() => Math.random() - 0.5);
-    let attempts = 0;
-    while (scrambled.every((l, i) => l === sorted[i]) && letters.length > 1 && attempts < 20) {
-      scrambled = [...letters].sort(() => Math.random() - 0.5);
-      attempts++;
-    }
-
-    setCards(
-      scrambled.map((letter) => ({
-        letter,
-        pattern: brailleMap[letter],
-      })),
-    );
+    setCorrectOrder(alphabeticalOrder(letters));
+    setCards(scramble(letters).map((letter) => ({ letter })));
     setSelectedIdx(null);
     setFeedback(null);
     setCardResults([]);
@@ -148,7 +122,10 @@ export default function BrailleSequence() {
     }
 
     // Check each card individually
-    const perCard = currentCards.map((card, i) => card.letter === expected[i]);
+    const perCard = checkLetterOrder(
+      currentCards.map((c) => c.letter),
+      expected,
+    );
     const isCorrect = perCard.every(Boolean);
 
     setCardResults(perCard);
@@ -160,7 +137,7 @@ export default function BrailleSequence() {
         const nextR = round + 1;
         setRound(nextR);
         if (nextR >= totalRounds) {
-          const finalScore = isCorrect ? scoreRef.current + 1 : scoreRef.current;
+          const finalScore = scoreRef.current; // already includes this round (re-rendered before the timeout)
           setPhase('result');
           const achievements = recordResult(finalScore >= totalRounds / 2, finalScore);
           pushAchievements(achievements);
@@ -192,7 +169,7 @@ export default function BrailleSequence() {
               <span>Score: {score}</span>
             </div>
 
-            <p className="seq-instruction">Tap two cards to swap them. Arrange in A→Z order.</p>
+            <p className="seq-instruction">Tap two cards to swap them. Arrange in a→z order.</p>
 
             <div className="seq-cards" role="group" aria-label="Braille sequence cards">
               {cards.map((card, i) => (
@@ -203,9 +180,9 @@ export default function BrailleSequence() {
                   }`}
                   onClick={() => handleCardClick(i)}
                   disabled={phase !== 'playing'}
-                  aria-label={`Position ${i + 1}${feedback !== null ? `: letter ${card.letter}` : ''}`}
+                  aria-label={`Position ${i + 1}: braille cell, ${describeCell(sequenceCell(card.letter))}${feedback !== null ? `, letter ${card.letter}` : ''}`}
                 >
-                  <SeqBrailleCell pattern={card.pattern} />
+                  <SeqBrailleCell letter={card.letter} />
                   {feedback !== null && <span className="seq-card-letter">{card.letter}</span>}
                   {cardResults.length > 0 && (
                     <span className={`seq-card-mark ${cardResults[i] ? 'correct' : 'wrong'}`}>

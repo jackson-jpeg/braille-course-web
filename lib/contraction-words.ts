@@ -1,104 +1,193 @@
 /**
- * Word lists for Contraction Sprint game.
- * Each word maps to its contracted braille representation.
+ * Words for the Contraction Sprint game, written in contracted (grade 2) UEB.
  *
- * UEB rules enforced:
- * - Wordsigns (but, can, do, etc.) are ONLY used as standalone words
- * - Strong contractions (and, for, of, the, with) are ONLY standalone
- * - Groupsigns (ch, th, er, ing, etc.) CAN appear within words
- * - Single letters use uppercase: 'A', 'B', etc.
+ * Each word is the list of pieces a braille reader sees: plain letters, or contractions from
+ * lib/braille/ueb.ts CONTRACTIONS. The cells are built by contractedWord() and every word is
+ * checked cell by cell against liblouis en-ueb-g2.ctb (see lib/games/contraction-sprint.ts
+ * brailleInventory and __tests__/braille/liblouis-oracle.test.ts).
+ *
+ * Only words whose real contracted form uses nothing but the contractions this site teaches are
+ * listed. Words that need an initial-letter contraction (mother, father, there, where, some...),
+ * a final-letter groupsign (song, found...) or a shortform (such, much, together, children...)
+ * are deliberately left out: showing them spelled with other signs would teach a wrong form.
+ *
+ * Spec format: pieces separated by spaces. Inside a longer word, "be" and "in" are the lower
+ * groupsigns (ICEB 10.6.2, 10.6.8); standing alone they are the lower wordsigns (10.5).
  */
+import { type ContractedWord, contractedWord } from '@/lib/braille/contracted';
+import { CONTRACTIONS } from '@/lib/braille/ueb';
 
-export interface ContractionWord {
-  word: string;
-  /** Array of pieces: uppercase letter or contraction/groupsign label */
-  pieces: string[];
-  difficulty: 'beginner' | 'intermediate' | 'advanced';
+function pieceSpec(p: string, pieceCount: number): string {
+  if (pieceCount > 1 && (p === 'be' || p === 'in')) return `${p}/lower-groupsign`;
+  return p;
 }
 
-export const contractionWords: ContractionWord[] = [
-  // ── Beginner: single-cell wordsigns (whole word = one braille cell) ──
-  { word: 'BUT', pieces: ['but'], difficulty: 'beginner' },
-  { word: 'CAN', pieces: ['can'], difficulty: 'beginner' },
-  { word: 'DO', pieces: ['do'], difficulty: 'beginner' },
-  { word: 'EVERY', pieces: ['every'], difficulty: 'beginner' },
-  { word: 'FROM', pieces: ['from'], difficulty: 'beginner' },
-  { word: 'GO', pieces: ['go'], difficulty: 'beginner' },
-  { word: 'HAVE', pieces: ['have'], difficulty: 'beginner' },
-  { word: 'JUST', pieces: ['just'], difficulty: 'beginner' },
-  { word: 'LIKE', pieces: ['like'], difficulty: 'beginner' },
-  { word: 'MORE', pieces: ['more'], difficulty: 'beginner' },
-  { word: 'NOT', pieces: ['not'], difficulty: 'beginner' },
-  { word: 'PEOPLE', pieces: ['people'], difficulty: 'beginner' },
-  { word: 'RATHER', pieces: ['rather'], difficulty: 'beginner' },
-  { word: 'SO', pieces: ['so'], difficulty: 'beginner' },
-  { word: 'THAT', pieces: ['that'], difficulty: 'beginner' },
-  { word: 'VERY', pieces: ['very'], difficulty: 'beginner' },
-  { word: 'WILL', pieces: ['will'], difficulty: 'beginner' },
-  { word: 'YOU', pieces: ['you'], difficulty: 'beginner' },
-  { word: 'IT', pieces: ['it'], difficulty: 'beginner' },
-  { word: 'US', pieces: ['us'], difficulty: 'beginner' },
-  { word: 'AS', pieces: ['as'], difficulty: 'beginner' },
-
-  // ── Intermediate: strong contractions + groupsign words ──
-  { word: 'AND', pieces: ['and'], difficulty: 'intermediate' },
-  { word: 'FOR', pieces: ['for'], difficulty: 'intermediate' },
-  { word: 'THE', pieces: ['the'], difficulty: 'intermediate' },
-  { word: 'WITH', pieces: ['with'], difficulty: 'intermediate' },
-  { word: 'OF', pieces: ['of'], difficulty: 'intermediate' },
-  // Groupsign words: ch, th, sh, wh, er, ing, st, ar, ou, ow, ed
-  { word: 'CHILD', pieces: ['ch', 'I', 'L', 'D'], difficulty: 'intermediate' },
-  { word: 'MOTHER', pieces: ['M', 'O', 'th', 'er'], difficulty: 'intermediate' },
-  { word: 'FATHER', pieces: ['F', 'A', 'th', 'er'], difficulty: 'intermediate' },
-  { word: 'OTHER', pieces: ['O', 'th', 'er'], difficulty: 'intermediate' },
-  { word: 'THERE', pieces: ['th', 'E', 'R', 'E'], difficulty: 'intermediate' },
-  { word: 'THING', pieces: ['th', 'ing'], difficulty: 'intermediate' },
-  { word: 'WHEN', pieces: ['wh', 'E', 'N'], difficulty: 'intermediate' },
-  { word: 'WHERE', pieces: ['wh', 'E', 'R', 'E'], difficulty: 'intermediate' },
-  { word: 'SHOW', pieces: ['sh', 'ow'], difficulty: 'intermediate' },
-  { word: 'STING', pieces: ['st', 'ing'], difficulty: 'intermediate' },
-  { word: 'STAR', pieces: ['st', 'ar'], difficulty: 'intermediate' },
-  { word: 'SHED', pieces: ['sh', 'ed'], difficulty: 'intermediate' },
-  { word: 'ARCH', pieces: ['ar', 'ch'], difficulty: 'intermediate' },
-  { word: 'WHICH', pieces: ['wh', 'I', 'ch'], difficulty: 'intermediate' },
-  { word: 'THEN', pieces: ['th', 'E', 'N'], difficulty: 'intermediate' },
-  { word: 'THEM', pieces: ['th', 'E', 'M'], difficulty: 'intermediate' },
-  { word: 'THIS', pieces: ['th', 'I', 'S'], difficulty: 'intermediate' },
-  { word: 'EACH', pieces: ['E', 'A', 'ch'], difficulty: 'intermediate' },
-  { word: 'SUCH', pieces: ['S', 'U', 'ch'], difficulty: 'intermediate' },
-
-  // ── Advanced: multi-groupsign words ──
-  { word: 'TOGETHER', pieces: ['T', 'O', 'G', 'E', 'th', 'er'], difficulty: 'advanced' },
-  { word: 'WEATHER', pieces: ['W', 'E', 'A', 'th', 'er'], difficulty: 'advanced' },
-  { word: 'ANOTHER', pieces: ['A', 'N', 'O', 'th', 'er'], difficulty: 'advanced' },
-  { word: 'BROTHER', pieces: ['B', 'R', 'O', 'th', 'er'], difficulty: 'advanced' },
-  { word: 'NOTHING', pieces: ['N', 'O', 'th', 'ing'], difficulty: 'advanced' },
-  { word: 'EVERYTHING', pieces: ['E', 'V', 'er', 'Y', 'th', 'ing'], difficulty: 'advanced' },
-  { word: 'SOMETHING', pieces: ['S', 'O', 'M', 'E', 'th', 'ing'], difficulty: 'advanced' },
-  { word: 'SHOWER', pieces: ['sh', 'ow', 'er'], difficulty: 'advanced' },
-  { word: 'THOUSAND', pieces: ['th', 'ou', 'S', 'A', 'N', 'D'], difficulty: 'advanced' },
-  { word: 'WISHING', pieces: ['W', 'I', 'sh', 'ing'], difficulty: 'advanced' },
-  { word: 'CHURCH', pieces: ['ch', 'U', 'R', 'ch'], difficulty: 'advanced' },
-  { word: 'TEACHING', pieces: ['T', 'E', 'A', 'ch', 'ing'], difficulty: 'advanced' },
-  { word: 'REACHING', pieces: ['R', 'E', 'A', 'ch', 'ing'], difficulty: 'advanced' },
-  { word: 'STARTING', pieces: ['st', 'ar', 'T', 'ing'], difficulty: 'advanced' },
-  { word: 'SHOWING', pieces: ['sh', 'ow', 'ing'], difficulty: 'advanced' },
-  { word: 'STARING', pieces: ['st', 'ar', 'ing'], difficulty: 'advanced' },
-  { word: 'ARCHING', pieces: ['ar', 'ch', 'ing'], difficulty: 'advanced' },
-  { word: 'THIRST', pieces: ['th', 'I', 'R', 'st'], difficulty: 'advanced' },
-  { word: 'THEIRS', pieces: ['th', 'E', 'I', 'R', 'S'], difficulty: 'advanced' },
-  { word: 'CHANGED', pieces: ['ch', 'A', 'N', 'G', 'ed'], difficulty: 'advanced' },
-  { word: 'WISHED', pieces: ['W', 'I', 'sh', 'ed'], difficulty: 'advanced' },
-  { word: 'OWNED', pieces: ['ow', 'N', 'ed'], difficulty: 'advanced' },
-];
-
-/** Get words filtered by difficulty */
-export function getContractionWords(difficulty: 'beginner' | 'intermediate' | 'advanced'): ContractionWord[] {
-  if (difficulty === 'beginner') {
-    return contractionWords.filter((w) => w.difficulty === 'beginner');
-  }
-  if (difficulty === 'intermediate') {
-    return contractionWords.filter((w) => w.difficulty === 'beginner' || w.difficulty === 'intermediate');
-  }
-  return contractionWords;
+function word(spec: string): ContractedWord {
+  const parts = spec.split(' ');
+  return contractedWord(
+    parts.join(''),
+    parts.map((p) => pieceSpec(p, parts.length)),
+  );
 }
+
+/**
+ * Whole words that are a single contraction standing alone: the alphabetic wordsigns (10.1),
+ * strong wordsigns (10.2), strong contractions used as words (10.3) and lower wordsigns (10.5).
+ */
+export const standaloneWords: readonly ContractedWord[] = [
+  ...new Set(
+    CONTRACTIONS.filter((c) =>
+      ['alphabetic-wordsign', 'strong-wordsign', 'strong-contraction', 'lower-wordsign'].includes(c.kind),
+    ).map((c) => c.text),
+  ),
+].map((t) => contractedWord(t, [t]));
+
+/** Words that combine letters with one or more contractions. */
+export const contractionWords: readonly ContractedWord[] = [
+  // Strong groupsigns (10.4) and strong contractions inside words (10.3)
+  'b a th',
+  'ch a t',
+  'sh i p',
+  'sh o p',
+  'f i sh',
+  'w i sh',
+  'r i ch',
+  'ch o p',
+  'ch i p',
+  'l u n ch',
+  'c a sh',
+  'b r u sh',
+  'sh e e p',
+  'ch a n g e',
+  'ch u r ch',
+  'ch e er',
+  'th a n',
+  'th ing',
+  's ing',
+  'k ing',
+  'b r ing',
+  'st ing',
+  'st r ing',
+  'sh ow',
+  's n ow',
+  'g r ow',
+  't ow n',
+  'c ow',
+  'ow n',
+  'sh ow ing',
+  'sh ow er',
+  'st ar',
+  'c ar',
+  'c ar d',
+  'f ar m',
+  'p ar k',
+  'st ar t',
+  'st ar ing',
+  'st o p',
+  'f a st',
+  'n e st',
+  'h er',
+  'o v er',
+  'w a t er',
+  'p a p er',
+  'r ed',
+  'b ed',
+  'sh ed',
+  'p l a y ed',
+  'j u m p ed',
+  'w i sh ed',
+  'l ou d',
+  'h ou s e',
+  'sh ou t',
+  'th ou s and',
+  'n i gh t',
+  'l i gh t',
+  'h i gh',
+  'gh o st',
+  'wh a t',
+  'wh y',
+  'wh i t e',
+  'wh i p',
+  'st and',
+  's and',
+  'h and',
+  'c and y',
+  'the m',
+  'the n',
+  'the y',
+  'o the r',
+  'b r o the r',
+  'wh e the r',
+  'of f',
+  'of f er',
+  'for m',
+  'for g e t',
+  'for e st',
+  'with in',
+  'with ou t',
+  // Lower groupsigns (10.6)
+  'b r ea d',
+  'h ea d',
+  'r ea d',
+  'r ea ch',
+  't ea ch',
+  't ea ch ing',
+  'm ea t',
+  'c l ea n',
+  'd r ea m',
+  'l ea f',
+  'wh ea t',
+  'w ea the r',
+  'r a bb i t',
+  'r i bb o n',
+  'h o bb y',
+  'r o bb er',
+  'b u bb l e',
+  'a cc e p t',
+  'a cc en t',
+  'o cc u r',
+  's o cc er',
+  'g i r a ff e',
+  'd i ff er en t',
+  'b i gg er',
+  'd r a gg ed',
+  'e gg s',
+  'g i gg l e',
+  's u gg e st',
+  'be g in',
+  'be c a m e',
+  'be l i e v e',
+  'con t a in',
+  'con c er t',
+  'con n e c t',
+  'con t r o l',
+  'con t e st',
+  'dis c o v er',
+  'dis m i s s',
+  'dis l i k e',
+  'dis t a n t',
+  'en t er',
+  'en j o y',
+  't en t',
+  'w en t',
+  'p en',
+  's e v en',
+  'o p en',
+  'of t en',
+  'w o m en',
+  'c en t er',
+  's p en d',
+  'b en ch',
+  'in s i d e',
+  'in t o',
+  'p r in t',
+  'f in i sh',
+  'th in',
+  'th in k',
+  'th in k ing',
+  'ch in',
+  's k in',
+  'w in d',
+  'f in d',
+  'in t er e st',
+].map(word);

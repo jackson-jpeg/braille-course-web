@@ -1,54 +1,33 @@
 'use client';
 
 import { useState, useEffect, useCallback, useRef } from 'react';
-import { nemethDigits, nemethOperators, nemethEquals, nemethNumericIndicator } from '@/lib/nemeth-map';
-import { generateProblem, generateChoices, type MathProblem } from '@/lib/math-problems';
+import {
+  type MathProblem,
+  OPERATOR_SIGNS,
+  choicesFor,
+  isCorrect as isCorrectAnswer,
+  randomProblem,
+} from '@/lib/games/number-sense';
+import BrailleText from '@/components/BrailleText';
+import { describeCells } from '@/lib/braille/prose';
+import { transcribe } from '@/lib/braille/transcribe';
 import { useGameProgress } from '@/hooks/useGameProgress';
 import { pushAchievements } from '@/components/AchievementToast';
 import { getRandomTip } from '@/lib/learning-tips';
-import { getDifficultyParams } from '@/lib/difficulty-settings';
 import DifficultySelector from '@/components/DifficultySelector';
 
-function BrailleCell({ pattern }: { pattern: number[] }) {
-  return (
-    <div className="numsense-cell" aria-hidden="true">
-      {pattern.map((v, i) => (
-        <span key={i} className={`numsense-dot ${v ? 'filled' : 'empty'}`} />
-      ))}
-    </div>
-  );
-}
+const OPERATOR_WORDS = { '+': 'plus', '−': 'minus', '×': 'times' } as const;
 
-/** Render a number in Nemeth braille: numeric indicator + digit cells */
-function BrailleNumber({ num }: { num: number }) {
-  const digits = String(num).split('');
+/** A number or problem in UEB braille, drawn with the shared cell styles of this game. */
+function BrailleMath({ text, label }: { text: string; label: string }) {
   return (
-    <div className="numsense-braille-number" aria-label={`Braille number ${num}`}>
-      <BrailleCell pattern={nemethNumericIndicator} />
-      {digits.map((d, i) => (
-        <BrailleCell key={i} pattern={nemethDigits[d] || [0, 0, 0, 0, 0, 0]} />
-      ))}
-    </div>
-  );
-}
-
-/** Render operator as a Nemeth braille cell */
-function BrailleOperator({ op }: { op: string }) {
-  const pattern = nemethOperators[op] || [0, 0, 0, 0, 0, 0];
-  return (
-    <div className="numsense-operator-cell" aria-label={op}>
-      <BrailleCell pattern={pattern} />
-    </div>
-  );
-}
-
-/** Render Nemeth equals sign (two cells, each dots 4,6) */
-function BrailleEquals() {
-  return (
-    <div className="numsense-operator-cell" aria-label="equals">
-      <BrailleCell pattern={nemethEquals} />
-      <BrailleCell pattern={nemethEquals} />
-    </div>
+    <BrailleText
+      text={text}
+      label={label}
+      className="numsense-braille-number"
+      cellClassName="numsense-cell"
+      dotClassName="numsense-dot"
+    />
   );
 }
 
@@ -85,20 +64,14 @@ export default function BrailleNumberSense() {
     return () => observer.disconnect();
   }, []);
 
-  const params = getDifficultyParams('number-sense', difficulty) as {
-    maxNumber: number;
-    operations: string[];
-  };
-
   const nextRound = useCallback(() => {
-    const p = generateProblem(params.maxNumber, params.operations);
-    const c = generateChoices(p.answer, 3);
+    const p = randomProblem(difficulty);
     setProblem(p);
-    setChoices(c);
+    setChoices(choicesFor(p));
     setSelected(null);
     setIsCorrect(null);
     setLocked(false);
-  }, [params.maxNumber, params.operations]);
+  }, [difficulty]);
 
   const startGame = useCallback(() => {
     setScore(0);
@@ -117,7 +90,7 @@ export default function BrailleNumberSense() {
       if (locked || !problem) return;
       setLocked(true);
       setSelected(choice);
-      const correct = choice === problem.answer;
+      const correct = isCorrectAnswer(problem, choice);
       setIsCorrect(correct);
 
       if (correct) setScore((s) => s + 1);
@@ -127,7 +100,7 @@ export default function BrailleNumberSense() {
           const nextR = round + 1;
           setRound(nextR);
           if (nextR >= totalRounds) {
-            const finalScore = correct ? scoreRef.current + 1 : scoreRef.current;
+            const finalScore = scoreRef.current; // already includes this round (re-rendered before the timeout)
             setGameOver(true);
             const achievements = recordResult(finalScore >= totalRounds / 2, finalScore);
             pushAchievements(achievements);
@@ -169,7 +142,7 @@ export default function BrailleNumberSense() {
         <span className="section-label">Numbers</span>
         <h2>Number Sense</h2>
         <p>
-          Solve math in braille <span className="numsense-badge">Nemeth Code</span>{' '}
+          Solve math written in braille <span className="numsense-badge">UEB math signs</span>{' '}
           <span className="numsense-kbd-hint">Keys 1–4 to answer</span>
         </p>
         <DifficultySelector gameId="number-sense" current={difficulty} onChange={setDifficulty} />
@@ -185,12 +158,12 @@ export default function BrailleNumberSense() {
               <span>Score: {score}</span>
             </div>
 
-            {/* Problem display in Nemeth braille */}
-            <div className="numsense-problem" aria-live="polite" aria-label={problem.display}>
-              <BrailleNumber num={problem.operands[0]} />
-              <BrailleOperator op={problem.operator} />
-              <BrailleNumber num={problem.operands[1]} />
-              <BrailleEquals />
+            {/* Problem display in UEB braille (numeric indicator + a–j, UEB plus/minus/times/equals) */}
+            <div className="numsense-problem" aria-live="polite">
+              <BrailleMath
+                text={problem.print}
+                label={`Braille problem: ${describeCells(transcribe(problem.print))}. The ${OPERATOR_SIGNS[problem.operator].name} and the equals sign are two cells each.`}
+              />
               <span className="numsense-answer-blank" aria-hidden="true" />
             </div>
 
@@ -208,11 +181,13 @@ export default function BrailleNumberSense() {
                     className={cls}
                     onClick={() => handleChoice(choice)}
                     disabled={locked}
-                    aria-label={`Choice ${i + 1}: ${choice}`}
+                    aria-label={`Choice ${i + 1}: ${locked ? `${choice}, ` : ''}braille ${describeCells(transcribe(String(choice)))}`}
+                    data-value={choice}
                   >
                     <span className="numsense-choice-number">{i + 1}</span>
-                    <BrailleNumber num={choice} />
-                    <span className="numsense-choice-value">{choice}</span>
+                    <BrailleMath text={String(choice)} label={`braille ${describeCells(transcribe(String(choice)))}`} />
+                    {/* The print value appears only after answering, so the braille has to be read. */}
+                    <span className="numsense-choice-value">{locked ? choice : '?'}</span>
                   </button>
                 );
               })}

@@ -9,7 +9,13 @@ const config: Config = {
   moduleNameMapper: {
     '^@/(.*)$': '<rootDir>/$1',
   },
-  testPathIgnorePatterns: ['<rootDir>/.next/', '<rootDir>/node_modules/'],
+  testPathIgnorePatterns: [
+    '<rootDir>/.next/',
+    '<rootDir>/node_modules/',
+    '<rootDir>/__tests__/helpers/',
+    '<rootDir>/__tests__/.*/fixtures/',
+    '<rootDir>/__tests__/fixtures/',
+  ],
 };
 
 export default createJestConfig(config);

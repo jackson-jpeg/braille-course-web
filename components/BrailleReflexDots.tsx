@@ -1,14 +1,16 @@
 'use client';
 
 import { useState, useEffect, useCallback, useRef } from 'react';
-import { brailleMap } from '@/lib/braille-map';
 import { useGameProgress } from '@/hooks/useGameProgress';
 import { pushAchievements } from '@/components/AchievementToast';
 import { getRandomTip } from '@/lib/learning-tips';
 import { getDifficultyParams } from '@/lib/difficulty-settings';
 import DifficultySelector from '@/components/DifficultySelector';
-
-const LETTERS = Object.keys(brailleMap).filter((k) => /^[A-Z]$/.test(k));
+import BrailleCell from '@/components/BrailleCell';
+import BrailleDotPad, { toggleDot as toggleCellDot } from '@/components/BrailleDotPad';
+import { type Cell, type Dot } from '@/lib/braille/ueb';
+import { describeCell } from '@/lib/braille/prose';
+import { cellDiff, dotForKey, isCorrect as isCorrectCell, pickLetter, reflexCell } from '@/lib/games/reflex';
 
 type Phase = 'ready' | 'show' | 'input' | 'feedback' | 'result';
 
@@ -16,8 +18,8 @@ export default function BrailleReflexDots() {
   const { difficulty, setDifficulty, recordResult } = useGameProgress('reflex-dots');
   const [phase, setPhase] = useState<Phase>('ready');
   const [targetLetter, setTargetLetter] = useState('');
-  const [targetPattern, setTargetPattern] = useState<number[]>([0, 0, 0, 0, 0, 0]);
-  const [userPattern, setUserPattern] = useState<number[]>([0, 0, 0, 0, 0, 0]);
+  const [userCell, setUserCell] = useState<Cell>([]);
+  const targetCell: Cell = targetLetter ? reflexCell(targetLetter) : [];
   const [round, setRound] = useState(0);
   const [score, setScore] = useState(0);
   const [isCorrect, setIsCorrect] = useState<boolean | null>(null);
@@ -50,11 +52,9 @@ export default function BrailleReflexDots() {
   }, []);
 
   const startRound = useCallback(() => {
-    const letter = LETTERS[Math.floor(Math.random() * LETTERS.length)];
-    const pattern = brailleMap[letter];
+    const letter = pickLetter();
     setTargetLetter(letter);
-    setTargetPattern(pattern);
-    setUserPattern([0, 0, 0, 0, 0, 0]);
+    setUserCell([]);
     setIsCorrect(null);
     setPhase('show');
 
@@ -79,13 +79,9 @@ export default function BrailleReflexDots() {
   }, []);
 
   const toggleDot = useCallback(
-    (index: number) => {
+    (dot: Dot) => {
       if (phase !== 'input') return;
-      setUserPattern((prev) => {
-        const next = [...prev];
-        next[index] = next[index] ? 0 : 1;
-        return next;
-      });
+      setUserCell((prev) => toggleCellDot(prev, dot));
     },
     [phase],
   );
@@ -93,7 +89,7 @@ export default function BrailleReflexDots() {
   const submitAnswer = useCallback(() => {
     if (phase !== 'input') return;
 
-    const correct = userPattern.every((v, i) => v === targetPattern[i]);
+    const correct = isCorrectCell(userCell, targetLetter);
     setIsCorrect(correct);
     setPhase('feedback');
 
@@ -104,7 +100,7 @@ export default function BrailleReflexDots() {
         const nextRound = round + 1;
         setRound(nextRound);
         if (nextRound >= params.rounds) {
-          const finalScore = correct ? scoreRef.current + 1 : scoreRef.current;
+          const finalScore = scoreRef.current; // already includes this round (re-rendered before the timeout)
           setPhase('result');
           const achievements = recordResult(finalScore >= params.rounds / 2, finalScore);
           pushAchievements(achievements);
@@ -115,7 +111,7 @@ export default function BrailleReflexDots() {
       },
       correct ? 800 : 1200,
     );
-  }, [phase, userPattern, targetPattern, round, params.rounds, startRound, recordResult]);
+  }, [phase, userCell, targetLetter, round, params.rounds, startRound, recordResult]);
 
   // Keyboard: 1-6 to toggle dots, Enter to submit
   useEffect(() => {
@@ -124,18 +120,9 @@ export default function BrailleReflexDots() {
       if (e.ctrlKey || e.metaKey || e.altKey) return;
 
       if (phase === 'input') {
-        // Dot positions: keys 1-6 map to dots 1,4,2,5,3,6 (grid order)
-        const dotKeyMap: Record<string, number> = {
-          '1': 0,
-          '4': 1,
-          '2': 2,
-          '5': 3,
-          '3': 4,
-          '6': 5,
-        };
-        if (e.key in dotKeyMap) {
-          toggleDot(dotKeyMap[e.key]);
-        }
+        // Number key n toggles dot n.
+        const dot = dotForKey(e.key);
+        if (dot !== null) toggleDot(dot);
         if (e.key === 'Enter') {
           submitAnswer();
         }
@@ -145,8 +132,7 @@ export default function BrailleReflexDots() {
     return () => window.removeEventListener('keydown', onKeyDown);
   }, [phase, toggleDot, submitAnswer]);
 
-  // Dot number labels for the grid (standard braille numbering)
-  const dotNumbers = [1, 4, 2, 5, 3, 6];
+  const diff = cellDiff(userCell, targetCell);
 
   return (
     <div className="reflex-container" ref={containerRef}>
@@ -162,7 +148,7 @@ export default function BrailleReflexDots() {
           <div className="reflex-ready">
             <p className="reflex-instructions">
               A braille pattern will flash briefly. Tap the dots to recreate it from memory!
-              <span className="reflex-kbd-hint">Keyboard: 1–6 toggle dots, Enter to submit</span>
+              <span className="reflex-kbd-hint">Keyboard: number keys 1–6 toggle those dots, Enter to submit</span>
             </p>
             <button className="reflex-start-btn" onClick={startGame}>
               Start Game
@@ -181,40 +167,41 @@ export default function BrailleReflexDots() {
 
             {/* Show phase: display the target pattern */}
             {phase === 'show' && (
-              <div className="reflex-display" aria-label={`Remember this pattern for letter ${targetLetter}`}>
+              <div className="reflex-display">
                 <div className="reflex-flash-label">
                   Memorize: <span className="reflex-letter-badge">{targetLetter}</span>
                 </div>
-                <div className="reflex-grid reflex-grid-show">
-                  {targetPattern.map((v, i) => (
-                    <span key={i} className={`reflex-dot-display ${v ? 'filled' : 'empty'}`}>
-                      {v ? '●' : '○'}
-                    </span>
-                  ))}
-                </div>
+                <BrailleCell
+                  cell={targetCell}
+                  className="reflex-grid reflex-grid-show"
+                  dotClassName="reflex-dot-display"
+                  label={`Remember this cell for letter ${targetLetter}`}
+                />
               </div>
             )}
 
             {/* Input phase: user taps dots */}
             {phase === 'input' && (
-              <div className="reflex-input" aria-label={`Recreate the pattern for letter ${targetLetter}`}>
+              <div className="reflex-input">
                 <div className="reflex-prompt-text">
                   Recreate: <span className="reflex-letter-badge">{targetLetter}</span>
                 </div>
-                <div className="reflex-grid reflex-grid-input" role="group">
-                  {userPattern.map((v, i) => (
-                    <button
-                      key={i}
-                      className={`reflex-dot-btn ${v ? 'active' : ''}`}
-                      onClick={() => toggleDot(i)}
-                      aria-label={`Dot ${dotNumbers[i]}: ${v ? 'raised' : 'flat'}`}
-                      aria-pressed={!!v}
-                    >
-                      <span className="reflex-dot-num">{dotNumbers[i]}</span>
-                      {v ? '●' : '○'}
-                    </button>
-                  ))}
-                </div>
+                <BrailleDotPad
+                  cell={userCell}
+                  onToggle={toggleDot}
+                  className="reflex-grid reflex-grid-input"
+                  dotClassName="reflex-dot-btn"
+                  raisedClassName="active"
+                  label={`Dots for letter ${targetLetter}`}
+                  renderDot={(dot, raised) => (
+                    <>
+                      <span className="reflex-dot-num" aria-hidden="true">
+                        {dot}
+                      </span>
+                      <span aria-hidden="true">{raised ? '●' : '○'}</span>
+                    </>
+                  )}
+                />
                 <button className="reflex-submit-btn" onClick={submitAnswer}>
                   Check
                 </button>
@@ -238,30 +225,31 @@ export default function BrailleReflexDots() {
                 </div>
                 {!isCorrect && (
                   <div className="reflex-comparison" role="group" aria-label="Pattern comparison">
-                    <div className="reflex-comparison-col" aria-label="Your answer">
+                    <div className="reflex-comparison-col">
                       <div className="reflex-comparison-label">Your answer</div>
-                      <div className="reflex-grid reflex-grid-show">
-                        {userPattern.map((v, i) => (
-                          <span
-                            key={i}
-                            className={`reflex-dot-display ${v ? 'filled' : 'empty'}${v !== targetPattern[i] ? ' mismatch' : ''}`}
-                          >
-                            {v ? '●' : '○'}
-                          </span>
-                        ))}
-                      </div>
+                      <BrailleCell
+                        cell={userCell}
+                        className="reflex-grid reflex-grid-show"
+                        dotClassName="reflex-dot-display"
+                        label="Your answer"
+                      />
                     </div>
-                    <div className="reflex-comparison-col" aria-label="Correct pattern">
+                    <div className="reflex-comparison-col">
                       <div className="reflex-comparison-label">Correct</div>
-                      <div className="reflex-grid reflex-grid-show">
-                        {targetPattern.map((v, i) => (
-                          <span key={i} className={`reflex-dot-display ${v ? 'filled' : 'empty'}`}>
-                            {v ? '●' : '○'}
-                          </span>
-                        ))}
-                      </div>
+                      <BrailleCell
+                        cell={targetCell}
+                        className="reflex-grid reflex-grid-show"
+                        dotClassName="reflex-dot-display"
+                        label={`Correct, letter ${targetLetter}`}
+                      />
                     </div>
                   </div>
+                )}
+                {!isCorrect && (
+                  <p className="reflex-comparison-label">
+                    {diff.missing.length > 0 && <>Missing: {describeCell(diff.missing)}. </>}
+                    {diff.extra.length > 0 && <>Not part of it: {describeCell(diff.extra)}.</>}
+                  </p>
                 )}
               </div>
             )}

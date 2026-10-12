@@ -1,60 +1,65 @@
 'use client';
 
 import { useState } from 'react';
-import { brailleMap } from '@/lib/braille-map';
+import BrailleCell from '@/components/BrailleCell';
+import { DIGITS_IN_ORDER, DIGIT_CELLS, DIGIT_LETTER, INDICATORS } from '@/lib/braille/ueb';
+import { describeCell, describeCells, renderProse } from '@/lib/braille/prose';
 
-const NUMBERS = ['1', '2', '3', '4', '5', '6', '7', '8', '9', '0'];
-const LETTER_FOR: Record<string, string> = {
-  '1': 'A',
-  '2': 'B',
-  '3': 'C',
-  '4': 'D',
-  '5': 'E',
-  '6': 'F',
-  '7': 'G',
-  '8': 'H',
-  '9': 'I',
-  '0': 'J',
-};
-const DOT_POS = [1, 4, 2, 5, 3, 6];
+/**
+ * The ten digits: each is the numeric indicator followed by one of the letters a–j (ICEB 6.1).
+ * Every digit card shows both cells, because a bare letter cell is a letter, not a number.
+ */
+const NUMERIC = INDICATORS.numeric.cells[0];
 
 export default function BrailleNumbers() {
   const [selected, setSelected] = useState<string | null>(null);
-  const indicator = brailleMap['#'];
 
   return (
     <div className="num-wrap">
       <div className="num-indicator-banner">
-        <div className="num-indicator-cell" aria-hidden="true">
-          {indicator.map((f, i) => (
-            <span key={i} className={`num-dot-sm${f ? ' raised' : ''}`} />
-          ))}
-        </div>
+        <BrailleCell
+          cell={NUMERIC}
+          className="num-indicator-cell"
+          dotClassName="num-dot-sm"
+          raisedClassName="raised"
+          flatClassName=""
+        />
         <p>
-          <strong>Number Indicator</strong> (dots 3, 4, 5, 6) tells the reader: the next character is a number. Numbers
-          1&ndash;9 reuse the patterns for letters A&ndash;I, and 0 uses J.
+          {renderProse(
+            'The {name:numeric} ({dots:numeric}) tells the reader that a number follows. The digits 1 to 9 then use the cells of the letters a to i, and 0 uses j.',
+          )}
         </p>
       </div>
 
-      <div className="num-grid" role="group" aria-label="Braille numbers">
-        {NUMBERS.map((n) => {
-          const dots = brailleMap[n];
+      <div className="num-grid" role="group" aria-label="Braille digits">
+        {DIGITS_IN_ORDER.map((n) => {
           const active = selected === n;
           return (
             <button
               key={n}
               className={`num-card${active ? ' active' : ''}`}
               aria-pressed={active}
-              aria-label={`Number ${n}, same pattern as letter ${LETTER_FOR[n]}`}
+              aria-label={`Number ${n}: numeric indicator, then letter ${DIGIT_LETTER[n]}. ${describeCells([NUMERIC, DIGIT_CELLS[n]])}`}
               onClick={() => setSelected(active ? null : n)}
             >
-              <div className="num-card-dots" aria-hidden="true">
-                {dots.map((f, i) => (
-                  <span key={i} className={`num-dot-sm${f ? ' raised' : ''}`} />
-                ))}
-              </div>
+              <span className="num-card-cells" aria-hidden="true">
+                <BrailleCell
+                  cell={NUMERIC}
+                  className="num-card-dots"
+                  dotClassName="num-dot-sm"
+                  raisedClassName="raised"
+                  flatClassName=""
+                />
+                <BrailleCell
+                  cell={DIGIT_CELLS[n]}
+                  className="num-card-dots"
+                  dotClassName="num-dot-sm"
+                  raisedClassName="raised"
+                  flatClassName=""
+                />
+              </span>
               <span className="num-card-val">{n}</span>
-              <span className="num-card-eq">({LETTER_FOR[n]})</span>
+              <span className="num-card-eq">({DIGIT_LETTER[n]})</span>
             </button>
           );
         })}
@@ -64,33 +69,38 @@ export default function BrailleNumbers() {
         <div className="num-detail" aria-live="polite">
           <div className="num-detail-equation">
             <div className="num-detail-cell-group">
-              <div className="num-detail-cell">
-                {indicator.map((f, i) => (
-                  <span key={i} className={`num-detail-dot${f ? ' raised ind' : ''}`}>
-                    {DOT_POS[i]}
-                  </span>
-                ))}
-              </div>
-              <span className="num-detail-cell-lbl">#</span>
+              <BrailleCell
+                cell={NUMERIC}
+                className="num-detail-cell"
+                dotClassName="num-detail-dot"
+                raisedClassName="raised ind"
+                flatClassName=""
+                showNumbers
+              />
+              <span className="num-detail-cell-lbl">numeric indicator</span>
             </div>
             <span className="num-detail-op" aria-hidden="true">
               +
             </span>
             <div className="num-detail-cell-group">
-              <div className="num-detail-cell">
-                {brailleMap[selected].map((f, i) => (
-                  <span key={i} className={`num-detail-dot${f ? ' raised' : ''}`}>
-                    {DOT_POS[i]}
-                  </span>
-                ))}
-              </div>
-              <span className="num-detail-cell-lbl">{LETTER_FOR[selected]}</span>
+              <BrailleCell
+                cell={DIGIT_CELLS[selected]}
+                className="num-detail-cell"
+                dotClassName="num-detail-dot"
+                raisedClassName="raised"
+                flatClassName=""
+                showNumbers
+              />
+              <span className="num-detail-cell-lbl">{DIGIT_LETTER[selected]}</span>
             </div>
             <span className="num-detail-op" aria-hidden="true">
               =
             </span>
             <div className="num-detail-result">{selected}</div>
           </div>
+          <p className="sr-only">
+            {selected} is the numeric indicator, {describeCell(NUMERIC)}, then {describeCell(DIGIT_CELLS[selected])}.
+          </p>
           <button className="alpha-detail-close" onClick={() => setSelected(null)} aria-label="Close detail panel">
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" aria-hidden="true">
               <line x1="18" y1="6" x2="6" y2="18" />

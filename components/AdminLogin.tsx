@@ -2,6 +2,7 @@
 
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
+import { CHROME_PRINT, chromeUnicode } from '@/lib/site-chrome-braille';
 
 export default function AdminLogin() {
   const [password, setPassword] = useState('');
@@ -40,7 +41,10 @@ export default function AdminLogin() {
   return (
     <div className="admin-page">
       <div className="admin-login">
-        <div className="admin-login-icon">⠃</div>
+        {/* Decorative braille letter b (for braille), from lib/braille. */}
+        <div className="admin-login-icon" aria-hidden="true">
+          {chromeUnicode(CHROME_PRINT.icon)}
+        </div>
         <div className="admin-login-brand">TeachBraille.org</div>
         <h1 className="admin-login-title">Admin Dashboard</h1>
         <p className="admin-login-subtitle">Enter your password to continue</p>

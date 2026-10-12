@@ -2,12 +2,14 @@
 
 import { useState, useEffect, useCallback, useRef } from 'react';
 import { loadProgress, markOnboardingSeen, setTrackingConsent } from '@/lib/progress-storage';
+import { CHROME_PRINT, chromeUnicode } from '@/lib/site-chrome-braille';
 
 const STEPS = [
   {
     title: 'Welcome to Braille Interactive!',
-    description: 'Practice and master braille with 12 interactive games — from letter recognition to sentence reading.',
-    icon: '⠃',
+    description: 'Practice and master braille with 16 interactive games — from letter recognition to sentence reading.',
+    // Decorative braille letter b (for braille), from lib/braille.
+    icon: chromeUnicode(CHROME_PRINT.icon),
   },
   {
     title: 'Track Your Progress',
@@ -97,7 +99,9 @@ export default function OnboardingModal() {
           ×
         </button>
 
-        <div className="onboarding-icon">{current.icon}</div>
+        <div className="onboarding-icon" aria-hidden="true">
+          {current.icon}
+        </div>
         <h3 id="onboarding-title" className="onboarding-title">
           {current.title}
         </h3>

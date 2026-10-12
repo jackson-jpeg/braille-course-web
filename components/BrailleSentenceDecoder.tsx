@@ -1,48 +1,67 @@
 'use client';
 
 import { useState, useEffect, useCallback, useRef } from 'react';
+import BrailleCell from '@/components/BrailleCell';
 import {
-  getRandomSentence,
-  resetSentenceHistory,
-  type SentenceData,
-  type BrailleToken,
-} from '@/lib/sentence-generator';
+  type DecoderDifficulty,
+  ROUNDS,
+  describeSentence,
+  isContracted,
+  isCorrect as checkAnswer,
+  pickSentences,
+} from '@/lib/games/sentence-decoder';
+import type { DecoderSentence, DecoderToken } from '@/lib/sentence-generator';
 import { useGameProgress } from '@/hooks/useGameProgress';
 import { pushAchievements } from '@/components/AchievementToast';
 import { getRandomTip } from '@/lib/learning-tips';
-import { getDifficultyParams } from '@/lib/difficulty-settings';
 import DifficultySelector from '@/components/DifficultySelector';
 
-function BrailleTokenCell({ token }: { token: BrailleToken }) {
-  if (token.type === 'space') {
-    return <span className="decoder-space" />;
-  }
+function TokenCells({ token }: { token: DecoderToken }) {
+  const contraction = token.kind === 'contraction';
   return (
-    <div
-      className={`decoder-cell ${token.type === 'contraction' ? 'decoder-cell-contraction' : ''}`}
-      aria-label={token.type === 'contraction' ? `Contraction for "${token.meaning}"` : `Letter ${token.value}`}
-    >
-      <div className="decoder-cell-dots">
-        {token.pattern.map((v, i) => (
-          <span key={i} className={`decoder-dot ${v ? 'filled' : 'empty'}`} />
-        ))}
-      </div>
-      {token.type === 'contraction' && <span className="decoder-contraction-marker">◆</span>}
-    </div>
+    <>
+      {token.cells.map((cell, j) => (
+        <div key={j} className={`decoder-cell ${contraction ? 'decoder-cell-contraction' : ''}`}>
+          <BrailleCell cell={cell} className="decoder-cell-dots" dotClassName="decoder-dot" />
+          {contraction && (
+            <span className="decoder-contraction-marker" aria-hidden="true">
+              ◆
+            </span>
+          )}
+        </div>
+      ))}
+    </>
   );
 }
 
-export default function BrailleSentenceDecoder() {
-  const { difficulty, setDifficulty, recordResult } = useGameProgress('sentence-decoder');
-  const [sentence, setSentence] = useState<SentenceData | null>(null);
+/** Tokens grouped into words, so a line never breaks in the middle of a braille word. */
+function words(sentence: DecoderSentence): DecoderToken[][] {
+  const out: DecoderToken[][] = [[]];
+  for (const t of sentence.tokens) {
+    if (t.kind === 'space') out.push([]);
+    else out[out.length - 1].push(t);
+  }
+  return out;
+}
+
+/** `fixedLevel` pins the level (used by the contracted-sentences lesson, so it opens contracted mode). */
+export default function BrailleSentenceDecoder({ fixedLevel }: { fixedLevel?: DecoderDifficulty } = {}) {
+  const progress = useGameProgress('sentence-decoder');
+  const { recordResult } = progress;
+  const difficulty = fixedLevel ?? progress.difficulty;
+  const setDifficulty = progress.setDifficulty;
+  const level = difficulty as DecoderDifficulty;
+  const contracted = isContracted(level);
+  const [queue, setQueue] = useState<DecoderSentence[]>([]);
   const [userInput, setUserInput] = useState('');
   const [submitted, setSubmitted] = useState(false);
   const [isCorrect, setIsCorrect] = useState(false);
   const [round, setRound] = useState(0);
   const [score, setScore] = useState(0);
-  const [totalRounds] = useState(5);
+  const totalRounds = ROUNDS;
   const [gameOver, setGameOver] = useState(false);
   const [tip, setTip] = useState('');
+  const [described, setDescribed] = useState(false);
 
   const inputRef = useRef<HTMLInputElement>(null);
   const containerRef = useRef<HTMLDivElement>(null);
@@ -50,43 +69,36 @@ export default function BrailleSentenceDecoder() {
   const scoreRef = useRef(score);
   scoreRef.current = score;
 
-  const params = getDifficultyParams('sentence-decoder', difficulty) as {
-    maxWords: number;
-  };
+  const sentence = queue[round] ?? null;
 
-  const loadSentence = useCallback(() => {
-    const s = getRandomSentence(params.maxWords);
-    setSentence(s);
+  const resetInput = useCallback(() => {
     setUserInput('');
     setSubmitted(false);
     setIsCorrect(false);
-    // Focus input only if the game section is visible (prevent page scroll-jump)
+    setDescribed(false);
+    // Focus input without scrolling the page
     setTimeout(() => {
-      if (inputRef.current) {
-        inputRef.current.focus({ preventScroll: true });
-      }
+      if (inputRef.current) inputRef.current.focus({ preventScroll: true });
     }, 100);
-  }, [params.maxWords]);
+  }, []);
 
   const startGame = useCallback(() => {
     setScore(0);
     setRound(0);
     setGameOver(false);
     setTip('');
-    resetSentenceHistory();
-    loadSentence();
-  }, [loadSentence]);
+    setQueue(pickSentences(level, ROUNDS));
+    resetInput();
+  }, [level, resetInput]);
 
   useEffect(() => {
     startGame();
-  }, []); // eslint-disable-line react-hooks/exhaustive-deps
+  }, [startGame]);
 
   const handleSubmit = useCallback(() => {
     if (!sentence || submitted || !userInput.trim()) return;
 
-    const normalized = userInput.trim().toLowerCase().replace(/\s+/g, ' ');
-    const expected = sentence.plainText.toLowerCase().replace(/\s+/g, ' ');
-    const correct = normalized === expected;
+    const correct = checkAnswer(sentence, userInput);
 
     setSubmitted(true);
     setIsCorrect(correct);
@@ -95,20 +107,21 @@ export default function BrailleSentenceDecoder() {
     roundTimerRef.current = setTimeout(
       () => {
         const nextR = round + 1;
-        setRound(nextR);
         if (nextR >= totalRounds) {
-          const finalScore = correct ? scoreRef.current + 1 : scoreRef.current;
+          const finalScore = scoreRef.current; // already includes this round (re-rendered before the timeout)
+          setRound(nextR);
           setGameOver(true);
           const achievements = recordResult(finalScore >= totalRounds / 2, finalScore);
           pushAchievements(achievements);
           setTip(getRandomTip().fact);
         } else {
-          loadSentence();
+          setRound(nextR);
+          resetInput();
         }
       },
       correct ? 1000 : 2500,
     );
-  }, [sentence, submitted, userInput, round, totalRounds, loadSentence, recordResult]);
+  }, [sentence, submitted, userInput, round, totalRounds, resetInput, recordResult]);
 
   // Cleanup timer
   useEffect(() => {
@@ -132,8 +145,8 @@ export default function BrailleSentenceDecoder() {
       <div className="decoder-header">
         <span className="section-label">Reading</span>
         <h2>Sentence Decoder</h2>
-        <p>Read contracted braille sentences</p>
-        <DifficultySelector gameId="sentence-decoder" current={difficulty} onChange={setDifficulty} />
+        <p>{contracted ? 'Read contracted (grade 2) braille sentences' : 'Read uncontracted braille sentences'}</p>
+        {!fixedLevel && <DifficultySelector gameId="sentence-decoder" current={difficulty} onChange={setDifficulty} />}
       </div>
 
       <div className="decoder-body">
@@ -147,13 +160,38 @@ export default function BrailleSentenceDecoder() {
             </div>
 
             {/* Braille sentence display */}
-            <div className="decoder-sentence" aria-label="Braille sentence to decode">
-              {sentence.brailleTokens.map((token, i) => (
-                <BrailleTokenCell key={i} token={token} />
+            <div
+              className="decoder-sentence"
+              role="img"
+              aria-label={`Braille sentence, ${sentence.cells.length} cells. Use “Describe the cells” to hear the dot numbers.`}
+            >
+              {words(sentence).map((word, wi) => (
+                <span key={wi} style={{ display: 'inline-flex', gap: 'inherit' }}>
+                  {wi > 0 && <span className="decoder-space" />}
+                  {word.map((token, ti) => (
+                    <TokenCells key={ti} token={token} />
+                  ))}
+                </span>
               ))}
             </div>
 
-            <div className="decoder-hint-text">◆ = contraction (one cell = whole word or syllable)</div>
+            <div className="decoder-hint-text">
+              {contracted ? '◆ = contraction (one cell for a whole word or a group of letters). ' : ''}
+              Capitals and punctuation don’t count: just type the words and numbers you read.{' '}
+              <button
+                type="button"
+                className="decoder-describe-btn"
+                onClick={() => setDescribed((d) => !d)}
+                aria-expanded={described}
+              >
+                Describe the cells
+              </button>
+            </div>
+            {described && (
+              <p className="decoder-hint-text" aria-live="polite">
+                {describeSentence(sentence)}
+              </p>
+            )}
 
             {/* User input */}
             <div className="decoder-input-wrap">
@@ -185,7 +223,7 @@ export default function BrailleSentenceDecoder() {
                 ) : (
                   <>
                     <span>Answer: </span>
-                    <strong>{sentence.plainText}</strong>
+                    <strong>{sentence.print}</strong>
                   </>
                 )}
               </div>

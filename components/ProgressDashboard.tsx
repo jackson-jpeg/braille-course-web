@@ -18,6 +18,10 @@ const GAME_INFO: { id: GameId; label: string; anchor: string }[] = [
   { id: 'sentence-decoder', label: 'Sentence Decoder', anchor: '#sentence-decoder' },
   { id: 'bingo', label: 'Braille Bingo', anchor: '#bingo' },
   { id: 'rain', label: 'Braille Rain', anchor: '#rain' },
+  { id: 'capital-quest', label: 'Capital Quest', anchor: '#capital-quest' },
+  { id: 'number-lock', label: 'Number Lock', anchor: '#number-lock' },
+  { id: 'punctuation-detective', label: 'Punctuation Detective', anchor: '#punctuation-detective' },
+  { id: 'brailler-challenge', label: 'Brailler Challenge', anchor: '#brailler-challenge' },
 ];
 
 function ProgressRing({ progress, size = 48 }: { progress: number; size?: number }) {
