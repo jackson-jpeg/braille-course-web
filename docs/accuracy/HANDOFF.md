@@ -58,13 +58,35 @@ there (a vps-tools hook blocks it).
 
 Vercel builds production from `master` (git integration; no Vercel CLI or token was available). Merging
 to `master` deploys. `npm run build` runs the full accuracy suite first, so a failing or skipped test stops
-the deploy. GitHub Actions (`.github/workflows/braille-accuracy.yml`) also regenerates the oracle with a
-fresh liblouis and runs the browser geometry check.
+the deploy. Everything else (oracle regeneration, browser checks, axe) is run by the session before each
+merge: see "Before every merge" below.
 
 Vercel builds with `NODE_ENV=production`. React refuses `act()` in production builds, so
-`test:accuracy` forces `NODE_ENV=test` for jest; CI also builds with `NODE_ENV=production` to catch
-this. (The first production deploy of this work failed for exactly this reason and was fixed in a
+`test:accuracy` forces `NODE_ENV=test` for jest; the local checklist builds with `NODE_ENV=production` to
+catch this. (The first production deploy of this work failed for exactly this reason and was fixed in a
 follow-up PR.)
+
+## Before every merge (required: there is no automatic CI)
+
+GitHub Actions is manual-only on this repo (the owner does not pay for Actions). `.github/workflows/braille-accuracy.yml`
+runs only from Actions → Run workflow; nothing runs on push or pull request. The Vercel build still runs the
+full accuracy suite, so a failing test cannot reach production, but these checks run nowhere unless the
+session runs them. Run all of them locally before merging any PR, and report the results in the PR:
+
+1. `npm run format:check`, `npm run lint`, `npx tsc --noEmit -p .`
+2. `npm run braille:oracle`, then `git diff --exit-code -- __tests__/fixtures/liblouis-oracle.json` (needs
+   `liblouis-bin python3-louis`). A changed fixture must be committed only if the change is explained.
+3. `npm run braille:rulebook` when rulebook data or citations changed (needs `poppler-utils`).
+4. `NODE_ENV=production npm run build` (runs the whole jest suite first, as Vercel does).
+5. `npm run start -- -p 3100`, then against `http://localhost:3100`:
+   - `npm run braille:geometry -- http://localhost:3100` (dot positions, captions, wording, overflow at
+     1280/390/320px): must report 0 problems;
+   - `npm run a11y:axe -- http://localhost:3100` (axe-core, every lesson and game page): must report 0
+     violations.
+6. After the merge deploys, run the same two browser checks against `https://www.teachbraille.org`.
+
+Do not trigger the GitHub workflow unless the owner asks. Dependabot version updates are off (no
+`.github/dependabot.yml`); keep it that way.
 
 ## How to add or change braille content safely
 
@@ -136,4 +158,4 @@ scripts/braille/plain-contracted-words.py`, then `npm run braille:oracle`.
 
 Resolved in the October 12 cleanup pass: Word Game keyboard at 320px (now checked at 320/390/1280 on
 every page), unused Contraction Sprint / Sentence Decoder difficulty parameters, admin worksheets now draw
-word answers in the worksheet's grade, family-site blocklist test, axe-core in CI.
+word answers in the worksheet's grade, family-site blocklist test, axe-core check (run locally before each merge; Actions is manual-only).

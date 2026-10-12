@@ -38,7 +38,7 @@ raisedClassName flatClassName label? />`) and `components/BrailleDotPad.tsx` (in
    `python3 -c "import louis; print(louis.translateString(['unicode.dis','en-ueb-g2.ctb'], 'mother'))"`.
 6. **Accessibility**: real text alternatives; keyboard play; screen-reader labels that state the dot
    numbers (use `describeCell`/`describeCells`, or `<BrailleCell label="letter h" />`, which appends
-   "dots 1, 2, 5"). Every lesson and game page must pass axe-core (`npm run a11y:axe -- <url>`, also in CI).
+   "dots 1, 2, 5"). Every lesson and game page must pass axe-core (`npm run a11y:axe -- <url>`).
 7. **Captions say what the cell is.** A plain letter cell is lowercase: caption it "h", never "H" (a
    capital needs the capital letter indicator in front, and that cell gets its own caption). The rule is
    `lib/braille/labels.ts`; the jsdom helper `checkAllCells` and the real-browser check apply it to every
@@ -47,6 +47,13 @@ raisedClassName flatClassName label? />`) and `components/BrailleDotPad.tsx` (in
    print and tokens (`{dots:numeric}`, `{letter:b}`); braille worksheet items carry only `print`.
    `lib/ai-content-sanitizer.ts` regenerates or removes everything else, and `lib/worksheet-braille.ts`
    draws items in the worksheet's grade (contracted words only from liblouis-verified lists).
+
+9. **No automatic CI.** GitHub Actions is manual-only (the owner does not pay for it). Before every
+   merge, run the checklist in `docs/accuracy/HANDOFF.md` ("Before every merge") locally: format, lint,
+   typecheck, `npm run braille:oracle` with a clean fixture diff, `NODE_ENV=production npm run build`, and
+   the browser geometry check and axe check against a local production server. After the deploy, run both
+   browser checks against https://www.teachbraille.org. Do not trigger the workflow or add Dependabot
+   version updates unless the owner asks.
 
 ## Per-game structure
 
