@@ -1,0 +1,141 @@
+# Session handoff: teachbraille.org braille accuracy work (October 2026)
+
+Everything another session needs to continue, with no prior context.
+
+## What this is
+
+teachbraille.org teaches Unified English Braille (UEB) to sighted parents and family of blind and low
+vision children. It is run by Delaney Costello, a Teacher of the Visually Impaired (TVI). It has free
+lessons (`/learn`) and practice games (`/games`) with no signup. Repo: `jackson-jpeg/braille-course-web`
+(Next.js 14 App Router, TypeScript, Prisma/Neon, Stripe, Vercel). Owner: Jackson (realjacksons@gmail.com).
+
+**Mission of this work**: every braille pattern, explanation and game answer is provably correct, and
+the basics (capitals, numbers, punctuation) are taught. Accuracy over everything; Delaney is not
+available to review, so the code proves its own correctness.
+
+## Where things are
+
+| Path                                                                                      | What                                                                                                                                                                                                                   |
+| ----------------------------------------------------------------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `lib/braille/ueb.ts`                                                                      | **The only definition of braille cells.** Letters, digits, indicators (capitals, numeric, grade 1, typeforms), punctuation, symbols, contractions, each with its ICEB rule. Unicode conversion, `dotPosition`, mirror. |
+| `lib/braille/transcribe.ts`                                                               | Print → uncontracted UEB, cell by cell (`transcribe`, `transcribeTokens`). Throws `TranscriptionError` rather than guess.                                                                                              |
+| `lib/braille/prose.ts`                                                                    | Generated prose: `describeCell(s)`, `renderProse('{dots:numeric}')`, data-derived `FACTS`.                                                                                                                             |
+| `lib/braille/contracted.ts`                                                               | `contractedWord('bath', ['b','a','th'])` for grade 2 content.                                                                                                                                                          |
+| `lib/braille/perkins.ts`                                                                  | Perkins / six-key layout, chord reader.                                                                                                                                                                                |
+| `lib/braille/shared.ts`                                                                   | Which signs share a cell.                                                                                                                                                                                              |
+| `lib/braille/inventory.ts`, `site-inventory.ts`                                           | Every string the site shows as braille (fed to liblouis). Register new content modules in `site-inventory.ts`.                                                                                                         |
+| `lib/braille/discrepancies.ts`                                                            | The only place a liblouis disagreement may be accepted (needs a verified rulebook citation).                                                                                                                           |
+| `lib/braille/terminology.ts`, `labels.ts`                                                 | Superseded (EBAE) terms and other-code names the site must never use; the rule that a plain letter cell is never captioned with an uppercase letter.                                                                   |
+| `lib/ai-content-sanitizer.ts`, `lib/worksheet-braille.ts`                                 | AI-generated admin documents: the wall between the model and the document, and worksheet braille in the right grade.                                                                                                   |
+| `lib/word-blocklist.ts`                                                                   | Family-site blocklist for every word list (`isBlockedWord` also catches inflections).                                                                                                                                  |
+| `lib/games/*.ts`                                                                          | Pure game logic per game: question enumeration, `isCorrect`, `brailleInventory`.                                                                                                                                       |
+| `lib/course-curriculum.ts`                                                                | The 18 lessons (templates rendered with `renderProse`).                                                                                                                                                                |
+| `components/BrailleCell.tsx`, `BrailleDotPad.tsx`, `BrailleText.tsx`                      | The only components that draw dots.                                                                                                                                                                                    |
+| `components/games/ChoiceGame.tsx`                                                         | Shell for Capital Quest, Number Lock, Punctuation Detective.                                                                                                                                                           |
+| `scripts/braille/`                                                                        | liblouis oracle, rulebook extraction/verification, Unicode names, real-browser geometry, report generator.                                                                                                             |
+| `__tests__/braille/`, `__tests__/games/`, `__tests__/course/`, `__tests__/admin-braille/` | The accuracy suite.                                                                                                                                                                                                    |
+| `docs/accuracy/`                                                                          | Audit, verification, discrepancy reports; this file; `MIGRATION-BRIEF.md` (rules for anyone editing braille content).                                                                                                  |
+
+## Commands (run in the repo; the original work ran in a Claude Code cloud container)
+
+| Command                                                                             | Purpose                                                                           | Needs                                                               |
+| ----------------------------------------------------------------------------------- | --------------------------------------------------------------------------------- | ------------------------------------------------------------------- |
+| `npm test` / `npm run test:accuracy`                                                | Whole suite (≈1,680 tests)                                                        | node 22                                                             |
+| `npm run braille:oracle`                                                            | Regenerate `__tests__/fixtures/liblouis-oracle.json` after adding braille content | liblouis + python3-louis (`apt install liblouis-bin python3-louis`) |
+| `npm run braille:rulebook`                                                          | Re-extract rulebook tables and verify cited examples                              | poppler-utils (`pdftotext`), internet                               |
+| `npm run build`                                                                     | Runs the accuracy suite, then Prisma + Next build (what Vercel runs)              |                                                                     |
+| `npm run start -- -p 3100` then `npm run braille:geometry -- http://localhost:3100` | Real-browser check at 1280/390/320px: dot positions, captions, wording, overflow  | Playwright Chromium                                                 |
+| (server running) `npm run a11y:axe -- http://localhost:3100`                        | axe-core (WCAG 2.2 A/AA) on every lesson and game page                            | Playwright Chromium                                                 |
+| `npx tsx scripts/braille/verification-report.ts <geometry-log>`                     | Regenerate `docs/accuracy/VERIFICATION-RESULTS.md`                                |                                                                     |
+
+**Machines.** Jackson's normal setup is a VPS (source of truth, see `jackson-jpeg/vps-tools`) that syncs
+one way to a MacBook. This session ran in an Anthropic cloud container that cannot reach either, so
+nothing was run on the VPS or Mac. All commands above run on any Linux machine with the listed tools.
+On the VPS use the repo path `/root/braille-course-web`. Don't run `npm install` in a production tree
+there (a vps-tools hook blocks it).
+
+## Deploy
+
+Vercel builds production from `master` (git integration; no Vercel CLI or token was available). Merging
+to `master` deploys. `npm run build` runs the full accuracy suite first, so a failing or skipped test stops
+the deploy. GitHub Actions (`.github/workflows/braille-accuracy.yml`) also regenerates the oracle with a
+fresh liblouis and runs the browser geometry check.
+
+Vercel builds with `NODE_ENV=production`. React refuses `act()` in production builds, so
+`test:accuracy` forces `NODE_ENV=test` for jest; CI also builds with `NODE_ENV=production` to catch
+this. (The first production deploy of this work failed for exactly this reason and was fixed in a
+follow-up PR.)
+
+## How to add or change braille content safely
+
+1. Never type a cell, a braille character, or "dots N" prose. Use `lib/braille` (see `MIGRATION-BRIEF.md`).
+2. Put game logic in `lib/games/<game>.ts` with `brailleInventory()` listing every string with the cells
+   the component actually draws; register it in `lib/braille/site-inventory.ts`.
+3. Run `npm run braille:oracle`, then `npm test`. If liblouis disagrees, the site is probably wrong. Only
+   if the ICEB rulebook supports the site: add a citation to `__tests__/fixtures/iceb-rulebook-examples.json`
+   ("citations"), verify it with `npm run braille:rulebook`, and add an entry to `lib/braille/discrepancies.ts`.
+   Never loosen or skip a test.
+4. Enumerate every question in a game test (see `__tests__/games/new-games-logic.test.ts`).
+
+## AI-generated admin documents (how braille is kept out of the model's hands)
+
+The admin "Create" tab asks Claude for slides, handouts, study guides, worksheets and quizzes. The model
+is never trusted with braille:
+
+1. The prompt (`lib/ai-braille-reference.ts`) contains no dot numbers at all (tested). It lists sign ids
+   and tells the model to write tokens such as `{dots:numeric}` or `{letter:b}`, and to give braille
+   worksheet items only a `print` field.
+2. `sanitizeGeneratedContent` (`lib/ai-content-sanitizer.ts`) runs on the model output and again when
+   the admin builds the documents. It removes sentences with Unicode braille, other codes (Nemeth, EBAE)
+   or dot numbers it cannot tie to a sign (including 7/8-dot, "dot-6", "dots one and four",
+   "positions 1 and 4"); regenerates claims it can tie to a sign from `lib/braille`; renames superseded
+   terms; and rejects unknown tokens. It is idempotent: drafts store tokens; documents render them.
+3. Braille worksheet items are rebuilt from `print`: the site writes the prompt, draws the cells and
+   writes the answer. The grade follows the admin difficulty (beginner: uncontracted; intermediate and
+   advanced: contracted). Contracted words come only from lists verified with liblouis en-ueb-g2
+   (Contraction Sprint words, plus 3,389 everyday words whose contracted form equals the uncontracted
+   one, `lib/braille/data/plain-contracted-words.json`); anything else is dropped, not guessed.
+4. `__tests__/admin-braille/ai-sanitizer.test.ts` feeds adversarial output through the real PDF/PPTX
+   builders (recorded) and proves none of it reaches a document.
+
+To refresh the everyday-word list: `npx tsx scripts/braille/dump-candidate-words.ts | python3
+scripts/braille/plain-contracted-words.py`, then `npm run braille:oracle`.
+
+## Vercel preview deployments (investigated October 12)
+
+- `vercel.json` has only `framework` and `crons`; there is no `ignoreCommand` or `git.deploymentEnabled`
+  anywhere in the repo, so nothing in the code turns previews off.
+- Every branch push authored by `Claude <noreply@anthropic.com>` got a Vercel deployment that failed
+  within about a second of being created (before any build ran). That is how Vercel rejects a commit
+  whose author is not a member of the Vercel team.
+- A test commit authored as `jackson-jpeg <realjacksons@gmail.com>` (the repo's git identity is now set
+  to that) got no Vercel deployment at all, not even a failed one, in over 30 minutes. See the cleanup
+  report for what the pull request push showed.
+- Production deploys from `master` work (the merge author is Jackson).
+- What to check in the Vercel dashboard (not reachable from the cloud session): Project → Settings → Git
+  (are preview deployments for non-production branches enabled?) and Settings → Build and Deployment
+  (Ignored Build Step).
+
+## State at handoff
+
+- Branch `claude/teachbraille-accuracy-audit-j6y95w`, merged to `master` through one PR per pass (see the
+  final message of each session for the PR link and the live check). Commits are authored as
+  `jackson-jpeg <realjacksons@gmail.com>` (repo-local git config).
+- All tests pass, none skipped. Numbers are in `VERIFICATION-RESULTS.md`.
+- The previous attempt (PR #3, a full redesign) was reverted by the owner in PR #4; its branch
+  `redesign-oct-2026` still exists. **This work deliberately keeps the current (pre-redesign) design.**
+
+## Open items / ideas (none block accuracy)
+
+- **Slate and stylus**: no game writes with a slate, so mirror writing is untested in practice
+  (`mirrorCell` exists and is unit-tested). Add tests if a slate mode is built.
+- **Contracted coverage**: only the main one-cell contractions are taught. Initial-letter and final-letter
+  contractions and shortforms are not; adding them means extending `CONTRACTIONS` and the rulebook tests.
+  The AI worksheet builder drops a contracted word it cannot verify, so it can only draw words from the
+  verified lists.
+- **Typeform indicators** (italic, bold, underline) are in the data and the AI reference but not taught.
+- **Vercel previews**: see above; the remaining check is in the Vercel dashboard.
+
+Resolved in the October 12 cleanup pass: Word Game keyboard at 320px (now checked at 320/390/1280 on
+every page), unused Contraction Sprint / Sentence Decoder difficulty parameters, admin worksheets now draw
+word answers in the worksheet's grade, family-site blocklist test, axe-core in CI.
