@@ -21,7 +21,7 @@ npm run dev                   # http://localhost:3000
 | `npm run build`        | Prisma generate + Next.js build |
 | `npm run lint`         | ESLint (next lint)              |
 | `npm run format`       | Prettier write                  |
-| `npm run format:check` | Prettier check (CI)             |
+| `npm run format:check` | Prettier check                  |
 | `npm run db:push`      | Push Prisma schema to DB        |
 | `npm run db:seed`      | Seed database                   |
 | `npm run db:studio`    | Open Prisma Studio              |
@@ -72,4 +72,5 @@ prisma/               # Schema + seed script
 - Game logic lives in `lib/games/*.ts` with every question enumerated and tested, and a `brailleInventory()` registered in `lib/braille/site-inventory.ts`.
 - After adding braille content run `npm run braille:oracle` (needs liblouis + python3-louis) and `npm test`. A liblouis disagreement can only be accepted via `lib/braille/discrepancies.ts` with a verified ICEB rulebook citation. Never loosen or skip a test.
 - `npm run build` runs the whole test suite first, so Vercel will not deploy with a failing accuracy test.
+- **No automatic CI**: GitHub Actions is manual-only (`workflow_dispatch`). Before every merge, run the local checklist in `docs/accuracy/HANDOFF.md` ("Before every merge"): oracle with a clean fixture diff, production build, browser geometry check and axe check. Do not trigger the workflow or enable Dependabot version updates unless the owner asks.
 - Full method and history: `docs/accuracy/` (start with `HANDOFF.md` and `MIGRATION-BRIEF.md`).

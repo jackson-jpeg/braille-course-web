@@ -1,13 +1,16 @@
 name: Braille accuracy
 
-# Every push and pull request: rebuild the liblouis oracle and the ICEB rulebook fixtures from
-# their sources, fail if they differ from the committed copies, then run the full accuracy suite,
-# the real-browser cell check (geometry, captions, wording, no sideways overflow at 1280/390/320px)
-# and the axe-core accessibility check of every lesson and game page.
+# Manual only (Actions → Braille accuracy → Run workflow): the owner does not pay for GitHub Actions,
+# so nothing here runs on push, pull request or a schedule. Production is still protected because the
+# Vercel build (`npm run build`) runs the full accuracy suite first. The checks below are run locally
+# before every merge (see docs/accuracy/HANDOFF.md, "Before every merge").
+#
+# When run: rebuild the liblouis oracle and the ICEB rulebook fixtures from their sources, fail if
+# they differ from the committed copies, then run the full accuracy suite, the real-browser cell check
+# (geometry, captions, wording, no sideways overflow at 1280/390/320px) and the axe-core accessibility
+# check of every lesson and game page.
 on:
-  push:
-    branches: [master]
-  pull_request:
+  workflow_dispatch:
 
 jobs:
   accuracy:
