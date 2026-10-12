@@ -22,11 +22,9 @@ export interface GameDifficultyParams {
   hangman: { minLength: number; maxLength: number; maxWrong: number };
   speedmatch: { choiceCount: number; timeLimit: number };
   memorymatch: { pairs: number };
-  'contraction-sprint': { timeLimit: number; contractionTypes: string[] };
   'number-sense': { maxNumber: number; operations: string[] };
   'reflex-dots': { displayTime: number; rounds: number };
   sequence: { letterCount: number };
-  'sentence-decoder': { maxWords: number };
   bingo: { winCondition: 'line' | 'double-line' | 'blackout'; callIntervalMs: number };
   rain: { fallSpeed: number; spawnMs: number; similarLetters: boolean };
   'capital-quest': Record<string, never>;
@@ -37,7 +35,8 @@ export interface GameDifficultyParams {
 
 /** Get difficulty parameters for a game */
 export function getDifficultyParams(gameId: GameId, difficulty: Difficulty): Record<string, unknown> {
-  const params: Record<GameId, Record<Difficulty, Record<string, unknown>>> = {
+  // Contraction Sprint and Sentence Decoder keep their levels with their logic (lib/games/*).
+  const params: Partial<Record<GameId, Record<Difficulty, Record<string, unknown>>>> = {
     wordgame: {
       beginner: { wordLength: 4 },
       intermediate: { wordLength: 4 },
@@ -63,11 +62,6 @@ export function getDifficultyParams(gameId: GameId, difficulty: Difficulty): Rec
       intermediate: { pairs: 8 },
       advanced: { pairs: 10 },
     },
-    'contraction-sprint': {
-      beginner: { timeLimit: 60, contractionTypes: ['wordsign'] },
-      intermediate: { timeLimit: 45, contractionTypes: ['wordsign', 'strong'] },
-      advanced: { timeLimit: 30, contractionTypes: ['wordsign', 'strong', 'groupsign-strong', 'groupsign-lower'] },
-    },
     'number-sense': {
       beginner: { maxNumber: 10, operations: ['+'] },
       intermediate: { maxNumber: 20, operations: ['+', '-'] },
@@ -82,11 +76,6 @@ export function getDifficultyParams(gameId: GameId, difficulty: Difficulty): Rec
       beginner: { letterCount: 4 },
       intermediate: { letterCount: 6 },
       advanced: { letterCount: 8 },
-    },
-    'sentence-decoder': {
-      beginner: { maxWords: 3 },
-      intermediate: { maxWords: 5 },
-      advanced: { maxWords: 7 },
     },
     bingo: {
       beginner: { winCondition: 'line', callIntervalMs: 3500 },

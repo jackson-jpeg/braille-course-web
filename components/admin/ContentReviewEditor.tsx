@@ -2,6 +2,10 @@
 
 import { useState, useCallback } from 'react';
 import BrailleInlinePreview from './BrailleInlinePreview';
+import BrailleCell from '@/components/BrailleCell';
+import { describeCells } from '@/lib/braille/prose';
+import { type BrailleGrade, GRADE_LABEL, isBrailleGrade, worksheetBraille } from '@/lib/worksheet-braille';
+import { BRAILLE_SECTION_TYPES } from '@/lib/ai-content-sanitizer';
 import type { CorrectionEntry } from './admin-types';
 
 interface ContentReviewEditorProps {
@@ -273,6 +277,8 @@ function SectionEditor({
 interface WorksheetItem {
   prompt: string;
   answer: string;
+  /** Braille sections: the print the site generates the braille, prompt and answer from. */
+  print?: string;
 }
 
 interface WorksheetSection {
@@ -291,11 +297,40 @@ const WORKSHEET_TYPES = [
   'dot-identification',
 ];
 
+/** Generated braille for a braille item's print, as the built worksheet will draw it. */
+function ItemBraillePreview({ print, grade }: { print: string; grade: BrailleGrade }) {
+  const cells = print.trim() ? worksheetBraille(print, grade) : null;
+  if (!print.trim()) return null;
+  if (!cells)
+    return (
+      <span className="admin-review-item-note" role="status">
+        The site cannot write “{print}” in {GRADE_LABEL[grade]} braille; this item will be left out.
+      </span>
+    );
+  return (
+    <span className="admin-braille-inline-preview" title={GRADE_LABEL[grade]}>
+      {cells.map((cell, i) => (
+        <BrailleCell
+          key={i}
+          cell={cell}
+          className="admin-braille-inline-grid"
+          dotClassName="admin-braille-inline-dot"
+          raisedClassName="admin-braille-inline-dot-raised raised"
+          flatClassName="flat"
+        />
+      ))}
+      <span className="sr-only">{`${print} in ${GRADE_LABEL[grade]} braille: ${describeCells(cells)}`}</span>
+    </span>
+  );
+}
+
 function WorksheetEditor({
   sections,
+  grade,
   onChange,
 }: {
   sections: WorksheetSection[];
+  grade: BrailleGrade;
   onChange: (s: WorksheetSection[]) => void;
 }) {
   const updateSection = (idx: number, field: string, value: unknown) => {
@@ -304,7 +339,7 @@ function WorksheetEditor({
     onChange(updated);
   };
 
-  const updateItem = (sIdx: number, iIdx: number, field: 'prompt' | 'answer', value: string) => {
+  const updateItem = (sIdx: number, iIdx: number, field: 'prompt' | 'answer' | 'print', value: string) => {
     const updated = [...sections];
     const items = [...updated[sIdx].items];
     items[iIdx] = { ...items[iIdx], [field]: value };
@@ -356,31 +391,65 @@ function WorksheetEditor({
             rows={2}
           />
           <div className="admin-review-items">
-            {section.items.map((item, ii) => (
-              <div key={ii} className="admin-review-item-row">
-                <span className="admin-review-item-num">{ii + 1}.</span>
-                <input
-                  className="admin-compose-input admin-review-input"
-                  value={item.prompt}
-                  onChange={(e) => updateItem(i, ii, 'prompt', e.target.value)}
-                  placeholder="Prompt"
-                />
-                <input
-                  className="admin-compose-input admin-review-input admin-review-input-answer"
-                  value={item.answer}
-                  onChange={(e) => updateItem(i, ii, 'answer', e.target.value)}
-                  placeholder="Answer"
-                />
-                <button type="button" className="admin-review-remove-btn" onClick={() => removeItem(i, ii)}>
-                  &times;
-                </button>
-              </div>
-            ))}
+            {BRAILLE_SECTION_TYPES.includes(section.type) && (
+              <p className="admin-review-item-note">
+                Braille items: enter only the print (a letter, number or word). The site writes the prompt, draws the
+                braille and writes the answer in {GRADE_LABEL[grade]} braille.
+              </p>
+            )}
+            {section.items.map((item, ii) =>
+              BRAILLE_SECTION_TYPES.includes(section.type) ? (
+                <div key={ii} className="admin-review-item-row">
+                  <span className="admin-review-item-num">{ii + 1}.</span>
+                  {section.type === 'practice-drill' && (
+                    <input
+                      className="admin-compose-input admin-review-input"
+                      value={item.prompt}
+                      onChange={(e) => updateItem(i, ii, 'prompt', e.target.value)}
+                      placeholder="Instruction"
+                      aria-label={`Item ${ii + 1} instruction`}
+                    />
+                  )}
+                  <input
+                    className="admin-compose-input admin-review-input admin-review-input-answer"
+                    value={item.print ?? ''}
+                    onChange={(e) => updateItem(i, ii, 'print', e.target.value)}
+                    placeholder="Print"
+                    aria-label={`Item ${ii + 1} print`}
+                  />
+                  <ItemBraillePreview print={item.print ?? ''} grade={grade} />
+                  <button type="button" className="admin-review-remove-btn" onClick={() => removeItem(i, ii)}>
+                    &times;
+                  </button>
+                </div>
+              ) : (
+                <div key={ii} className="admin-review-item-row">
+                  <span className="admin-review-item-num">{ii + 1}.</span>
+                  <input
+                    className="admin-compose-input admin-review-input"
+                    value={item.prompt}
+                    onChange={(e) => updateItem(i, ii, 'prompt', e.target.value)}
+                    placeholder="Prompt"
+                  />
+                  <input
+                    className="admin-compose-input admin-review-input admin-review-input-answer"
+                    value={item.answer}
+                    onChange={(e) => updateItem(i, ii, 'answer', e.target.value)}
+                    placeholder="Answer"
+                  />
+                  <button type="button" className="admin-review-remove-btn" onClick={() => removeItem(i, ii)}>
+                    &times;
+                  </button>
+                </div>
+              ),
+            )}
             <button type="button" className="admin-review-add-btn" onClick={() => addItem(i)}>
               + Add item
             </button>
           </div>
-          <BrailleInlinePreview text={section.items.map((it) => `${it.prompt} ${it.answer}`).join(' ')} />
+          {!BRAILLE_SECTION_TYPES.includes(section.type) && (
+            <BrailleInlinePreview text={section.items.map((it) => `${it.prompt} ${it.answer}`).join(' ')} />
+          )}
         </div>
       ))}
     </div>
@@ -510,6 +579,7 @@ export default function ContentReviewEditor({
   const [bundleTab, setBundleTab] = useState<'slides' | 'handout' | 'worksheet'>('slides');
 
   const d = data as Record<string, unknown>;
+  const grade: BrailleGrade = isBrailleGrade(d.brailleGrade) ? d.brailleGrade : 'uncontracted';
 
   const handleChange = useCallback(
     (updated: unknown) => {
@@ -582,6 +652,7 @@ export default function ContentReviewEditor({
         return (
           <WorksheetEditor
             sections={(d.sections || []) as WorksheetSection[]}
+            grade={grade}
             onChange={(sections) => handleChange({ ...d, sections })}
           />
         );
@@ -636,6 +707,7 @@ export default function ContentReviewEditor({
             {bundleTab === 'worksheet' && (
               <WorksheetEditor
                 sections={(d.worksheetSections || []) as WorksheetSection[]}
+                grade={grade}
                 onChange={(sections) => handleBundleChange('worksheetSections', sections)}
               />
             )}
@@ -683,13 +755,19 @@ export default function ContentReviewEditor({
                 strokeLinecap="round"
               />
             </svg>
-            <strong>AI Error Corrected</strong> — {corrections.length} braille dot pattern
-            {corrections.length > 1 ? 's were' : ' was'} automatically fixed
+            <strong>Braille checked</strong> — the AI&rsquo;s braille is never used: {corrections.length} change
+            {corrections.length > 1 ? 's were' : ' was'} made from the site&rsquo;s braille data
           </div>
           <ul className="admin-review-corrections-list">
             {corrections.map((c, i) => (
               <li key={i}>
-                <strong>{c.letterOrContraction}</strong>: <del>{c.original}</del> → <strong>{c.corrected}</strong>
+                {c.letterOrContraction && <strong>{c.letterOrContraction}: </strong>}
+                {c.original && (
+                  <>
+                    <del>{c.original}</del> →{' '}
+                  </>
+                )}
+                <strong>{c.corrected}</strong>
               </li>
             ))}
           </ul>

@@ -66,6 +66,8 @@ export async function POST(req: NextRequest) {
       };
 
       try {
+        // Every builder sanitizes the content again (edits are not trusted) and generates all of its
+        // braille from lib/braille, in the grade the draft was generated for (parsed.brailleGrade).
         if (format === 'session-bundle') {
           // Build three documents sequentially with progress sub-events
           const materials: Array<{
@@ -80,7 +82,7 @@ export async function POST(req: NextRequest) {
 
           // 1. Slides (PPTX)
           send({ stage: 'building', sub: 'slides', progress: '1/3' });
-          const slidesData: PptxResponse = { slides: parsed.slides };
+          const slidesData: PptxResponse = { slides: parsed.slides, brailleGrade: parsed.brailleGrade };
           const pptxBuffer = await generatePptxBuffer(slidesData);
           send({ stage: 'uploading', sub: 'slides', progress: '1/3' });
           const pptxFilename = `${safeTitle}-slides.pptx`;
@@ -98,7 +100,7 @@ export async function POST(req: NextRequest) {
 
           // 2. Handout (PDF)
           send({ stage: 'building', sub: 'handout', progress: '2/3' });
-          const handoutData: PdfResponse = { sections: parsed.handoutSections };
+          const handoutData: PdfResponse = { sections: parsed.handoutSections, brailleGrade: parsed.brailleGrade };
           const handoutBuffer = await generatePdfBuffer(handoutData, title + ' — Handout', false);
           send({ stage: 'uploading', sub: 'handout', progress: '2/3' });
           const handoutFilename = `${safeTitle}-handout.pdf`;
@@ -116,7 +118,10 @@ export async function POST(req: NextRequest) {
 
           // 3. Worksheet (PDF)
           send({ stage: 'building', sub: 'worksheet', progress: '3/3' });
-          const worksheetData: WorksheetResponse = { sections: parsed.worksheetSections };
+          const worksheetData: WorksheetResponse = {
+            sections: parsed.worksheetSections,
+            brailleGrade: parsed.brailleGrade,
+          };
           const worksheetBuffer = await generateWorksheetPdfBuffer(worksheetData, title + ' — Worksheet');
           send({ stage: 'uploading', sub: 'worksheet', progress: '3/3' });
           const worksheetFilename = `${safeTitle}-worksheet.pdf`;

@@ -1,167 +1,62 @@
 /**
  * The BRAILLE REFERENCE DATA block sent to the AI model (lib/ai-braille-reference.ts, used by
- * app/api/admin/generate/route.ts). Every line that names dots is parsed and checked against the
- * canonical data AND against independent liblouis output (en-ueb-g1 / en-ueb-g2, pasted below).
+ * app/api/admin/generate/route.ts). It names no dots at all: it lists sign ids and the tokens the
+ * model writes instead. Every token it teaches is rendered and checked against independent
+ * liblouis output (en-ueb-g1 / en-ueb-g2, pasted below).
  */
 import {
   CONTRACTION_KINDS_BY_LEVEL,
+  FACT_TOKENS,
   PROMPT_EXAMPLES,
-  REFERENCE_EXAMPLES,
   buildBrailleReference,
   buildPedagogicalPreamble,
   wordsignsNotFirstLetter,
   type Difficulty,
 } from '@/lib/ai-braille-reference';
-import { validateBrailleText } from '@/lib/braille-validator';
-import {
-  type Cell,
-  ALL_SIGNS,
-  ALPHABET,
-  CONTRACTIONS,
-  INDICATORS,
-  PUNCTUATION,
-  SYMBOLS,
-  cellsKey,
-  toCell,
-  unicodeToCell,
-  unicodeToCells,
-} from '@/lib/braille/ueb';
-import { transcribe } from '@/lib/braille/transcribe';
+import { sanitizeText } from '@/lib/ai-content-sanitizer';
+import { parseDotSpec } from '@/lib/braille-validator';
+import { ALPHABET, CONTRACTIONS, INDICATORS, PUNCTUATION, SYMBOLS, cellsKey, unicodeToCells } from '@/lib/braille/ueb';
 
 const LEVELS: Difficulty[] = ['beginner', 'intermediate', 'advanced'];
 
 /* Independent ground truth from liblouis (python3 louis.translateString, unicode.dis). */
 const LOUIS_ALPHABET = '⠁⠃⠉⠙⠑⠋⠛⠓⠊⠚⠅⠇⠍⠝⠕⠏⠟⠗⠎⠞⠥⠧⠺⠭⠽⠵'; // en-ueb-g1 "abc…z"
-const LOUIS_G1: Record<string, string> = {
-  Hello: '⠠⠓⠑⠇⠇⠕',
-  USA: '⠠⠠⠥⠎⠁',
-  '2024': '⠼⠃⠚⠃⠙',
-  '3b': '⠼⠉⠰⠃',
-  'Is it 5?': '⠠⠊⠎⠀⠊⠞⠀⠼⠑⠦',
-};
+const LOUIS_G1: Record<string, string> = { Hello: '⠠⠓⠑⠇⠇⠕', '2024': '⠼⠃⠚⠃⠙' };
 const LOUIS_G2_WORDSIGN: Record<string, string> = { it: '⠭', as: '⠵', but: '⠃', his: '⠦', was: '⠴' };
 const LOUIS_NUMERIC = '⠼';
 
-const letterCell = (l: string) => unicodeToCell(LOUIS_ALPHABET[ALPHABET.indexOf(l)]);
-
-/** "dot 6, then dots 1, 2" → cells. */
-function parseDesc(desc: string): Cell[] {
-  return desc.split(', then ').map((part) => {
-    if (part === 'blank cell') return [];
-    const m = part.match(/^dots? ([1-6](?:, [1-6])*)$/);
-    if (!m) throw new Error(`unparseable dot description "${part}"`);
-    return toCell(m[1].split(', ').map(Number));
-  });
-}
-
-const DESC = '((?:dots? [1-6](?:, [1-6])*|blank cell)(?:, then (?:dots? [1-6](?:, [1-6])*|blank cell))*)';
-
-interface Checked {
-  kind: string;
-  key: string;
-}
-
-/** Check one line; returns what it was about, or throws if it names dots that do not match. */
-function checkLine(line: string): Checked | null {
-  if (!/\bdots? [1-6]|blank cell/.test(line)) return null;
-  let m: RegExpMatchArray | null;
-
-  if ((m = line.match(new RegExp(`^  Letter ([a-z]): ${DESC}$`)))) {
-    expect(cellsKey(parseDesc(m[2]))).toBe(cellsKey([letterCell(m[1])]));
-    return { kind: 'letter', key: m[1] };
-  }
-  if (
-    (m = line.match(
-      new RegExp(`^  Digit ([0-9]): ${DESC} \\(numeric indicator, then the cell of the letter ([a-j])\\)$`),
-    ))
-  ) {
-    const expected = [unicodeToCell(LOUIS_NUMERIC), letterCell('jabcdefghi'[Number(m[1])])];
-    expect(cellsKey(parseDesc(m[2]))).toBe(cellsKey(expected));
-    expect(m[3]).toBe('jabcdefghi'[Number(m[1])]);
-    return { kind: 'digit', key: m[1] };
-  }
-  if ((m = line.match(new RegExp(`^  Example "(.+)": ${DESC}$`)))) {
-    expect(cellsKey(parseDesc(m[2]))).toBe(cellsKey(unicodeToCells(LOUIS_G1[m[1]])));
-    return { kind: 'example', key: m[1] };
-  }
-  if ((m = line.match(new RegExp(`^    "([a-z]+)": ${DESC}(?: \\(the letter ([a-z])\\))? \\[ICEB [0-9.]+\\] — .+$`)))) {
-    const text = m[1];
-    const cells = parseDesc(m[2]);
-    const candidates = CONTRACTIONS.filter((c) => c.text === text);
-    expect(candidates.length).toBeGreaterThan(0);
-    expect(candidates.some((c) => cellsKey(c.cells) === cellsKey(cells))).toBe(true);
-    if (LOUIS_G2_WORDSIGN[text]) expect(cellsKey(cells)).toBe(cellsKey(unicodeToCells(LOUIS_G2_WORDSIGN[text])));
-    if (m[3]) expect(cellsKey(cells)).toBe(cellsKey([letterCell(m[3])]));
-    return { kind: 'contraction', key: `${text}:${cellsKey(cells)}` };
-  }
-  if ((m = line.match(new RegExp(`^  ([a-z0-9 ]+?)(?: \\((.{1,3})\\))?: ${DESC} \\[ICEB [0-9.]+\\](?: — .+)?$`)))) {
-    const sign = ALL_SIGNS.find((s) => s.name === m![1]);
-    expect(sign).toBeDefined();
-    expect(cellsKey(parseDesc(m[3]))).toBe(cellsKey(sign!.cells));
-    if (m[2]) expect(sign!.print).toBe(m[2]);
-    return { kind: 'sign', key: sign!.id };
-  }
-  if ((m = line.match(new RegExp(`^  ${DESC}: (.+)$`)))) {
-    // Shared-cell line: every sign / contraction named really has these cells.
-    const cells = parseDesc(m[1]);
-    const [signsPart, contractionPart] = m[2].split(' / contraction ');
-    for (const name of signsPart.split(' / ')) {
-      const sign = ALL_SIGNS.find((s) => s.name === name);
-      expect(sign).toBeDefined();
-      expect(cellsKey(sign!.cells)).toBe(cellsKey(cells));
-    }
-    for (const t of (contractionPart ?? '').split(', ').filter(Boolean)) {
-      const text = t.replace(/"/g, '');
-      expect(CONTRACTIONS.some((c) => c.text === text && cellsKey(c.cells) === cellsKey(cells))).toBe(true);
-    }
-    return { kind: 'shared', key: m[2] };
-  }
-  if (
-    (m = line.match(new RegExp(`^Left column, top to bottom: ${DESC}\\. Right column, top to bottom: ${DESC}\\.$`)))
-  ) {
-    expect(parseDesc(m[1])).toEqual([[1, 2, 3]]);
-    expect(parseDesc(m[2])).toEqual([[4, 5, 6]]);
-    return { kind: 'layout', key: 'columns' };
-  }
-  if (line.startsWith('How to write dot numbers') || line.startsWith('"dot 6, then dot 3"')) {
-    // Format examples; check they are real signs (h; capitals terminator).
-    const d = line.match(/"(.+?)"/)![1];
-    if (line.startsWith('How')) expect(parseDesc(d)).toEqual([letterCell('h')]);
-    else expect(cellsKey(parseDesc(d))).toBe(cellsKey(INDICATORS.capitalsTerminator.cells));
-    return { kind: 'format', key: line.slice(0, 10) };
-  }
-  throw new Error(`line names dots but is not in a checked format: ${line}`);
+/** Render a token through the sanitizer (as a document build does) and parse the dots back. */
+function tokenCells(token: string, grade: 'uncontracted' | 'contracted' = 'contracted') {
+  const out = sanitizeText(`It is ${token}.`, grade);
+  expect(out).not.toBe('');
+  return cellsKey(parseDotSpec(out.replace(/^It is /, '')));
 }
 
 describe.each(LEVELS)('reference block, %s', (level) => {
   const ref = buildBrailleReference(level);
-  const lines = ref.split('\n');
-  const checked = lines.map(checkLine).filter((x): x is Checked => x !== null);
-  const keys = (kind: string) => new Set(checked.filter((c) => c.kind === kind).map((c) => c.key));
+  const preamble = buildPedagogicalPreamble(level);
 
-  test('every line that names dots matches the data (and liblouis)', () => {
-    expect(checked.length).toBeGreaterThan(60);
+  test('names no dots and contains no braille: the model is never shown a pattern to copy', () => {
+    for (const text of [ref, preamble, JSON.stringify(PROMPT_EXAMPLES)]) {
+      expect(text).not.toMatch(/\bdots?\s*[0-9]/i);
+      expect(text).not.toMatch(/[⠀-⣿]/);
+    }
+    expect(ref).toContain('YOU NEVER WRITE BRAILLE');
+    expect(preamble).toContain('NEVER write dot numbers or braille characters');
   });
 
-  test('covers all letters, digits, indicators, punctuation and symbols', () => {
-    expect([...keys('letter')].sort()).toEqual([...ALPHABET]);
-    expect(keys('digit').size).toBe(10);
-    const signs = keys('sign');
-    for (const s of [...Object.values(INDICATORS), ...Object.values(PUNCTUATION), ...Object.values(SYMBOLS)]) {
-      expect(signs.has(s.id)).toBe(true);
-    }
-    expect([...keys('example')].sort()).toEqual([...REFERENCE_EXAMPLES].sort());
+  test('lists every indicator, punctuation mark and symbol by token id', () => {
+    for (const s of [...Object.values(INDICATORS), ...Object.values(PUNCTUATION), ...Object.values(SYMBOLS)])
+      expect(ref).toContain(`  ${s.id}: ${s.name}`);
   });
 
   test('contractions given match the level', () => {
     const kinds = CONTRACTION_KINDS_BY_LEVEL[level];
-    const expected = CONTRACTIONS.filter((c) => kinds.includes(c.kind)).map((c) => `${c.text}:${cellsKey(c.cells)}`);
-    expect([...keys('contraction')].sort()).toEqual([...new Set(expected)].sort());
-  });
-
-  test('the cell diagram puts 1-2-3 on the left and 4-5-6 on the right', () => {
-    const i = lines.indexOf('The braille cell has six dots in two columns of three:');
-    expect(lines.slice(i + 1, i + 4)).toEqual(['  1 4', '  2 5', '  3 6']);
+    for (const c of CONTRACTIONS) {
+      const listed = ref.includes(`    "${c.text}"`);
+      if (kinds.includes(c.kind)) expect({ c: c.text, listed }).toEqual({ c: c.text, listed: true });
+    }
+    if (kinds.length === 0) expect(ref).not.toMatch(/^ {4}"/m);
   });
 
   test('UEB only, with UEB terminology and the uncontracted convention', () => {
@@ -169,24 +64,41 @@ describe.each(LEVELS)('reference block, %s', (level) => {
     expect(ref).toContain('Third Edition 2024');
     expect(ref).toMatch(/\[ICEB 5\.11\.1\]/);
     expect(ref).toContain('a letter standing alone is written as just the letter, with no grade 1 indicator');
-    expect(ref).toContain('numeric indicator: dots 3, 4, 5, 6');
-    expect(ref).toContain('grade 1 indicator: dots 5, 6');
-    expect(ref).not.toMatch(/(?<!capital )letter indicator|letter sign|number indicator|nemeth|\bEBAE\b/i);
-    expect(ref).not.toMatch(/[⠀-⣿]/);
+    expect(ref).not.toMatch(
+      /(?<!capital )letter indicator|letter sign|number indicator|number sign|nemeth|\bEBAE\b|American Edition/i,
+    );
   });
 
-  test('the fidelity guard finds nothing to correct in the reference block', () => {
-    expect(validateBrailleText(ref).corrections).toEqual([]);
+  test('uebdots (uncontracted, cell by cell) is offered only at the uncontracted level', () => {
+    expect(ref.includes('{uebdots:TEXT}')).toBe(level === 'beginner');
+  });
+});
+
+describe('every token the reference teaches renders to the braille liblouis gives', () => {
+  test.each([...ALPHABET])('{letter:%s}', (l) => {
+    expect(tokenCells(`{letter:${l}}`)).toBe(cellsKey(unicodeToCells(LOUIS_ALPHABET[ALPHABET.indexOf(l)])));
+  });
+  test('{dots:numeric} and the digits', () => {
+    expect(tokenCells('{dots:numeric}')).toBe(cellsKey(unicodeToCells(LOUIS_NUMERIC)));
+    expect(tokenCells('{dots:digit-2}')).toBe(cellsKey(unicodeToCells(LOUIS_G1['2024'].slice(0, 2))));
+  });
+  test('{uebdots:Hello} (uncontracted only)', () => {
+    expect(tokenCells('{uebdots:Hello}', 'uncontracted')).toBe(cellsKey(unicodeToCells(LOUIS_G1.Hello)));
+  });
+  test.each(Object.entries(LOUIS_G2_WORDSIGN))('{dots:contraction:%s}', (word, louis) => {
+    expect(tokenCells(`{dots:contraction:${word}}`)).toBe(cellsKey(unicodeToCells(louis)));
+  });
+  test('every fact name renders', () => {
+    for (const f of Object.keys(FACT_TOKENS)) expect(sanitizeText(`Fact: {fact:${f}}.`, 'contracted')).not.toBe('');
   });
 });
 
 describe('alphabetic wordsigns: not always the first letter', () => {
   const ref = buildBrailleReference('intermediate');
   test('"it" is the letter x and "as" is the letter z', () => {
-    expect(ref).toContain('"it": dots 1, 3, 4, 6 (the letter x)');
-    expect(ref).toContain('"as": dots 1, 3, 5, 6 (the letter z)');
+    expect(ref).toContain('"it" (the letter x)');
+    expect(ref).toContain('"as" (the letter z)');
     expect(ref).toContain('"it" is the letter x, "as" is the letter z');
-    expect(ref).not.toMatch(/same pattern as/i);
   });
   test('the exceptions are exactly it/x and as/z', () => {
     expect(wordsignsNotFirstLetter()).toEqual([
@@ -199,22 +111,16 @@ describe('alphabetic wordsigns: not always the first letter', () => {
   });
 });
 
-describe('pedagogical preamble and prompt examples', () => {
-  test.each(LEVELS)('%s preamble: correct examples, UEB terms, nothing for the guard to fix', (level) => {
-    const p = buildPedagogicalPreamble(level);
-    expect(p).toContain('"The letter A is dot 1"');
-    expect(p).toContain('"The letter B is dots 1, 2"');
-    expect(p).not.toMatch(/(?<!capital )letter indicator|nemeth|\bEBAE\b/i);
-    expect(validateBrailleText(p).corrections).toEqual([]);
+describe('prompt examples', () => {
+  test('braille worksheet examples carry print only', () => {
+    for (const k of ['brailleToPrint', 'printToBraille', 'dotIdentification', 'practiceDrill'] as const) {
+      const ex = JSON.parse(PROMPT_EXAMPLES[k]);
+      expect(typeof ex.print).toBe('string');
+      expect(ex.answer).toBeUndefined();
+    }
   });
-  test('format prompt examples use the right dots', () => {
-    expect(PROMPT_EXAMPLES.brailleToPrint).toBe(
-      '{ "prompt": "What letter is represented by dots 1, 2?", "answer": "B" }',
-    );
-    expect(PROMPT_EXAMPLES.printToBraille).toBe(
-      '{ "prompt": "Write the dot numbers for the letter F.", "answer": "dots 1, 2, 4" }',
-    );
-    expect(JSON.parse(PROMPT_EXAMPLES.dotIdentification).answer).toBe('dots 1, 2');
-    expect(cellsKey(transcribe('f'))).toBe(cellsKey([letterCell('f')]));
+  test('the token sentence renders correctly', () => {
+    expect(tokenCells('{letter:b}')).toBe(cellsKey(unicodeToCells(LOUIS_ALPHABET[1])));
+    expect(sanitizeText(PROMPT_EXAMPLES.tokenSentence, 'uncontracted')).toMatch(/^The letter b is dots? /);
   });
 });

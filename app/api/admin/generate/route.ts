@@ -8,7 +8,8 @@ import {
   buildBrailleReference,
   buildPedagogicalPreamble,
 } from '@/lib/ai-braille-reference';
-import { validateContentJson } from '@/lib/braille-validator';
+import { sanitizeGeneratedContent } from '@/lib/ai-content-sanitizer';
+import { gradeForDifficulty } from '@/lib/worksheet-braille';
 import { buildPreview, sseEncode } from '@/lib/document-builders';
 
 export const maxDuration = 60;
@@ -100,6 +101,16 @@ function validateStructure(format: string, parsed: unknown): void {
 
 /* ── Prompts ── */
 
+const WORKSHEET_SHAPE = `Return ONLY valid JSON (no markdown fences) with this shape:
+{ "sections": [{ "heading": "Section Title", "type": "fill-in-the-blank", "instructions": "Instructions for this section.", "items": [{ "prompt": "The braille cell has ___ dots.", "answer": "six" }] }] }
+The "type" must be one of: "fill-in-the-blank", "matching", "practice-drill", "braille-to-print", "print-to-braille", or "dot-identification".
+Guidelines for each type:
+- fill-in-the-blank: Use ___ in the prompt to indicate blanks. Prompt and answer are print; never dot numbers.
+- matching: Prompts are left-column items and answers are right-column items, in print; never dot numbers.
+- braille-to-print, print-to-braille, dot-identification: each item is ONLY the print to show in braille, e.g. ${PROMPT_EXAMPLES.brailleToPrint}, ${PROMPT_EXAMPLES.printToBraille}, ${PROMPT_EXAMPLES.dotIdentification}. The print is a single letter, a number or one word suited to the level. The site writes the prompt, draws the braille and writes the answer.
+- practice-drill: a short instruction in "prompt" and the print to write in "print", e.g. ${PROMPT_EXAMPLES.practiceDrill}. No answer: the site generates it.
+Never write dot numbers or braille characters anywhere; use the tokens from the reference (e.g. "${PROMPT_EXAMPLES.tokenSentence}").`;
+
 const FORMAT_PROMPTS: Record<string, string> = {
   pptx: `You are creating a PowerPoint presentation for a braille course instructor. Given the user's notes, create a structured presentation. Return ONLY valid JSON (no markdown fences) with this shape:
 { "slides": [{ "title": "Slide Title", "bullets": ["Point 1", "Point 2"], "speakerNotes": "Optional notes" }] }
@@ -113,17 +124,8 @@ Create 3-8 sections. Content should be clear and suitable for students.`,
 { "title": "Study Guide Title", "objectives": ["Objective 1", "Objective 2"], "sections": [{ "heading": "Section Title", "content": "Explanation text.", "keyTerms": ["term1", "term2"], "practiceQuestions": ["Question 1?", "Question 2?"] }] }
 Create 3-6 sections with key terms and practice questions where relevant.`,
 
-  worksheet: `You are creating a braille course worksheet. Given the user's notes, create an engaging worksheet with varied exercise types. Return ONLY valid JSON (no markdown fences) with this shape:
-{ "sections": [{ "heading": "Section Title", "type": "fill-in-the-blank", "instructions": "Instructions for this section.", "items": [{ "prompt": "The braille cell has ___ dots.", "answer": "six" }] }] }
-The "type" must be one of: "fill-in-the-blank", "matching", "practice-drill", "braille-to-print", "print-to-braille", or "dot-identification".
-Create 3-5 sections with 4-8 items each. Include at least one braille-specific section type. Guidelines for each type:
-- fill-in-the-blank: Use ___ in the prompt to indicate blanks.
-- matching: Prompts are left-column items and answers are right-column items.
-- practice-drill: Prompts are instructions and answers are the expected results.
-- braille-to-print: Prompt gives a dot pattern description (e.g., ${PROMPT_EXAMPLES.dotDescription}), answer is the print character or word. Example: ${PROMPT_EXAMPLES.brailleToPrint}
-- print-to-braille: Prompt gives a print letter or word, answer is the dot pattern. Example: ${PROMPT_EXAMPLES.printToBraille}
-- dot-identification: Prompt describes a cell configuration, answer lists the dot numbers. Example: ${PROMPT_EXAMPLES.dotIdentification}
-Always use the reference data above to ensure dot patterns are correct.`,
+  worksheet: `You are creating a braille course worksheet. Given the user's notes, create an engaging worksheet with varied exercise types. ${WORKSHEET_SHAPE}
+Create 3-5 sections with 4-8 items each. Include at least one braille-specific section type.`,
 
   quiz: `You are creating a quiz/assessment for a braille course. Given the user's notes, create a mixed-format assessment. Return ONLY valid JSON (no markdown fences) with this shape:
 { "questions": [{ "type": "multiple-choice", "question": "What is...?", "options": ["A) ...", "B) ...", "C) ...", "D) ..."], "answer": "A", "explanation": "Because..." }] }
@@ -141,9 +143,7 @@ Create 5-12 slides. The first slide should be a title slide. Keep bullets concis
 { "sections": [{ "heading": "Section Title", "content": "Paragraph text here.", "bullets": ["Point 1", "Point 2"], "keyTerms": ["term1", "term2"], "practiceQuestions": ["Question 1?"] }] }
 Create 3-6 sections. Include key terms and practice questions where relevant. Content should complement the slide deck — not duplicate it but provide deeper explanation and reference material.`,
 
-  worksheet: `You are creating a braille course worksheet. Given the user's notes, create an engaging worksheet with varied exercise types. Return ONLY valid JSON (no markdown fences) with this shape:
-{ "sections": [{ "heading": "Section Title", "type": "fill-in-the-blank", "instructions": "Instructions for this section.", "items": [{ "prompt": "The braille cell has ___ dots.", "answer": "six" }] }] }
-The "type" must be one of: "fill-in-the-blank", "matching", "practice-drill", "braille-to-print", "print-to-braille", or "dot-identification".
+  worksheet: `You are creating a braille course worksheet. Given the user's notes, create an engaging worksheet with varied exercise types. ${WORKSHEET_SHAPE}
 Create 3-5 sections with 4-8 items each. Include at least one braille-specific section type. This worksheet accompanies a slide deck and handout — focus on active practice and exercises rather than reference content.`,
 };
 
@@ -288,14 +288,22 @@ export async function POST(req: NextRequest) {
           validateStructure(format, parsed);
         }
 
-        // Braille fidelity validation
-        const { corrected, corrections, wasCorrected } = validateContentJson(parsed);
-        const preview = buildPreview(format, corrected);
+        // The model's braille is never used: every dot claim is regenerated from lib/braille or
+        // removed, braille items are rebuilt from their print for the level's grade.
+        const { content, issues } = sanitizeGeneratedContent(format, parsed, gradeForDifficulty(difficulty));
+        const preview = buildPreview(format, content);
+        const corrections = issues.map((i) => ({
+          original: i.original ?? '',
+          corrected: i.detail,
+          context: i.kind,
+          letterOrContraction: '',
+        }));
+        const wasCorrected = issues.length > 0;
 
         // Two-stage flow: stop at review stage — no building/uploading
         send({
           stage: 'review',
-          content: corrected,
+          content,
           preview,
           corrections,
           wasCorrected,

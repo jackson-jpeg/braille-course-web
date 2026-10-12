@@ -1,8 +1,9 @@
 name: Braille accuracy
 
 # Every push and pull request: rebuild the liblouis oracle and the ICEB rulebook fixtures from
-# their sources, fail if they differ from the committed copies, then run the full accuracy suite
-# and the real-browser cell geometry check.
+# their sources, fail if they differ from the committed copies, then run the full accuracy suite,
+# the real-browser cell check (geometry, captions, wording, no sideways overflow at 1280/390/320px)
+# and the axe-core accessibility check of every lesson and game page.
 on:
   push:
     branches: [master]
@@ -35,9 +36,10 @@ jobs:
         run: npm run build
         env:
           NODE_ENV: production
-      - name: Real-browser cell geometry
+      - name: Real-browser cell geometry, captions and layout; axe-core accessibility
         run: |
           npx playwright install --with-deps chromium
           npm run start -- -p 3100 &
           for i in $(seq 1 60); do curl -sf http://localhost:3100 >/dev/null && break; sleep 1; done
-          node scripts/braille/check-rendered-cells.mjs http://localhost:3100
+          npx tsx scripts/braille/check-rendered-cells.mjs http://localhost:3100
+          node scripts/a11y/check-axe.mjs http://localhost:3100

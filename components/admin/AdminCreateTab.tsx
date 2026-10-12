@@ -5,7 +5,6 @@ import { useToast } from './AdminToast';
 import { formatFileSize } from './admin-utils';
 import AdminConfirmDialog from './AdminConfirmDialog';
 import ContentReviewEditor from './ContentReviewEditor';
-import { renderProse } from '@/lib/braille/prose';
 import type { Material, GeneratePreview, ContentTemplate, CorrectionEntry } from './admin-types';
 
 const FORMAT_OPTIONS = [
@@ -94,37 +93,34 @@ const FORMAT_OPTIONS = [
 ];
 
 /**
- * Built-in prompt presets. UEB only; every dot pattern is generated from lib/braille by
- * renderProse, never typed here.
+ * Built-in prompt presets. UEB only. They are sent to the AI model, which never writes dot numbers:
+ * they name signs with the same tokens the model is told to use ({dots:numeric}), and the site
+ * renders the tokens from lib/braille when it builds the document (lib/ai-content-sanitizer.ts).
  */
 export const BUILTIN_PRESETS = [
   {
     label: 'Grade 1 Introduction',
     title: 'Introduction to Uncontracted (Grade 1) UEB',
-    notes: renderProse(
+    notes:
       'Teach Unified English Braille (UEB), uncontracted. Cover the braille alphabet (a-z), numbers (using the {name:numeric}, {dots:numeric}), and basic punctuation (period, comma, question mark, exclamation mark). Include how each letter maps to a braille cell configuration. Explain the six-dot cell and how its dots are numbered. Show capital letters with the {name:capitalLetter} ({dots:capitalLetter}). In uncontracted braille a letter standing alone is written as just the letter, with no grade 1 indicator (ICEB 5.11.1). Provide examples of simple words spelled out letter by letter.',
-    ),
   },
   {
     label: 'Contractions Practice',
     title: 'UEB Contracted (Grade 2) Braille: Contractions',
-    notes: renderProse(
+    notes:
       'Focus on the most common UEB contractions: the strong contractions "and", "for", "of", "the", "with" and the strong groupsigns "ch", "sh", "th", "wh", "ed", "er", "ou", "ow", "st", "ing". Include alphabetic wordsigns like "but", "can", "do", "every", "from", "go", "have", "just", "knowledge", "like", "more", "not", and point out that "it" is the letter x ({dots:contraction:it}) and "as" is the letter z ({dots:contraction:as}). Provide exercises pairing print text with contracted braille representations.',
-    ),
   },
   {
-    label: 'Number Signs',
+    label: 'Numbers & Math',
     title: 'Numbers and Math Signs in UEB',
-    notes: renderProse(
-      'Explain the {name:numeric} ({dots:numeric}) and how the letters a-j become the digits 1-9 and 0 after it. Explain that a lowercase letter a-j right after a number needs the {name:grade1Symbol} ({dots:grade1Symbol}), as in "3b" ({uebdots:3b}). Cover the UEB signs for simple math: {name:plus} ({dots:plus}), {name:minus} ({dots:minus}), {name:times} ({dots:times}), {name:divide} ({dots:divide}), {name:equals} ({dots:equals}). Include real-world examples: phone numbers, addresses, prices (the {name:dollar} is {dots:dollar}), dates. Practice reading and writing multi-digit numbers.',
-    ),
+    notes:
+      'Explain the {name:numeric} ({dots:numeric}) and how the letters a-j become the digits 1-9 and 0 after it. Explain that a lowercase letter a-j right after a number needs the {name:grade1Symbol} ({dots:grade1Symbol}), as in "3b". Cover the UEB signs for simple math: {name:plus} ({dots:plus}), {name:minus} ({dots:minus}), {name:times} ({dots:times}), {name:divide} ({dots:divide}), {name:equals} ({dots:equals}). Include real-world examples: phone numbers, addresses, prices (the {name:dollar} is {dots:dollar}), dates. Practice reading and writing multi-digit numbers.',
   },
   {
     label: 'Capitals & Indicators',
     title: 'UEB Capitals and Indicators',
-    notes: renderProse(
+    notes:
       'Cover the {name:capitalLetter} ({dots:capitalLetter}), the {name:capitalWord} ({dots:capitalWord}) for a word in all capitals, the {name:capitalPassage} ({dots:capitalPassage}) for three or more capitalized words, and the {name:capitalsTerminator} ({dots:capitalsTerminator}). Cover the {name:grade1Symbol} ({dots:grade1Symbol}) and when uncontracted braille needs it. Mention that UEB also has typeform indicators for italics, bold and underlining (ICEB section 9), but do not give their dot numbers. Include examples of proper nouns, acronyms, and capitalized words in braille.',
-    ),
   },
 ];
 
@@ -602,7 +598,7 @@ export default function AdminCreateTab({ onEmailMaterial }: Props) {
       },
       'study-guide': {
         title: `Study Guide${sessionCtx}`,
-        notes: `Create a study guide for this week's material${sessionCtx}. Include learning objectives, key terms with dot patterns, and practice questions.`,
+        notes: `Create a study guide for this week's material${sessionCtx}. Include learning objectives, key terms, and practice questions.`,
       },
     };
 

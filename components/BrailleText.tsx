@@ -31,6 +31,8 @@ export function tokenCaption(t: BrailleToken): string {
     case 'space':
       return 'space';
     case 'letter':
+      // The cell is the lowercase letter; a capital is shown by the indicator token before it.
+      return t.print.toLowerCase();
     case 'digit':
       return t.print;
     case 'indicator':

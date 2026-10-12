@@ -7,8 +7,10 @@ import { type Cell, CONTRACTIONS, LETTER_CELLS, cellsKey } from '@/lib/braille/u
  * Renders inline braille cells for the letters and contractions mentioned in a piece of
  * AI-generated text, so the admin can eyeball them while reviewing. Read-only.
  *
- * Single uppercase letters (e.g. "B") show that letter's cell; contractions named in quotes
- * (e.g. "and") show the contraction's cell. All cells come from lib/braille.
+ * Single letters named in the text (e.g. "B") show that letter's cell, labelled with the lowercase
+ * letter the cell stands for (a plain letter cell is lowercase; a capital needs the capital
+ * indicator); contractions named in quotes (e.g. "and") show the contraction's cell. All cells
+ * come from lib/braille.
  */
 
 interface BrailleInlinePreviewProps {
@@ -16,9 +18,9 @@ interface BrailleInlinePreviewProps {
 }
 
 export interface InlinePreviewItem {
-  /** Visible caption, e.g. "B" or "and". */
+  /** Visible caption, e.g. "b" or "and". */
   label: string;
-  /** Screen-reader name, e.g. "Letter B" or "Contraction and". */
+  /** Screen-reader name, e.g. "letter b" or "Contraction and". */
   name: string;
   cells: readonly Cell[];
 }
@@ -42,7 +44,8 @@ export function inlinePreviewItems(text: string): InlinePreviewItem[] {
   for (const letter of text.match(/\b[A-Z]\b/g) ?? []) {
     if (seen.has(letter)) continue;
     seen.add(letter);
-    items.push({ label: letter, name: `Letter ${letter}`, cells: [LETTER_CELLS[letter.toLowerCase()]] });
+    const lower = letter.toLowerCase();
+    items.push({ label: lower, name: `letter ${lower}`, cells: [LETTER_CELLS[lower]] });
   }
 
   const lowerText = text.toLowerCase();

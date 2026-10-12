@@ -1,9 +1,9 @@
 import PptxGenJS from 'pptxgenjs';
 import PDFDocument from 'pdfkit';
-import { type Cell, ALL_DOTS, LETTER_CELLS, dotPosition } from '@/lib/braille/ueb';
-import { describeCell } from '@/lib/braille/prose';
-import { transcribeTokens } from '@/lib/braille/transcribe';
-import { parseDotSpec } from '@/lib/braille-validator';
+import { type Cell, ALL_DOTS, dotPosition } from '@/lib/braille/ueb';
+import { describeCells } from '@/lib/braille/prose';
+import { type BrailleGrade, worksheetBraille } from '@/lib/worksheet-braille';
+import { sanitizeGeneratedContent } from '@/lib/ai-content-sanitizer';
 
 /* ── Interfaces ── */
 
@@ -23,21 +23,29 @@ export interface SectionData {
 
 export interface PptxResponse {
   slides: SlideData[];
+  /** Grade the document's braille is written in (set by the sanitizer). */
+  brailleGrade?: BrailleGrade;
 }
 
 export interface PdfResponse {
   sections: SectionData[];
+  /** Grade the document's braille is written in (set by the sanitizer). */
+  brailleGrade?: BrailleGrade;
 }
 
 export interface StudyGuideResponse {
   title: string;
   objectives: string[];
   sections: SectionData[];
+  /** Grade the document's braille is written in (set by the sanitizer). */
+  brailleGrade?: BrailleGrade;
 }
 
 export interface WorksheetItem {
   prompt: string;
   answer: string;
+  /** Braille sections: the print the braille is generated from (lib/worksheet-braille.ts). */
+  print?: string;
 }
 
 export interface WorksheetSection {
@@ -55,6 +63,8 @@ export interface WorksheetSection {
 
 export interface WorksheetResponse {
   sections: WorksheetSection[];
+  /** Grade the document's braille is written in (set by the sanitizer). */
+  brailleGrade?: BrailleGrade;
 }
 
 export interface QuizQuestion {
@@ -67,6 +77,8 @@ export interface QuizQuestion {
 
 export interface QuizResponse {
   questions: QuizQuestion[];
+  /** Grade the document's braille is written in (set by the sanitizer). */
+  brailleGrade?: BrailleGrade;
 }
 
 export interface GeneratePreview {
@@ -169,60 +181,42 @@ export function drawBrailleCell(
 }
 
 /**
- * The cells to draw for a print word, in uncontracted UEB (capital and numeric indicators
- * included), each with the print it stands for ("" for indicators). Spaces are null. Returns
- * null when the text cannot be transcribed.
+ * The cells a worksheet item shows: generated from its print for the document's grade by
+ * lib/worksheet-braille.ts. Never parsed from model text. Null when the item has no braille.
  */
-export function brailleWordCells(word: string): ({ cell: Cell; print: string } | null)[] | null {
-  try {
-    return transcribeTokens(word).flatMap((t) =>
-      t.kind === 'space' ? [null] : t.cells.map((cell, i) => ({ cell, print: i === 0 ? t.print : '' })),
-    );
-  } catch {
-    return null;
-  }
+export function itemCells(item: Pick<WorksheetItem, 'print'>, grade: BrailleGrade): Cell[] | null {
+  return item.print ? worksheetBraille(item.print, grade) : null;
 }
 
 /**
- * Cells for a worksheet answer, drawn only when they are the same in uncontracted and contracted
- * braille (the worksheet does not say which it teaches): a single letter is drawn as that letter's
- * cell, a dot description ("dots N, N") as the cells it describes, and a number as its numeric
- * indicator and digits. Word answers are not drawn: "and" is three cells uncontracted but one
- * contracted, so drawing either could teach the wrong one.
+ * Every document is built from this, never from the content it was handed: the content is
+ * sanitized again (the admin's edits are not trusted either) and its braille tokens rendered from
+ * lib/braille. The grade comes from the content's `brailleGrade` (set when it was generated).
  */
-export function answerCells(answer: string): Cell[] | null {
-  const text = answer.trim();
-  if (/^[A-Za-z]$/.test(text)) return [LETTER_CELLS[text.toLowerCase()]];
-  if (/^dots?\b/i.test(text)) {
-    const cells = parseDotSpec(text);
-    return cells.length > 0 ? cells : null;
-  }
-  if (/^[0-9][0-9.,]*$/.test(text)) {
-    const cells = brailleWordCells(text);
-    return cells ? cells.map((c) => (c ? c.cell : [])) : null;
-  }
-  return null;
+function prepare<T>(format: string, data: unknown): T & { brailleGrade: BrailleGrade } {
+  return sanitizeGeneratedContent(format, data, undefined, { render: true }).content as unknown as T & {
+    brailleGrade: BrailleGrade;
+  };
 }
 
-export function drawBrailleWord(
+/** Draw a row of cells (blank cells as gaps); returns the total width. */
+export function drawCellRow(
   doc: PDFKit.PDFDocument,
-  word: string,
+  cells: readonly Cell[],
   x: number,
   y: number,
   options: BrailleCellOptions = {},
 ): number {
   let curX = x;
-  const gap = options.size === 'medium' ? 4 : 3;
-  const cells = brailleWordCells(word) ?? [];
-  for (const c of cells) {
-    if (c === null) {
+  const gap = options.size === 'medium' ? 6 : 3;
+  for (const cell of cells) {
+    if (cell.length === 0 && !options.ghostDots) {
       curX += brailleCellGeometry(options.size).width + gap;
       continue;
     }
-    const w = drawBrailleCell(doc, c.cell, curX, y, { ...options, label: c.print || undefined });
-    curX += w + gap;
+    curX += drawBrailleCell(doc, options.ghostDots ? [] : cell, curX, y, options) + gap;
   }
-  return curX - x; // total width
+  return curX - x;
 }
 
 /* ── PDF page decoration helper ── */
@@ -259,7 +253,8 @@ export function setupPdfDecorations(doc: PDFKit.PDFDocument, title: string) {
 
 /* ── Document generators ── */
 
-export function generatePptxBuffer(data: PptxResponse): Promise<Buffer> {
+export function generatePptxBuffer(input: PptxResponse): Promise<Buffer> {
+  const data = prepare<PptxResponse>('pptx', input);
   const pptx = new PptxGenJS();
   pptx.layout = 'LAYOUT_WIDE';
 
@@ -340,10 +335,12 @@ export function generatePptxBuffer(data: PptxResponse): Promise<Buffer> {
 }
 
 export function generatePdfBuffer(
-  data: PdfResponse | StudyGuideResponse,
+  input: PdfResponse | StudyGuideResponse,
   title: string,
   isStudyGuide: boolean,
 ): Promise<Buffer> {
+  const data = isStudyGuide ? prepare<StudyGuideResponse>('study-guide', input) : prepare<PdfResponse>('pdf', input);
+  const grade = data.brailleGrade;
   return new Promise((resolve, reject) => {
     const doc = new PDFDocument({ margin: 60, size: 'LETTER' });
     const chunks: Buffer[] = [];
@@ -363,10 +360,11 @@ export function generatePdfBuffer(
     doc.moveTo(60, doc.y).lineTo(552, doc.y).strokeColor(GOLD).lineWidth(2).stroke();
     doc.moveDown(1);
 
-    if (isStudyGuide && 'objectives' in data && data.objectives?.length) {
+    const objectives = isStudyGuide ? (data as StudyGuideResponse).objectives : undefined;
+    if (objectives?.length) {
       doc.fontSize(14).fillColor(NAVY).font('Helvetica-Bold').text('Learning Objectives');
       doc.moveDown(0.3);
-      data.objectives.forEach((obj) => {
+      objectives.forEach((obj) => {
         doc.fontSize(11).fillColor('#333333').font('Helvetica').text(`\u2022  ${obj}`, { indent: 10 });
         doc.moveDown(0.2);
       });
@@ -419,21 +417,21 @@ export function generatePdfBuffer(
         for (const term of section.keyTerms) {
           if (doc.y > 680) doc.addPage();
           const trimmed = term.trim();
-          // If the term is a single letter A-Z, draw its braille cell inline
-          if (trimmed.length === 1 && /^[A-Za-z]$/.test(trimmed)) {
-            const cell = LETTER_CELLS[trimmed.toLowerCase()];
-            if (cell) {
-              const textY = doc.y;
-              doc
-                .fontSize(11)
-                .fillColor('#555555')
-                .font('Helvetica')
-                .text(trimmed.toUpperCase(), 70, textY, { continued: false });
-              drawBrailleCell(doc, cell, 90, textY - 2, { size: 'small', label: describeCell(cell) });
-              doc.y = textY + 22;
-              doc.moveDown(0.15);
-              continue;
-            }
+          // A single letter is drawn in braille, generated for the document's grade (a letter
+          // standing alone needs the grade 1 indicator in contracted braille when it is a wordsign).
+          const cells = /^[A-Za-z]$/.test(trimmed) ? worksheetBraille(trimmed, grade) : null;
+          if (cells) {
+            const textY = doc.y;
+            doc.fontSize(11).fillColor('#555555').font('Helvetica').text(trimmed, 70, textY, { continued: false });
+            const w = drawCellRow(doc, cells, 90, textY - 2, { size: 'small' });
+            doc
+              .fontSize(9)
+              .fillColor('#555555')
+              .font('Helvetica')
+              .text(describeCells(cells), 100 + w, textY, { continued: false });
+            doc.y = textY + 22;
+            doc.moveDown(0.15);
+            continue;
           }
           doc.fontSize(11).fillColor('#555555').font('Helvetica').text(`\u2022  ${trimmed}`, { indent: 10 });
           doc.moveDown(0.15);
@@ -484,7 +482,9 @@ export function generatePdfBuffer(
   });
 }
 
-export function generateWorksheetPdfBuffer(data: WorksheetResponse, title: string): Promise<Buffer> {
+export function generateWorksheetPdfBuffer(input: WorksheetResponse, title: string): Promise<Buffer> {
+  const data = prepare<WorksheetResponse>('worksheet', input);
+  const grade = data.brailleGrade;
   return new Promise((resolve, reject) => {
     const doc = new PDFDocument({ margin: 60, size: 'LETTER' });
     const chunks: Buffer[] = [];
@@ -562,21 +562,10 @@ export function generateWorksheetPdfBuffer(data: WorksheetResponse, title: strin
           doc.text(`${itemCounter}. ${item.prompt}`);
           doc.moveDown(0.15);
 
-          // Draw one empty cell per braille cell of the answer (uncontracted UEB, so capitals
-          // and numbers get their indicator cells) for the student to fill in.
-          const cells = answerCells(item.answer);
+          // One empty cell per cell of the generated answer (indicators included) to fill in.
+          const cells = itemCells(item, grade);
           if (cells && cells.length > 0 && cells.length <= 12) {
-            const startX = 80;
-            let curX = startX;
-            const cellW = brailleCellGeometry('medium').width;
-            for (const cell of cells) {
-              if (cell.length === 0) {
-                curX += cellW + 6; // a space between words
-                continue;
-              }
-              const w = drawBrailleCell(doc, [], curX, doc.y, { size: 'medium', ghostDots: true });
-              curX += w + 6;
-            }
+            drawCellRow(doc, cells, 80, doc.y, { size: 'medium', ghostDots: true });
             doc.y = doc.y + 38; // move past the cells
           } else {
             doc.text('Answer: _______________________________________', { indent: 20 });
@@ -590,6 +579,17 @@ export function generateWorksheetPdfBuffer(data: WorksheetResponse, title: strin
           itemCounter++;
           doc.fontSize(11).fillColor('#333333').font('Helvetica');
           doc.text(`${itemCounter}. ${item.prompt}`);
+          // The braille the student reads (generated from the item's print), or empty cells to fill.
+          const cells = itemCells(item, grade);
+          if (cells && (section.type === 'braille-to-print' || section.type === 'dot-identification')) {
+            doc.moveDown(0.15);
+            drawCellRow(doc, cells, 80, doc.y, { size: 'medium' });
+            doc.y = doc.y + 38;
+          } else if (cells && section.type === 'print-to-braille' && cells.length <= 12) {
+            doc.moveDown(0.15);
+            drawCellRow(doc, cells, 80, doc.y, { size: 'medium', ghostDots: true });
+            doc.y = doc.y + 38;
+          }
           if (
             section.type === 'braille-to-print' ||
             section.type === 'print-to-braille' ||
@@ -618,23 +618,18 @@ export function generateWorksheetPdfBuffer(data: WorksheetResponse, title: strin
       doc.fontSize(13).fillColor(NAVY).font('Helvetica-Bold').text(section.heading);
       doc.moveDown(0.3);
 
-      const isBrailleSection = ['braille-to-print', 'print-to-braille', 'dot-identification'].includes(section.type);
-
       section.items.forEach((item, idx) => {
         if (doc.y > 660) doc.addPage();
         answerCounter++;
         const num = section.type === 'matching' ? `${idx + 1}` : `${answerCounter}`;
         doc.fontSize(10).fillColor('#333333').font('Helvetica').text(`${num}. ${item.answer}`);
 
-        // Draw braille cell next to answer for braille-specific sections
-        if (isBrailleSection) {
-          // Draw the answer's cells (a letter, a number with its numeric indicator, or the
-          // dots the answer describes), when it is short enough to fit.
-          const cells = answerCells(item.answer);
-          if (cells && cells.length > 0 && cells.length <= 6) {
-            let curX = doc.x + 200;
-            for (const cell of cells) curX += drawBrailleCell(doc, cell, curX, doc.y - 12, { size: 'small' }) + 3;
-          }
+        // Braille sections: the generated cells for the item's print, next to the answer.
+        const cells = itemCells(item, grade);
+        if (cells && cells.length <= 12) {
+          const y = doc.y;
+          drawCellRow(doc, cells, 300, y - 12, { size: 'small' });
+          doc.y = Math.max(y, y - 12 + brailleCellGeometry('small').height + 2);
         }
 
         doc.moveDown(0.15);
@@ -646,7 +641,8 @@ export function generateWorksheetPdfBuffer(data: WorksheetResponse, title: strin
   });
 }
 
-export function generateQuizPdfBuffer(data: QuizResponse, title: string): Promise<Buffer> {
+export function generateQuizPdfBuffer(input: QuizResponse, title: string): Promise<Buffer> {
+  const data = prepare<QuizResponse>('quiz', input);
   return new Promise((resolve, reject) => {
     const doc = new PDFDocument({ margin: 60, size: 'LETTER' });
     const chunks: Buffer[] = [];

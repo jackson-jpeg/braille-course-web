@@ -25,8 +25,8 @@ describe('BrailleCell', () => {
   });
 
   test('a labelled cell announces its dot numbers', () => {
-    const { getByRole } = render(<BrailleCell cell={[1, 2, 5]} label="Letter H" />);
-    expect(getByRole('img').getAttribute('aria-label')).toBe('Letter H, dots 1, 2, 5');
+    const { getByRole } = render(<BrailleCell cell={[1, 2, 5]} label="letter h" />);
+    expect(getByRole('img').getAttribute('aria-label')).toBe('letter h, dots 1, 2, 5');
   });
 
   test('an unlabelled cell is hidden from screen readers (its control must describe it)', () => {

@@ -79,8 +79,8 @@ const lines = [
   `- ICEB rulebook: ${rulebook.entries.length} symbol-table entries and ${rulebook.headings.length} section headings extracted from the PDF (sha256 ${rulebook.source.sha256.slice(0, 12)}…); ${examples.examples.length} verbatim worked examples reproduced exactly.`,
   `- Canonical data: ${ALL_SIGNS.length} signs (letters, digits, indicators, punctuation, symbols) and ${CONTRACTIONS.length} contraction entries, each matched to the rulebook tables; all 64 cells round-tripped through Unicode and checked against Unicode character names.`,
   geometry
-    ? `- Real-browser geometry (Chromium, 1280px and 390px): ${geometry}`
-    : '- Real-browser geometry: run `node scripts/braille/check-rendered-cells.mjs <url>` (also run in CI).',
+    ? `- Real-browser check (Chromium, 1280px, 390px and 320px: dot geometry, captions, wording, no sideways overflow): ${geometry}`
+    : '- Real-browser check: run `npm run braille:geometry -- <url>` (also run in CI).',
   '',
   '## Braille inventory by area',
   '',

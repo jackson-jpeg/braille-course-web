@@ -8,7 +8,6 @@
 import { type Cell, type Dot, ALL_DOTS, cellsToUnicode, dotPosition, unicodeToCells } from '@/lib/braille/ueb';
 import { transcribe } from '@/lib/braille/transcribe';
 import { type InventoryItem, g1Item } from '@/lib/braille/inventory';
-import { REFERENCE_EXAMPLES } from '@/lib/ai-braille-reference';
 
 /**
  * Print strings the chrome shows as braille. All lowercase on purpose: each is drawn without a
@@ -81,7 +80,6 @@ function chrome(where: string, print: string, cells: Cell[]): InventoryItem {
 
 export function brailleInventory(): InventoryItem[] {
   return [
-    ...REFERENCE_EXAMPLES.map((p) => g1Item('admin:ai-reference', p)),
     ...ADMIN_PRESET_EXAMPLES.map((p) => g1Item('admin:presets', p)),
     // The cells each place actually draws, so liblouis checks the real render path.
     chrome('chrome:navbar-logo', CHROME_PRINT.logo, chromeCells(CHROME_PRINT.logo)),

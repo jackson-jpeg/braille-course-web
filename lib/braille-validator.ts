@@ -34,6 +34,7 @@ import {
   cellsKey,
   toCell,
 } from '@/lib/braille/ueb';
+import { SUPERSEDED_SIGN_NAMES } from '@/lib/braille/terminology';
 import { describeCells } from '@/lib/braille/prose';
 import { transcribe } from '@/lib/braille/transcribe';
 
@@ -48,9 +49,9 @@ export interface CorrectionEntry {
   letterOrContraction: string;
 }
 
-type Seq = readonly Cell[];
+export type Seq = readonly Cell[];
 
-interface Target {
+export interface Target {
   label: string;
   /** Every cell sequence that is a correct way to write this label. */
   accepted: Seq[];
@@ -67,15 +68,19 @@ const NAME_ALIASES: Readonly<Record<string, readonly string[]>> = {
   capitalWord: [
     'capital word indicator',
     'capitalised word indicator',
-    'double capital indicator',
-    'double capital sign',
+    ...SUPERSEDED_SIGN_NAMES.capitalWord,
     'all-caps indicator',
     'all caps indicator',
   ],
   capitalPassage: ['capitalised passage indicator', 'capital passage indicator'],
   capitalsTerminator: ['capital terminator', 'capitalisation terminator', 'capitalization terminator'],
-  numeric: ['number indicator', 'number sign', 'numeral sign', 'numeric sign', 'numeric prefix'],
-  grade1Symbol: ['grade 1 symbol indicator', 'grade one indicator', 'grade one symbol indicator'],
+  numeric: [...SUPERSEDED_SIGN_NAMES.numeric, 'numeric sign', 'numeric prefix'],
+  grade1Symbol: [
+    'grade 1 symbol indicator',
+    'grade one indicator',
+    'grade one symbol indicator',
+    ...SUPERSEDED_SIGN_NAMES.grade1Symbol,
+  ],
   grade1Word: ['grade one word indicator'],
   period: ['full stop'],
   exclamation: ['exclamation point'],
@@ -222,6 +227,11 @@ const REVERSE_CONNECTOR = `${S}*\\)?${S}*(?:is|are|=|means|represents|stands${S}
 const FORWARD_RE = new RegExp(`(?:${LABEL})${KIND_WORD}${FORWARD_CONNECTOR}(?<spec>${DOT_SPEC})`, 'gi');
 const REVERSE_RE = new RegExp(`(?<spec>${DOT_SPEC})${REVERSE_CONNECTOR}(?:${LABEL})`, 'gi');
 
+/** Any dot-number phrase ("dots N, N", "dot N then dots N N"), labelled or not. */
+export function dotSpecRegExp(): RegExp {
+  return new RegExp(DOT_SPEC, 'gi');
+}
+
 /** Split a matched dot description into cells, e.g. "dot N, then dots N, N" → two cells. */
 export function parseDotSpec(spec: string): Cell[] {
   const parts = spec.split(/\s*,?\s*(?:and\s+then|then|followed\s+by|\+)\s+|(?=\bdots?\b)/i);
@@ -257,14 +267,14 @@ export function judgeClaim(accepted: readonly Seq[], claimed: Seq): 'ok' | Seq |
   return sameLength.length === 1 ? sameLength[0] : null;
 }
 
-interface Claim {
+export interface Claim {
   specStart: number;
   specEnd: number;
   spec: string;
   target: Target;
 }
 
-function findClaims(text: string): Claim[] {
+export function findClaims(text: string): Claim[] {
   const claims: Claim[] = [];
   const overlaps = (s: number, e: number) => claims.some((c) => s < c.specEnd && e > c.specStart);
   for (const re of [FORWARD_RE, REVERSE_RE]) {

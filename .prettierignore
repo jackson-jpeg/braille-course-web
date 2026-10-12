@@ -4,3 +4,5 @@ package-lock.json
 prisma/migrations/
 __tests__/fixtures/
 __tests__/games/fixtures/
+lib/braille/data/
+scripts/braille/data/

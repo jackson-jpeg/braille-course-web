@@ -71,9 +71,7 @@ describe('chrome braille data', () => {
 
   test('inventory lists every chrome and admin string with the cells shown', () => {
     const inv = brailleInventory();
-    expect(inv.map((i) => i.print).sort()).toEqual(
-      ['t', 't', 't', 'teach', '404', 'b', 'b', '3b', 'Hello', 'USA', '2024', '3b', 'Is it 5?'].sort(),
-    );
+    expect(inv.map((i) => i.print).sort()).toEqual(['t', 't', 't', 'teach', '404', 'b', 'b', '3b'].sort());
     for (const item of inv) {
       expect(item.table).toBe('g1');
       expect(cellsKey(item.cells)).toBe(louis(item.print));
@@ -130,8 +128,9 @@ describe('admin inline preview', () => {
     const { container, getAllByRole } = render(<BrailleInlinePreview text={text} />);
     expect(checkAllCells(container)).toEqual([]);
     const items = inlinePreviewItems(text);
-    expect(items.map((i) => i.label)).toEqual(['B', 'C', 'X', 'Z', 'it', 'as', 'the', 'his']);
-    const louisG2: Record<string, string> = { B: '⠃', C: '⠉', X: '⠭', Z: '⠵', as: '⠵', his: '⠦', it: '⠭', the: '⠮' };
+    // A plain letter cell is lowercase, so its label is the lowercase letter (never "B" on a b cell).
+    expect(items.map((i) => i.label)).toEqual(['b', 'c', 'x', 'z', 'it', 'as', 'the', 'his']);
+    const louisG2: Record<string, string> = { b: '⠃', c: '⠉', x: '⠭', z: '⠵', as: '⠵', his: '⠦', it: '⠭', the: '⠮' };
     for (const i of items) expect(cellsKey(i.cells)).toBe(cellsKey(unicodeToCells(louisG2[i.label])));
     expect(readCells(container).map((c) => c.dots)).toEqual(items.map((i) => cellKey(i.cells[0])));
     expect(getAllByRole('img').map((e) => e.getAttribute('aria-label'))).toContain('Contraction it, dots 1, 3, 4, 6');

@@ -1,4 +1,4 @@
-/** 1,482 common English words (4 and 5 letters), lowercase a–z, for Braille Hangman */
+/** 1478 common English words (4 and 5 letters), lowercase a–z, for Braille Hangman */
 export const hangmanWords = [
   // ---- 4-letter words ----
   'able',
@@ -685,7 +685,6 @@ export const hangmanWords = [
   'turn',
   'twin',
   'type',
-  'ugly',
   'unit',
   'upon',
   'urge',
@@ -1089,7 +1088,6 @@ export const hangmanWords = [
   'juice',
   'knack',
   'kneel',
-  'knife',
   'knock',
   'label',
   'labor',
@@ -1241,7 +1239,6 @@ export const hangmanWords = [
   'reply',
   'rider',
   'ridge',
-  'rifle',
   'right',
   'rigid',
   'rinse',
@@ -1286,7 +1283,6 @@ export const hangmanWords = [
   'shine',
   'shirt',
   'shock',
-  'shoot',
   'shore',
   'short',
   'shout',

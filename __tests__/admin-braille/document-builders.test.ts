@@ -4,15 +4,9 @@
  * PDF teaching materials (lib/document-builders.ts) draw braille cells with pdfkit. These tests
  * check the dot geometry (1-2-3 down the left column, 4-5-6 down the right), that a drawn cell
  * raises exactly its dots (for all 64 cells, via a recording fake document), and which cells are
- * drawn for worksheet answers and words.
+ * drawn for worksheet items in each grade.
  */
-import {
-  answerCells,
-  brailleCellGeometry,
-  brailleWordCells,
-  drawBrailleCell,
-  drawBrailleWord,
-} from '@/lib/document-builders';
+import { brailleCellGeometry, drawBrailleCell, drawCellRow, itemCells } from '@/lib/document-builders';
 import { type Cell, ALL_CELLS, cellKey, cellsKey, unicodeToCells } from '@/lib/braille/ueb';
 
 const RAISED = '#1B2A4A';
@@ -108,38 +102,47 @@ describe('drawBrailleCell', () => {
 /* Ground truth from liblouis en-ueb-g1 (unicode.dis). */
 const U = (s: string): Cell[] => unicodeToCells(s);
 
-describe('answerCells (worksheet answer key and practice-drill boxes)', () => {
+describe('itemCells (worksheet braille is generated from the item print for the document grade)', () => {
   test.each([
-    ['B', U('⠃')], // a letter named in an answer: the letter's cell
-    ['b', U('⠃')],
-    ['8', U('⠼⠓')], // a digit: numeric indicator + h (the old code drew h alone)
-    ['404', U('⠼⠙⠚⠙')],
-    ['dots 1, 2, 4', U('⠋')], // a dot description: the cells it describes (the old drill drew 4 boxes for "DOTS")
-    ['dot 6, then dots 1, 2', U('⠠⠃')],
-  ])('%s', (answer, cells) => {
-    expect(cellsKey(answerCells(answer)!)).toBe(cellsKey(cells));
+    ['B', 'uncontracted', U('⠠⠃')],
+    ['b', 'uncontracted', U('⠃')],
+    ['8', 'uncontracted', U('⠼⠓')], // numeric indicator + h (old code drew h alone)
+    ['404', 'contracted', U('⠼⠙⠚⠙')],
+    ['A1', 'uncontracted', U('⠠⠁⠼⠁')],
+    ['and', 'uncontracted', U('⠁⠝⠙')],
+    ['and', 'contracted', U('⠯')],
+    ['b', 'contracted', U('⠰⠃')], // a wordsign letter standing alone needs the grade 1 indicator
+    ['B', 'contracted', U('⠰⠠⠃')],
+    ['a', 'contracted', U('⠁')], // not a wordsign letter
+  ] as const)('%s (%s)', (print, grade, cells) => {
+    expect(cellsKey(itemCells({ print }, grade)!)).toBe(cellsKey(cells));
   });
-  test('word answers are not drawn: their cells differ between uncontracted and contracted braille', () => {
-    for (const w of ['and', 'but', 'Cat', 'the cat', 'it']) expect(answerCells(w)).toBeNull();
+  test('no print, no braille: the prompt and answer text are never parsed for cells', () => {
+    expect(itemCells({}, 'uncontracted')).toBeNull();
+    expect(itemCells({ print: '' }, 'contracted')).toBeNull();
   });
-  test('untranscribable text gives null', () => {
-    expect(answerCells('emoji 🙂')).toBeNull();
+  test('print the site cannot vouch for in that grade gives null (the item is dropped)', () => {
+    expect(itemCells({ print: 'emoji 🙂' }, 'uncontracted')).toBeNull();
+    expect(itemCells({ print: 'xylophonic' }, 'contracted')).toBeNull();
   });
 });
 
-describe('brailleWordCells / drawBrailleWord', () => {
-  test('capitals and numbers get their indicators (the old code drew A1 as two a cells)', () => {
-    const cells = brailleWordCells('A1')!;
-    expect(cellsKey(cells.map((c) => c!.cell))).toBe(cellsKey(U('⠠⠁⠼⠁')));
-    expect(cells.map((c) => c!.print)).toEqual(['', 'A', '', '1']);
-  });
-  test('spaces are gaps', () => {
-    expect(brailleWordCells('a b')!.map((c) => (c ? cellKey(c.cell) : null))).toEqual(['1', null, '12']);
-  });
-  test('drawBrailleWord draws every cell and labels the letters only', () => {
+describe('drawCellRow', () => {
+  test('draws every cell and raises exactly their dots', () => {
     const r = recorder();
-    drawBrailleWord(r.doc, 'Hi', 0, 0);
+    drawCellRow(r.doc, U('⠠⠓⠊'), 0, 0);
     expect(r.all).toHaveLength(18);
-    expect(r.labels).toEqual(['H', 'i']);
+    expect(r.raised).toHaveLength(1 + 3 + 2);
+  });
+  test('ghost cells (for the student to fill in) raise nothing', () => {
+    const r = recorder();
+    drawCellRow(r.doc, U('⠠⠓⠊'), 0, 0, { ghostDots: true });
+    expect(r.all).toHaveLength(18);
+    expect(r.raised).toHaveLength(0);
+  });
+  test('a blank cell is a gap', () => {
+    const r = recorder();
+    drawCellRow(r.doc, [[1], [], [1, 2]], 0, 0);
+    expect(r.all).toHaveLength(12);
   });
 });

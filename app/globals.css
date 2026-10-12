@@ -264,6 +264,7 @@ body::after {
   flex-direction: column;
   align-items: center;
   cursor: pointer;
+  min-width: 24px; /* WCAG 2.5.8: each letter is a 24px target even when the cells shrink on phones */
 }
 .braille-cell {
   display: grid;
@@ -829,7 +830,7 @@ body::after {
   width: 28px;
   height: 28px;
   background: var(--gold);
-  color: white;
+  color: var(--navy); /* white on gold is 2.2:1 */
   border-radius: 50%;
   display: flex;
   align-items: center;
@@ -1369,7 +1370,7 @@ body::after {
   font-size: 0.78rem;
   color: var(--gold);
   text-decoration: none;
-  opacity: 0.7;
+  opacity: 0.85; /* 0.7 was 4.3:1 on the footer navy; AA needs 4.5:1 */
   transition: opacity 0.2s ease;
 }
 .footer-email:hover {
@@ -2935,6 +2936,29 @@ details.faq-item.reveal:nth-child(6) {
   .wordgame-key.wide {
     min-width: 44px;
     font-size: 0.6rem;
+  }
+}
+
+/* The narrowest phones (320px): the bottom row (Enter, 7 letters, Backspace) shares the width
+   instead of overflowing it. Keys stay at least 24px wide (WCAG 2.5.8 target size). */
+@media (max-width: 360px) {
+  .wordgame-kb-row {
+    width: 100%;
+    justify-content: center;
+    gap: 3px;
+  }
+  .wordgame-key {
+    flex: 1 1 0;
+    min-width: 24px;
+    max-width: 32px;
+    padding: 3px 2px;
+  }
+  .wordgame-key.wide {
+    flex: 1.5 1 0;
+    min-width: 36px;
+    max-width: 44px;
+    font-size: 0.55rem;
+    letter-spacing: 0;
   }
 }
 
@@ -6088,7 +6112,7 @@ details.faq-item.reveal:nth-child(6) {
 .admin-compose-btn {
   padding: 10px 24px;
   background: var(--gold);
-  color: white;
+  color: var(--navy); /* white on gold is 2.2:1 */
   border: none;
   border-radius: var(--radius-sm);
   font-family: var(--font-body), 'Outfit', sans-serif;
@@ -6243,7 +6267,7 @@ details.faq-item.reveal:nth-child(6) {
 .admin-send-btn {
   padding: 10px 28px;
   background: var(--gold);
-  color: white;
+  color: var(--navy); /* white on gold is 2.2:1 */
   border: none;
   border-radius: var(--radius-sm);
   font-family: var(--font-body), 'Outfit', sans-serif;
@@ -7801,7 +7825,7 @@ details.faq-item.reveal:nth-child(6) {
   display: inline-block;
   padding: 8px 20px;
   background: var(--gold);
-  color: white;
+  color: var(--navy); /* white on gold is 2.2:1 */
   border: none;
   border-radius: var(--radius-sm);
   font-family: var(--font-body), 'Outfit', sans-serif;
@@ -8291,7 +8315,7 @@ details.faq-item.reveal:nth-child(6) {
 .global-error-retry {
   padding: 12px 28px;
   background: var(--gold);
-  color: white;
+  color: var(--navy); /* white on gold is 2.2:1 */
   border: none;
   border-radius: var(--radius-sm);
   font-family: var(--font-body), 'Outfit', sans-serif;
@@ -8873,7 +8897,7 @@ details.faq-item.reveal:nth-child(6) {
 }
 .alpha-detail-dot.raised {
   background: var(--gold);
-  color: white;
+  color: var(--navy); /* white on gold is 2.2:1 */
   font-weight: 600;
 }
 .alpha-detail-info {
@@ -8993,7 +9017,7 @@ details.faq-item.reveal:nth-child(6) {
 }
 .intro-cta-card:hover .intro-cta-icon {
   background: var(--gold);
-  color: white;
+  color: var(--navy); /* white on gold is 2.2:1 */
 }
 .intro-cta-card h3 {
   font-family: var(--font-heading), 'DM Serif Display', serif;
@@ -9338,7 +9362,7 @@ details.faq-item.reveal:nth-child(6) {
 }
 .num-detail-dot.raised {
   background: var(--gold);
-  color: white;
+  color: var(--navy); /* white on gold is 2.2:1 */
   font-weight: 600;
 }
 .num-detail-dot.raised.ind {
@@ -10078,6 +10102,11 @@ details.faq-item.reveal:nth-child(6) {
   color: var(--navy);
   font-weight: 600;
   min-width: 22px;
+}
+.admin-review-item-note {
+  font-size: 0.78rem;
+  color: var(--slate, #555);
+  margin: 0 0 8px;
 }
 .admin-review-item-row .admin-review-input {
   flex: 1;
@@ -11163,7 +11192,7 @@ details.faq-item.reveal:nth-child(6) {
   height: 20px;
   padding: 0 6px;
   background: var(--gold);
-  color: white;
+  color: var(--navy); /* white on gold is 2.2:1 */
   border-radius: 10px;
   font-size: 0.72rem;
   font-weight: 700;
@@ -11928,7 +11957,7 @@ details.faq-item.reveal:nth-child(6) {
 }
 .admin-settings-day-active {
   background: var(--gold);
-  color: white;
+  color: var(--navy); /* white on gold is 2.2:1 */
   border-color: var(--gold);
 }
 .admin-settings-day-active:hover {
@@ -12633,7 +12662,7 @@ details.faq-item.reveal:nth-child(6) {
   display: inline-block;
   padding: var(--space-sm) var(--space-lg);
   background: var(--gold);
-  color: white;
+  color: var(--navy); /* white on gold is 2.2:1 */
   border: none;
   border-radius: var(--radius-full);
   font-family: var(--font-body), 'Outfit', sans-serif;
@@ -13133,7 +13162,7 @@ details.faq-item.reveal:nth-child(6) {
   margin-top: var(--space-xl);
   width: 100%;
   background: var(--gold);
-  color: white;
+  color: var(--navy); /* white on gold is 2.2:1 */
   font-family: var(--font-body);
   font-size: 1.05rem;
   font-weight: 600;
@@ -13572,7 +13601,7 @@ details.faq-item.reveal:nth-child(6) {
   margin-top: var(--space-xl);
   width: 100%;
   background: var(--gold);
-  color: white;
+  color: var(--navy); /* white on gold is 2.2:1 */
   font-family: var(--font-body);
   font-size: 1.05rem;
   font-weight: 600;
@@ -13832,7 +13861,7 @@ details.faq-item.reveal:nth-child(6) {
 .admin-add-school-btn {
   padding: 8px 16px;
   background: var(--gold);
-  color: white;
+  color: var(--navy); /* white on gold is 2.2:1 */
   border: none;
   border-radius: var(--radius-sm);
   font-size: 0.85rem;
@@ -13942,7 +13971,7 @@ details.faq-item.reveal:nth-child(6) {
 .admin-add-school-submit {
   padding: 8px 22px;
   background: var(--gold);
-  color: white;
+  color: var(--navy); /* white on gold is 2.2:1 */
   border: none;
   border-radius: var(--radius-sm);
   font-size: 0.85rem;
@@ -14209,7 +14238,7 @@ details.faq-item.reveal:nth-child(6) {
 .admin-school-action-btn:hover {
   background: var(--gold);
   border-color: var(--gold);
-  color: white;
+  color: var(--navy); /* white on gold is 2.2:1 */
   transform: scale(1.1);
 }
 
@@ -14310,7 +14339,7 @@ details.faq-item.reveal:nth-child(6) {
 .admin-school-panel-action:hover {
   background: var(--gold);
   border-color: var(--gold);
-  color: white;
+  color: var(--navy); /* white on gold is 2.2:1 */
 }
 
 .admin-school-panel-close:hover {
@@ -14791,7 +14820,7 @@ details.faq-item.reveal:nth-child(6) {
   font-weight: 600;
   padding: 8px 20px;
   background: var(--gold);
-  color: white;
+  color: var(--navy); /* white on gold is 2.2:1 */
   border: none;
   border-radius: var(--radius-full);
   cursor: pointer;
@@ -15048,7 +15077,7 @@ details.faq-item.reveal:nth-child(6) {
   border-radius: var(--radius-full);
   border: none;
   background: var(--gold);
-  color: white;
+  color: var(--navy); /* white on gold is 2.2:1 */
   font-weight: 700;
   cursor: pointer;
   font-size: 0.9rem;
@@ -15370,7 +15399,7 @@ details.faq-item.reveal:nth-child(6) {
 }
 .difficulty-pill.active {
   background: var(--gold);
-  color: white;
+  color: var(--navy); /* white on gold is 2.2:1 */
   border-color: var(--gold);
 }
 .difficulty-pill:focus-visible {
@@ -15403,7 +15432,7 @@ details.faq-item.reveal:nth-child(6) {
   border-radius: 50%;
   border: none;
   background: var(--gold);
-  color: white;
+  color: var(--navy); /* white on gold is 2.2:1 */
   font-size: 1.3rem;
   cursor: pointer;
   box-shadow: 0 4px 16px var(--gold-glow);
@@ -15489,7 +15518,7 @@ details.faq-item.reveal:nth-child(6) {
   border-radius: var(--radius-full);
   border: none;
   background: var(--gold);
-  color: white;
+  color: var(--navy); /* white on gold is 2.2:1 */
   font-weight: 700;
   font-size: 0.9rem;
   cursor: pointer;
@@ -15569,7 +15598,7 @@ details.faq-item.reveal:nth-child(6) {
   border-radius: var(--radius-full);
   border: none;
   background: var(--gold);
-  color: white;
+  color: var(--navy); /* white on gold is 2.2:1 */
   font-weight: 700;
   font-size: 1rem;
   cursor: pointer;
@@ -16053,7 +16082,7 @@ details.faq-item.reveal:nth-child(6) {
   border-radius: var(--radius-full);
   border: none;
   background: var(--gold);
-  color: white;
+  color: var(--navy); /* white on gold is 2.2:1 */
   font-weight: 700;
   font-size: 1rem;
   cursor: pointer;
@@ -16108,7 +16137,7 @@ details.faq-item.reveal:nth-child(6) {
   border-radius: var(--radius-full);
   border: none;
   background: var(--gold);
-  color: white;
+  color: var(--navy); /* white on gold is 2.2:1 */
   font-weight: 700;
   font-size: 1rem;
   cursor: pointer;
@@ -16221,7 +16250,7 @@ details.faq-item.reveal:nth-child(6) {
   border-radius: var(--radius-full);
   border: none;
   background: var(--gold);
-  color: white;
+  color: var(--navy); /* white on gold is 2.2:1 */
   font-weight: 700;
   cursor: pointer;
   transition: all var(--transition-micro);
@@ -16431,7 +16460,7 @@ details.faq-item.reveal:nth-child(6) {
   border-radius: var(--radius-full);
   border: none;
   background: var(--gold);
-  color: white;
+  color: var(--navy); /* white on gold is 2.2:1 */
   font-weight: 700;
   cursor: pointer;
   transition: all var(--transition-micro);
@@ -16484,7 +16513,7 @@ details.faq-item.reveal:nth-child(6) {
   border-radius: var(--radius-full);
   border: none;
   background: var(--gold);
-  color: white;
+  color: var(--navy); /* white on gold is 2.2:1 */
   font-weight: 700;
   font-size: 1rem;
   cursor: pointer;
@@ -16619,7 +16648,7 @@ details.faq-item.reveal:nth-child(6) {
   border-radius: var(--radius-md);
   border: none;
   background: var(--gold);
-  color: white;
+  color: var(--navy); /* white on gold is 2.2:1 */
   font-weight: 700;
   cursor: pointer;
   transition: all var(--transition-micro);
@@ -16676,7 +16705,7 @@ details.faq-item.reveal:nth-child(6) {
   border-radius: var(--radius-full);
   border: none;
   background: var(--gold);
-  color: white;
+  color: var(--navy); /* white on gold is 2.2:1 */
   font-weight: 700;
   font-size: 1rem;
   cursor: pointer;
@@ -16809,7 +16838,7 @@ details.faq-item.reveal:nth-child(6) {
   display: block;
   margin-top: 0.4em;
   font-size: 0.82em;
-  opacity: 0.55;
+  color: var(--text-secondary);
   font-style: italic;
 }
 
@@ -18560,7 +18589,7 @@ details.faq-item.reveal:nth-child(6) {
   line-height: 1.2;
 }
 .braille-text-token--space .braille-text-caption {
-  color: rgba(27, 42, 74, 0.35);
+  color: var(--text-secondary);
 }
 
 .lesson-char-cells {
@@ -19175,4 +19204,10 @@ details.faq-item.reveal:nth-child(6) {
     width: 8px;
     height: 8px;
   }
+}
+
+.daily-challenge-list:focus-visible {
+  outline: 2px solid var(--gold-text);
+  outline-offset: 2px;
+  border-radius: 8px;
 }

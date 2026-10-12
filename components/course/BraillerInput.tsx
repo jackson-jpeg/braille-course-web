@@ -129,7 +129,11 @@ export default function BraillerInput({ target, onSolved, solved }: BraillerInpu
       </div>
 
       {multi && (
-        <div className="brailler-written" aria-label={`Cells written so far: ${writtenCells.length} of ${total}`}>
+        <div
+          className="brailler-written"
+          role="img"
+          aria-label={`Cells written so far: ${writtenCells.length} of ${total}`}
+        >
           {target.cells.map((c, i) => (
             <span key={i} className={`brailler-written-slot${i === cellIndex && !solved ? ' current' : ''}`}>
               {i < writtenCells.length ? (

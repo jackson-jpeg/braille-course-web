@@ -86,7 +86,7 @@ export const ALPHABET: readonly string[] = 'abcdefghijklmnopqrstuvwxyz'.split(''
 export const LETTERS: readonly Sign[] = ALPHABET.map((l) => ({
   id: `letter-${l}`,
   kind: 'letter' as const,
-  name: `Letter ${l.toUpperCase()}`,
+  name: `letter ${l}`,
   print: l,
   cells: [LETTER_CELLS[l]],
   rule: '4.1',
