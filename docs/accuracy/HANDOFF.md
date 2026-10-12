@@ -57,6 +57,11 @@ to `master` deploys. `npm run build` runs the full accuracy suite first, so a fa
 the deploy. GitHub Actions (`.github/workflows/braille-accuracy.yml`) also regenerates the oracle with a
 fresh liblouis and runs the browser geometry check.
 
+Vercel builds with `NODE_ENV=production`. React refuses `act()` in production builds, so
+`test:accuracy` forces `NODE_ENV=test` for jest; CI also builds with `NODE_ENV=production` to catch
+this. (The first production deploy of this work failed for exactly this reason and was fixed in a
+follow-up PR.)
+
 ## How to add or change braille content safely
 
 1. Never type a cell, a braille character, or "dots N" prose. Use `lib/braille` (see `MIGRATION-BRIEF.md`).
