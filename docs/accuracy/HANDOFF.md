@@ -94,3 +94,5 @@ follow-up PR.)
   (their levels now live in `lib/games/*`).
 - Admin PDF worksheets no longer draw braille for word answers (it differs between grades); passing the
   worksheet's grade through would let them draw the right form.
+
+<!-- Vercel preview check: commits on this branch are authored as the repo owner. -->
