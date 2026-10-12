@@ -240,7 +240,7 @@ export const COURSE_MODULES: CourseModule[] = [
         summary: 'Put letters together and read whole words.',
         intro: [
           'Letters become words when you read them left to right, one cell at a time, with a blank cell between words. Warm up by writing the letters in a few short words, then head to the Word Game to read whole words under gentle pressure.',
-          'Everything in these first lessons is uncontracted braille: every letter is written out. A single letter on its own, like the “b” in “plan b”, is simply that letter.',
+          'Everything in these first lessons is uncontracted braille: every letter is written out. A single letter on its own, like the “b” in “plan b”, is simply that letter. (In contracted braille, which comes later, a lone letter can stand for a whole word, so there it needs an extra cell.)',
         ],
         chars: [letter('c'), letter('a'), letter('t'), letter('d'), letter('o'), letter('g')],
         examples: [{ print: 'cat' }, { print: 'dog' }, { print: 'a big red bus' }],

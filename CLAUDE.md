@@ -64,3 +64,12 @@ prisma/               # Schema + seed script
 - Game progress is entirely client-side (localStorage), no server round-trips
 - Stripe Embedded Checkout for payments; webhooks handle enrollment confirmation
 - Rate limiting for admin login is in-memory (`lib/rate-limit.ts`) — resets on deploy; acceptable for admin-only endpoint
+
+## Braille accuracy (read before touching any braille content)
+
+- **All braille comes from `lib/braille/`** (`ueb.ts` cells with ICEB rule citations, `transcribe.ts` print → uncontracted UEB, `prose.ts` generated dot descriptions). Never type a dot pattern, a Unicode braille character, or "dots N" prose anywhere else; `__tests__/braille/no-hardcoded-braille.test.ts` fails the build if you do.
+- Draw cells only with `components/BrailleCell.tsx`, `BrailleDotPad.tsx` or `BrailleText.tsx`.
+- Game logic lives in `lib/games/*.ts` with every question enumerated and tested, and a `brailleInventory()` registered in `lib/braille/site-inventory.ts`.
+- After adding braille content run `npm run braille:oracle` (needs liblouis + python3-louis) and `npm test`. A liblouis disagreement can only be accepted via `lib/braille/discrepancies.ts` with a verified ICEB rulebook citation. Never loosen or skip a test.
+- `npm run build` runs the whole test suite first, so Vercel will not deploy with a failing accuracy test.
+- Full method and history: `docs/accuracy/` (start with `HANDOFF.md` and `MIGRATION-BRIEF.md`).
