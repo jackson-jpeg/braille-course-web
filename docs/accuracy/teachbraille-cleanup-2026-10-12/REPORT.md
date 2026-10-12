@@ -4,37 +4,26 @@ All five items went into one pull request:
 [jackson-jpeg/braille-course-web#7](https://github.com/jackson-jpeg/braille-course-web/pull/7).
 The updated session handoff is `HANDOFF.md` in this folder (the same file as `docs/accuracy/HANDOFF.md`).
 
-## 1. Vercel previews
+## 1. Vercel previews (corrected later on October 12)
 
-- **Commit author.** Every earlier branch commit was authored by `Claude <noreply@anthropic.com>`. The repo's
-  git identity is now `jackson-jpeg <realjacksons@gmail.com>`, and every commit in this pass is authored as you.
-- **Config.** `vercel.json` has only `framework` and `crons`. There is no `ignoreCommand`, no
-  `git.deploymentEnabled`, no `.vercelignore` and no `vercel` key in `package.json`. Nothing in the repo
-  turns preview deployments off.
-- **What Vercel did.**
+**The cause was not the commit author.** Vercel's own email gave the real cause: the Preview copy of the
+`CRON_SECRET` environment variable has leading or trailing whitespace. Vercel rejects such a deployment
+straight away, which is why every preview failed about a second after it was created, before any build ran.
+This report first blamed the commit author; that was wrong. Production uses its own copy of the variable,
+which is why `master` kept deploying.
 
-  | Commit                                      | Author       | What GitHub shows from Vercel                                             |
-  | ------------------------------------------- | ------------ | ------------------------------------------------------------------------- |
-  | 5eb9923, 6e64a50, 454b557, 20eef64, c9fb796 | Claude       | A deployment that failed about 1 s after it was created (no build)        |
-  | ed3ed16, 36bf471 (merges of #5, #6)         | Jackson      | Production deployment (#5 failed on `act()`, #6 succeeded)                |
-  | 859126d, 197f3ad, bdf5469 (branch, PR #7)   | jackson-jpeg | Nothing: no deployment, no status, no bot comment on the PR               |
-  | f44c30c (merge of #7)                       | Jackson      | Nothing on GitHub, **but the site is live**: production serves this build |
+Fixed in code, with no dashboard change:
 
-- **What the evidence shows.**
-  - The one-second failures on the Claude-authored pushes are how Vercel rejects a commit author who is not
-    on the team, so your theory fits them, and authoring commits as you removes that cause.
-  - Since about 04:13 UTC today, though, Vercel has stopped reporting anything to GitHub. The merge of #7
-    has no GitHub deployment or status at all, yet www.teachbraille.org serves its CSS and passes its
-    checks. So Vercel is building but no longer posting deployments and statuses to GitHub.
-  - That means previews for the branch may well have built too, unreported. Their URLs are hashed for a
-    branch name this long, and the project's vercel.app URL needs a Vercel login, so this session cannot
-    confirm either way.
-- **What to check** in the Vercel dashboard (this session cannot reach it):
-  - Project → Deployments, filtered to branch `claude/teachbraille-accuracy-audit-j6y95w`: are there preview
-    builds for 197f3ad / bdf5469?
-  - Project → Settings → Git: preview deployments enabled for other branches, and the GitHub connection
-    (deployment statuses / PR comments) still connected.
-  - Project → Settings → Build and Deployment: no Ignored Build Step.
+- `vercel.json` sets `git.deploymentEnabled` to `{ "**": false, "master": true }`, so only `master` deploys
+  and no previews are built (no more failure emails).
+- `vercel.json` sets `github.silent: true` (no Vercel bot comments on PRs).
+- `lib/cron-auth.ts` trims `CRON_SECRET` and the bearer token, so a stray space can never lock out the cron
+  jobs (tested in `__tests__/lib/cron-auth.test.ts`).
+
+What GitHub showed at the time, for the record: the branch pushes got deployments that failed about a
+second after creation; from about 04:13 UTC Vercel posted nothing to GitHub for a while, though production
+kept deploying. Commits are authored as `jackson-jpeg <realjacksons@gmail.com>`; that is fine to keep but was
+never the fix.
 
 ## 2. AI worksheet generator: the model never writes braille
 

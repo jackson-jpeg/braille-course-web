@@ -1,5 +1,14 @@
 {
   "framework": "nextjs",
+  "git": {
+    "deploymentEnabled": {
+      "**": false,
+      "master": true
+    }
+  },
+  "github": {
+    "silent": true
+  },
   "crons": [
     {
       "path": "/api/cron/finalize-balance",
