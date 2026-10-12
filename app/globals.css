@@ -337,7 +337,7 @@ body::after {
 
 .braille-hint {
   font-size: 0.72rem;
-  color: var(--slate);
+  color: var(--text-secondary); /* the old slate at half opacity was 2.3:1 on cream */
   opacity: 0;
   font-weight: 400;
   letter-spacing: 0.5px;
@@ -345,7 +345,7 @@ body::after {
   height: 18px;
 }
 .braille-hint.visible {
-  opacity: 0.5;
+  opacity: 1;
   transition-delay: 1.5s;
 }
 
@@ -376,7 +376,7 @@ body::after {
 
 /* Easter egg animations */
 .braille-decoration.celebration ~ .braille-hint {
-  opacity: 0.5;
+  opacity: 1;
 }
 
 .braille-letter-group.active .braille-letter-label.dot-desc {

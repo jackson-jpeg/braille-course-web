@@ -13,20 +13,28 @@ The updated session handoff is `HANDOFF.md` in this folder (the same file as `do
   turns preview deployments off.
 - **What Vercel did.**
 
-  | Commit                                      | Author       | Vercel                                                                |
-  | ------------------------------------------- | ------------ | --------------------------------------------------------------------- |
-  | 5eb9923, 6e64a50, 454b557, 20eef64, c9fb796 | Claude       | Deployment created, then failed about 1 s later, before any build ran |
-  | 859126d (test commit)                       | jackson-jpeg | No deployment at all (watched for 30 min)                             |
-  | 197f3ad (this PR's commit)                  | jackson-jpeg | See "Preview result" below                                            |
-  | master merges (#5, #6)                      | jackson-jpeg | Production built (#5 failed on `act()`, fixed by #6)                  |
+  | Commit                                      | Author       | What GitHub shows from Vercel                                             |
+  | ------------------------------------------- | ------------ | ------------------------------------------------------------------------- |
+  | 5eb9923, 6e64a50, 454b557, 20eef64, c9fb796 | Claude       | A deployment that failed about 1 s after it was created (no build)        |
+  | ed3ed16, 36bf471 (merges of #5, #6)         | Jackson      | Production deployment (#5 failed on `act()`, #6 succeeded)                |
+  | 859126d, 197f3ad, bdf5469 (branch, PR #7)   | jackson-jpeg | Nothing: no deployment, no status, no bot comment on the PR               |
+  | f44c30c (merge of #7)                       | Jackson      | Nothing on GitHub, **but the site is live**: production serves this build |
 
-- **What the evidence shows.** A deployment that fails one second after it is created is how Vercel
-  rejects a commit author who is not on the team, so your theory fits the Claude-authored pushes. With you
-  as the author, that rejection stops. Vercel then created no preview deployment at all, which points to a
-  dashboard setting rather than the repo.
-- **What to check.** Two Vercel dashboard settings that this session cannot reach:
-  - Project → Settings → Git: are preview deployments enabled for non-production branches?
-  - Project → Settings → Build and Deployment: is an Ignored Build Step set?
+- **What the evidence shows.**
+  - The one-second failures on the Claude-authored pushes are how Vercel rejects a commit author who is not
+    on the team, so your theory fits them, and authoring commits as you removes that cause.
+  - Since about 04:13 UTC today, though, Vercel has stopped reporting anything to GitHub. The merge of #7
+    has no GitHub deployment or status at all, yet www.teachbraille.org serves its CSS and passes its
+    checks. So Vercel is building but no longer posting deployments and statuses to GitHub.
+  - That means previews for the branch may well have built too, unreported. Their URLs are hashed for a
+    branch name this long, and the project's vercel.app URL needs a Vercel login, so this session cannot
+    confirm either way.
+- **What to check** in the Vercel dashboard (this session cannot reach it):
+  - Project → Deployments, filtered to branch `claude/teachbraille-accuracy-audit-j6y95w`: are there preview
+    builds for 197f3ad / bdf5469?
+  - Project → Settings → Git: preview deployments enabled for other branches, and the GitHub connection
+    (deployment statuses / PR comments) still connected.
+  - Project → Settings → Build and Deployment: no Ignored Build Step.
 
 ## 2. AI worksheet generator: the model never writes braille
 
@@ -121,6 +129,15 @@ The updated session handoff is `HANDOFF.md` in this folder (the same file as `do
 - Real-browser check at 1280/390/320 px: **2,869** cells, 0 problems.
 - axe-core: **0** violations.
 
-## Preview result and live check
+## After merge: live check (production, www.teachbraille.org)
 
-See the end of the session (filled in after CI, merge and deploy).
+- The real-browser check against production at 1280/390/320 px found **2,877** cells and 0 problems. That
+  covers dot positions, captions, wording and overflow, including the Word Game keyboard at 320 px.
+- axe-core against production found one thing the local run missed: the "tap a letter" hint fades in
+  after 1.5 s at half opacity, and that was only 2.3:1 contrast. The local check measured before it
+  appeared.
+  - Fixed in a small follow-up PR: the hint is now full-strength secondary text.
+  - The axe script now waits 2.5 s and for the page title before measuring.
+  - The same run once measured a page that hadn't finished loading. It reported "no title", but the live
+    page has its title on every fetch.
+- See the follow-up PR and the final session message for the post-fix live axe result.
