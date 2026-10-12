@@ -6,7 +6,6 @@
  * no digits, no apostrophes.
  */
 import type { InventoryItem } from '@/lib/braille/inventory';
-import { g1Item } from '@/lib/braille/inventory';
 import { type Cell, ALPHABET, LETTER_CELLS } from '@/lib/braille/ueb';
 import { answerWords, validGuesses } from '@/lib/game-words';
 
@@ -88,7 +87,8 @@ export function updateKeyStatuses(
 /** Every piece of braille this game can show (checked against liblouis). */
 export function brailleInventory(): InventoryItem[] {
   return [
-    ...ALPHABET.map((l) => g1Item('game:wordgame', l)),
-    ...[...VALID_GUESSES].map((w) => g1Item('game:wordgame', w)),
+    // The cells the game actually draws, so liblouis checks the real render path.
+    ...ALPHABET.map((l) => ({ where: 'game:wordgame', print: l, table: 'g1' as const, cells: [tileCell(l)] })),
+    ...[...VALID_GUESSES].map((w) => ({ where: 'game:wordgame', print: w, table: 'g1' as const, cells: wordCells(w) })),
   ];
 }

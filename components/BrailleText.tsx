@@ -40,6 +40,16 @@ export function tokenCaption(t: BrailleToken): string {
   }
 }
 
+/** Split tokens into words; each space token is kept at the end of the word before it. */
+function words(toks: BrailleToken[]): { t: BrailleToken; i: number }[][] {
+  const out: { t: BrailleToken; i: number }[][] = [[]];
+  toks.forEach((t, i) => {
+    out[out.length - 1].push({ t, i });
+    if (t.kind === 'space') out.push([]);
+  });
+  return out.filter((w) => w.length > 0);
+}
+
 export default function BrailleText({
   text,
   tokens,
@@ -56,25 +66,30 @@ export default function BrailleText({
   const sr = label ?? `Braille: ${describeCells(toks.flatMap((t) => t.cells))}`;
   return (
     <div className={className} role="img" aria-label={sr}>
-      {toks.map((t, i) => (
-        <span
-          key={i}
-          className={`braille-text-token braille-text-token--${t.kind}${i === highlight ? ' braille-text-token--highlight' : ''}`}
-          aria-hidden="true"
-        >
-          <span className="braille-text-cells">
-            {t.cells.map((c, j) => (
-              <BrailleCell
-                key={j}
-                cell={c}
-                className={cellClassName}
-                dotClassName={dotClassName}
-                raisedClassName={raisedClassName}
-                flatClassName={flatClassName}
-              />
-            ))}
-          </span>
-          {showLabels && <span className="braille-text-caption">{tokenCaption(t)}</span>}
+      {/* Tokens are grouped into words so a line only ever breaks at a space, never inside a word. */}
+      {words(toks).map((word, w) => (
+        <span key={w} className="braille-text-word">
+          {word.map(({ t, i }) => (
+            <span
+              key={i}
+              className={`braille-text-token braille-text-token--${t.kind}${i === highlight ? ' braille-text-token--highlight' : ''}`}
+              aria-hidden="true"
+            >
+              <span className="braille-text-cells">
+                {t.cells.map((c, j) => (
+                  <BrailleCell
+                    key={j}
+                    cell={c}
+                    className={cellClassName}
+                    dotClassName={dotClassName}
+                    raisedClassName={raisedClassName}
+                    flatClassName={flatClassName}
+                  />
+                ))}
+              </span>
+              {showLabels && <span className="braille-text-caption">{tokenCaption(t)}</span>}
+            </span>
+          ))}
         </span>
       ))}
     </div>

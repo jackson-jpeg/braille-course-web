@@ -184,8 +184,11 @@ export function brailleWordCells(word: string): ({ cell: Cell; print: string } |
 }
 
 /**
- * Cells for a worksheet answer: a single letter is drawn as that letter's cell; a dot description
- * ("dots N, N") as the cells it describes; anything else as its uncontracted UEB transcription.
+ * Cells for a worksheet answer, drawn only when they are the same in uncontracted and contracted
+ * braille (the worksheet does not say which it teaches): a single letter is drawn as that letter's
+ * cell, a dot description ("dots N, N") as the cells it describes, and a number as its numeric
+ * indicator and digits. Word answers are not drawn: "and" is three cells uncontracted but one
+ * contracted, so drawing either could teach the wrong one.
  */
 export function answerCells(answer: string): Cell[] | null {
   const text = answer.trim();
@@ -194,8 +197,11 @@ export function answerCells(answer: string): Cell[] | null {
     const cells = parseDotSpec(text);
     return cells.length > 0 ? cells : null;
   }
-  const cells = brailleWordCells(text);
-  return cells ? cells.map((c) => (c ? c.cell : [])) : null;
+  if (/^[0-9][0-9.,]*$/.test(text)) {
+    const cells = brailleWordCells(text);
+    return cells ? cells.map((c) => (c ? c.cell : [])) : null;
+  }
+  return null;
 }
 
 export function drawBrailleWord(

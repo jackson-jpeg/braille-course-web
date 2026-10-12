@@ -7,7 +7,6 @@
  * Keyboard: number key n toggles dot n, for n from 1 to 6.
  */
 import type { InventoryItem } from '@/lib/braille/inventory';
-import { g1Item } from '@/lib/braille/inventory';
 import { type Cell, type Dot, ALL_DOTS, ALPHABET, LETTER_CELLS, sameCell } from '@/lib/braille/ueb';
 import type { Difficulty } from '@/lib/progress-types';
 
@@ -51,5 +50,6 @@ export function cellDiff(answer: Cell, target: Cell): { missing: Cell; extra: Ce
 
 /** Every piece of braille this game can show (checked against liblouis). */
 export function brailleInventory(): InventoryItem[] {
-  return REFLEX_LETTERS.map((l) => g1Item('game:reflex', l));
+  // The cells the game actually draws, so liblouis checks the real render path.
+  return REFLEX_LETTERS.map((l) => ({ where: 'game:reflex', print: l, table: 'g1' as const, cells: [reflexCell(l)] }));
 }

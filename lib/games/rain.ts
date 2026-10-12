@@ -6,7 +6,6 @@
  * capital is accepted as the same letter key).
  */
 import type { InventoryItem } from '@/lib/braille/inventory';
-import { g1Item } from '@/lib/braille/inventory';
 import { type Cell, ALPHABET, LETTER_CELLS } from '@/lib/braille/ueb';
 import { similarLetters } from './speedmatch';
 
@@ -62,5 +61,6 @@ export function dropForKey<D extends Drop>(key: string, drops: readonly D[]): D 
 
 /** Every piece of braille this game can show (checked against liblouis). */
 export function brailleInventory(): InventoryItem[] {
-  return RAIN_LETTERS.map((l) => g1Item('game:rain', l));
+  // The cells the game actually draws, so liblouis checks the real render path.
+  return RAIN_LETTERS.map((l) => ({ where: 'game:rain', print: l, table: 'g1' as const, cells: [rainCell(l)] }));
 }

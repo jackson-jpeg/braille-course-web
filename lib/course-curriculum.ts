@@ -130,7 +130,7 @@ const STRONG_WORDSIGN_SENTENCE = (() => {
     if (!group) throw new Error(`course-curriculum: no groupsign shares a cell with ${w.text}`);
     return `${group.text} → ${w.text}`;
   });
-  return `Standing alone, six of these cells mean whole words: ${pairs.join(', ')}.`;
+  return `Standing alone, six groupsign cells mean whole words: ${pairs.join(', ')}.`;
 })();
 
 /** “bath” = b, a, th: the example used in the strong groupsigns lesson (checked against liblouis g2). */
@@ -201,7 +201,9 @@ export const COURSE_MODULES: CourseModule[] = [
           P(
             'Here’s the elegant trick: k through t are exactly a through j with {fact:secondDecadeAdds} added. k is a plus {fact:secondDecadeAdds}, l is b plus {fact:secondDecadeAdds}, and so on.',
           ),
-          'If you know the first ten letters, you already know these. Just add the bottom-left dot.',
+          P(
+            'If you know the first ten letters, you already know these. Just add {fact:secondDecadeAdds}, the {fact:secondDecadeAddsPlace} dot.',
+          ),
         ],
         chars: 'klmnopqrst'.split('').map((c) => letter(c)),
         practiceGameId: 'speedmatch',
@@ -356,7 +358,7 @@ export const COURSE_MODULES: CourseModule[] = [
           P(
             'Watch for letters right after a number. Because a to j double as digits, a lowercase a to j written straight after a number needs the {name:grade1Symbol} ({dots:grade1Symbol}) first, so “3b” can’t be misread as 32. Letters k to z don’t need it (“3rd”), and neither do capitals, because the capital indicator already ends the number (“4B”).',
           ),
-          'In uncontracted braille this is one of only two places the grade 1 indicator appears. The other is a question mark standing on its own.',
+          'This is where you’ll meet the grade 1 indicator most often in uncontracted braille. You may also see it before a question mark at the start of a word or after a hyphen or dash.',
         ],
         chars: [
           signItem(INDICATORS.grade1Symbol, 'Before a lowercase a–j right after a number: {dots:grade1Symbol}.'),
@@ -517,7 +519,7 @@ export const COURSE_MODULES: CourseModule[] = [
         ],
         practiceGameId: 'contraction-sprint',
         practiceGameLabel: 'Contraction Sprint',
-        tip: 'If a ch, sh, th, wh, ou or st cell stands alone, read it as a whole word.',
+        tip: 'If one of those six cells stands alone, read it as the whole word.',
       },
       {
         slug: 'lower-groupsigns',
@@ -555,7 +557,7 @@ export const COURSE_MODULES: CourseModule[] = [
         ],
         practiceGameId: 'contraction-sprint',
         practiceGameLabel: 'Contraction Sprint',
-        tip: 'You now know contractions from every major family: wordsigns, groupsigns, upper and lower.',
+        tip: 'You now know the most common one-cell contractions. Contracted braille also has initial-letter contractions, final-letter groupsigns and shortforms, which a full braille course covers next.',
       },
     ],
   },

@@ -9,6 +9,8 @@ import {
   randomProblem,
 } from '@/lib/games/number-sense';
 import BrailleText from '@/components/BrailleText';
+import { describeCells } from '@/lib/braille/prose';
+import { transcribe } from '@/lib/braille/transcribe';
 import { useGameProgress } from '@/hooks/useGameProgress';
 import { pushAchievements } from '@/components/AchievementToast';
 import { getRandomTip } from '@/lib/learning-tips';
@@ -98,7 +100,7 @@ export default function BrailleNumberSense() {
           const nextR = round + 1;
           setRound(nextR);
           if (nextR >= totalRounds) {
-            const finalScore = correct ? scoreRef.current + 1 : scoreRef.current;
+            const finalScore = scoreRef.current; // already includes this round (re-rendered before the timeout)
             setGameOver(true);
             const achievements = recordResult(finalScore >= totalRounds / 2, finalScore);
             pushAchievements(achievements);
@@ -160,7 +162,7 @@ export default function BrailleNumberSense() {
             <div className="numsense-problem" aria-live="polite">
               <BrailleMath
                 text={problem.print}
-                label={`${problem.a} ${OPERATOR_WORDS[problem.operator]} ${problem.b} equals what? The ${OPERATOR_SIGNS[problem.operator].name} and equals sign are each two cells.`}
+                label={`Braille problem: ${describeCells(transcribe(problem.print))}. The ${OPERATOR_SIGNS[problem.operator].name} and the equals sign are two cells each.`}
               />
               <span className="numsense-answer-blank" aria-hidden="true" />
             </div>
@@ -179,11 +181,13 @@ export default function BrailleNumberSense() {
                     className={cls}
                     onClick={() => handleChoice(choice)}
                     disabled={locked}
-                    aria-label={`Choice ${i + 1}: ${choice}`}
+                    aria-label={`Choice ${i + 1}: ${locked ? `${choice}, ` : ''}braille ${describeCells(transcribe(String(choice)))}`}
+                    data-value={choice}
                   >
                     <span className="numsense-choice-number">{i + 1}</span>
-                    <BrailleMath text={String(choice)} label={`${choice} in braille`} />
-                    <span className="numsense-choice-value">{choice}</span>
+                    <BrailleMath text={String(choice)} label={`braille ${describeCells(transcribe(String(choice)))}`} />
+                    {/* The print value appears only after answering, so the braille has to be read. */}
+                    <span className="numsense-choice-value">{locked ? choice : '?'}</span>
                   </button>
                 );
               })}

@@ -87,14 +87,23 @@ describe('Bingo renders correct cells', () => {
       expect(checkAllCells(container)).toEqual([]);
       const squares = [...container.querySelectorAll('.bingo-cell:not(.free)')];
       expect(squares).toHaveLength(24);
+      // Unmarked squares show braille only (finding the braille is the game).
       for (const sq of squares) {
-        const letter = sq.querySelector('.bingo-cell-letter')!.textContent!;
-        expect(letter).toMatch(/^[a-z]$/);
-        expect(sq.querySelector('[data-braille-cell]')!.getAttribute('data-dots')).toBe(braille(letter));
+        expect(sq.querySelector('.bingo-cell-letter')!.textContent!.trim()).toBe('');
+        expect(sq.getAttribute('aria-label')).toMatch(/^braille dots? /);
       }
       const current = container.querySelector('.bingo-current')!;
       const letter = current.querySelector('.bingo-current-letter')!.textContent!;
       expect(current.querySelector('[data-braille-cell]')!.getAttribute('data-dots')).toBe(braille(letter));
+      // Marking the square whose braille is the called letter reveals that letter.
+      const match = squares.find(
+        (sq) => sq.querySelector('[data-braille-cell]')!.getAttribute('data-dots') === braille(letter),
+      );
+      if (match) {
+        fireEvent.click(match);
+        expect(match.querySelector('.bingo-cell-letter')!.textContent).toBe(letter);
+        expect(match.getAttribute('aria-label')).toContain(`letter ${letter}`);
+      }
     } finally {
       jest.useRealTimers();
     }

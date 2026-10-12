@@ -173,6 +173,11 @@ function renderFact(name: string): string {
       const dots = ALL_DOTS.filter((d) => dotPosition(d).row === 1);
       return `dots ${dots.join(' and ')}`;
     }
+    case 'secondDecadeAddsPlace': {
+      if (FACTS.secondDecadeAdds.length !== 1) throw new Error('prose fact: k–t add more than one dot');
+      const { column, row } = dotPosition(FACTS.secondDecadeAdds[0]);
+      return `${['top', 'middle', 'bottom'][row - 1]}-${column === 1 ? 'left' : 'right'}`;
+    }
     case 'wAddsToJ':
       return describeCell(toCell(difference(LETTER_CELLS.w, LETTER_CELLS.j)));
     default:

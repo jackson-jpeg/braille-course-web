@@ -78,6 +78,20 @@ describe('Trap 3: numbers', () => {
   });
 });
 
+describe('Trap 3 (continued): numbers next to capitals, and runs of periods', () => {
+  test('inside a capitalized passage a capital A–J after a digit takes the grade 1 indicator (no capital indicator ends the number)', () => {
+    expect(U('SEE 3D FILMS NOW')).toBe('⠠⠠⠠⠎⠑⠑ ⠼⠉⠰⠙ ⠋⠊⠇⠍⠎ ⠝⠕⠺⠠⠄');
+    expect(U('WE ARE 2B')).toBe('⠠⠠⠠⠺⠑ ⠁⠗⠑ ⠼⠃⠰⠃⠠⠄');
+  });
+  test('periods inside a number keep numeric mode (ICEB 6.3.1 example 4..7)', () => {
+    expect(U('4..7')).toBe('⠼⠙⠲⠲⠛');
+  });
+  test('an ambiguous apostrophe / closing single quote is refused, not guessed (ICEB 7.6.13)', () => {
+    expect(() => transcribe('‘I like the dogs’ toys,’ she said.')).toThrow(TranscriptionError);
+    expect(U('‘word’')).toBe('⠠⠦⠺⠕⠗⠙⠠⠴');
+  });
+});
+
 describe('Trap 4: shared cells', () => {
   test('question mark and opening quotation mark share ⠦; position tells them apart', () => {
     expect(U('“Hi?”')).toBe('⠦⠠⠓⠊⠦⠴');

@@ -14,7 +14,7 @@ import { type BrailleToken, transcribeTokens } from '@/lib/braille/transcribe';
 export const CHALLENGE_TARGETS: Record<Difficulty, string[]> = {
   beginner: ['cat', 'dog', 'hi', 'Sam', 'Mom', 'Max', 'I am', 'big hug'],
   intermediate: ['CAT', '3 cats', 'Room 12', 'I am 9.', 'Hi, Ann.', 'It’s me.', 'Yes!', 'OK'],
-  advanced: ['Is it 5:30?', 'I LOVE YOU!', '“Hi,” said Mom.', 'my dog (Max)', 'Look at 3b.', 'DON’T', '1,000 stars'],
+  advanced: ['Is it 5:30?', 'I LOVE YOU', '“Hi,” said Mom.', 'my dog (Max)', 'Look at 3b.', 'DON’T', '1,000 stars'],
 };
 
 export interface ExpectedCell {

@@ -15918,6 +15918,11 @@ details.faq-item.reveal:nth-child(6) {
 }
 .numsense-braille-number {
   display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 8px 12px;
+}
+.numsense-braille-number .braille-text-word {
   gap: 4px;
 }
 .numsense-cell {
@@ -19104,4 +19109,70 @@ details.faq-item.reveal:nth-child(6) {
   display: inline-flex;
   gap: 5px;
   justify-content: center;
+}
+.braille-text-word {
+  display: inline-flex;
+  flex-wrap: nowrap;
+  align-items: flex-start;
+  gap: 6px;
+}
+.cgame-braille-sm .braille-text-word {
+  gap: 3px;
+}
+@media (max-width: 520px) {
+  .nlock-face {
+    min-width: 0;
+    padding: 18px 14px;
+  }
+  .nlock-braille .braille-text-cell,
+  .cgame-braille-lg .braille-text-cell {
+    grid-template-columns: repeat(2, 12px);
+    grid-auto-rows: 12px;
+    gap: 4px;
+  }
+  .nlock-braille .braille-text-dot,
+  .cgame-braille-lg .braille-text-dot {
+    width: 12px;
+    height: 12px;
+  }
+  .cgame-braille-md .braille-text-cell {
+    grid-template-columns: repeat(2, 9px);
+    grid-auto-rows: 9px;
+    gap: 3px;
+  }
+  .cgame-braille-md .braille-text-dot {
+    width: 9px;
+    height: 9px;
+  }
+}
+.lesson-example-braille .braille-text-word {
+  flex-wrap: wrap;
+}
+.braille-decoration {
+  flex-wrap: wrap;
+  row-gap: 12px;
+}
+.lesson-char-cells {
+  flex-wrap: wrap;
+  justify-content: center;
+}
+@media (max-width: 520px) {
+  .num-grid {
+    grid-template-columns: repeat(auto-fill, minmax(72px, 1fr));
+  }
+  .numsense-choice {
+    padding: 12px 6px;
+    min-width: 0;
+  }
+  .numsense-choice .braille-text-word {
+    gap: 2px;
+  }
+  .numsense-choice .numsense-cell {
+    width: 20px;
+    gap: 2px;
+  }
+  .numsense-choice .numsense-dot {
+    width: 8px;
+    height: 8px;
+  }
 }

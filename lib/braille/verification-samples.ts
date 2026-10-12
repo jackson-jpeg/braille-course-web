@@ -38,5 +38,13 @@ export const VERIFICATION_SAMPLES: readonly string[] = [
   'the',
   'and',
   'knowledge',
+  'SEE 3D FILMS NOW',
+  'ROOM 4A IS OPEN',
+  'WE ARE 2B',
+  '4..7',
+  '1,2,3',
+  '3...',
+  'rock ’n’ roll',
+  '’90s',
   ...'bcdefghjklmnpqrstuvwxyz'.split(''),
 ];

@@ -114,6 +114,17 @@ describe('Punctuation Detective', () => {
 });
 
 describe('Brailler Challenge', () => {
+  test('no target puts a capitals terminator next to punctuation (ICEB 8.6.2 allows either order there, so one fixed answer would be unfair)', () => {
+    const { transcribeTokens } = require('@/lib/braille/transcribe');
+    for (const t of challenge.allTargets()) {
+      const toks = transcribeTokens(t) as { signId: string; kind: string }[];
+      toks.forEach((tok, i) => {
+        if (tok.signId !== 'capitalsTerminator') return;
+        expect([t, toks[i - 1]?.kind, toks[i + 1]?.kind]).not.toContain('punctuation');
+      });
+    }
+  });
+
   test.each(challenge.allTargets())(
     '%s: every expected cell is the liblouis cell, and only that cell is accepted',
     (target) => {

@@ -5,7 +5,7 @@
  * Plain data (no React), so the next/og image routes can import it too. Every cell comes from
  * lib/braille's transcriber (uncontracted UEB); every dot position from `dotPosition`.
  */
-import { type Cell, type Dot, ALL_DOTS, cellsToUnicode, dotPosition } from '@/lib/braille/ueb';
+import { type Cell, type Dot, ALL_DOTS, cellsToUnicode, dotPosition, unicodeToCells } from '@/lib/braille/ueb';
 import { transcribe } from '@/lib/braille/transcribe';
 import { type InventoryItem, g1Item } from '@/lib/braille/inventory';
 import { REFERENCE_EXAMPLES } from '@/lib/ai-braille-reference';
@@ -75,16 +75,25 @@ export const ADMIN_PRESET_EXAMPLES: readonly string[] = ['3b'];
  * Every print string this area shows as braille (site chrome) or spells out in dots (admin AI
  * reference block and presets), with the cells shown.
  */
+function chrome(where: string, print: string, cells: Cell[]): InventoryItem {
+  return { where, print, table: 'g1', cells };
+}
+
 export function brailleInventory(): InventoryItem[] {
   return [
     ...REFERENCE_EXAMPLES.map((p) => g1Item('admin:ai-reference', p)),
     ...ADMIN_PRESET_EXAMPLES.map((p) => g1Item('admin:presets', p)),
-    g1Item('chrome:navbar-logo', CHROME_PRINT.logo),
-    g1Item('chrome:icon', CHROME_PRINT.logo),
-    g1Item('chrome:apple-icon', CHROME_PRINT.logo),
-    g1Item('chrome:opengraph-image', CHROME_PRINT.ogWord),
-    g1Item('chrome:not-found', CHROME_PRINT.notFound),
-    g1Item('chrome:admin-login-icon', CHROME_PRINT.icon),
-    g1Item('chrome:onboarding-icon', CHROME_PRINT.icon),
+    // The cells each place actually draws, so liblouis checks the real render path.
+    chrome('chrome:navbar-logo', CHROME_PRINT.logo, chromeCells(CHROME_PRINT.logo)),
+    chrome('chrome:icon', CHROME_PRINT.logo, [iconCell()]),
+    chrome('chrome:apple-icon', CHROME_PRINT.logo, [iconCell()]),
+    chrome(
+      'chrome:opengraph-image',
+      CHROME_PRINT.ogWord,
+      ogImageCells().map((c) => c.cell),
+    ),
+    chrome('chrome:not-found', CHROME_PRINT.notFound, unicodeToCells(chromeUnicode(CHROME_PRINT.notFound))),
+    chrome('chrome:admin-login-icon', CHROME_PRINT.icon, unicodeToCells(chromeUnicode(CHROME_PRINT.icon))),
+    chrome('chrome:onboarding-icon', CHROME_PRINT.icon, unicodeToCells(chromeUnicode(CHROME_PRINT.icon))),
   ];
 }

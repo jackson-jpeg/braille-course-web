@@ -55,14 +55,25 @@ describe('liblouis oracle', () => {
 });
 
 describe('documented discrepancies', () => {
+  const citations = (rulebookExamples as { citations: { rule: string; print: string; braille: string }[] }).citations;
+  const spaces = (x: string) => x.replace(/\u2800/g, ' ');
   test.each(DISCREPANCIES.map((d) => [d.print, d]))('%s: site follows the cited rulebook example', (_p, d) => {
     expect(d.rule).toMatch(/^\d+\.\d+(\.\d+)?$/);
     expect(d.explanation.length).toBeGreaterThan(40);
+    // The cited example is one the verification script found verbatim in the rulebook PDF.
+    expect(citations).toContainEqual({
+      rule: d.rule,
+      print: d.rulebookExample.print,
+      braille: d.rulebookExample.braille,
+    });
+    // liblouis still says what we recorded, and the site still says what the rulebook requires.
     expect(translations[`${d.table}\t${d.print}`]).toBe(d.liblouis);
     expect(transcribeToUnicode(d.print)).toBe(d.site);
     expect(d.site).not.toBe(d.liblouis);
-    // The structural point of the example (terminator before the closing quote) is in the site output.
-    expect(d.rulebookExample.braille.endsWith('⠖⠠⠄⠴')).toBe(d.site.endsWith('⠖⠠⠄⠴'));
+    // The deciding braille is in the rulebook example and the site output, and not in liblouis's.
+    expect(d.rulebookExample.braille).toContain(d.essential);
+    expect(spaces(d.site)).toContain(d.essential);
+    expect(spaces(d.liblouis)).not.toContain(d.essential);
   });
 });
 

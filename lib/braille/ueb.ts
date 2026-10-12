@@ -169,7 +169,8 @@ export const INDICATORS = {
     name: 'grade 1 indicator',
     cells: [G1],
     rule: '5.2',
-    usage: 'In uncontracted braille, needed only before a lowercase letter a to j that comes right after a number.',
+    usage:
+      'In uncontracted braille, used mainly before a lowercase letter a to j right after a number, and before a question mark at the start of a word.',
   },
   grade1Word: {
     id: 'grade1Word',

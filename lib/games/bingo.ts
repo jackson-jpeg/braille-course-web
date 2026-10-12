@@ -5,7 +5,6 @@
  * (ICEB 4.1), so a call matches at most one square, and only the square for that letter.
  */
 import type { InventoryItem } from '@/lib/braille/inventory';
-import { g1Item } from '@/lib/braille/inventory';
 import { type Cell, ALPHABET, LETTER_CELLS } from '@/lib/braille/ueb';
 import type { Difficulty } from '@/lib/progress-types';
 import { shuffle } from './quiz';
@@ -85,5 +84,6 @@ export function nextCall(
 
 /** Every piece of braille this game can show (checked against liblouis). */
 export function brailleInventory(): InventoryItem[] {
-  return BINGO_LETTERS.map((l) => g1Item('game:bingo', l));
+  // The cells the game actually draws, so liblouis checks the real render path.
+  return BINGO_LETTERS.map((l) => ({ where: 'game:bingo', print: l, table: 'g1' as const, cells: [bingoCell(l)] }));
 }

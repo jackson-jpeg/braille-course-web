@@ -11,7 +11,6 @@
  * dash in "Letters A–J" is shown too (it is never silently dropped).
  */
 import type { InventoryItem } from '@/lib/braille/inventory';
-import { g1Item } from '@/lib/braille/inventory';
 import { type BrailleToken, transcribeTokens } from '@/lib/braille/transcribe';
 import { ALL_LESSONS } from '@/lib/course-curriculum';
 
@@ -60,5 +59,10 @@ export function heroTokens(word: string): BrailleToken[] {
 
 /** Every piece of braille this game can show (checked against liblouis). */
 export function brailleInventory(): InventoryItem[] {
-  return [...HERO_WORDS, ...lessonHeroWords()].map((w) => g1Item('hero', heroPrint(w)));
+  return [...HERO_WORDS, ...lessonHeroWords()].map((w) => ({
+    where: 'hero',
+    print: heroPrint(w),
+    table: 'g1' as const,
+    cells: heroTokens(w).flatMap((t) => t.cells),
+  }));
 }

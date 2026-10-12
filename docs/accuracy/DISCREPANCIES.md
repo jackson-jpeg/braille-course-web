@@ -6,7 +6,7 @@ Every braille fact on teachbraille.org is checked against three independent sour
 2. **liblouis 3.29** `en-ueb-g1.ctb` (uncontracted) and `en-ueb-g2.ctb` (contracted), the open-source braille translator used by most screen readers.
 3. **Unicode**: the Braille Patterns block (U+2800–U+283F) and its official character names.
 
-**Resolution policy**: when sources disagree, the site follows the ICEB rulebook, because ICEB writes the code and liblouis is software that implements it. Every disagreement is recorded in `lib/braille/discrepancies.ts` with the rule, a verbatim rulebook example, and both outputs. The test suite then fails if either liblouis or the site output changes, so a disagreement can never be "fixed" silently. No test was changed or loosened to resolve a disagreement.
+**Resolution policy**: when sources disagree, the site follows the ICEB rulebook, because ICEB writes the code and liblouis is software that implements it. Every disagreement is recorded in `lib/braille/discrepancies.ts` with the rule, a rulebook example (checked verbatim against the PDF by `scripts/braille/verify-rulebook-examples.py`), the deciding cells, and both outputs. The test suite then fails if either liblouis or the site output changes, so a disagreement can never be "fixed" silently. No test was changed or loosened to resolve a disagreement.
 
 ## Disagreements between sources
 
@@ -21,6 +21,18 @@ Every braille fact on teachbraille.org is checked against three independent sour
 - **Rule**: 8.6.2: "The capitals terminator may precede or follow punctuation and other terminators but it is best that indicators and paired characters such as parentheses, square brackets and quotes be nested. That is, close punctuation and indicators in reverse order of opening." The passage opens inside the quotation, so it closes inside it.
 - **Resolution**: follow ICEB. The rulebook example is contracted; the placement of the terminator relative to the quote is the same in uncontracted braille.
 - **Exposure**: no page or game currently shows a capitalized passage that ends inside a quotation. The case is exercised only by the verification suite, so learners never see a form where the sources differ.
+
+### 2. Apostrophes at the edge of a word: `rock ’n’ roll`, `’90s`
+
+|                                       | rock ’n’ roll                             | ’90s                            |
+| ------------------------------------- | ----------------------------------------- | ------------------------------- |
+| liblouis 3.29 g1                      | `⠗⠕⠉⠅⠀⠠⠴⠝⠠⠴⠀⠗⠕⠇⠇` (closing single quotes) | `⠠⠴⠼⠊⠚⠎` (closing single quote) |
+| ICEB rulebook, 7.6.6 examples (p. 84) | `⠗⠕⠉⠅ ⠄⠰⠝⠄ ⠗⠕⠇⠇` (apostrophes)            | the '90s `⠮ ⠄⠼⠊⠚⠎` (apostrophe) |
+| Site                                  | `⠗⠕⠉⠅⠀⠄⠝⠄⠀⠗⠕⠇⠇`                           | `⠄⠼⠊⠚⠎`                         |
+
+- **Rule**: 7.6.6: "Use ⠄ for the apostrophe." The rulebook's own examples write these marks as apostrophes. (Its "rock ’n’ roll" is contracted, so the lone n there carries a grade 1 indicator; uncontracted braille does not need one, 5.11.1.)
+- **Resolution**: follow ICEB. Where an apostrophe could also be a closing single quote (7.6.13), the site's transcriber refuses the text rather than guess.
+- **Exposure**: neither string appears in lessons or games; both are verification samples only.
 
 ## Not disagreements, but worth knowing
 

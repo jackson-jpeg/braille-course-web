@@ -264,14 +264,20 @@ export function transcribeTokens(text: string): BrailleToken[] {
         afterNumericSymbol = true;
         out.push(digitToken(ch));
       } else if (LETTER_RE.test(ch)) {
-        if (afterNumericSymbol && LOWER_A_TO_J.test(ch)) out.push(signToken(INDICATORS.grade1Symbol, ''));
+        // 6.5.2: a letter a–j right after a digit (or a period/comma in a number) would read as a
+        // digit. A capital indicator ends the number by itself; inside a capitalized passage there
+        // is no capital indicator, so a capital A–J there needs the grade 1 indicator too.
+        const hasCapIndicator = (capPrefix.get(k) ?? []).length > 0;
+        if (afterNumericSymbol && LOWER_A_TO_J.test(ch.toLowerCase()) && !hasCapIndicator)
+          out.push(signToken(INDICATORS.grade1Symbol, ''));
         numeric = false;
         afterNumericSymbol = false;
         out.push(...(capPrefix.get(k) ?? []));
         out.push(letterToken(ch));
         if (terminatorAfter.has(k)) out.push(signToken(INDICATORS.capitalsTerminator, ''));
-      } else if ((ch === '.' || ch === ',') && numeric && DIGIT_RE.test(next)) {
-        // Decimal point or digit-group comma: stays in numeric mode (6.2.1).
+      } else if ((ch === '.' || ch === ',') && numeric && (DIGIT_RE.test(next) || next === '.')) {
+        // Period and comma are numeric-mode symbols (6.2.1): a decimal point, a digit-group comma,
+        // or a run of periods inside a number ("4..7" ⠼⠙⠲⠲⠛, ICEB 6.3.1) keep numeric mode.
         out.push(signToken(ch === '.' ? PUNCTUATION.period : PUNCTUATION.comma, ch));
         afterNumericSymbol = true;
       } else if (ch === '.' && !numeric && DIGIT_RE.test(next) && !LETTER_RE.test(prev)) {
@@ -289,7 +295,7 @@ export function transcribeTokens(text: string): BrailleToken[] {
         const wasNumericSymbol = (ch === '.' || ch === ',') && numeric;
         numeric = false;
         afterNumericSymbol = wasNumericSymbol;
-        out.push(punctuationToken(ch, prev, next, k, chars));
+        out.push(punctuationToken(ch, prev, next, k, chars, words.slice(wi + 1).join(' ')));
       }
 
       if (k === terminatorIndex) out.push(signToken(INDICATORS.capitalsTerminator, ''));
@@ -300,7 +306,14 @@ export function transcribeTokens(text: string): BrailleToken[] {
 
   return out;
 
-  function punctuationToken(ch: string, prev: string, next: string, k: number, chars: string[]): BrailleToken {
+  function punctuationToken(
+    ch: string,
+    prev: string,
+    next: string,
+    k: number,
+    chars: string[],
+    laterWords: string,
+  ): BrailleToken {
     if (ch === '.') return signToken(PUNCTUATION.period, ch);
     if (ch === '?') {
       // 7.5.3 / 7.5.4: a question mark at the start of a sequence (after only opening marks).
@@ -338,6 +351,11 @@ export function transcribeTokens(text: string): BrailleToken[] {
     if (ch === '’' || ch === "'") {
       // Apostrophe unless it closes an open single quote at the end of a word (7.6.15).
       if (singleQuoteOpen && !LETTER_RE.test(next)) {
+        // 7.6.13: print may not distinguish a closing single quote from an apostrophe. If another
+        // ’ follows later ("‘the dogs’ toys,’"), this one could be either, so refuse to guess.
+        const rest = chars.slice(k + 1).join('') + ' ' + laterWords;
+        if (/[’']/.test(rest))
+          throw new TranscriptionError(`ambiguous apostrophe or closing single quote (ICEB 7.6.13): "${text}"`);
         singleQuoteOpen = false;
         return signToken(PUNCTUATION.closeSingleQuote, ch);
       }

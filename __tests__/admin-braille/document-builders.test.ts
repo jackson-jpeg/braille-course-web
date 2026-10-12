@@ -114,11 +114,13 @@ describe('answerCells (worksheet answer key and practice-drill boxes)', () => {
     ['b', U('⠃')],
     ['8', U('⠼⠓')], // a digit: numeric indicator + h (the old code drew h alone)
     ['404', U('⠼⠙⠚⠙')],
-    ['Cat', U('⠠⠉⠁⠞')], // capital indicator counted (the old drill drew 3 boxes)
     ['dots 1, 2, 4', U('⠋')], // a dot description: the cells it describes (the old drill drew 4 boxes for "DOTS")
     ['dot 6, then dots 1, 2', U('⠠⠃')],
   ])('%s', (answer, cells) => {
     expect(cellsKey(answerCells(answer)!)).toBe(cellsKey(cells));
+  });
+  test('word answers are not drawn: their cells differ between uncontracted and contracted braille', () => {
+    for (const w of ['and', 'but', 'Cat', 'the cat', 'it']) expect(answerCells(w)).toBeNull();
   });
   test('untranscribable text gives null', () => {
     expect(answerCells('emoji 🙂')).toBeNull();

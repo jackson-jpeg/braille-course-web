@@ -9,7 +9,6 @@
  * would need the capital indicator first (ICEB 8.3).
  */
 import type { InventoryItem } from '@/lib/braille/inventory';
-import { g1Item } from '@/lib/braille/inventory';
 import { type Cell, ALL_DOTS, ALPHABET, LETTER_CELLS } from '@/lib/braille/ueb';
 import { type QuestionSpec, buildChoices } from './quiz';
 
@@ -83,5 +82,11 @@ export function isCorrect(spec: QuestionSpec<string, string>, choice: string): b
 
 /** Every piece of braille this game can show (checked against liblouis). */
 export function brailleInventory(): InventoryItem[] {
-  return SPEEDMATCH_LETTERS.map((l) => g1Item('game:speedmatch', l));
+  // The cells the game actually draws, so liblouis checks the real render path.
+  return SPEEDMATCH_LETTERS.map((l) => ({
+    where: 'game:speedmatch',
+    print: l,
+    table: 'g1' as const,
+    cells: [letterCell(l)],
+  }));
 }

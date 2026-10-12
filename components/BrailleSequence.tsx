@@ -137,7 +137,7 @@ export default function BrailleSequence() {
         const nextR = round + 1;
         setRound(nextR);
         if (nextR >= totalRounds) {
-          const finalScore = isCorrect ? scoreRef.current + 1 : scoreRef.current;
+          const finalScore = scoreRef.current; // already includes this round (re-rendered before the timeout)
           setPhase('result');
           const achievements = recordResult(finalScore >= totalRounds / 2, finalScore);
           pushAchievements(achievements);

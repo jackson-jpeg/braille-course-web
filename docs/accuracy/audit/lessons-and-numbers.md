@@ -87,3 +87,63 @@ liblouis 3.29 `en-ueb-g1.ctb` / `en-ueb-g2.ctb`; Unicode braille block.
 - Before: one cell per item, so a capital letter, a digit or any two-cell sign could not be drilled correctly.
 - After: items may be several cells; the writer goes cell by cell, names each cell ("cell 1: the capital letter indicator"), and a test writes every drill item of every lesson with the Perkins keys.
 - Source: ICEB 8.3.1 (a capital letter is a two-cell symbol), 6.1.
+
+## Found by the independent review pass (after migration), fixed
+
+### Number written as two digits when a capital A–J follows it inside a capitalized passage
+
+- Where: `lib/braille/transcribe.ts` (no page showed this yet; found by adversarial testing).
+- Before: `SEE 3D FILMS NOW` → ⠼⠉⠙ (reads "34"), `WE ARE 2B` → ⠼⠃⠃ ("22").
+- After: ⠼⠉⠰⠙, ⠼⠃⠰⠃: the grade 1 indicator is written whenever a letter a–j follows a number without a capital indicator in between.
+- Source: ICEB 6.5.2 (a–j after a digit needs the grade 1 indicator; a capital indicator ends the number), 6.3.1; liblouis g1 agrees for all three strings (now permanent verification samples).
+
+### Runs of periods inside a number
+
+- Before: `4..7` → ⠼⠙⠲⠼⠲⠛ (an extra numeric indicator).
+- After: ⠼⠙⠲⠲⠛.
+- Source: ICEB 6.3.1 example "4..7 ⠼⠙⠲⠲⠛"; 6.2.1 (period is a numeric-mode symbol); liblouis agrees.
+
+### Apostrophe vs closing single quote guessed wrongly
+
+- Before: `‘I like the dogs’ toys,’ she said.` closed the quotation after "dogs" and turned the real closing quote into an apostrophe.
+- After: such input is refused (TranscriptionError) instead of guessed; no site content uses it.
+- Source: ICEB 7.6.13 (print may not distinguish the two; software cannot decide with complete accuracy).
+
+### Final score recorded one too high in four games
+
+- Where: Number Sense, Sentence Decoder, Reflex Dots, Sequence (the Number Sense bug predates this work).
+- Before: a last correct answer was counted twice, so 4/10 plus a correct last answer was recorded as 6, enough for a "win".
+- After: the recorded score is the real score; a test plays ten right and ten wrong answers and checks 10 and 0.
+- Source: game logic (not a braille rule).
+
+### Brailler Challenge refused a correct answer
+
+- Before: target "I LOVE YOU!" accepted only ⠽⠕⠥⠖⠠⠄, but the rulebook allows the terminator before or after the exclamation mark.
+- After: target is "I LOVE YOU"; a test forbids any target with a capitals terminator next to punctuation.
+- Source: ICEB 8.6.2 ("The capitals terminator may precede or follow punctuation").
+
+### Grade 1 indicator described as used "only" in two places
+
+- Where: `lib/braille/ueb.ts` usage text (Dot Explorer, AI reference), "Numbers in Real Text" lesson.
+- Before: "needed only before a lowercase letter a to j…", "one of only two places…".
+- After: "used mainly…", "where you'll meet it most often… You may also see it before a question mark at the start of a word or after a hyphen or dash."
+- Source: ICEB 5.11.1 gives these as examples ("e.g."), not a complete list; 7.5.3–7.5.4.
+
+### Overstated contraction coverage
+
+- Where: Grade 2 lessons.
+- Before: "You now know contractions from every major family"; "If a ch, sh, th, wh, ou or st cell stands alone…" in a lesson that shows only four of those cells.
+- After: names the families not yet taught (initial-letter, final-letter, shortforms) and lists the six wordsign cells explicitly.
+- Source: ICEB 2.2 contractions summary.
+
+### Worksheet PDFs drew uncontracted cells for word answers
+
+- Where: `lib/document-builders.ts` (`answerCells`, admin-generated worksheets).
+- Before: an answer such as "and" was drawn as ⠁⠝⠙ even on a contractions worksheet, where it is ⠯.
+- After: only answers whose braille is the same in both grades are drawn (a letter, a dot description, a number); word answers get no drawn cells.
+- Source: ICEB 10.3 (strong contraction "and" ⠯).
+
+### Answers given away
+
+- Number Sense showed the print value next to each braille choice and read the problem aloud in print; Bingo squares showed and announced their letters. Now the print appears only after answering / marking, and screen-reader labels give dot numbers.
+- Source: game design / accessibility (labels still state dot numbers, generated from the data).

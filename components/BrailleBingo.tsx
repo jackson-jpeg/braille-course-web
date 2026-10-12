@@ -216,7 +216,9 @@ export default function BrailleBingo() {
                     aria-label={
                       isFree
                         ? 'Free space'
-                        : `letter ${letter}, ${describeCell(bingoCell(letter))}${isMarked ? ', marked' : ''}`
+                        : isMarked
+                          ? `letter ${letter}, ${describeCell(bingoCell(letter))}, marked`
+                          : `braille ${describeCell(bingoCell(letter))}`
                     }
                   >
                     {isFree ? (
@@ -230,7 +232,10 @@ export default function BrailleBingo() {
                           className="bingo-cell-braille"
                           dotClassName="bingo-cell-dot"
                         />
-                        <span className="bingo-cell-letter">{letter}</span>
+                        {/* The print letter shows once marked: find the braille for the called letter. */}
+                        <span className="bingo-cell-letter" aria-hidden="true">
+                          {isMarked ? letter : '\u00a0'}
+                        </span>
                       </>
                     )}
                   </button>

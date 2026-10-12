@@ -100,7 +100,7 @@ export default function BrailleReflexDots() {
         const nextRound = round + 1;
         setRound(nextRound);
         if (nextRound >= params.rounds) {
-          const finalScore = correct ? scoreRef.current + 1 : scoreRef.current;
+          const finalScore = scoreRef.current; // already includes this round (re-rendered before the timeout)
           setPhase('result');
           const achievements = recordResult(finalScore >= params.rounds / 2, finalScore);
           pushAchievements(achievements);

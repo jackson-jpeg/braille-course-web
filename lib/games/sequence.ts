@@ -5,7 +5,6 @@
  * are all different, so there is exactly one correct order.
  */
 import type { InventoryItem } from '@/lib/braille/inventory';
-import { g1Item } from '@/lib/braille/inventory';
 import { type Cell, ALPHABET, LETTER_CELLS } from '@/lib/braille/ueb';
 import type { Difficulty } from '@/lib/progress-types';
 import { shuffle } from './quiz';
@@ -68,5 +67,11 @@ export function checkOrder(arranged: readonly string[], letters: readonly string
 
 /** Every piece of braille this game can show (checked against liblouis). */
 export function brailleInventory(): InventoryItem[] {
-  return SEQUENCE_LETTERS.map((l) => g1Item('game:sequence', l));
+  // The cells the game actually draws, so liblouis checks the real render path.
+  return SEQUENCE_LETTERS.map((l) => ({
+    where: 'game:sequence',
+    print: l,
+    table: 'g1' as const,
+    cells: [sequenceCell(l)],
+  }));
 }

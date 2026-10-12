@@ -8,7 +8,6 @@
  * are not dealt either.
  */
 import type { InventoryItem } from '@/lib/braille/inventory';
-import { g1Item } from '@/lib/braille/inventory';
 import { type Cell, ALPHABET, LETTER_CELLS } from '@/lib/braille/ueb';
 import { shuffle } from './quiz';
 
@@ -63,5 +62,11 @@ export function isMatch(a: MemoryCard, b: MemoryCard): boolean {
 
 /** Every piece of braille this game can show (checked against liblouis). */
 export function brailleInventory(): InventoryItem[] {
-  return MEMORY_LETTERS.map((l) => g1Item('game:memorymatch', l));
+  // The cells the game actually draws, so liblouis checks the real render path.
+  return MEMORY_LETTERS.map((l) => ({
+    where: 'game:memorymatch',
+    print: l,
+    table: 'g1' as const,
+    cells: [cardCell({ letter: l })],
+  }));
 }

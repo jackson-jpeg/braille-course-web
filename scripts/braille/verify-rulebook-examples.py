@@ -26,7 +26,8 @@ def main():
         sys.exit("rulebook PDF hash mismatch")
     text = subprocess.run(["pdftotext", "-layout", path, "-"], check=True, capture_output=True).stdout.decode()
     lines = [norm(l) for l in text.splitlines()]
-    ex = json.load(open(os.path.join(ROOT, "__tests__", "fixtures", "iceb-rulebook-examples.json")))["examples"]
+    data = json.load(open(os.path.join(ROOT, "__tests__", "fixtures", "iceb-rulebook-examples.json")))
+    ex = data["examples"] + data.get("citations", [])
     bad = 0
     for e in ex:
         p, b = norm(e["print"]), e["braille"]

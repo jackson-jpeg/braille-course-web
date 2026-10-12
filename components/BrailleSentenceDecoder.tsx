@@ -108,7 +108,7 @@ export default function BrailleSentenceDecoder({ fixedLevel }: { fixedLevel?: De
       () => {
         const nextR = round + 1;
         if (nextR >= totalRounds) {
-          const finalScore = correct ? scoreRef.current + 1 : scoreRef.current;
+          const finalScore = scoreRef.current; // already includes this round (re-rendered before the timeout)
           setRound(nextR);
           setGameOver(true);
           const achievements = recordResult(finalScore >= totalRounds / 2, finalScore);

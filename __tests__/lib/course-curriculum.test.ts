@@ -145,6 +145,11 @@ describe('every sentence is rendered from data, and the claims are true', () => 
 
   const cellWith = (pred: (d: 1 | 2 | 3 | 4 | 5 | 6) => boolean): Cell => ([1, 2, 3, 4, 5, 6] as const).filter(pred);
 
+  test('“a is a single dot in the top left”', () => {
+    expect(LETTER_CELLS.a).toHaveLength(1);
+    expect(dotPosition(LETTER_CELLS.a[0])).toEqual({ column: 1, row: 1 });
+  });
+
   test('“c is the whole top row” and “l is the whole left column”', () => {
     expect(LETTER_CELLS.c).toEqual(cellWith((d) => dotPosition(d).row === 1));
     expect(LETTER_CELLS.l).toEqual(cellWith((d) => dotPosition(d).column === 1));

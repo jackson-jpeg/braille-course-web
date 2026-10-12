@@ -1,15 +1,15 @@
 # Verification results (generated)
 
-Generated 2026-10-12T03:27:55.410Z by `scripts/braille/verification-report.ts` from a real run of the whole test suite. Do not edit by hand.
+Generated 2026-10-12T03:51:57.404Z by `scripts/braille/verification-report.ts` from a real run of the whole test suite. Do not edit by hand.
 
 ## Totals
 
-- Tests: **1574 passed**, 0 failed, 0 skipped/todo, 1574 total, in 32 files.
-- liblouis oracle: liblouis 3.29.0, 7780 translations in the fixture; the site shows **7780** distinct print strings as braille (7572 uncontracted via en-ueb-g1.ctb, 208 contracted via en-ueb-g2.ctb), every one compared cell by cell.
-- Documented source disagreements: 1 (see DISCREPANCIES.md).
+- Tests: **1583 passed**, 0 failed, 0 skipped/todo, 1583 total, in 33 files.
+- liblouis oracle: liblouis 3.29.0, 7787 translations in the fixture; the site shows **7787** distinct print strings as braille (7579 uncontracted via en-ueb-g1.ctb, 208 contracted via en-ueb-g2.ctb), every one compared cell by cell.
+- Documented source disagreements: 3 (see DISCREPANCIES.md).
 - ICEB rulebook: 490 symbol-table entries and 134 section headings extracted from the PDF (sha256 bf742499ee2e…); 54 verbatim worked examples reproduced exactly.
 - Canonical data: 75 signs (letters, digits, indicators, punctuation, symbols) and 62 contraction entries, each matched to the rulebook tables; all 64 cells round-tripped through Unicode and checked against Unicode character names.
-- Real-browser geometry (Chromium, 1280px and 390px): 1908 drawn cells checked, 0 problem(s)
+- Real-browser geometry (Chromium, 1280px and 390px): 1912 drawn cells checked, 0 problem(s)
 
 ## Braille inventory by area
 
@@ -53,7 +53,7 @@ Generated 2026-10-12T03:27:55.410Z by `scripts/braille/verification-report.ts` f
 | lesson:strong-contractions         | 5     |
 | lesson:strong-groupsigns           | 1     |
 | lesson:the-braille-cell            | 3     |
-| verification                       | 116   |
+| verification                       | 126   |
 
 ## Tests by file
 
@@ -65,10 +65,10 @@ Generated 2026-10-12T03:27:55.410Z by `scripts/braille/verification-report.ts` f
 | **tests**/admin-braille/document-builders.test.ts | 78     | 0      | 0       |
 | **tests**/admin-braille/site-chrome.test.tsx      | 75     | 0      | 0       |
 | **tests**/api/school-contact.test.ts              | 22     | 0      | 0       |
-| **tests**/braille/liblouis-oracle.test.ts         | 6      | 0      | 0       |
+| **tests**/braille/liblouis-oracle.test.ts         | 8      | 0      | 0       |
 | **tests**/braille/no-hardcoded-braille.test.ts    | 9      | 0      | 0       |
 | **tests**/braille/render-cell.test.tsx            | 132    | 0      | 0       |
-| **tests**/braille/transcribe.test.ts              | 77     | 0      | 0       |
+| **tests**/braille/transcribe.test.ts              | 80     | 0      | 0       |
 | **tests**/braille/ueb-data.test.ts                | 184    | 0      | 0       |
 | **tests**/course/brailler.test.tsx                | 205    | 0      | 0       |
 | **tests**/games/alphabet.test.tsx                 | 2      | 0      | 0       |
@@ -79,15 +79,16 @@ Generated 2026-10-12T03:27:55.410Z by `scripts/braille/verification-report.ts` f
 | **tests**/games/hero.test.tsx                     | 55     | 0      | 0       |
 | **tests**/games/intro-and-tips.test.tsx           | 4      | 0      | 0       |
 | **tests**/games/memorymatch.test.tsx              | 6      | 0      | 0       |
-| **tests**/games/new-games-logic.test.ts           | 180    | 0      | 0       |
+| **tests**/games/new-games-logic.test.ts           | 181    | 0      | 0       |
 | **tests**/games/new-games-ui.test.tsx             | 9      | 0      | 0       |
 | **tests**/games/number-sense.test.tsx             | 7      | 0      | 0       |
 | **tests**/games/rain.test.tsx                     | 6      | 0      | 0       |
 | **tests**/games/reflex.test.tsx                   | 31     | 0      | 0       |
+| **tests**/games/scoring.test.tsx                  | 2      | 0      | 0       |
 | **tests**/games/sentence-decoder.test.tsx         | 36     | 0      | 0       |
 | **tests**/games/sequence.test.tsx                 | 8      | 0      | 0       |
 | **tests**/games/speedmatch.test.tsx               | 6      | 0      | 0       |
 | **tests**/games/wordgame.test.tsx                 | 16     | 0      | 0       |
 | **tests**/lib/admin-auth.test.ts                  | 8      | 0      | 0       |
-| **tests**/lib/course-curriculum.test.ts           | 104    | 0      | 0       |
+| **tests**/lib/course-curriculum.test.ts           | 105    | 0      | 0       |
 | **tests**/lib/progress-storage.test.ts            | 22     | 0      | 0       |

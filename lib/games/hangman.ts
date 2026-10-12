@@ -5,7 +5,6 @@
  * Words are lowercase a–z only (no capitals, digits or apostrophes).
  */
 import type { InventoryItem } from '@/lib/braille/inventory';
-import { g1Item } from '@/lib/braille/inventory';
 import { type Cell, ALPHABET, LETTER_CELLS } from '@/lib/braille/ueb';
 import { hangmanWords } from '@/lib/hangman-words';
 
@@ -46,5 +45,12 @@ export function isLost(word: string, guessed: Iterable<string>, maxWrong: number
 
 /** Every piece of braille this game can show (checked against liblouis). */
 export function brailleInventory(): InventoryItem[] {
-  return [...ALPHABET.map((l) => g1Item('game:hangman', l)), ...HANGMAN_WORDS.map((w) => g1Item('game:hangman', w))];
+  // The cells the game actually draws (letter by letter), so liblouis checks the real render path.
+  const item = (print: string) => ({
+    where: 'game:hangman',
+    print,
+    table: 'g1' as const,
+    cells: [...print].map(hangmanCell),
+  });
+  return [...ALPHABET.map(item), ...HANGMAN_WORDS.map(item)];
 }
