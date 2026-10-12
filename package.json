@@ -16,7 +16,7 @@
     "test:watch": "jest --watch",
     "braille:oracle": "tsx scripts/braille/dump-site-braille.ts | python3 scripts/braille/liblouis-oracle.py",
     "braille:rulebook": "python3 scripts/braille/extract-rulebook-signs.py && python3 scripts/braille/verify-rulebook-examples.py",
-    "test:accuracy": "jest --ci",
+    "test:accuracy": "NODE_ENV=test jest --ci",
     "braille:geometry": "node scripts/braille/check-rendered-cells.mjs"
   },
   "dependencies": {
