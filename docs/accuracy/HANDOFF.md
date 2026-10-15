@@ -83,7 +83,7 @@ session runs them. Run all of them locally before merging any PR, and report the
      1280/390/320px): must report 0 problems;
    - `npm run a11y:axe -- http://localhost:3100` (axe-core, every lesson and game page): must report 0
      violations.
-6. After the merge deploys, run the same two browser checks against `https://www.teachbraille.org`.
+6. After the merge deploys, run the same two browser checks against `https://teachbraille.org`.
 
 Do not trigger the GitHub workflow unless the owner asks. Dependabot version updates are off (no
 `.github/dependabot.yml`); keep it that way.
@@ -135,7 +135,7 @@ scripts/braille/plain-contracted-words.py`, then `npm run braille:oracle`.
 - If previews are ever wanted again: first remove the whitespace from the Preview `CRON_SECRET`, then
   drop the `"**": false` rule.
 - Vercel's deployment statuses on GitHub went quiet for part of October 12. Confirm a deploy with the
-  deployments API, and with the browser checks run against https://www.teachbraille.org.
+  deployments API, and with the browser checks run against https://teachbraille.org.
 
 ## State at handoff
 

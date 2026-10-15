@@ -52,7 +52,7 @@ raisedClassName flatClassName label? />`) and `components/BrailleDotPad.tsx` (in
    merge, run the checklist in `docs/accuracy/HANDOFF.md` ("Before every merge") locally: format, lint,
    typecheck, `npm run braille:oracle` with a clean fixture diff, `NODE_ENV=production npm run build`, and
    the browser geometry check and axe check against a local production server. After the deploy, run both
-   browser checks against https://www.teachbraille.org. Do not trigger the workflow or add Dependabot
+   browser checks against https://teachbraille.org. Do not trigger the workflow or add Dependabot
    version updates unless the owner asks.
 
 ## Per-game structure

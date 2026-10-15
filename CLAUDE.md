@@ -65,6 +65,17 @@ prisma/               # Schema + seed script
 - Stripe Embedded Checkout for payments; webhooks handle enrollment confirmation
 - Rate limiting for admin login is in-memory (`lib/rate-limit.ts`) — resets on deploy; acceptable for admin-only endpoint
 
+## Domain and indexing
+
+- **The apex `https://teachbraille.org` is the one home.** In the Vercel project, `www.teachbraille.org`
+  redirects to it with a permanent 308, and the apex itself has no redirect (set 2026-10-15; before that the
+  apex sent a temporary 307 to www while every canonical and the sitemap named the apex, and Google would not
+  index). Canonicals, `app/sitemap.ts`, `app/robots.ts` and `metadataBase` all name the apex. Never flip this
+  back to www.
+- DNS is not on Vercel (nameservers `ns-cloud-b*.googledomains.com`), so search-engine verification uses meta
+  tags in `app/layout.tsx` metadata (`verification`), not DNS records.
+- Vercel Analytics drops `/admin` page views (`lib/analytics-filter.ts`).
+
 ## Braille accuracy (read before touching any braille content)
 
 - **All braille comes from `lib/braille/`** (`ueb.ts` cells with ICEB rule citations, `transcribe.ts` print → uncontracted UEB, `prose.ts` generated dot descriptions). Never type a dot pattern, a Unicode braille character, or "dots N" prose anywhere else; `__tests__/braille/no-hardcoded-braille.test.ts` fails the build if you do.
