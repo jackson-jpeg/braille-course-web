@@ -58,6 +58,7 @@ export async function POST(req: NextRequest) {
         notes: questions?.trim() || null,
         preferredCallbackTime: preferredCallbackTime?.trim() || null,
         status: 'NEW',
+        deletedAt: null, // a new request brings a soft-deleted lead back
       },
       create: {
         email: email.toLowerCase().trim(),
@@ -67,6 +68,7 @@ export async function POST(req: NextRequest) {
         notes: questions?.trim() || null,
         preferredCallbackTime: preferredCallbackTime?.trim() || null,
         status: 'NEW',
+        source: 'APPOINTMENT',
       },
     });
 

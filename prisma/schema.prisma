@@ -24,6 +24,14 @@ enum LeadStatus {
   CONTACTED
 }
 
+enum LeadSource {
+  APPOINTMENT // /appointments form, /api/appointment-request
+  WAITLIST // /summer waitlist form when the course is full
+  SUMMER // /summer "Not ready to enroll yet?" form
+  SYNC // admin Sync Inbox (lib/icloud-mail.ts)
+  MANUAL // admin Add Lead
+}
+
 enum AttendanceStatus {
   PRESENT
   ABSENT
@@ -92,10 +100,15 @@ model Lead {
   phone                 String?
   preferredCallbackTime String?
   status                LeadStatus @default(NEW)
+  /// How the lead was created. NULL only for rows whose origin could not be proven when this was added.
+  source                LeadSource?
+  /// Soft delete: set by admin Delete. Hidden from the admin, kept for history.
+  deletedAt             DateTime?
   createdAt             DateTime   @default(now())
   updatedAt             DateTime   @updatedAt
 
   @@index([status])
+  @@index([deletedAt])
 }
 
 model Note {

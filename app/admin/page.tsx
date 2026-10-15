@@ -33,7 +33,7 @@ export default async function AdminPage() {
         include: { section: true },
         orderBy: { createdAt: 'desc' },
       }),
-      prisma.lead.findMany({ orderBy: { createdAt: 'desc' } }),
+      prisma.lead.findMany({ where: { deletedAt: null }, orderBy: { createdAt: 'desc' } }),
       prisma.schoolInquiry.findMany({ orderBy: { createdAt: 'desc' } }),
       loadScheduleMap(),
     ]);

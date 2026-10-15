@@ -44,7 +44,7 @@ export async function GET(req: NextRequest) {
     const [totalEnrollments, completedCount, leadCount] = await Promise.all([
       prisma.enrollment.count(),
       prisma.enrollment.count({ where: { paymentStatus: 'COMPLETED' } }),
-      prisma.lead.count(),
+      prisma.lead.count({ where: { deletedAt: null } }),
     ]);
 
     const funnel = {

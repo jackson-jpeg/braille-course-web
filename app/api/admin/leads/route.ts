@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { prisma } from '@/lib/prisma';
 import { notifyNewLead, LEAD_SOURCES } from '@/lib/lead-notify';
+import { ACTIVE_LEAD, normalizeEmail } from '@/lib/leads';
 import { isAuthorized } from '@/lib/admin-auth';
 
 /* ── GET /api/admin/leads?key=... — list all leads ── */
@@ -11,6 +12,7 @@ export async function GET(req: NextRequest) {
 
   try {
     const leads = await prisma.lead.findMany({
+      where: ACTIVE_LEAD,
       orderBy: { createdAt: 'desc' },
     });
 
@@ -44,13 +46,20 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ error: 'Email is required' }, { status: 400 });
     }
 
-    const lead = await prisma.lead.create({
-      data: {
-        email: email.trim(),
-        name: name?.trim() || null,
-        subject: subject?.trim() || null,
-      },
+    const normalized = normalizeEmail(email);
+    const existing = await prisma.lead.findFirst({
+      where: { email: { equals: normalized, mode: 'insensitive' } },
+      select: { id: true, deletedAt: true },
     });
+    if (existing && !existing.deletedAt) {
+      return NextResponse.json({ error: 'A lead with this email already exists' }, { status: 409 });
+    }
+
+    const fields = { name: name?.trim() || null, subject: subject?.trim() || null };
+    // A soft-deleted lead with this email comes back (its history and original source are kept).
+    const lead = existing
+      ? await prisma.lead.update({ where: { id: existing.id }, data: { ...fields, status: 'NEW', deletedAt: null } })
+      : await prisma.lead.create({ data: { email: normalized, ...fields, source: 'MANUAL' } });
     await notifyNewLead(lead, LEAD_SOURCES.addLead);
 
     return NextResponse.json({

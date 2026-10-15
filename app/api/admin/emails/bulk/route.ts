@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from 'next/server';
 import { isAuthorized } from '@/lib/admin-auth';
 import { customEmail } from '@/lib/email-templates';
 import { resend, SENDER_EMAIL } from '@/lib/resend';
+import { markLeadsContacted } from '@/lib/leads';
 
 /**
  * POST /api/admin/emails/bulk
@@ -51,13 +52,15 @@ export async function POST(req: NextRequest) {
         .replace(/\{\{email\}\}/g, email);
 
       try {
-        await resend.emails.send({
+        // Resend reports most failures in `error` rather than by throwing.
+        const result = await resend.emails.send({
           from: SENDER_EMAIL,
           to: email,
           subject: personalizedSubject,
           html: customEmail({ subject: personalizedSubject, body: personalizedBody }),
         });
-        results.push({ email, success: true });
+        if (result.error) results.push({ email, success: false, error: result.error.message });
+        else results.push({ email, success: true });
       } catch (err) {
         results.push({ email, success: false, error: (err as Error).message });
       }
@@ -65,6 +68,7 @@ export async function POST(req: NextRequest) {
 
     const sent = results.filter((r) => r.success).length;
     const failed = results.filter((r) => !r.success).length;
+    await markLeadsContacted(results.filter((r) => r.success).map((r) => r.email));
 
     return NextResponse.json({ sent, failed, results });
   } catch (error) {

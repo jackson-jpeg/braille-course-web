@@ -3,6 +3,7 @@ import { resend, SENDER_EMAIL } from '@/lib/resend';
 import { customEmail } from '@/lib/email-templates';
 import { isAuthorized } from '@/lib/admin-auth';
 import { prisma } from '@/lib/prisma';
+import { markLeadsContacted } from '@/lib/leads';
 
 /* ── GET /api/admin/emails ── list sent emails ── */
 export async function GET(req: NextRequest) {
@@ -76,6 +77,9 @@ export async function POST(req: NextRequest) {
       console.error('Failed to send email:', (sendErr as Error).message);
       return NextResponse.json({ error: 'Failed to send email' }, { status: 500 });
     }
+
+    // Emailing a NEW lead from the admin means Delaney has contacted them.
+    await markLeadsContacted(recipients);
 
     return NextResponse.json({ success: true, id: result.data?.id });
   } catch (err) {

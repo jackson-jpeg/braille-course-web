@@ -3,6 +3,7 @@ import { prisma } from '@/lib/prisma';
 import { resend, SENDER_EMAIL } from '@/lib/resend';
 import { customEmail } from '@/lib/email-templates';
 import { verifyCronSecret } from '@/lib/cron-auth';
+import { markLeadsContacted } from '@/lib/leads';
 
 export async function GET(req: NextRequest) {
   // Only allow Vercel Cron (or manual trigger with the secret)
@@ -89,6 +90,7 @@ export async function GET(req: NextRequest) {
             resendId: result.data?.id || null,
           },
         });
+        await markLeadsContacted(email.to);
         sent++;
       } catch (err) {
         console.error(`Failed to send scheduled email ${email.id}:`, (err as Error).message);

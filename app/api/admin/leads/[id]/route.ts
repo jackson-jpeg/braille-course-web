@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { prisma } from '@/lib/prisma';
 import { isAuthorized } from '@/lib/admin-auth';
+import { ACTIVE_LEAD } from '@/lib/leads';
 
 /* ── PATCH /api/admin/leads/[id]?key=... — update a lead ── */
 export async function PATCH(req: NextRequest, { params }: { params: Promise<{ id: string }> }) {
@@ -35,7 +36,7 @@ export async function PATCH(req: NextRequest, { params }: { params: Promise<{ id
     if (preferredCallbackTime !== undefined) data.preferredCallbackTime = preferredCallbackTime;
 
     const lead = await prisma.lead.update({
-      where: { id },
+      where: { id, ...ACTIVE_LEAD },
       data,
     });
 
@@ -51,7 +52,7 @@ export async function PATCH(req: NextRequest, { params }: { params: Promise<{ id
   }
 }
 
-/* ── DELETE /api/admin/leads/[id]?key=... — delete a lead ── */
+/* ── DELETE /api/admin/leads/[id]: soft delete (sets deletedAt; the row is kept for history) ── */
 export async function DELETE(req: NextRequest, { params }: { params: Promise<{ id: string }> }) {
   if (!isAuthorized(req)) {
     return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
@@ -59,7 +60,7 @@ export async function DELETE(req: NextRequest, { params }: { params: Promise<{ i
 
   try {
     const { id } = await params;
-    await prisma.lead.delete({ where: { id } });
+    await prisma.lead.update({ where: { id, ...ACTIVE_LEAD }, data: { deletedAt: new Date() } });
     return NextResponse.json({ success: true });
   } catch {
     return NextResponse.json({ error: 'Failed to delete lead' }, { status: 500 });

@@ -45,6 +45,12 @@ export interface ImapEmail {
   attachments?: { filename: string; content_type: string; size?: number }[];
 }
 
+/** A search result with the threading headers Sync Inbox uses to skip replies. */
+export interface ImapThreadEmail extends ImapEmail {
+  inReplyTo: string | null;
+  references: string | null;
+}
+
 export interface ImapEmailDetail extends ImapEmail {
   html: string;
   text: string;
@@ -176,16 +182,17 @@ export async function getReceivedEmail(uid: string): Promise<ImapEmailDetail | n
   }
 }
 
-export async function searchEmailsBySubject(query: string): Promise<ImapEmail[]> {
+export async function searchEmailsBySubject(query: string): Promise<ImapThreadEmail[]> {
   if (!process.env.ICLOUD_EMAIL || !process.env.ICLOUD_APP_PASSWORD) {
     throw new Error('Missing ICLOUD_EMAIL or ICLOUD_APP_PASSWORD env vars');
   }
   const client = createClient();
-  const emails: ImapEmail[] = [];
+  const emails: ImapThreadEmail[] = [];
 
   try {
     await client.connect();
-    const lock = await client.getMailboxLock('INBOX');
+    // Read-only (EXAMINE): searching for leads must never mark Delaney's mail as read.
+    const lock = await client.getMailboxLock('INBOX', { readOnly: true });
 
     try {
       const uids = await client.search({ subject: query }, { uid: true });
@@ -196,6 +203,7 @@ export async function searchEmailsBySubject(query: string): Promise<ImapEmail[]>
         {
           uid: true,
           envelope: true,
+          headers: ['references'],
         },
         { uid: true },
       )) {
@@ -211,6 +219,13 @@ export async function searchEmailsBySubject(query: string): Promise<ImapEmail[]>
           to: toArr.map((t) => t.address || ''),
           subject: env.subject || '',
           created_at: env.date?.toISOString() || new Date().toISOString(),
+          inReplyTo: env.inReplyTo || null,
+          references: msg.headers
+            ? msg.headers
+                .toString()
+                .replace(/^references:\s*/i, '')
+                .trim() || null
+            : null,
         });
       }
     } finally {

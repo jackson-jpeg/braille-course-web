@@ -25,6 +25,8 @@ const lead: Lead = {
   phone: '555-0100',
   preferredCallbackTime: 'weekends',
   status: 'NEW',
+  source: 'SUMMER',
+  deletedAt: null,
   createdAt: new Date('2026-10-15T18:37:24.664Z'),
   updatedAt: new Date('2026-10-15T18:37:24.664Z'),
 };
@@ -53,8 +55,8 @@ describe('every path that creates a lead notifies Delaney', () => {
 
   test.each([
     ['app/api/admin/leads/route.ts', 'notifyNewLead(lead, LEAD_SOURCES.addLead)'],
-    ['app/api/admin/leads/sync/route.ts', 'if (!existed) await notifyNewLead(lead, LEAD_SOURCES.syncInbox)'],
-    ['app/api/waitlist-signup/route.ts', 'if (!existed) await notifyNewLead(lead,'],
+    ['app/api/admin/leads/sync/route.ts', 'await notifyNewLead(lead, LEAD_SOURCES.syncInbox)'],
+    ['app/api/waitlist-signup/route.ts', 'if (isNew) await notifyNewLead(lead,'],
     ['app/api/appointment-request/route.ts', 'to: ADMIN_EMAIL'],
   ])('%s', (file, call) => {
     expect(fs.readFileSync(path.join(ROOT, file), 'utf8')).toContain(call);

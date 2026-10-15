@@ -26,19 +26,24 @@ export async function POST(req: NextRequest) {
     const subject = isUpdates ? 'Summer Course Updates' : 'Waitlist Request';
 
     const normalized = email.toLowerCase().trim();
-    const existed = await prisma.lead.findUnique({ where: { email: normalized }, select: { id: true } });
+    const existed = await prisma.lead.findUnique({ where: { email: normalized }, select: { deletedAt: true } });
+    // New to Delaney if there was no lead, or only a soft-deleted one (which comes back).
+    const isNew = !existed || existed.deletedAt !== null;
 
     const lead = await prisma.lead.upsert({
       where: { email: normalized },
-      update: isUpdates ? {} : { subject, status: 'NEW' },
+      update: isUpdates
+        ? { deletedAt: null, ...(existed?.deletedAt ? { subject, status: 'NEW' as const } : {}) }
+        : { subject, status: 'NEW', deletedAt: null },
       create: {
         email: normalized,
         subject,
         status: 'NEW',
+        source: isUpdates ? 'SUMMER' : 'WAITLIST',
       },
     });
 
-    if (!existed) await notifyNewLead(lead, isUpdates ? LEAD_SOURCES.summerUpdates : LEAD_SOURCES.waitlist);
+    if (isNew) await notifyNewLead(lead, isUpdates ? LEAD_SOURCES.summerUpdates : LEAD_SOURCES.waitlist);
 
     return NextResponse.json({ success: true });
   } catch (err) {
