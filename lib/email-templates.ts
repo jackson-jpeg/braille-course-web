@@ -144,7 +144,7 @@ function footer(extraNote?: string) {
             Looking forward to learning together!
           </p>
           <p style="margin:8px 0 0;font-family:${FONT_BODY};font-size:14px;color:${C.navy};font-weight:500;">
-            — Delaney Costello
+            Delaney Costello
           </p>
         </td></tr>
       </table>
@@ -254,7 +254,7 @@ export function enrollmentConfirmation(opts: { isDeposit: boolean; schedule: str
   ${footer(isDeposit ? 'You&rsquo;ll receive a receipt from Stripe separately. No action is needed before June&nbsp;7 &mdash; we&rsquo;ll send a reminder with video call details closer to the start date.' : 'You&rsquo;ll receive a receipt from Stripe separately. We&rsquo;ll send a reminder with video call details closer to the start&nbsp;date.')}`;
 
   const preview = isDeposit
-    ? `Your $${PRICING.deposit} deposit is confirmed — your spot in the Summer Braille Course is reserved.`
+    ? `Your $${PRICING.deposit} deposit is confirmed. Your spot in the Summer Braille Course is reserved.`
     : "You're fully enrolled in the Summer Braille Course. You're all set!";
   return shell(body, preview);
 }
@@ -347,7 +347,7 @@ export function appointmentRequestConfirmationEmail(opts: { name: string }) {
 
   ${footer('If you have any questions in the meantime, feel free to reply to this email.')}`;
 
-  return shell(body, `Hi ${name} — your appointment request has been received. I'll be in touch within 24 hours.`);
+  return shell(body, `Hi ${name}, your appointment request has been received. I'll be in touch within 24 hours.`);
 }
 
 export function schoolContactAdminEmail(opts: {
@@ -436,7 +436,7 @@ export function schoolContactAdminEmail(opts: {
     </td>
   </tr>`;
 
-  return shell(body, `New school inquiry from ${schoolName} — ${contactName} (${contactEmail})`);
+  return shell(body, `New school inquiry from ${schoolName}: ${contactName} (${contactEmail})`);
 }
 
 export function schoolContactConfirmationEmail(opts: { contactName: string; schoolName: string }) {
@@ -498,6 +498,6 @@ export function schoolContactConfirmationEmail(opts: { contactName: string; scho
 
   return shell(
     body,
-    `Hi ${contactName} — thank you for reaching out about TVI services for ${schoolName}. I'll be in touch within 2 business days.`,
+    `Hi ${contactName}, thank you for reaching out about TVI services for ${schoolName}. I'll be in touch within 2 business days.`,
   );
 }

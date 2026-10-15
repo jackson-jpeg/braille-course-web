@@ -101,7 +101,7 @@ export async function POST(req: NextRequest) {
           // 2. Handout (PDF)
           send({ stage: 'building', sub: 'handout', progress: '2/3' });
           const handoutData: PdfResponse = { sections: parsed.handoutSections, brailleGrade: parsed.brailleGrade };
-          const handoutBuffer = await generatePdfBuffer(handoutData, title + ' — Handout', false);
+          const handoutBuffer = await generatePdfBuffer(handoutData, title + ': Handout', false);
           send({ stage: 'uploading', sub: 'handout', progress: '2/3' });
           const handoutFilename = `${safeTitle}-handout.pdf`;
           const handoutBlob = await put(handoutFilename, handoutBuffer, { access: 'public' });
@@ -122,7 +122,7 @@ export async function POST(req: NextRequest) {
             sections: parsed.worksheetSections,
             brailleGrade: parsed.brailleGrade,
           };
-          const worksheetBuffer = await generateWorksheetPdfBuffer(worksheetData, title + ' — Worksheet');
+          const worksheetBuffer = await generateWorksheetPdfBuffer(worksheetData, title + ': Worksheet');
           send({ stage: 'uploading', sub: 'worksheet', progress: '3/3' });
           const worksheetFilename = `${safeTitle}-worksheet.pdf`;
           const worksheetBlob = await put(worksheetFilename, worksheetBuffer, { access: 'public' });

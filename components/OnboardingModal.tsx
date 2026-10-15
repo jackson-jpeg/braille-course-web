@@ -7,7 +7,7 @@ import { CHROME_PRINT, chromeUnicode } from '@/lib/site-chrome-braille';
 const STEPS = [
   {
     title: 'Welcome to Braille Interactive!',
-    description: 'Practice and master braille with 16 interactive games — from letter recognition to sentence reading.',
+    description: 'Practice and master braille with 16 interactive games, from letter recognition to sentence reading.',
     // Decorative braille letter b (for braille), from lib/braille.
     icon: chromeUnicode(CHROME_PRINT.icon),
   },

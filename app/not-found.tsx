@@ -3,7 +3,7 @@ import Link from 'next/link';
 import { CHROME_PRINT, chromeUnicode } from '@/lib/site-chrome-braille';
 
 export const metadata: Metadata = {
-  title: 'Page Not Found — TeachBraille.org',
+  title: 'Page Not Found',
 };
 
 export default function NotFound() {

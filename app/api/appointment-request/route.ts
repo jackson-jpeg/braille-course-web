@@ -89,7 +89,7 @@ export async function POST(req: NextRequest) {
       resend.emails.send({
         from: NOREPLY_EMAIL,
         to: email.trim(),
-        subject: 'Appointment Request Received — TeachBraille.org',
+        subject: 'Appointment Request Received: TeachBraille.org',
         html: appointmentRequestConfirmationEmail({ name: name.trim() }),
       }),
     ]);

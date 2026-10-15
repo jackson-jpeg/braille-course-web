@@ -81,7 +81,7 @@ const FORMAT_OPTIONS = [
   {
     value: 'session-bundle',
     label: 'Session Bundle',
-    description: 'Slides + handout + worksheet — complete session package',
+    description: 'Slides + handout + worksheet: complete session package',
     icon: (
       <svg width="20" height="20" viewBox="0 0 24 24" fill="none">
         <rect x="2" y="4" width="8" height="7" rx="1" stroke="currentColor" strokeWidth="1.5" />
@@ -912,10 +912,10 @@ export default function AdminCreateTab({ onEmailMaterial }: Props) {
               ))}
             </div>
             <span className="admin-difficulty-hint">
-              {difficulty === 'beginner' && 'Grade 1 only — dot numbers, simple words, 3-5 new characters per section'}
+              {difficulty === 'beginner' && 'Grade 1 only: dot numbers, simple words, 3-5 new characters per section'}
               {difficulty === 'intermediate' && 'Grade 1 + common Grade 2 contractions, 5-8 concepts per section'}
               {difficulty === 'advanced' &&
-                'Grade 2 emphasis — context rules, exceptions, full sentences, 8-12 concepts per section'}
+                'Grade 2 emphasis: context rules, exceptions, full sentences, 8-12 concepts per section'}
             </span>
           </div>
 
@@ -1050,7 +1050,7 @@ export default function AdminCreateTab({ onEmailMaterial }: Props) {
           <h4>Quick Generate</h4>
           <p>
             One-click generation for common tasks
-            {nextSession ? ` — next class: ${nextSession.title} (${nextSession.date})` : ''}.
+            {nextSession ? `. Next class: ${nextSession.title} (${nextSession.date})` : ''}.
           </p>
           <div className="admin-quickgen-btns">
             <button type="button" className="admin-quickgen-btn" onClick={() => handleQuickGenerate('worksheet')}>

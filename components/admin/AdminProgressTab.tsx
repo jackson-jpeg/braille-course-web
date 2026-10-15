@@ -253,12 +253,12 @@ export default function AdminProgressTab({ sections, enrollments, scheduleMap }:
         count++;
       }
     });
-    return count > 0 ? `${Math.round(total / count)}%` : '—';
+    return count > 0 ? `${Math.round(total / count)}%` : 'n/a';
   }
 
   function assignmentAverage(assignmentId: string): string {
     const a = assignments.find((x) => x.id === assignmentId);
-    if (!a) return '—';
+    if (!a) return 'n/a';
     let total = 0;
     let count = 0;
     sectionEnrollments.forEach((e) => {
@@ -268,7 +268,7 @@ export default function AdminProgressTab({ sections, enrollments, scheduleMap }:
         count++;
       }
     });
-    return count > 0 ? `${Math.round(total / count)}%` : '—';
+    return count > 0 ? `${Math.round(total / count)}%` : 'n/a';
   }
 
   return (
@@ -408,7 +408,7 @@ export default function AdminProgressTab({ sections, enrollments, scheduleMap }:
                               min={0}
                               max={a.maxScore}
                               step="any"
-                              placeholder="—"
+                              placeholder="Score"
                               onChange={(e) => handleScoreChange(a.id, enrollment.id, e.target.value)}
                               onBlur={flushSaves}
                             />

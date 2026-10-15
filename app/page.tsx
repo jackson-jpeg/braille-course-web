@@ -6,13 +6,13 @@ import Link from 'next/link';
 
 export const metadata: Metadata = {
   title: {
-    absolute: 'Teach Braille — Free Practice, Courses & TVI Services | TeachBraille.org',
+    absolute: 'Teach Braille: Free Practice, Courses & TVI Services | TeachBraille.org',
   },
   description:
     'Teach and learn braille with free interactive practice games, a beginner-friendly guide, summer courses, and personalized 1-on-1 instruction from Delaney Costello, a certified Teacher of the Visually Impaired.',
   alternates: { canonical: 'https://teachbraille.org' },
   openGraph: {
-    title: 'Teach Braille — Free Practice, Courses & TVI Services | TeachBraille.org',
+    title: 'Teach Braille: Free Practice, Courses & TVI Services | TeachBraille.org',
     description:
       'Learn braille with free interactive games, a step-by-step introduction, summer courses, and personalized TVI instruction from Delaney Costello.',
   },
@@ -48,8 +48,8 @@ export default function HubPage() {
           </p>
           <p className="hub-about-text">
             Whether I&apos;m teaching a student to read braille, helping a family get started with assistive technology,
-            or consulting with a school team on accommodations — my focus is always on empowering students and the
-            people who support them.
+            or consulting with a school team on accommodations, my focus is always on empowering students and the people
+            who support them.
           </p>
 
           <blockquote className="pullquote reveal">
@@ -76,7 +76,7 @@ export default function HubPage() {
           </div>
           <h2 id="hub-benefit-heading">Why Work with a TVI?</h2>
           <p>
-            A Teacher of the Visually Impaired provides specialized instruction for students with visual impairments —
+            A Teacher of the Visually Impaired provides specialized instruction for students with visual impairments,
             including braille, assistive technology, and daily living skills. Working with a TVI ensures that a
             student&apos;s education is shaped around how they learn best.
           </p>
@@ -167,7 +167,7 @@ export default function HubPage() {
               </div>
               <h3>1-on-1 Sessions</h3>
               <p>
-                Personalized support in braille, assistive technology, compensatory skills, and more — tailored to your
+                Personalized support in braille, assistive technology, compensatory skills, and more, tailored to your
                 pace and goals.
               </p>
               <span className="hub-card-cta">
@@ -187,7 +187,7 @@ export default function HubPage() {
                 </svg>
               </div>
               <h3>Interactive Braille Practice</h3>
-              <p>Free braille practice with interactive activities — Word Game, Dot Explorer, Hangman, and more.</p>
+              <p>Free braille practice with interactive activities: Word Game, Dot Explorer, Hangman, and more.</p>
               <span className="hub-card-cta">
                 Start practicing
                 <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" aria-hidden="true">

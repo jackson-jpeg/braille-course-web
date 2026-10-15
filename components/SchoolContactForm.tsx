@@ -69,7 +69,7 @@ const DELIVERY_OPTIONS = [
   {
     value: 'Remote',
     label: 'Remote',
-    subtitle: 'Via video call — nationwide',
+    subtitle: 'Via video call, nationwide',
     icon: (
       <svg
         width="24"

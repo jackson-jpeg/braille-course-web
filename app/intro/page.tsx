@@ -11,14 +11,14 @@ import { contractedWord } from '@/lib/braille/contracted';
 import { describeCell, renderProse } from '@/lib/braille/prose';
 
 export const metadata: Metadata = {
-  title: 'Intro to Braille — What Is Braille & How to Read It',
+  title: 'Intro to Braille: What Is Braille & How to Read It',
   description:
     'Learn braille from the beginning: what it is, how the 6-dot cell works, the A–Z alphabet, grades of braille, how numbers work, and why braille matters. Free interactive guide from a certified TVI.',
   alternates: { canonical: 'https://teachbraille.org/intro' },
   openGraph: {
-    title: 'Intro to Braille — What Is Braille & How to Read It | TeachBraille.org',
+    title: 'Intro to Braille: What Is Braille & How to Read It | TeachBraille.org',
     description:
-      'A free, beginner-friendly guide to braille — history, the braille cell, interactive A–Z alphabet, grades, numbers, and why braille matters.',
+      'A free, beginner-friendly guide to braille: history, the braille cell, interactive A–Z alphabet, grades, numbers, and why braille matters.',
   },
 };
 
@@ -60,9 +60,9 @@ const introJsonLd = {
   '@graph': [
     {
       '@type': 'Article',
-      headline: 'Intro to Braille — What Is Braille & How to Read It',
+      headline: 'Intro to Braille: What Is Braille & How to Read It',
       description:
-        'A beginner-friendly introduction to braille — history, the braille cell, grades of braille, numbers, and an interactive A–Z alphabet.',
+        'A beginner-friendly introduction to braille: history, the braille cell, grades of braille, numbers, and an interactive A–Z alphabet.',
       author: {
         '@type': 'Person',
         name: 'Delaney Costello',

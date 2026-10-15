@@ -96,12 +96,12 @@ export default function BrailleDotExplorer() {
               )}
               <div className="explorer-dots-label">
                 {dotsCaption(cell)}
-                {meanings.length === 0 ? ' — no single-cell sign on this site' : ''}
+                {meanings.length === 0 ? ' (no single-cell sign on this site)' : ''}
               </div>
               {meanings.map((m, i) => (
                 <div key={i} className="explorer-contraction-type" data-meaning={m.kind}>
                   <strong>{m.title}</strong>
-                  {m.detail ? ` — ${m.detail}` : ''} <span className="explorer-rule">(UEB rule {m.rule})</span>
+                  {m.detail ? `: ${m.detail}` : ''} <span className="explorer-rule">(UEB rule {m.rule})</span>
                 </div>
               ))}
               {mode === 'alphabetic' && cellMeanings(cell, 'contracted').length > meanings.length && (

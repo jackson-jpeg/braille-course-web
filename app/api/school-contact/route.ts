@@ -156,7 +156,7 @@ export async function POST(req: NextRequest) {
       resend.emails.send({
         from: NOREPLY_EMAIL,
         to: email.trim(),
-        subject: 'School Inquiry Received — TeachBraille.org',
+        subject: 'School Inquiry Received: TeachBraille.org',
         html: schoolContactConfirmationEmail({
           contactName: contactName.trim(),
           schoolName: schoolName.trim(),

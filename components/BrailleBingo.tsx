@@ -160,7 +160,7 @@ export default function BrailleBingo() {
         <span className="section-label">Listen &amp; Mark</span>
         <h2>Braille Bingo</h2>
         <p>
-          A letter is called each round — tap every matching cell on your card to reach{' '}
+          A letter is called each round. Tap every matching cell on your card to reach{' '}
           <span className="bingo-badge">{winLabel}</span>
         </p>
         <DifficultySelector gameId="bingo" current={difficulty} onChange={setDifficulty} />

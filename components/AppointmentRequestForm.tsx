@@ -181,7 +181,7 @@ export default function AppointmentRequestForm() {
             disabled={loading}
           />
           <p className="appointment-form-hint">
-            Optional — helps us prepare for our conversation {questions.length > 0 && `(${questions.length}/1000)`}
+            Optional: helps us prepare for our conversation {questions.length > 0 && `(${questions.length}/1000)`}
           </p>
         </div>
 

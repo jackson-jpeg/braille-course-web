@@ -161,7 +161,7 @@ export default function AdminOverviewTab({
       items.push({
         id: `school-${s.id}`,
         type: 'school',
-        label: `${s.schoolName} — ${s.contactName} (${STATUS_LABELS[s.status] || s.status})`,
+        label: `${s.schoolName}: ${s.contactName} (${STATUS_LABELS[s.status] || s.status})`,
         time: s.createdAt,
         tab: 'schools',
       });

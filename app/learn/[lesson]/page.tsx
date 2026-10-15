@@ -24,10 +24,10 @@ export async function generateMetadata({ params }: { params: Promise<{ lesson: s
   const { lesson: slug } = await params;
   const lesson = getLessonBySlug(slug);
   if (!lesson) return {};
-  const title = `${lesson.title} — Free Braille Course`;
+  const title = `${lesson.title} | Free Braille Course`;
   return {
     title,
-    description: `${lesson.summary} Part of a free, self-paced braille course. Write each character yourself and practice with interactive games — no account needed.`,
+    description: `${lesson.summary} Part of a free, self-paced braille course. Write each character yourself and practice with interactive games, no account needed.`,
     alternates: { canonical: `https://teachbraille.org/learn/${lesson.slug}` },
     openGraph: {
       title: `${title} | TeachBraille.org`,

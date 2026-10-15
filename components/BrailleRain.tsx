@@ -200,7 +200,7 @@ export default function BrailleRain() {
         <span className="section-label">Read &amp; Type</span>
         <h2>Braille Rain</h2>
         <p>
-          Braille cells fall — type each letter before it lands. <span className="rain-kbd-hint">Type a–z</span>
+          Braille cells fall. Type each letter before it lands. <span className="rain-kbd-hint">Type a–z</span>
         </p>
         <DifficultySelector gameId="rain" current={difficulty} onChange={setDifficulty} />
       </div>

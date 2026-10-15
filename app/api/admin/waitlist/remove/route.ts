@@ -46,7 +46,7 @@ export async function POST(req: NextRequest) {
     return NextResponse.json({
       success: true,
       ...(enrollment.stripeCustomerId
-        ? { warning: 'This student already paid — consider issuing a refund via Stripe.' }
+        ? { warning: 'This student already paid. Consider issuing a refund via Stripe.' }
         : {}),
     });
   } catch (err) {

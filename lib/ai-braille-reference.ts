@@ -51,7 +51,7 @@ function rule(r: string): string {
 /** One catalog line: the token id, the sign's name and print, its rule and usage. Never its dots. */
 function signLine(sign: Sign): string {
   const print = sign.print ? ` (${sign.print})` : '';
-  const usage = sign.usage ? ` — ${sign.usage}` : '';
+  const usage = sign.usage ? `: ${sign.usage}` : '';
   return `  ${sign.id}: ${sign.name}${print} ${rule(sign.rule)}${usage}`;
 }
 
@@ -94,7 +94,7 @@ function contractionLines(kinds: readonly ContractionKind[]): string[] {
         const letter = ALPHABET.find((l) => cellsKey([LETTER_CELLS[l]]) === cellsKey(c.cells))!;
         letterNote = ` (the letter ${letter})`;
       }
-      lines.push(`    "${c.text}"${letterNote} ${rule(c.rule)} — ${c.usage}`);
+      lines.push(`    "${c.text}"${letterNote} ${rule(c.rule)}: ${c.usage}`);
     }
   }
   const odd = wordsignsNotFirstLetter();
@@ -209,7 +209,7 @@ export function buildPedagogicalPreamble(difficulty: Difficulty): string {
 
   const levelGuidelines: Record<Difficulty, string> = {
     beginner: [
-      'PEDAGOGICAL GUIDELINES — BEGINNER LEVEL (uncontracted braille):',
+      'PEDAGOGICAL GUIDELINES: BEGINNER LEVEL (uncontracted braille):',
       '- Use ONLY uncontracted (grade 1) braille. Do NOT introduce any contractions.',
       '- Show the dots (with tokens) for every letter or symbol introduced.',
       '- Start with simple, familiar letters (a, b, c, l) before moving to complex ones.',
@@ -220,7 +220,7 @@ export function buildPedagogicalPreamble(difficulty: Difficulty): string {
       '',
     ].join('\n'),
     intermediate: [
-      'PEDAGOGICAL GUIDELINES — INTERMEDIATE LEVEL (contracted braille):',
+      'PEDAGOGICAL GUIDELINES: INTERMEDIATE LEVEL (contracted braille):',
       '- Introduce common contractions of UEB contracted (grade 2) braille, building on uncontracted braille.',
       '- Introduce alphabetic wordsigns (e.g., b = "but", c = "can") and strong contractions (e.g., "and", "the", "for").',
       `- Relate alphabetic wordsigns to their letters, but check the reference: not every wordsign uses its first letter (${odd}).`,
@@ -230,7 +230,7 @@ export function buildPedagogicalPreamble(difficulty: Difficulty): string {
       '',
     ].join('\n'),
     advanced: [
-      'PEDAGOGICAL GUIDELINES — ADVANCED LEVEL (contracted braille):',
+      'PEDAGOGICAL GUIDELINES: ADVANCED LEVEL (contracted braille):',
       '- Emphasize UEB contracted (grade 2) braille throughout.',
       '- Include strong groupsigns (ch, gh, sh, th, wh, ed, er, ou, ow, st, ar, ing) and lower groupsigns and wordsigns.',
       '- Cover context-dependent rules and exceptions (e.g., when a contraction cannot be used).',

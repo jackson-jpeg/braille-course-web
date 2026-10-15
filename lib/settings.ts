@@ -21,9 +21,9 @@ export const DEFAULT_SETTINGS: Record<string, string> = {
   'enrollment.enabled': 'true',
   'enrollment.waitlistEnabled': 'true',
   'enrollment.maxWaitlist': '10',
-  'email.depositSubject': `Your $${PRICING.deposit} Deposit Is Confirmed — Summer Braille Course`,
-  'email.fullPaymentSubject': "You're Enrolled — Summer Braille Course",
-  'email.balanceReminderSubject': 'Balance Reminder — Summer Braille Course',
+  'email.depositSubject': `Your $${PRICING.deposit} Deposit Is Confirmed: Summer Braille Course`,
+  'email.fullPaymentSubject': "You're Enrolled: Summer Braille Course",
+  'email.balanceReminderSubject': 'Balance Reminder: Summer Braille Course',
 };
 
 /** Load all settings from DB, merged with defaults. */

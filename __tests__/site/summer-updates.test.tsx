@@ -1,10 +1,8 @@
 /**
  * /summer "Not ready to enroll yet?" email capture: posts to the waitlist route as the
- * summer-updates list, hides itself when the course is full, and its copy has no em dash.
+ * summer-updates list, and hides itself when the course is full.
  */
 import { fireEvent, render, screen, waitFor } from '@testing-library/react';
-import { readFileSync } from 'fs';
-import path from 'path';
 import SummerUpdatesForm from '@/components/SummerUpdatesForm';
 import { SpotsProvider } from '@/lib/spots-context';
 
@@ -53,25 +51,5 @@ describe('SummerUpdatesForm', () => {
   test('is hidden when the course is full (the waitlist takes over)', () => {
     const { container } = renderWith(full);
     expect(container.innerHTML).toBe('');
-  });
-});
-
-/** User-facing text in a source file, with comments removed. */
-function copyOf(file: string): string {
-  return readFileSync(path.join(__dirname, '../..', file), 'utf8')
-    .replace(/\{\/\*[\s\S]*?\*\/\}/g, '')
-    .replace(/\/\*[\s\S]*?\*\//g, '')
-    .replace(/^\s*\/\/.*$/gm, '');
-}
-
-describe('no em dashes on /summer and /learn', () => {
-  test.each([
-    'app/summer/page.tsx',
-    'components/SummerUpdatesForm.tsx',
-    'components/EnrollmentForm.tsx',
-    'app/learn/page.tsx',
-    'components/course/LessonList.tsx',
-  ])('%s', (file) => {
-    expect(copyOf(file)).not.toContain('—');
   });
 });

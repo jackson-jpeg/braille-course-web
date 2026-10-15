@@ -2,7 +2,7 @@ import { Suspense } from 'react';
 import CheckoutForm from '@/components/CheckoutForm';
 
 export const metadata = {
-  title: 'Checkout — Summer Braille Course',
+  title: 'Checkout: Summer Braille Course',
   robots: { index: false, follow: false },
 };
 

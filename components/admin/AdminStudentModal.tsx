@@ -388,7 +388,7 @@ export default function AdminStudentModal({ enrollment, scheduleMap, onClose, on
                                 <div key={a.id} className="admin-student-attendance-row">
                                   <span style={{ fontSize: '0.82rem', flex: 1 }}>{a.title}</span>
                                   <span style={{ fontSize: '0.82rem', fontWeight: 600 }}>
-                                    {score !== null ? `${score}/${a.maxScore}` : '—'}
+                                    {score !== null ? `${score}/${a.maxScore}` : 'n/a'}
                                   </span>
                                 </div>
                               );

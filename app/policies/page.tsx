@@ -64,24 +64,24 @@ export default function PoliciesPage() {
             <h3>Data We Collect</h3>
             <p>
               When you enroll, we collect your email address through Stripe Checkout. We do <strong>not</strong> store
-              credit card numbers or payment details on our servers — all payment processing is handled securely by
+              credit card numbers or payment details on our servers. All payment processing is handled securely by
               Stripe.
             </p>
 
             <h3>Third-Party Services</h3>
             <ul>
               <li>
-                <strong>Stripe</strong> — payment processing (
+                <strong>Stripe</strong>: payment processing (
                 <a href="https://stripe.com/privacy" target="_blank" rel="noopener noreferrer">
                   Stripe Privacy Policy
                 </a>
                 )
               </li>
               <li>
-                <strong>Resend</strong> — transactional email delivery
+                <strong>Resend</strong>: transactional email delivery
               </li>
               <li>
-                <strong>Vercel</strong> — hosting and anonymized analytics
+                <strong>Vercel</strong>: hosting and anonymized analytics
               </li>
             </ul>
 
@@ -107,8 +107,8 @@ export default function PoliciesPage() {
               <li>Enrolled spots are non-transferable to other individuals.</li>
               <li>The instructor may modify the course schedule with reasonable notice to enrolled students.</li>
               <li>
-                All course materials — including lesson plans, handouts, and resources — are the intellectual property
-                of the instructor and may not be redistributed.
+                All course materials, including lesson plans, handouts, and resources, are the intellectual property of
+                the instructor and may not be redistributed.
               </li>
               <li>Students are expected to maintain a respectful learning environment during all sessions.</li>
             </ul>

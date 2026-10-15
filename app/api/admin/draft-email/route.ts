@@ -14,7 +14,7 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ error: 'Missing required field: brief' }, { status: 400 });
     }
 
-    const systemPrompt = `You are drafting an email for Delaney, a braille course instructor. Write in a warm, professional tone. Keep emails concise and friendly. Return ONLY valid JSON (no markdown fences) with this shape: { "subject": "Email subject line", "body": "Full email body text" }. Sign off as Delaney. Do not include HTML — plain text only.`;
+    const systemPrompt = `You are drafting an email for Delaney, a braille course instructor. Write in a warm, professional tone. Keep emails concise and friendly. Return ONLY valid JSON (no markdown fences) with this shape: { "subject": "Email subject line", "body": "Full email body text" }. Sign off as Delaney. Do not include HTML: plain text only.`;
 
     const userMessage = recipientContext
       ? `Draft an email: ${brief}\n\nRecipient context: ${recipientContext}`
@@ -40,7 +40,7 @@ export async function POST(req: NextRequest) {
     try {
       parsed = JSON.parse(jsonText);
     } catch {
-      return NextResponse.json({ error: 'AI returned invalid JSON — please try again' }, { status: 502 });
+      return NextResponse.json({ error: 'AI returned invalid JSON. Please try again.' }, { status: 502 });
     }
 
     return NextResponse.json({ subject: parsed.subject, body: parsed.body });

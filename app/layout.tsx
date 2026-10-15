@@ -30,7 +30,7 @@ const caveat = Caveat({
 export const metadata: Metadata = {
   metadataBase: new URL('https://teachbraille.org'),
   title: {
-    default: 'Teach Braille — Free Practice, Courses & TVI Services | TeachBraille.org',
+    default: 'Teach Braille: Free Practice, Courses & TVI Services | TeachBraille.org',
     template: '%s | TeachBraille.org',
   },
   description:
@@ -50,7 +50,7 @@ export const metadata: Metadata = {
     'UEB braille',
   ],
   openGraph: {
-    title: 'Teach Braille — Free Practice, Courses & TVI Services | TeachBraille.org',
+    title: 'Teach Braille: Free Practice, Courses & TVI Services | TeachBraille.org',
     description:
       'Learn braille with free interactive games, a step-by-step introduction, summer courses, and personalized TVI instruction from Delaney Costello.',
     type: 'website',
@@ -60,7 +60,7 @@ export const metadata: Metadata = {
   },
   twitter: {
     card: 'summary_large_image',
-    title: 'Teach Braille — Free Practice, Courses & TVI Services | TeachBraille.org',
+    title: 'Teach Braille: Free Practice, Courses & TVI Services | TeachBraille.org',
     description:
       'Learn braille with free interactive games, a step-by-step introduction, summer courses, and personalized TVI instruction from Delaney Costello.',
   },

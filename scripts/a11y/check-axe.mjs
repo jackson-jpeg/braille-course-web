@@ -14,7 +14,7 @@ import fs from 'fs';
 const base = process.argv[2] ?? 'http://localhost:3000';
 const curriculum = fs.readFileSync(new URL('../../lib/course-curriculum.ts', import.meta.url), 'utf8');
 const slugs = [...curriculum.matchAll(/slug: '([a-z0-9-]+)'/g)].map((m) => m[1]);
-const pages = ['/', '/intro', '/learn', '/games', ...slugs.map((s) => `/learn/${s}`)];
+const pages = ['/', '/intro', '/learn', '/games', '/summer', ...slugs.map((s) => `/learn/${s}`)];
 const TAGS = ['wcag2a', 'wcag2aa', 'wcag21a', 'wcag21aa', 'wcag22aa'];
 
 const browser = await chromium.launch({ headless: true });

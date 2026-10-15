@@ -96,7 +96,7 @@ export default function SuccessPoller({
         <polyline points="12,6 12,12 16,14" />
       </svg>
       <span>
-        <strong>{PRICING.totalSessions} sessions</strong> — loading your schedule&hellip;
+        <strong>{PRICING.totalSessions} sessions</strong>. Loading your schedule&hellip;
       </span>
     </div>
   );

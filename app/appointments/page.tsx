@@ -5,12 +5,12 @@ import BrailleHero from '@/components/BrailleHero';
 import AppointmentRequestForm from '@/components/AppointmentRequestForm';
 
 export const metadata: Metadata = {
-  title: 'Book a Braille Lesson — 1-on-1 TVI Instruction',
+  title: 'Book a Braille Lesson: 1-on-1 TVI Instruction',
   description:
     'Learn braille at your own pace with personalized 1-on-1 instruction from Delaney Costello, a certified Teacher of the Visually Impaired. Schedule a session today.',
   alternates: { canonical: 'https://teachbraille.org/appointments' },
   openGraph: {
-    title: 'Book a Braille Lesson — 1-on-1 TVI Instruction | TeachBraille.org',
+    title: 'Book a Braille Lesson: 1-on-1 TVI Instruction | TeachBraille.org',
     description: 'Personalized braille instruction at your own pace from a certified Teacher of the Visually Impaired.',
   },
 };
@@ -40,7 +40,7 @@ export default function AppointmentsPage() {
           <h2 id="appt-about-heading">Delaney Costello</h2>
           <p className="appointments-about-text">
             Delaney is a <strong>Teacher of the Visually Impaired</strong> with{' '}
-            <strong>9 years of teaching experience</strong> — 6 years in person and 3 years in a hybrid of in-person and
+            <strong>9 years of teaching experience</strong>: 6 years in person and 3 years in a hybrid of in-person and
             remote services.
           </p>
           <p className="appointments-about-text">
@@ -65,7 +65,7 @@ export default function AppointmentsPage() {
               </div>
               <h3>Learn at Your Own Pace</h3>
               <p>
-                Every minute is focused on your progress — no need to keep up with a group or wait for others to catch
+                Every minute is focused on your progress. No need to keep up with a group or wait for others to catch
                 up.
               </p>
             </div>
@@ -78,7 +78,7 @@ export default function AppointmentsPage() {
               </div>
               <h3>Curriculum Built Around You</h3>
               <p>
-                Lessons are tailored to your specific goals — whether that&apos;s reading to your child, writing notes,
+                Lessons are tailored to your specific goals, whether that&apos;s reading to your child, writing notes,
                 or building professional skills.
               </p>
             </div>

@@ -157,7 +157,7 @@ export default function BrailleHangman() {
       <div className="hangman-header">
         <span className="section-label">Challenge</span>
         <h2>Braille Hangman</h2>
-        <p>Guess the word — 6 wrong guesses allowed</p>
+        <p>Guess the word. 6 wrong guesses allowed.</p>
       </div>
 
       <div className="hangman-body">

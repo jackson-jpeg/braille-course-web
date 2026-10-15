@@ -166,8 +166,8 @@ export default function LessonRunner({ lesson, prev, next }: LessonRunnerProps) 
               Write It Yourself
             </h2>
             <p className="lesson-text">
-              Braille is read by touch and written dot by dot. Recreate each character below in the writer — the best
-              way to make it stick.
+              Braille is read by touch and written dot by dot. Recreate each character below in the writer. The best way
+              to make it stick.
             </p>
 
             <ol className="lesson-drill-chips" aria-label="Drill progress">
@@ -179,7 +179,7 @@ export default function LessonRunner({ lesson, prev, next }: LessonRunnerProps) 
                   <span aria-hidden="true">{c.print}</span>
                   <span className="sr-only">
                     {c.print}
-                    {solved[i] ? ' — done' : i === current ? ' — current' : ''}
+                    {solved[i] ? ' (done)' : i === current ? ' (current)' : ''}
                   </span>
                 </li>
               ))}
@@ -207,7 +207,7 @@ export default function LessonRunner({ lesson, prev, next }: LessonRunnerProps) 
               </>
             ) : (
               <div className="lesson-done-banner" role="status">
-                <strong>Nicely done — you wrote every character in this lesson.</strong>
+                <strong>Nicely done, you wrote every character in this lesson.</strong>
               </div>
             )}
           </div>
@@ -220,7 +220,7 @@ export default function LessonRunner({ lesson, prev, next }: LessonRunnerProps) 
           <div className="lesson-inner">
             <div className="section-label">Practice</div>
             <h2 id="lesson-practice-heading" className="lesson-section-heading">
-              Keep Practicing{lesson.practiceGameLabel ? ` — ${lesson.practiceGameLabel}` : ''}
+              Keep Practicing{lesson.practiceGameLabel ? `: ${lesson.practiceGameLabel}` : ''}
             </h2>
             <p className="lesson-text">
               {lessonFinished
@@ -271,7 +271,7 @@ export default function LessonRunner({ lesson, prev, next }: LessonRunnerProps) 
                   </>
                 ) : (
                   <>
-                    You&rsquo;ve reached the end of the course — explore the <Link href="/games">practice games</Link>{' '}
+                    You&rsquo;ve reached the end of the course. Explore the <Link href="/games">practice games</Link>{' '}
                     any time.
                   </>
                 )}

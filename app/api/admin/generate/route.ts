@@ -141,10 +141,10 @@ Create 5-12 slides. The first slide should be a title slide. Keep bullets concis
 
   handout: `You are creating a PDF handout for a braille course instructor. Given the user's notes, create a structured document. Return ONLY valid JSON (no markdown fences) with this shape:
 { "sections": [{ "heading": "Section Title", "content": "Paragraph text here.", "bullets": ["Point 1", "Point 2"], "keyTerms": ["term1", "term2"], "practiceQuestions": ["Question 1?"] }] }
-Create 3-6 sections. Include key terms and practice questions where relevant. Content should complement the slide deck — not duplicate it but provide deeper explanation and reference material.`,
+Create 3-6 sections. Include key terms and practice questions where relevant. Content should complement the slide deck. Do not duplicate it; provide deeper explanation and reference material.`,
 
   worksheet: `You are creating a braille course worksheet. Given the user's notes, create an engaging worksheet with varied exercise types. ${WORKSHEET_SHAPE}
-Create 3-5 sections with 4-8 items each. Include at least one braille-specific section type. This worksheet accompanies a slide deck and handout — focus on active practice and exercises rather than reference content.`,
+Create 3-5 sections with 4-8 items each. Include at least one braille-specific section type. This worksheet accompanies a slide deck and handout. Focus on active practice and exercises rather than reference content.`,
 };
 
 /* ── POST handler (SSE streaming) ── */

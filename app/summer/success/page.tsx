@@ -6,7 +6,7 @@ import SuccessPoller from '@/components/SuccessPoller';
 import { PRICING, formatPrice } from '@/lib/pricing';
 
 export const metadata = {
-  title: 'Registration Confirmed — Summer Braille Course',
+  title: 'Registration Confirmed: Summer Braille Course',
   robots: { index: false, follow: false },
 };
 
@@ -91,7 +91,7 @@ export default async function SuccessPage({ searchParams }: { searchParams: Prom
         <p className="success-amount">
           {isDeposit
             ? 'Thank you for reserving your spot!'
-            : `${formatPrice(PRICING.full)} payment confirmed — you're fully enrolled.`}
+            : `${formatPrice(PRICING.full)} payment confirmed. You're fully enrolled.`}
         </p>
 
         {isDeposit && (

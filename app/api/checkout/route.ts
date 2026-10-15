@@ -94,7 +94,7 @@ export async function POST(req: NextRequest) {
           type: plan,
           sectionId,
         },
-        description: `${courseName} — ${schedule}`,
+        description: `${courseName}, ${schedule}`,
       },
       return_url: `${siteUrl}/summer/success?session_id={CHECKOUT_SESSION_ID}`,
     };

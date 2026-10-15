@@ -225,7 +225,7 @@ export default function BrailleContractionSprint() {
         {phase === 'ready' && (
           <div className="csprint-ready">
             <p className="csprint-instructions">
-              Identify braille contractions as fast as you can. Correct answers add time — wrong answers cost time. Keys
+              Identify braille contractions as fast as you can. Correct answers add time; wrong answers cost time. Keys
               1–4 to choose.
             </p>
             <button className="csprint-start-btn" onClick={startGame}>

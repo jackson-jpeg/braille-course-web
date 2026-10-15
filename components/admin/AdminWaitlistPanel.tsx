@@ -209,7 +209,7 @@ export default function AdminWaitlistPanel({ sections, scheduleMap, onSendEmail,
       {removingEntry && (
         <AdminConfirmDialog
           title="Remove from Waitlist"
-          message={`Remove ${removingEntry.email || 'this student'} from the waitlist? This student already paid — you may need to issue a refund via Stripe.`}
+          message={`Remove ${removingEntry.email || 'this student'} from the waitlist? This student already paid. You may need to issue a refund via Stripe.`}
           confirmLabel="Remove"
           confirmVariant="danger"
           loading={removeLoading}

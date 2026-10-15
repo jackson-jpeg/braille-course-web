@@ -27,7 +27,7 @@ export async function POST(req: NextRequest) {
       const section = await tx.section.findUnique({ where: { id: enrollment.sectionId } });
       if (!section) throw new Error('Section not found');
       if (section.enrolledCount >= section.maxCapacity) {
-        throw new Error('Section is full — cannot promote');
+        throw new Error('Section is full, so this student cannot be promoted');
       }
 
       // Promote: update enrollment status

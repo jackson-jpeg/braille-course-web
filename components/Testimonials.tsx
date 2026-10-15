@@ -1,7 +1,7 @@
 const testimonials = [
   {
     quote:
-      'Delaney transformed our braille program. Her ability to connect with students remotely is remarkable — our students look forward to every session.',
+      'Delaney transformed our braille program. Her ability to connect with students remotely is remarkable. Our students look forward to every session.',
     name: 'Sarah Mitchell',
     role: 'Special Education Director',
     org: 'Hillsborough County Schools',

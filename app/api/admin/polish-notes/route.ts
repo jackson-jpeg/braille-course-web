@@ -14,7 +14,7 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ error: 'Missing required field: notes' }, { status: 400 });
     }
 
-    const systemPrompt = `You are a braille course instructor's assistant. Restructure the user's rough notes into a clean lesson plan outline. Keep ALL factual content — do not add, invent, or remove any braille-specific facts. Organize with headings, bullet points, and logical flow. Return plain text (no JSON, no markdown fences). The output will be used as input for an AI material generator, so structure it clearly with labeled sections.${format ? ` The material will be generated as a ${format}.` : ''}${difficulty ? ` Target difficulty level: ${difficulty}.` : ''}`;
+    const systemPrompt = `You are a braille course instructor's assistant. Restructure the user's rough notes into a clean lesson plan outline. Keep ALL factual content: do not add, invent, or remove any braille-specific facts. Organize with headings, bullet points, and logical flow. Return plain text (no JSON, no markdown fences). The output will be used as input for an AI material generator, so structure it clearly with labeled sections.${format ? ` The material will be generated as a ${format}.` : ''}${difficulty ? ` Target difficulty level: ${difficulty}.` : ''}`;
 
     const response = await anthropic.messages.create({
       model: 'claude-sonnet-4-5-20250929',

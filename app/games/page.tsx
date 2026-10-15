@@ -41,14 +41,14 @@ import GameErrorBoundary from '@/components/GameErrorBoundary';
 import StreakBadge from '@/components/StreakBadge';
 
 export const metadata: Metadata = {
-  title: 'Free Braille Practice Games — 16 Interactive Activities',
+  title: 'Free Braille Practice Games: 16 Interactive Activities',
   description:
     'Teach and learn braille with 16 free interactive games. Practice letters, capitals, numbers, punctuation, contractions, and sentences with Word Game, Dot Explorer, Hangman, Speed Match, Memory Match, Braille Bingo, Braille Rain, and more.',
   alternates: { canonical: 'https://teachbraille.org/games' },
   openGraph: {
-    title: 'Free Braille Practice Games — 16 Interactive Activities | TeachBraille.org',
+    title: 'Free Braille Practice Games: 16 Interactive Activities | TeachBraille.org',
     description:
-      'Learn braille with 16 free interactive games — from letter recognition to full sentence decoding. No account needed.',
+      'Learn braille with 16 free interactive games, from letter recognition to full sentence decoding. No account needed.',
   },
 };
 

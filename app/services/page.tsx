@@ -7,14 +7,14 @@ import FAQ from '@/components/FAQ';
 import HowItWorks from '@/components/HowItWorks';
 
 export const metadata: Metadata = {
-  title: 'TVI Services for Schools & Districts — Braille Instruction & More',
+  title: 'TVI Services for Schools & Districts: Braille Instruction & More',
   description:
     'Teach braille in your school or district. Contracted TVI services from Delaney Costello including braille instruction, assistive technology training, compensatory skills, and expanded core curriculum.',
   alternates: { canonical: 'https://teachbraille.org/services' },
   openGraph: {
     title: 'TVI Services for Schools & Districts | TeachBraille.org',
     description:
-      'Contracted vision services from a certified TVI — braille instruction, assistive technology, and expanded core curriculum for schools and districts.',
+      'Contracted vision services from a certified TVI: braille instruction, assistive technology, and expanded core curriculum for schools and districts.',
   },
 };
 
@@ -119,7 +119,7 @@ export default function ServicesPage() {
               </div>
               <h3>Assistive Technology</h3>
               <p>
-                Comprehensive AT assessment and instruction — helping students find and master the tools that work best
+                Comprehensive AT assessment and instruction, helping students find and master the tools that work best
                 for them.
               </p>
             </div>
@@ -134,8 +134,8 @@ export default function ServicesPage() {
               </div>
               <h3>Expanded Core Curriculum</h3>
               <p>
-                Instruction across <a href="#ecc">8 of the 9 ECC areas</a> — building the essential skills that go
-                beyond academics for students with visual impairments.
+                Instruction across <a href="#ecc">8 of the 9 ECC areas</a>, building the essential skills that go beyond
+                academics for students with visual impairments.
               </p>
             </div>
             <div className="services-card">
@@ -269,8 +269,8 @@ export default function ServicesPage() {
           <p>
             Students with visual impairments have unique educational needs that go far beyond what general education
             support can provide. A certified Teacher of the Visually Impaired brings specialized training in braille
-            literacy, assistive technology, and the Expanded Core Curriculum — ensuring your students receive
-            instruction from someone who truly understands how vision loss impacts learning and development.
+            literacy, assistive technology, and the Expanded Core Curriculum, ensuring your students receive instruction
+            from someone who truly understands how vision loss impacts learning and development.
           </p>
         </div>
       </section>

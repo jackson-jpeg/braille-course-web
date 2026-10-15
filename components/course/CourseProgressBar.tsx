@@ -26,7 +26,7 @@ export default function CourseProgressBar({ percent, completedCount, total, comp
       </div>
       {!compact && (
         <p className="course-progress-caption">
-          {completedCount} of {total} lessons complete{clamped === 100 ? ' — course finished! 🎉' : ''}
+          {completedCount} of {total} lessons complete{clamped === 100 ? ', course finished! 🎉' : ''}
         </p>
       )}
     </div>

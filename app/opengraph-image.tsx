@@ -3,7 +3,7 @@ import { type DotSlot, ogImageCells } from '@/lib/site-chrome-braille';
 
 export const runtime = 'edge';
 
-export const alt = 'TeachBraille.org — Delaney Costello, Teacher of the Visually Impaired';
+export const alt = 'TeachBraille.org | Delaney Costello, Teacher of the Visually Impaired';
 export const size = { width: 1200, height: 630 };
 export const contentType = 'image/png';
 

@@ -97,7 +97,7 @@ export async function POST(req: NextRequest) {
               },
             });
             console.log(
-              `WAITLISTED enrollment for session ${stripeSessionId} — section ${sectionId} is full (position ${waitlistCount + 1}). Manual refund needed.`,
+              `WAITLISTED enrollment for session ${stripeSessionId}, section ${sectionId} is full (position ${waitlistCount + 1}). Manual refund needed.`,
             );
             return 'waitlisted' as const;
           }
@@ -146,12 +146,12 @@ export async function POST(req: NextRequest) {
           const depositSubject = getSetting(
             settings,
             'email.depositSubject',
-            `Your $${PRICING.deposit} Deposit Is Confirmed — Summer Braille Course`,
+            `Your $${PRICING.deposit} Deposit Is Confirmed: Summer Braille Course`,
           );
           const fullSubject = getSetting(
             settings,
             'email.fullPaymentSubject',
-            "You're Enrolled — Summer Braille Course",
+            "You're Enrolled: Summer Braille Course",
           );
 
           await resend.emails.send({
@@ -174,7 +174,7 @@ export async function POST(req: NextRequest) {
 
       // Full payments: no invoice needed
       if (paymentType === 'full') {
-        console.log(`Full payment completed for customer ${stripeCustomerId} — no invoice needed`);
+        console.log(`Full payment completed for customer ${stripeCustomerId}, no invoice needed`);
         return NextResponse.json({ received: true });
       }
 

@@ -381,7 +381,7 @@ export default function AdminEmailsTab({
       setComposeBody(json.body);
       setShowDraftInput(false);
       setDraftBrief('');
-      showToast('AI draft ready — edit as needed');
+      showToast('AI draft ready. Edit as needed.');
     } catch (err) {
       showToast(err instanceof Error ? err.message : 'Failed to draft email', 'error');
     } finally {

@@ -14,7 +14,7 @@ const PLAN_INFO: Record<Plan, { label: string; price: string; note: string }> = 
   full: {
     label: 'Pay in Full',
     price: formatPrice(PRICING.full),
-    note: 'One-time payment — no balance due',
+    note: 'One-time payment: no balance due',
   },
   deposit: {
     label: 'Reserve with Deposit',

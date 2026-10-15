@@ -80,7 +80,7 @@ const templates: LearningTip[] = [
 
   // Encouragement
   {
-    fact: 'Every braille pattern you recognize builds your braille literacy — keep practicing!',
+    fact: 'Every braille pattern you recognize builds your braille literacy. Keep practicing!',
     category: 'encouragement',
   },
   { fact: 'Learning braille patterns helps you understand how tactile reading works.', category: 'encouragement' },
@@ -89,11 +89,11 @@ const templates: LearningTip[] = [
     category: 'encouragement',
   },
   {
-    fact: 'Consistency beats intensity — even 5 minutes of practice daily makes a difference.',
+    fact: 'Consistency beats intensity: even 5 minutes of practice daily makes a difference.',
     category: 'encouragement',
   },
   {
-    fact: 'Making mistakes is part of learning — each wrong guess teaches your brain something new.',
+    fact: 'Making mistakes is part of learning. Each wrong guess teaches your brain something new.',
     category: 'encouragement',
   },
 ];

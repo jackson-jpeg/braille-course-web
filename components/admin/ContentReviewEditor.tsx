@@ -755,7 +755,7 @@ export default function ContentReviewEditor({
                 strokeLinecap="round"
               />
             </svg>
-            <strong>Braille checked</strong> — the AI&rsquo;s braille is never used: {corrections.length} change
+            <strong>Braille checked</strong>: the AI&rsquo;s braille is never used: {corrections.length} change
             {corrections.length > 1 ? 's were' : ' was'} made from the site&rsquo;s braille data
           </div>
           <ul className="admin-review-corrections-list">

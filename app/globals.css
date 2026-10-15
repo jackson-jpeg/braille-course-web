@@ -2110,8 +2110,10 @@ details.faq-item.reveal:nth-child(6) {
 .enrollment-option input[type='radio'] {
   appearance: none;
   -webkit-appearance: none;
-  width: 18px;
-  height: 18px;
+  /* 24px: the WCAG 2.2 minimum target size (axe target-size) */
+  width: 24px;
+  height: 24px;
+  margin: 0;
   border: 2px solid rgba(212, 168, 83, 0.4);
   border-radius: 50%;
   flex-shrink: 0;
@@ -2128,8 +2130,8 @@ details.faq-item.reveal:nth-child(6) {
   top: 50%;
   left: 50%;
   transform: translate(-50%, -50%) scale(0);
-  width: 6px;
-  height: 6px;
+  width: 8px;
+  height: 8px;
   background: var(--navy);
   border-radius: 50%;
   transition: transform var(--transition-micro);
