@@ -68,6 +68,14 @@ export default function PoliciesPage() {
               Stripe.
             </p>
 
+            <h3>Free Course and Games</h3>
+            <p>
+              Your lesson and game progress is saved in your own browser. Unless you choose &ldquo;Skip tracking&rdquo;,
+              the site also records anonymous activity (which lessons are started and finished, and which games are
+              played) under a random ID stored on your device. It is never linked to your name or email, and is used
+              only to improve the course.
+            </p>
+
             <h3>Third-Party Services</h3>
             <ul>
               <li>

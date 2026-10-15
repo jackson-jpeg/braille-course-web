@@ -19,8 +19,9 @@ const AdminSchoolsTab = dynamic(() => import('./AdminSchoolsTab'), { loading: Ta
 const AdminCreateTab = dynamic(() => import('./AdminCreateTab'), { loading: TabLoading });
 const AdminMaterialsTab = dynamic(() => import('./AdminMaterialsTab'), { loading: TabLoading });
 const AdminSettingsTab = dynamic(() => import('./AdminSettingsTab'), { loading: TabLoading });
+const AdminLearnTab = dynamic(() => import('./AdminLearnTab'), { loading: TabLoading });
 
-type Tab = 'overview' | 'students' | 'payments' | 'emails' | 'schools' | 'create' | 'materials' | 'settings';
+type Tab = 'overview' | 'learn' | 'students' | 'payments' | 'emails' | 'schools' | 'create' | 'materials' | 'settings';
 
 function getGreeting(): string {
   const h = new Date().getHours();
@@ -38,6 +39,16 @@ const TAB_META: Record<Tab, { label: string; icon: JSX.Element }> = {
         <rect x="9" y="1" width="6" height="6" rx="1" stroke="currentColor" strokeWidth="1.5" />
         <rect x="1" y="9" width="6" height="6" rx="1" stroke="currentColor" strokeWidth="1.5" />
         <rect x="9" y="9" width="6" height="6" rx="1" stroke="currentColor" strokeWidth="1.5" />
+      </svg>
+    ),
+  },
+  learn: {
+    label: 'Learners',
+    icon: (
+      <svg width="15" height="15" viewBox="0 0 16 16" fill="none">
+        <path d="M8 2L1 5l7 3 7-3-7-3z" stroke="currentColor" strokeWidth="1.5" strokeLinejoin="round" />
+        <path d="M4 6.5V10c0 1 1.8 2 4 2s4-1 4-2V6.5" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" />
+        <path d="M15 5v3.5" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" />
       </svg>
     ),
   },
@@ -309,6 +320,15 @@ export default function AdminDashboard({ sections, enrollments, leads, schoolInq
         },
       },
       {
+        id: 'tab-learn',
+        label: 'Go to Learners',
+        detail: 'Free course & game engagement',
+        action: () => {
+          setTab('learn');
+          setShowPalette(false);
+        },
+      },
+      {
         id: 'tab-students',
         label: 'Go to Students',
         action: () => {
@@ -496,41 +516,51 @@ export default function AdminDashboard({ sections, enrollments, leads, schoolInq
 
         {/* Tabs */}
         <div className="admin-tabs">
-          {(['overview', 'students', 'payments', 'emails', 'schools', 'create', 'materials', 'settings'] as Tab[]).map(
-            (t) => (
-              <button
-                key={t}
-                className={`admin-tab ${tab === t ? 'admin-tab-active' : ''}`}
-                onClick={() => {
-                  if (tab === 'emails' && t !== 'emails' && hasUnsavedCompose) {
-                    setPendingTabSwitch(t);
-                    return;
-                  }
-                  setTab(t);
-                  if (t !== 'emails') {
-                    setEmailComposeTo('');
-                    setEmailInitialTemplate('');
-                    setPendingAttachmentIds([]);
-                  }
-                }}
-              >
-                <span className="admin-tab-icon">{TAB_META[t].icon}</span>
-                {TAB_META[t].label}
-                {t === 'students' && (newInquiryCount > 0 || waitlistedCount > 0) && (
-                  <span
-                    className={`admin-tab-badge admin-tab-badge-count ${waitlistedCount > 0 ? 'admin-tab-badge-orange' : 'admin-tab-badge-red'}`}
-                  >
-                    {newInquiryCount + waitlistedCount}
-                  </span>
-                )}
-                {t === 'payments' && pendingInvoiceCount > 0 && (
-                  <span className="admin-tab-badge admin-tab-badge-count admin-tab-badge-gold">
-                    {pendingInvoiceCount}
-                  </span>
-                )}
-              </button>
-            ),
-          )}
+          {(
+            [
+              'overview',
+              'learn',
+              'students',
+              'payments',
+              'emails',
+              'schools',
+              'create',
+              'materials',
+              'settings',
+            ] as Tab[]
+          ).map((t) => (
+            <button
+              key={t}
+              className={`admin-tab ${tab === t ? 'admin-tab-active' : ''}`}
+              onClick={() => {
+                if (tab === 'emails' && t !== 'emails' && hasUnsavedCompose) {
+                  setPendingTabSwitch(t);
+                  return;
+                }
+                setTab(t);
+                if (t !== 'emails') {
+                  setEmailComposeTo('');
+                  setEmailInitialTemplate('');
+                  setPendingAttachmentIds([]);
+                }
+              }}
+            >
+              <span className="admin-tab-icon">{TAB_META[t].icon}</span>
+              {TAB_META[t].label}
+              {t === 'students' && (newInquiryCount > 0 || waitlistedCount > 0) && (
+                <span
+                  className={`admin-tab-badge admin-tab-badge-count ${waitlistedCount > 0 ? 'admin-tab-badge-orange' : 'admin-tab-badge-red'}`}
+                >
+                  {newInquiryCount + waitlistedCount}
+                </span>
+              )}
+              {t === 'payments' && pendingInvoiceCount > 0 && (
+                <span className="admin-tab-badge admin-tab-badge-count admin-tab-badge-gold">
+                  {pendingInvoiceCount}
+                </span>
+              )}
+            </button>
+          ))}
         </div>
 
         {/* Tab content with fade transition */}
@@ -546,6 +576,8 @@ export default function AdminDashboard({ sections, enrollments, leads, schoolInq
               onSendEmail={handleSendEmail}
             />
           )}
+
+          {tab === 'learn' && <AdminLearnTab />}
 
           {tab === 'students' && (
             <AdminStudentsTab

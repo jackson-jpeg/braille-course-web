@@ -24,7 +24,7 @@ const ALL_GAMES: GameId[] = [
   'brailler-challenge',
 ];
 
-const GAME_NAMES: Record<GameId, string> = {
+export const GAME_NAMES: Record<GameId, string> = {
   wordgame: 'Word Game',
   explorer: 'Dot Explorer',
   hangman: 'Hangman',

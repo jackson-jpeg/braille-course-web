@@ -65,6 +65,17 @@ prisma/               # Schema + seed script
 - Stripe Embedded Checkout for payments; webhooks handle enrollment confirmation
 - Rate limiting for admin login is in-memory (`lib/rate-limit.ts`) — resets on deploy; acceptable for admin-only endpoint
 
+## Production database: never `db:push`
+
+- **Do not run `npm run db:push` (or `prisma db push`) against production.** Production holds
+  `Attendance_archive_2026`, `ClassSession_archive_2026`, `Enrollment_archive_2026` and `Grade_archive_2026`,
+  which are not in `schema.prisma`; a push would drop them (checked 2026-10-15 with `prisma migrate diff`).
+- To change the schema, generate the exact SQL for your change and apply only that:
+  `prisma migrate diff --from-schema-datamodel <old schema> --to-schema-datamodel prisma/schema.prisma --script`,
+  read it, then `prisma db execute --schema prisma/schema.prisma --file <that.sql>`.
+- `AnalyticsEvent` (anonymous lesson and game events, `/api/track`, admin Learners tab) was added this way on
+  2026-10-15.
+
 ## Domain and indexing
 
 - **The apex `https://teachbraille.org` is the one home.** In the Vercel project, `www.teachbraille.org`

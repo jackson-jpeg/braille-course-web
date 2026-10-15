@@ -127,7 +127,8 @@ export default function OnboardingModal() {
 
         {isLast && (
           <p className="onboarding-privacy">
-            All progress data stays on your device.{' '}
+            Your progress stays on your device. With tracking on, we also count anonymous lesson and game activity
+            (never your name or email).{' '}
             <button className="onboarding-privacy-link" onClick={() => handleClose(false)}>
               Skip tracking
             </button>

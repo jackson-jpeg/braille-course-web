@@ -10,6 +10,8 @@ const ROUTE_LIMITS: Record<string, number> = {
   'enrollment-status': 60,
   'game-progress': 60,
   sections: 60,
+  // Anonymous lesson/game events: a busy learner sends dozens in a session.
+  track: 300,
 };
 
 interface RateLimitEntry {

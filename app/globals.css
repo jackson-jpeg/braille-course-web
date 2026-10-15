@@ -17403,6 +17403,12 @@ details.faq-item.reveal:nth-child(6) {
   font-size: 0.82rem;
   font-weight: 600;
   color: var(--navy);
+  white-space: nowrap;
+}
+.admin-hbar-subcount {
+  font-weight: 400;
+  font-size: 0.74rem;
+  opacity: 0.6;
 }
 /* Quick actions */
 .admin-quick-actions {
