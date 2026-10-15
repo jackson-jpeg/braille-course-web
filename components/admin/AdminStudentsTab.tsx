@@ -20,6 +20,8 @@ interface Props {
   leads: Lead[];
   scheduleMap: Record<string, string>;
   onSendEmail: (email: string, template?: string) => void;
+  /** Called with the fresh list after every re-fetch, so the dashboard's badge stays current. */
+  onLeadsChange?: (leads: Lead[]) => void;
 }
 
 export default function AdminStudentsTab({
@@ -28,6 +30,7 @@ export default function AdminStudentsTab({
   leads: initialLeads,
   scheduleMap,
   onSendEmail,
+  onLeadsChange,
 }: Props) {
   const { showToast } = useToast();
   const [subTab, setSubTab] = useState<'enrolled' | 'prospective' | 'attendance' | 'progress'>('enrolled');
@@ -86,11 +89,14 @@ export default function AdminStudentsTab({
     try {
       const res = await fetch('/api/admin/leads');
       const data = await res.json();
-      if (res.ok) setLeadsList(data.leads);
+      if (res.ok) {
+        setLeadsList(data.leads);
+        onLeadsChange?.(data.leads);
+      }
     } catch (err) {
       console.error('Failed to fetch leads:', err);
     }
-  }, []);
+  }, [onLeadsChange]);
 
   // Sync leads from inbox
   const syncLeads = useCallback(async () => {
@@ -300,7 +306,7 @@ export default function AdminStudentsTab({
             <div className="admin-search-wrap">
               <input
                 type="text"
-                placeholder="Search by email\u2026"
+                placeholder="Search by email…"
                 value={search}
                 onChange={(e) => setSearch(e.target.value)}
                 className="admin-search"
@@ -444,7 +450,7 @@ export default function AdminStudentsTab({
             <div className="admin-search-wrap">
               <input
                 type="text"
-                placeholder="Search by email or name\u2026"
+                placeholder="Search by email or name…"
                 value={leadSearch}
                 onChange={(e) => setLeadSearch(e.target.value)}
                 className="admin-search"

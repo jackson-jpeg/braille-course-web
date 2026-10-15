@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { prisma } from '@/lib/prisma';
 import { checkRateLimit } from '@/lib/rate-limit';
+import { notifyNewLead, LEAD_SOURCES } from '@/lib/lead-notify';
 
 export async function POST(req: NextRequest) {
   const ip = req.headers.get('x-forwarded-for')?.split(',')[0]?.trim() || 'unknown';
@@ -24,15 +25,20 @@ export async function POST(req: NextRequest) {
     const isUpdates = list === 'summer-updates';
     const subject = isUpdates ? 'Summer Course Updates' : 'Waitlist Request';
 
-    await prisma.lead.upsert({
-      where: { email: email.toLowerCase().trim() },
+    const normalized = email.toLowerCase().trim();
+    const existed = await prisma.lead.findUnique({ where: { email: normalized }, select: { id: true } });
+
+    const lead = await prisma.lead.upsert({
+      where: { email: normalized },
       update: isUpdates ? {} : { subject, status: 'NEW' },
       create: {
-        email: email.toLowerCase().trim(),
+        email: normalized,
         subject,
         status: 'NEW',
       },
     });
+
+    if (!existed) await notifyNewLead(lead, isUpdates ? LEAD_SOURCES.summerUpdates : LEAD_SOURCES.waitlist);
 
     return NextResponse.json({ success: true });
   } catch (err) {

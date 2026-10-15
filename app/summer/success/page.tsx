@@ -38,7 +38,7 @@ export default async function SuccessPage({ searchParams }: { searchParams: Prom
   const { session_id } = await searchParams;
 
   if (!session_id) {
-    return <ErrorCard title="No Payment Found" message="We couldn\u2019t find a payment associated with this page." />;
+    return <ErrorCard title="No Payment Found" message="We couldn’t find a payment associated with this page." />;
   }
 
   let session;
@@ -48,7 +48,7 @@ export default async function SuccessPage({ searchParams }: { searchParams: Prom
     return (
       <ErrorCard
         title="No Payment Found"
-        message="We couldn\u2019t verify your payment. Please contact us if you believe this is an error."
+        message="We couldn’t verify your payment. Please contact us if you believe this is an error."
       />
     );
   }
@@ -57,7 +57,7 @@ export default async function SuccessPage({ searchParams }: { searchParams: Prom
     return (
       <ErrorCard
         title="Payment Not Completed"
-        message="Your payment hasn\u2019t been processed yet. Please try again or contact us for help."
+        message="Your payment hasn’t been processed yet. Please try again or contact us for help."
       />
     );
   }

@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { prisma } from '@/lib/prisma';
+import { notifyNewLead, LEAD_SOURCES } from '@/lib/lead-notify';
 import { isAuthorized } from '@/lib/admin-auth';
 
 /* ── GET /api/admin/leads?key=... — list all leads ── */
@@ -50,6 +51,7 @@ export async function POST(req: NextRequest) {
         subject: subject?.trim() || null,
       },
     });
+    await notifyNewLead(lead, LEAD_SOURCES.addLead);
 
     return NextResponse.json({
       lead: {

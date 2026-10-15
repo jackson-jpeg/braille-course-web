@@ -42,7 +42,7 @@ function shell(content: string, preheader?: string) {
   // Hidden preheader text that shows in Gmail/Outlook preview but not in the email body.
   // Padded with zero-width spaces + non-breaking spaces to push header text out of the snippet.
   const preheaderHtml = preheader
-    ? `<div style="display:none;font-size:1px;color:${C.cream};line-height:1px;max-height:0;max-width:0;opacity:0;overflow:hidden;">${preheader}${'&#847; &zwnj; '.repeat(40)}</div>`
+    ? `<div style="display:none;font-size:1px;color:${C.cream};line-height:1px;max-height:0;max-width:0;opacity:0;overflow:hidden;">${escapeHtml(preheader)}${'&#847; &zwnj; '.repeat(40)}</div>`
     : '';
 
   return `
@@ -223,7 +223,7 @@ export function enrollmentConfirmation(opts: { isDeposit: boolean; schedule: str
             `;">$${PRICING.deposit} deposit</strong> has been received and your enrollment is&nbsp;confirmed.`
           : 'Your <strong style="color:' +
             C.navy +
-            `;">$${PRICING.full} payment</strong> is confirmed &mdash; you&rsquo;re fully enrolled and ready to&nbsp;go!`
+            `;">$${PRICING.full} payment</strong> is confirmed. You&rsquo;re fully enrolled and ready to&nbsp;go!`
       }
     </td>
   </tr>
@@ -243,7 +243,7 @@ export function enrollmentConfirmation(opts: { isDeposit: boolean; schedule: str
       <table role="presentation" width="100%" cellpadding="0" cellspacing="0">
         ${detailRow('Schedule', schedule)}
         ${detailRow('Dates', PRICING.courseDates.replace('–', '&ndash;'))}
-        ${detailRow('Sessions', `${PRICING.totalSessions} total &mdash; twice per week, 1&nbsp;hr&nbsp;each`)}
+        ${detailRow('Sessions', `${PRICING.totalSessions} total, twice per week, 1&nbsp;hr&nbsp;each`)}
         ${detailRow('Format', 'Fully remote via video call')}
       </table>
     </td>
@@ -251,7 +251,7 @@ export function enrollmentConfirmation(opts: { isDeposit: boolean; schedule: str
 
   ${ctaButton('View Course Page', 'https://teachbraille.org/summer')}
 
-  ${footer(isDeposit ? 'You&rsquo;ll receive a receipt from Stripe separately. No action is needed before June&nbsp;7 &mdash; we&rsquo;ll send a reminder with video call details closer to the start date.' : 'You&rsquo;ll receive a receipt from Stripe separately. We&rsquo;ll send a reminder with video call details closer to the start&nbsp;date.')}`;
+  ${footer(isDeposit ? 'You&rsquo;ll receive a receipt from Stripe separately. No action is needed before June&nbsp;7. We&rsquo;ll send a reminder with video call details closer to the start date.' : 'You&rsquo;ll receive a receipt from Stripe separately. We&rsquo;ll send a reminder with video call details closer to the start&nbsp;date.')}`;
 
   const preview = isDeposit
     ? `Your $${PRICING.deposit} deposit is confirmed. Your spot in the Summer Braille Course is reserved.`
@@ -302,6 +302,60 @@ export function appointmentRequestAdminEmail(opts: {
   ${footer('This lead has been added to your Prospective Students list with status NEW.')}`;
 
   return shell(body, `New appointment request from ${name} (${email})`);
+}
+
+/** Admin alert for a new lead from any path that has no richer email of its own. */
+export function newLeadAdminEmail(opts: {
+  source: string;
+  email: string;
+  name?: string | null;
+  subject?: string | null;
+  phone?: string | null;
+  preferredCallbackTime?: string | null;
+  notes?: string | null;
+  status: string;
+  createdAt: Date;
+  id: string;
+}) {
+  const none = '<em style="color:#999;">None</em>';
+  const when = opts.createdAt.toLocaleString('en-US', {
+    timeZone: 'America/New_York',
+    dateStyle: 'full',
+    timeStyle: 'long',
+  });
+  const who = opts.name || opts.email;
+
+  const body = `
+  ${header('New Lead', `From ${opts.source}`)}
+
+  <tr>
+    <td style="padding:32px 40px 0;font-family:${FONT_BODY};font-size:15px;color:${C.slate};line-height:1.7;">
+      A new lead was added to your Prospective Students list. Here is everything stored for it:
+    </td>
+  </tr>
+
+  <tr>
+    <td style="padding:24px 40px 0;">
+      <table role="presentation" width="100%" cellpadding="0" cellspacing="0">
+        ${detailRow('Name', opts.name ? escapeHtml(opts.name) : none)}
+        ${detailRow('Email', `<a href="mailto:${escapeHtml(opts.email)}" style="color:${C.gold};text-decoration:none;border-bottom:1px solid ${C.goldLight};">${escapeHtml(opts.email)}</a>`)}
+        ${detailRow('Type', opts.subject ? escapeHtml(opts.subject) : none)}
+        ${detailRow('Phone', opts.phone ? escapeHtml(opts.phone) : none)}
+        ${detailRow('Preferred Times', opts.preferredCallbackTime ? escapeHtml(opts.preferredCallbackTime) : none)}
+        ${detailRow('Notes', opts.notes ? escapeHtml(opts.notes).replace(/\n/g, '<br />') : none)}
+        ${detailRow('Status', escapeHtml(opts.status))}
+        ${detailRow('Source', escapeHtml(opts.source))}
+        ${detailRow('Created', escapeHtml(when))}
+        ${detailRow('Lead ID', escapeHtml(opts.id))}
+      </table>
+    </td>
+  </tr>
+
+  ${ctaButton('View in Admin Dashboard', 'https://teachbraille.org/admin')}
+
+  ${footer('You get this email for every new lead on teachbraille.org.')}`;
+
+  return shell(body, `New lead: ${who} (${opts.source})`);
 }
 
 export function appointmentRequestConfirmationEmail(opts: { name: string }) {

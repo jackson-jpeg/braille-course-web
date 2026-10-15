@@ -643,7 +643,7 @@ export default function AdminPaymentsTab({ enrollments }: Props) {
             <input
               type="text"
               className="admin-email-search"
-              placeholder="Search by email, name, amount, status\u2026"
+              placeholder="Search by email, name, amount, status…"
               value={chargeSearch}
               onChange={(e) => setChargeSearch(e.target.value)}
             />

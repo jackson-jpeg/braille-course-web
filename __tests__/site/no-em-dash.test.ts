@@ -29,10 +29,11 @@ test('the scanner sees raw, escaped and entity em dashes, and skips comments', (
         "export const a = 'raw \u2014 dash';",
         "export const b = 'escaped \\u2014 dash';",
         'export const C = () => <p>entity &mdash; dash, numeric &#8212; too</p>;',
+        "export const html = '<p>email &mdash; html</p>';",
         "export const d = 'clean: no dash';",
       ].join('\n'),
     );
-    expect(findEmDashes(dir).map((h) => h.line)).toEqual([2, 3, 4]);
+    expect(findEmDashes(dir).map((h) => h.line)).toEqual([2, 3, 4, 5]);
   } finally {
     fs.rmSync(dir, { recursive: true, force: true });
   }

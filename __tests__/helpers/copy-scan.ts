@@ -46,10 +46,10 @@ export function findEmDashes(repoRoot: string): CopyHit[] {
           ts.isTemplateTail(node) ||
           ts.isJsxText(node)
         ) {
-          // The decoded value catches '\u2014' escapes; JSX text is checked for HTML entities too.
+          // The decoded value catches '\u2014' escapes; entities count too (JSX text and HTML email strings).
           const value = ts.isJsxText(node) ? node.getText(sf) : (node as ts.LiteralLikeNode).text;
           const text = node.getText(sf);
-          if (value.includes(EM_DASH) || (ts.isJsxText(node) && EM_DASH_ENTITY.test(value))) {
+          if (value.includes(EM_DASH) || EM_DASH_ENTITY.test(value)) {
             hits.push({
               file: path.relative(repoRoot, file),
               line: sf.getLineAndCharacterOfPosition(node.getStart(sf)).line + 1,

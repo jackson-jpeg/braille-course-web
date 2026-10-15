@@ -169,7 +169,16 @@ const TAB_META: Record<Tab, { label: string; icon: JSX.Element }> = {
   },
 };
 
-export default function AdminDashboard({ sections, enrollments, leads, schoolInquiries, scheduleMap }: AdminProps) {
+export default function AdminDashboard({
+  sections,
+  enrollments,
+  leads: initialLeads,
+  schoolInquiries,
+  scheduleMap,
+}: AdminProps) {
+  // Server-rendered at page load, then kept current by the Students tab (sync, add, edit, delete),
+  // so the Students badge and the overview never show a stale count.
+  const [leads, setLeads] = useState(initialLeads);
   const [tab, setTab] = useState<Tab>('overview');
   const [emailComposeTo, setEmailComposeTo] = useState('');
   const [emailInitialTemplate, setEmailInitialTemplate] = useState('');
@@ -469,7 +478,7 @@ export default function AdminDashboard({ sections, enrollments, leads, schoolInq
                 ref={paletteInputRef}
                 type="text"
                 className="admin-palette-input"
-                placeholder="Search students, actions, tabs\u2026"
+                placeholder="Search students, actions, tabs…"
                 value={paletteQuery}
                 onChange={(e) => setPaletteQuery(e.target.value)}
                 onKeyDown={handlePaletteKeyDown}
@@ -492,7 +501,7 @@ export default function AdminDashboard({ sections, enrollments, leads, schoolInq
                 )}
               </div>
               <div className="admin-palette-footer">
-                <kbd>\u2191\u2193</kbd> navigate <kbd>\u21B5</kbd> select <kbd>esc</kbd> close
+                <kbd>↑↓</kbd> navigate <kbd>↵</kbd> select <kbd>esc</kbd> close
               </div>
             </div>
           </div>
@@ -584,6 +593,7 @@ export default function AdminDashboard({ sections, enrollments, leads, schoolInq
               sections={sections}
               enrollments={enrollments}
               leads={leads}
+              onLeadsChange={setLeads}
               scheduleMap={scheduleMap}
               onSendEmail={handleSendEmail}
             />

@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from 'next/server';
 import { prisma } from '@/lib/prisma';
 import { searchEmailsBySubject } from '@/lib/icloud-mail';
 import { isAuthorized } from '@/lib/admin-auth';
+import { notifyNewLead, LEAD_SOURCES } from '@/lib/lead-notify';
 
 /* ── POST /api/admin/leads/sync?key=... — auto-sync inquiry emails from iCloud IMAP ── */
 export async function POST(req: NextRequest) {
@@ -22,11 +23,13 @@ export async function POST(req: NextRequest) {
 
       if (!email) continue;
 
-      await prisma.lead.upsert({
+      const existed = await prisma.lead.findUnique({ where: { email }, select: { id: true } });
+      const lead = await prisma.lead.upsert({
         where: { email },
         create: { email, name, subject: em.subject },
         update: {},
       });
+      if (!existed) await notifyNewLead(lead, LEAD_SOURCES.syncInbox);
       synced++;
     }
 

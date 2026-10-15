@@ -286,7 +286,7 @@ export default function AdminMaterialsTab({ onEmailMaterial }: Props) {
         <input
           type="text"
           className="admin-email-search"
-          placeholder="Search files\u2026"
+          placeholder="Search files…"
           value={materialSearch}
           onChange={(e) => setMaterialSearch(e.target.value)}
         />
