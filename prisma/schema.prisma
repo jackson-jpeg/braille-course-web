@@ -247,6 +247,22 @@ model GameProgress {
   @@index([enrollmentId])
 }
 
+/// Anonymous, privacy-respecting engagement events for the free course and games.
+/// No PII: `visitorId` is a random id minted in the browser's localStorage, not a login.
+model AnalyticsEvent {
+  id        String   @id @default(cuid())
+  visitorId String // anonymous random id from the learner's device
+  eventType String // 'lesson_start' | 'lesson_complete' | 'game_play'
+  target    String // lesson slug (lessons) or game id (games)
+  meta      String? // optional JSON blob: { score?, won? }
+  createdAt DateTime @default(now())
+
+  @@index([eventType, createdAt])
+  @@index([target, eventType])
+  @@index([visitorId])
+  @@index([createdAt])
+}
+
 model SchoolInquiry {
   id                 String              @id @default(cuid())
 

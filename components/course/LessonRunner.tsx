@@ -8,6 +8,7 @@ import GameErrorBoundary from '@/components/GameErrorBoundary';
 import BraillerInput from '@/components/course/BraillerInput';
 import LessonNav from '@/components/course/LessonNav';
 import { useCourseProgress } from '@/hooks/useCourseProgress';
+import { track } from '@/lib/analytics-track';
 import { describeDots, type Lesson } from '@/lib/course-curriculum';
 import type { GameId } from '@/lib/progress-types';
 
@@ -56,6 +57,7 @@ export default function LessonRunner({ lesson, prev, next }: LessonRunnerProps) 
   useEffect(() => {
     markOpened(lesson.slug);
     setAlreadyDone(isComplete(lesson.slug));
+    track('lesson_start', lesson.slug);
   }, [lesson.slug, markOpened, isComplete]);
 
   const drillDone = hasChars && solved.every(Boolean);
@@ -81,12 +83,14 @@ export default function LessonRunner({ lesson, prev, next }: LessonRunnerProps) 
       const total = lesson.chars.length;
       const score = Math.round((firstTry.filter(Boolean).length / total) * 100);
       complete(lesson.slug, score);
+      track('lesson_complete', lesson.slug, { score });
     }
   }, [drillDone, firstTry, lesson.chars.length, lesson.slug, complete]);
 
   const finishWrapUp = useCallback(() => {
     setManualDone(true);
     complete(lesson.slug, 100);
+    track('lesson_complete', lesson.slug, { score: 100 });
   }, [complete, lesson.slug]);
 
   const lessonFinished = drillDone || manualDone || alreadyDone;

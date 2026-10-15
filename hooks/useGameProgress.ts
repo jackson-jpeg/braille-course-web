@@ -14,6 +14,7 @@ import {
   invalidateCache,
 } from '@/lib/progress-storage';
 import { checkAchievements, type Achievement } from '@/lib/achievements';
+import { track } from '@/lib/analytics-track';
 
 interface UseGameProgressReturn {
   stats: GameStats;
@@ -53,6 +54,7 @@ export function useGameProgress(gameId: GameId): UseGameProgressReturn {
   const recordResult = useCallback(
     (won: boolean, score: number): Achievement[] => {
       const progress = recordGameResult(gameId, won, score, difficulty);
+      track('game_play', gameId, { won, score, difficulty });
       const newAchievements = checkAchievements(progress);
       refresh();
       return newAchievements;
