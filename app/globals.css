@@ -2426,6 +2426,50 @@ details.faq-item.reveal:nth-child(6) {
   font-weight: 500;
 }
 
+/* "Not ready to enroll yet?" email capture on /summer */
+.summer-updates {
+  max-width: 440px;
+  margin: 40px auto 0;
+  padding: 32px 28px;
+  border: 1px solid rgba(212, 168, 83, 0.2);
+  border-radius: var(--radius-md);
+  text-align: center;
+}
+.summer-updates-title {
+  font-size: 1.05rem;
+  font-weight: 500;
+  color: var(--gold-light);
+  margin-bottom: 8px;
+}
+.summer-updates-text {
+  font-size: 0.9rem;
+  color: rgba(255, 255, 255, 0.6);
+  font-weight: 300;
+  line-height: 1.7;
+}
+.summer-updates-button {
+  padding: 12px 28px;
+  background: transparent;
+  color: var(--gold-light);
+  font-family: var(--font-body), 'Outfit', sans-serif;
+  font-size: 0.88rem;
+  font-weight: 500;
+  border: 2px solid rgba(212, 168, 83, 0.4);
+  border-radius: var(--radius-full);
+  cursor: pointer;
+  transition:
+    border-color var(--transition-micro),
+    background var(--transition-micro);
+}
+.summer-updates-button:hover {
+  border-color: var(--gold);
+  background: rgba(212, 168, 83, 0.08);
+}
+.summer-updates-button:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
 @media (max-width: 768px) {
   .enrollment-submit {
     padding: 16px 32px;

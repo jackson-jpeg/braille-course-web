@@ -3,6 +3,7 @@ import { prisma } from '@/lib/prisma';
 import BrailleHero from '@/components/BrailleHero';
 import FloatingCta from '@/components/FloatingCta';
 import EnrollmentForm from '@/components/EnrollmentForm';
+import SummerUpdatesForm from '@/components/SummerUpdatesForm';
 import { SpotsProvider } from '@/lib/spots-context';
 import SpotsBadge from '@/components/SpotsBadge';
 import Footer from '@/components/Footer';
@@ -11,12 +12,12 @@ import { PRICING, formatPrice } from '@/lib/pricing';
 export const revalidate = 60;
 
 export const metadata: Metadata = {
-  title: 'Summer Braille Course 2027 — Learn Braille This Summer',
+  title: 'Summer Braille Course 2027: Learn Braille This Summer',
   description:
-    'Learn to read and write braille this summer. Remote course for parents and loved ones of visually impaired individuals. Taught by Delaney Costello, certified TVI. Only 10 spots — Summer 2027.',
+    'Learn to read and write braille this summer. Remote course for parents and loved ones of visually impaired individuals. Taught by Delaney Costello, certified TVI. Only 10 spots for Summer 2027.',
   alternates: { canonical: 'https://teachbraille.org/summer' },
   openGraph: {
-    title: 'Summer Braille Course 2027 — Learn Braille This Summer | TeachBraille.org',
+    title: 'Summer Braille Course 2027: Learn Braille This Summer | TeachBraille.org',
     description:
       'A remote braille course for parents and loved ones. Live instruction from a certified TVI. Only 10 spots available.',
     type: 'website',
@@ -137,10 +138,10 @@ export default async function SummerPage() {
           <div className="section-label">Why This Course Exists</div>
           <h2 id="about-heading">Built From a Parent&apos;s Request</h2>
           <p className="about-text">
-            Last summer, a former student&apos;s mother reached out hoping to learn Braille — the first time a parent
-            had ever asked. Over several weeks at the library, her home, and on virtual calls, she learned half the
-            alphabet and gained real confidence in reading and writing Braille. Her curiosity and determination inspired
-            this course, so more families can share that same experience.
+            Last summer, a former student&apos;s mother reached out hoping to learn Braille. It was the first time a
+            parent had ever asked. Over several weeks at the library, her home, and on virtual calls, she learned half
+            the alphabet and gained real confidence in reading and writing Braille. Her curiosity and determination
+            inspired this course, so more families can share that same experience.
           </p>
 
           <blockquote className="pullquote reveal">
@@ -183,7 +184,7 @@ export default async function SummerPage() {
               <p className="faq-answer">
                 The course is <strong>{PRICING.courseDuration} long</strong>, beginning{' '}
                 <strong>{PRICING.courseStartDate}</strong> and ending the week of <strong>July 26</strong>. The final
-                week is one class short — Section A meets only Monday, July 26th, and Section B meets only Tuesday, July
+                week is one class short: Section A meets only Monday, July 26th, and Section B meets only Tuesday, July
                 27th.
               </p>
             </details>
@@ -198,8 +199,8 @@ export default async function SummerPage() {
               <p className="faq-answer">
                 You&apos;ll meet <strong>twice per week for one hour each session</strong>. Over the{' '}
                 {PRICING.courseDuration} course, that comes out to{' '}
-                <strong>{PRICING.totalSessions} sessions total</strong>. Two time slots are available — pick the one
-                that works best for you:
+                <strong>{PRICING.totalSessions} sessions total</strong>. Two time slots are available. Pick the one that
+                works best for you:
               </p>
               <ul className="faq-answer" style={{ marginTop: '0.5rem', paddingLeft: '1.25rem' }}>
                 <li>Monday &amp; Wednesday, 1–2 PM ET</li>
@@ -216,7 +217,7 @@ export default async function SummerPage() {
               </summary>
               <p className="faq-answer">
                 To ensure personalized attention for every learner, enrollment is limited to{' '}
-                <strong>10 total spots</strong> — 5 per class. Participants will be chosen on a first-come, first-served
+                <strong>10 total spots</strong> (5 per class). Participants will be chosen on a first-come, first-served
                 basis.
               </p>
             </details>
@@ -244,7 +245,7 @@ export default async function SummerPage() {
               <p className="faq-answer">
                 The total cost for the {PRICING.courseDuration} course ({PRICING.totalSessions} sessions) is{' '}
                 <strong>{formatPrice(PRICING.full)} per learner</strong>. You can pay in full upfront, or reserve your
-                spot with a <strong>{formatPrice(PRICING.deposit)} deposit</strong> — the remaining{' '}
+                spot with a <strong>{formatPrice(PRICING.deposit)} deposit</strong>, and the remaining{' '}
                 <strong>{formatPrice(PRICING.balance)}</strong> will be charged automatically on{' '}
                 <strong>{PRICING.balanceDueDate}</strong>.
               </p>
@@ -328,7 +329,7 @@ export default async function SummerPage() {
           </div>
           <p className="materials-note">
             A <strong>brailler</strong> is optional but highly recommended. If you have access to one, it will greatly
-            enhance your learning experience. Don&apos;t have one? No worries — we can discuss options before the course
+            enhance your learning experience. Don&apos;t have one? No worries. We can discuss options before the course
             begins.
           </p>
         </div>
@@ -366,6 +367,8 @@ export default async function SummerPage() {
             </svg>
             Secure checkout powered by Stripe
           </div>
+
+          <SummerUpdatesForm />
 
           <div className="cta-divider" aria-hidden="true"></div>
 

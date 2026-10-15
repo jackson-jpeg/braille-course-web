@@ -55,7 +55,7 @@ export default async function LessonPage({ params }: { params: Promise<{ lesson:
     isAccessibleForFree: true,
     isPartOf: {
       '@type': 'Course',
-      name: 'Learn Braille — Free Self-Paced Course',
+      name: 'Learn Braille: Free Self-Paced Course',
       url: 'https://teachbraille.org/learn',
     },
     author: {

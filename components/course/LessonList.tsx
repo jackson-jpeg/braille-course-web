@@ -3,16 +3,22 @@
 import Link from 'next/link';
 import { useCourseProgress } from '@/hooks/useCourseProgress';
 import CourseProgressBar from '@/components/course/CourseProgressBar';
-import { COURSE_MODULES, TOTAL_LESSONS, ALL_LESSONS, getLessonBySlug } from '@/lib/course-curriculum';
+import { COURSE_MODULES, TOTAL_LESSONS, ALL_LESSONS, getLessonIndex } from '@/lib/course-curriculum';
 
 export default function LessonList() {
   const { completedCount, percent, lastLessonSlug, isComplete } = useCourseProgress();
 
-  const resumeLesson = lastLessonSlug ? getLessonBySlug(lastLessonSlug) : undefined;
   const allDone = completedCount >= TOTAL_LESSONS && TOTAL_LESSONS > 0;
   const firstLesson = ALL_LESSONS[0];
 
-  // Where the primary CTA points: first unfinished lesson (or resume, or start).
+  // Resume at the last lesson opened, or, once that one is finished, at the first
+  // unfinished lesson after it (wrapping to the start), so Resume never reopens a done lesson.
+  const lastIndex = lastLessonSlug ? getLessonIndex(lastLessonSlug) : -1;
+  const resumeLesson =
+    lastIndex === -1
+      ? undefined
+      : ALL_LESSONS.map((_, i) => ALL_LESSONS[(lastIndex + i) % ALL_LESSONS.length]).find((l) => !isComplete(l.slug));
+
   const nextUp = resumeLesson && !allDone ? resumeLesson : firstLesson;
   const ctaLabel = allDone
     ? 'Review from the start'

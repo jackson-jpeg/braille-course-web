@@ -1,6 +1,6 @@
 import type { Metadata } from 'next';
 import { Outfit, DM_Serif_Display, Caveat } from 'next/font/google';
-import { Analytics } from '@vercel/analytics/next';
+import SiteAnalytics from '@/components/SiteAnalytics';
 import NavBar from '@/components/NavBar';
 import ScrollRevealInit from '@/components/ScrollRevealInit';
 import './globals.css';
@@ -112,7 +112,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
         <NavBar />
         <ScrollRevealInit />
         <main id="main-content">{children}</main>
-        <Analytics />
+        <SiteAnalytics />
       </body>
     </html>
   );

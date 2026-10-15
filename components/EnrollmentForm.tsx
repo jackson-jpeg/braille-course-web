@@ -169,7 +169,7 @@ export default function EnrollmentForm() {
         : selectedPlan === 'deposit'
           ? formatPrice(PRICING.deposit)
           : '';
-    return price ? `Continue to Checkout — ${price}` : 'Continue to Checkout';
+    return price ? `Continue to Checkout: ${price}` : 'Continue to Checkout';
   })();
 
   return (
@@ -234,7 +234,7 @@ export default function EnrollmentForm() {
               onChange={() => setSelectedPlan('full')}
             />
             <div className="enrollment-option-text">
-              <div className="enrollment-option-title">Pay in Full — {formatPrice(PRICING.full)}</div>
+              <div className="enrollment-option-title">Pay in Full: {formatPrice(PRICING.full)}</div>
               <div className="enrollment-option-sub">One-time payment</div>
             </div>
           </label>
@@ -264,7 +264,7 @@ export default function EnrollmentForm() {
           const scheduleText = section ? SECTION_SCHEDULES[section.label] || section.label : '';
           const planText =
             selectedPlan === 'full'
-              ? `Pay in Full — ${formatPrice(PRICING.full)}`
+              ? `Pay in Full: ${formatPrice(PRICING.full)}`
               : `${formatPrice(PRICING.deposit)} deposit today, ${formatPrice(PRICING.balance)} on ${PRICING.balanceDueDate}`;
           return (
             <div className="enrollment-summary">
