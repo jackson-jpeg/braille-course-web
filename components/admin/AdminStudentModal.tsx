@@ -349,7 +349,7 @@ export default function AdminStudentModal({ enrollment, scheduleMap, onClose, on
                       <strong>
                         {attendanceStats.attended}/{attendanceStats.total}
                       </strong>{' '}
-                      sessions &mdash; {attendanceStats.rate}% attendance
+                      sessions ({attendanceStats.rate}% attendance)
                     </p>
                     <div className="admin-student-attendance-list">
                       {attendanceStats.records.map((r) => (

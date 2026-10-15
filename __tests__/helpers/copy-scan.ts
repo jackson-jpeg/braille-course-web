@@ -8,6 +8,7 @@ import ts from 'typescript';
 
 export const COPY_ROOTS = ['app', 'components', 'lib', 'hooks'];
 const EM_DASH = '—';
+const EM_DASH_ENTITY = /&(mdash|#8212|#x2014);/i;
 
 export interface CopyHit {
   file: string;
@@ -28,7 +29,7 @@ export function findEmDashes(repoRoot: string): CopyHit[] {
   for (const root of COPY_ROOTS) {
     for (const file of sourceFiles(path.join(repoRoot, root))) {
       const src = fs.readFileSync(file, 'utf8');
-      if (!src.includes(EM_DASH)) continue;
+      if (!src.includes(EM_DASH) && !/\\u2014|&(mdash|#8212|#x2014);/i.test(src)) continue;
       const sf = ts.createSourceFile(
         file,
         src,
@@ -45,8 +46,10 @@ export function findEmDashes(repoRoot: string): CopyHit[] {
           ts.isTemplateTail(node) ||
           ts.isJsxText(node)
         ) {
+          // The decoded value catches '\u2014' escapes; JSX text is checked for HTML entities too.
+          const value = ts.isJsxText(node) ? node.getText(sf) : (node as ts.LiteralLikeNode).text;
           const text = node.getText(sf);
-          if (text.includes(EM_DASH)) {
+          if (value.includes(EM_DASH) || (ts.isJsxText(node) && EM_DASH_ENTITY.test(value))) {
             hits.push({
               file: path.relative(repoRoot, file),
               line: sf.getLineAndCharacterOfPosition(node.getStart(sf)).line + 1,

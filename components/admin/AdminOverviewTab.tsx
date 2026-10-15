@@ -329,7 +329,7 @@ export default function AdminOverviewTab({
                         {newSchoolInquiries.length} new school{' '}
                         {newSchoolInquiries.length === 1 ? 'inquiry' : 'inquiries'}
                       </strong>
-                      {' \u2014 '}
+                      {': '}
                       {newSchoolInquiries
                         .slice(0, 2)
                         .map((s) => s.schoolName)
@@ -346,7 +346,7 @@ export default function AdminOverviewTab({
                       <strong>
                         {newLeads.length} new {newLeads.length === 1 ? 'inquiry' : 'inquiries'}
                       </strong>
-                      {' \u2014 '}
+                      {': '}
                       {newLeads
                         .slice(0, 2)
                         .map((l) => l.name || l.email)
@@ -363,7 +363,7 @@ export default function AdminOverviewTab({
                       <strong>
                         {waitlisted.length} {waitlisted.length === 1 ? 'student' : 'students'} waitlisted
                       </strong>
-                      {' \u2014 '}
+                      {': '}
                       {waitlisted
                         .slice(0, 2)
                         .map((e) => e.email || 'Unknown')

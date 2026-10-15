@@ -400,7 +400,7 @@ export default function AdminStudentsTab({
                     >
                       <td>
                         <span className="admin-email-cell">
-                          {e.email || '\u2014'}
+                          {e.email || 'n/a'}
                           {e.email && <CopyButton text={e.email} label="Copy email" />}
                         </span>
                       </td>
@@ -670,7 +670,7 @@ export default function AdminStudentsTab({
                             <CopyButton text={l.email} label="Copy email" />
                           </span>
                         </td>
-                        <td>{l.name || '\u2014'}</td>
+                        <td>{l.name || 'n/a'}</td>
                         <td>
                           {l.subject ? (
                             <span
@@ -683,7 +683,7 @@ export default function AdminStudentsTab({
                                   : l.subject}
                             </span>
                           ) : (
-                            '\u2014'
+                            'n/a'
                           )}
                         </td>
                         <td>
@@ -692,7 +692,7 @@ export default function AdminStudentsTab({
                               {l.phone}
                             </a>
                           ) : (
-                            '\u2014'
+                            'n/a'
                           )}
                         </td>
                         <td
@@ -704,7 +704,7 @@ export default function AdminStudentsTab({
                           }}
                           title={l.preferredCallbackTime || ''}
                         >
-                          {l.preferredCallbackTime || '\u2014'}
+                          {l.preferredCallbackTime || 'n/a'}
                         </td>
                         <td>
                           <span className={`admin-status admin-status-${l.status.toLowerCase()}`}>{l.status}</span>
@@ -723,7 +723,7 @@ export default function AdminStudentsTab({
                               : l.notes.length > 40
                                 ? l.notes.slice(0, 40) + '\u2026'
                                 : l.notes
-                            : '\u2014'}
+                            : 'n/a'}
                         </td>
                         <td title={fullDate(l.createdAt)}>{relativeTime(l.createdAt)}</td>
                         <td>

@@ -386,7 +386,7 @@ export default function AdminSchoolsTab({ schoolInquiries, onSync, onNavigate: _
                         </div>
                         {(inquiry.districtName || inquiry.state) && (
                           <p className="admin-school-district">
-                            {[inquiry.districtName, inquiry.state].filter(Boolean).join(' \u2014 ')}
+                            {[inquiry.districtName, inquiry.state].filter(Boolean).join(', ')}
                           </p>
                         )}
                         <div className="admin-school-contact">
@@ -514,7 +514,7 @@ export default function AdminSchoolsTab({ schoolInquiries, onSync, onNavigate: _
                             <span className="admin-archived-row-school">{inquiry.schoolName}</span>
                             {(inquiry.districtName || inquiry.state) && (
                               <span className="admin-archived-row-district">
-                                {[inquiry.districtName, inquiry.state].filter(Boolean).join(' \u2014 ')}
+                                {[inquiry.districtName, inquiry.state].filter(Boolean).join(', ')}
                               </span>
                             )}
                             <span className="admin-archived-row-contact">{inquiry.contactName}</span>
@@ -571,19 +571,17 @@ export default function AdminSchoolsTab({ schoolInquiries, onSync, onNavigate: _
                   {contractedSchools.map((inquiry) => (
                     <tr key={inquiry.id} className="admin-contracts-row" onClick={() => setSelectedSchool(inquiry)}>
                       <td className="admin-contracts-cell-school">{inquiry.schoolName}</td>
-                      <td>{inquiry.districtName || '\u2014'}</td>
+                      <td>{inquiry.districtName || 'n/a'}</td>
                       <td>{inquiry.contactName}</td>
-                      <td>{inquiry.state || '\u2014'}</td>
-                      <td>{inquiry.studentCount || '\u2014'}</td>
+                      <td>{inquiry.state || 'n/a'}</td>
+                      <td>{inquiry.studentCount || 'n/a'}</td>
                       <td>
-                        {inquiry.contractStartDate
-                          ? new Date(inquiry.contractStartDate).toLocaleDateString()
-                          : '\u2014'}
+                        {inquiry.contractStartDate ? new Date(inquiry.contractStartDate).toLocaleDateString() : 'n/a'}
                       </td>
                       <td>
-                        {inquiry.contractEndDate ? new Date(inquiry.contractEndDate).toLocaleDateString() : '\u2014'}
+                        {inquiry.contractEndDate ? new Date(inquiry.contractEndDate).toLocaleDateString() : 'n/a'}
                       </td>
-                      <td>{inquiry.serviceHours || '\u2014'}</td>
+                      <td>{inquiry.serviceHours || 'n/a'}</td>
                       <td className="admin-contracts-cell-date">{relativeTime(inquiry.updatedAt)}</td>
                       <td>
                         <button

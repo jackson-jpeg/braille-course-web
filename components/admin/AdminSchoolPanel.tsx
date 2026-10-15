@@ -206,7 +206,7 @@ export default function AdminSchoolPanel({ inquiry, onClose, onUpdate, onDelete 
             <h2 className="admin-school-panel-title">{inquiry.schoolName}</h2>
             {(inquiry.districtName || inquiry.state) && (
               <p className="admin-school-panel-subtitle">
-                {[inquiry.districtName, inquiry.state].filter(Boolean).join(' \u2014 ')}
+                {[inquiry.districtName, inquiry.state].filter(Boolean).join(', ')}
               </p>
             )}
           </div>

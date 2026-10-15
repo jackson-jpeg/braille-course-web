@@ -242,7 +242,7 @@ export default function AdminAttendanceTab({ sections, enrollments, scheduleMap 
                           {session.attendanceCount}/{session.totalEnrolled || sectionEnrollments.length}
                         </span>
                       ) : (
-                        <span style={{ color: '#9ca3af', fontSize: '0.85rem' }}>{isPast ? 'Not taken' : '\u2014'}</span>
+                        <span style={{ color: '#9ca3af', fontSize: '0.85rem' }}>{isPast ? 'Not taken' : 'n/a'}</span>
                       )}
                     </td>
                     <td>

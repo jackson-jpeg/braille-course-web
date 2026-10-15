@@ -699,7 +699,7 @@ export default function AdminPaymentsTab({ enrollments }: Props) {
                     filteredCharges.map((c) => (
                       <tr key={c.id}>
                         <td>{formatDate(c.created)}</td>
-                        <td>{c.customer?.email || c.customer?.name || '\u2014'}</td>
+                        <td>{c.customer?.email || c.customer?.name || 'n/a'}</td>
                         <td>{formatCurrency(c.amount)}</td>
                         <td>
                           <span
@@ -785,7 +785,7 @@ export default function AdminPaymentsTab({ enrollments }: Props) {
                   <tbody>
                     {filteredInvoices.map((inv) => (
                       <tr key={inv.id}>
-                        <td>{inv.customer?.email || inv.customer?.name || '\u2014'}</td>
+                        <td>{inv.customer?.email || inv.customer?.name || 'n/a'}</td>
                         <td>{formatCurrency(inv.amount_due)}</td>
                         <td>
                           <span className={`admin-invoice-badge admin-invoice-${inv.status}`}>{inv.status_label}</span>
@@ -1062,7 +1062,7 @@ export default function AdminPaymentsTab({ enrollments }: Props) {
                             ? `${c.percent_off}% off`
                             : c.amount_off
                               ? `$${(c.amount_off / 100).toFixed(2)} off`
-                              : '\u2014'}
+                              : 'n/a'}
                         </td>
                         <td>
                           {c.promotion_codes.length > 0 ? (
@@ -1071,7 +1071,7 @@ export default function AdminPaymentsTab({ enrollments }: Props) {
                               <CopyButton text={c.promotion_codes.map((p) => p.code).join(', ')} label="Copy code" />
                             </span>
                           ) : (
-                            '\u2014'
+                            'n/a'
                           )}
                         </td>
                         <td>
@@ -1202,7 +1202,7 @@ export default function AdminPaymentsTab({ enrollments }: Props) {
                   ) : (
                     sortedLinks.map((link) => (
                       <tr key={link.id}>
-                        <td>{link.name || '\u2014'}</td>
+                        <td>{link.name || 'n/a'}</td>
                         <td>
                           <span className="admin-email-cell">
                             <a href={link.url} target="_blank" rel="noopener noreferrer" className="admin-stripe-link">
@@ -1216,7 +1216,7 @@ export default function AdminPaymentsTab({ enrollments }: Props) {
                             ? link.line_items
                                 .map((li) => `${li.description || 'Item'} (${formatCurrency(li.amount_total)})`)
                                 .join(', ')
-                            : '\u2014'}
+                            : 'n/a'}
                         </td>
                         <td>
                           <span className={`admin-status admin-status-${link.active ? 'completed' : 'waitlisted'}`}>

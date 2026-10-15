@@ -3,6 +3,8 @@
  * toast and admin screen. Scans every string, template and JSX text in app/, components/, lib/
  * and hooks/ (comments are skipped), so a new route is covered the moment it is added.
  */
+import fs from 'fs';
+import os from 'os';
 import path from 'path';
 import { COPY_ROOTS, findEmDashes } from '../helpers/copy-scan';
 
@@ -15,6 +17,26 @@ const DATA_NOT_COPY = new Map<string, string[]>([
   ['lib/games/spell.ts', ["'—'"]],
   ['lib/braille-validator.ts', ['}*|[:=—–]${']],
 ]);
+
+test('the scanner sees raw, escaped and entity em dashes, and skips comments', () => {
+  const dir = fs.mkdtempSync(path.join(os.tmpdir(), 'em-dash-scan-'));
+  try {
+    for (const root of COPY_ROOTS) fs.mkdirSync(path.join(dir, root));
+    fs.writeFileSync(
+      path.join(dir, 'app', 'page.tsx'),
+      [
+        '// a comment \u2014 is fine',
+        "export const a = 'raw \u2014 dash';",
+        "export const b = 'escaped \\u2014 dash';",
+        'export const C = () => <p>entity &mdash; dash, numeric &#8212; too</p>;',
+        "export const d = 'clean: no dash';",
+      ].join('\n'),
+    );
+    expect(findEmDashes(dir).map((h) => h.line)).toEqual([2, 3, 4]);
+  } finally {
+    fs.rmSync(dir, { recursive: true, force: true });
+  }
+});
 
 test('scans every route and shared module', () => {
   expect(COPY_ROOTS).toEqual(['app', 'components', 'lib', 'hooks']);

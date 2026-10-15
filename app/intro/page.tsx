@@ -150,9 +150,9 @@ export default function IntroPage() {
           <div className="intro-history-grid reveal">
             <p className="intro-history-text">
               Braille is a tactile writing system used by people who are blind or visually impaired. It was created by{' '}
-              <strong>Louis Braille</strong>, who devised it as a teenager &mdash; he was 15 in 1824 &mdash; while
-              studying at the Royal Institute for Blind Youth in Paris. An accident in his father&apos;s workshop when
-              he was 3 led to his blindness by about age 5.
+              <strong>Louis Braille</strong>, who devised it as a teenager (he was 15 in 1824) while studying at the
+              Royal Institute for Blind Youth in Paris. An accident in his father&apos;s workshop when he was 3 led to
+              his blindness by about age 5.
             </p>
             <div className="intro-history-stat-card">
               <span className="intro-stat-number">15</span>
@@ -177,8 +177,8 @@ export default function IntroPage() {
           <div className="intro-history-grid intro-history-grid--reversed reveal">
             <p className="intro-history-text">
               Each braille character is formed within a <strong>cell of 6 dot positions</strong> arranged in 3 rows and
-              2 columns &mdash; giving <strong>64 possible patterns</strong> including the blank cell. This compact
-              system can represent letters, numbers, punctuation, and even music notation.
+              2 columns, giving <strong>64 possible patterns</strong> including the blank cell. This compact system can
+              represent letters, numbers, punctuation, and even music notation.
             </p>
             <div className="intro-history-stat-card">
               <span className="intro-stat-number">64</span>
@@ -224,7 +224,7 @@ export default function IntroPage() {
         <div className="intro-impact-inner">
           <h2 id="intro-impact-heading">Why Braille Matters</h2>
           <p className="intro-history-text">
-            Braille is far more than a code &mdash; it&rsquo;s a gateway to literacy, independence, and opportunity for
+            Braille is far more than a code. It&rsquo;s a gateway to literacy, independence, and opportunity for
             millions of people around the world.
           </p>
 
@@ -259,7 +259,7 @@ export default function IntroPage() {
             </svg>
             <p>
               <strong>Braille is literacy.</strong> From reading medication labels and elevator buttons to using
-              refreshable braille displays with computers and smartphones &mdash; braille remains essential for daily
+              refreshable braille displays with computers and smartphones, braille remains essential for daily
               independence and professional success.
             </p>
           </div>
@@ -271,15 +271,15 @@ export default function IntroPage() {
         <div className="intro-grades-inner">
           <h2 id="intro-grades-heading">Grades of Braille</h2>
           <p className="intro-history-text">
-            There are two main grades of braille. <strong>Grade&nbsp;1</strong> spells out every word letter by letter
-            &mdash; just like the alphabet you explored above. <strong>Grade&nbsp;2</strong> also uses contractions and
+            There are two main grades of braille. <strong>Grade&nbsp;1</strong> spells out every word letter by letter,
+            just like the alphabet you explored above. <strong>Grade&nbsp;2</strong> also uses contractions and
             shortforms to save space and speed up reading.
           </p>
 
           <div className="intro-grades-compare reveal">
             <div className="intro-grades-card intro-grades-card--g1">
               <h3>Grade 1</h3>
-              <p>Uncontracted &mdash; letter for letter</p>
+              <p>Uncontracted: letter for letter</p>
               <div className="intro-grades-cells">
                 {THE_UNCONTRACTED.map((t) => (
                   <IntroCell key={t.print} cell={t.cells[0]} label={t.print} ariaName={t.name} />
@@ -289,7 +289,7 @@ export default function IntroPage() {
             </div>
             <div className="intro-grades-card intro-grades-card--g2">
               <h3>Grade 2</h3>
-              <p>Contracted &mdash; one cell for the whole word</p>
+              <p>Contracted: one cell for the whole word</p>
               <div className="intro-grades-cells">
                 <IntroCell cell={THE_CONTRACTED.cells[0]} label="the" ariaName="the word “the” in contracted braille" />
               </div>
@@ -352,7 +352,7 @@ export default function IntroPage() {
                 </svg>
               </div>
               <h3>Practice with Games</h3>
-              <p>Free interactive activities &mdash; Word Game, Dot Explorer, Hangman, and more. No account needed.</p>
+              <p>Free interactive activities: Word Game, Dot Explorer, Hangman, and more. No account needed.</p>
               <span className="intro-cta-arrow" aria-hidden="true">
                 <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
                   <line x1="5" y1="12" x2="19" y2="12" />

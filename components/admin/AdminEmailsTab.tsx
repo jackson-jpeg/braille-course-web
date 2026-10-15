@@ -976,7 +976,7 @@ export default function AdminEmailsTab({
                       />
                     </div>
                     <div className="admin-compose-field">
-                      <label>Body (plain text &mdash; wrapped in branded template)</label>
+                      <label>Body (plain text, wrapped in branded template)</label>
                       <textarea
                         value={composeBody}
                         onChange={(e) => setComposeBody(e.target.value)}
