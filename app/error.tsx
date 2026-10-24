@@ -18,6 +18,8 @@ export default function GlobalError({ error, reset }: { error: Error & { digest?
           <button onClick={reset} className="global-error-retry">
             Try Again
           </button>
+          {/* A full page load on purpose: it leaves whatever client state broke behind. */}
+          {/* eslint-disable-next-line @next/next/no-html-link-for-pages */}
           <a href="/" className="global-error-home">
             Back to Home
           </a>

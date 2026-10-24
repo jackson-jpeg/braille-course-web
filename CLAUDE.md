@@ -2,7 +2,7 @@
 
 ## Overview
 
-Next.js 14 App Router application for a braille learning course. TypeScript, Prisma 6 (PostgreSQL on Neon), Stripe payments, Vercel Blob file storage, Resend email, Anthropic AI content generation.
+Next.js 15 App Router application (React 19) for a braille learning course. TypeScript, Prisma 6 (PostgreSQL on Neon), Stripe payments, Vercel Blob file storage, Resend email, Anthropic AI content generation.
 
 ## Quick Start
 

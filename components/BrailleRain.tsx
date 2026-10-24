@@ -40,9 +40,9 @@ export default function BrailleRain() {
   const idRef = useRef(0);
   const phaseRef = useRef<Phase>('ready');
   const rafRef = useRef<number>(0);
-  const stepTimerRef = useRef<ReturnType<typeof setInterval>>();
-  const spawnTimerRef = useRef<ReturnType<typeof setInterval>>();
-  const flashTimerRef = useRef<ReturnType<typeof setTimeout>>();
+  const stepTimerRef = useRef<ReturnType<typeof setInterval> | undefined>(undefined);
+  const spawnTimerRef = useRef<ReturnType<typeof setInterval> | undefined>(undefined);
+  const flashTimerRef = useRef<ReturnType<typeof setTimeout> | undefined>(undefined);
   const paramsRef = useRef(params);
   paramsRef.current = params;
   phaseRef.current = phase;

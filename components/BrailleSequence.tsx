@@ -40,7 +40,7 @@ export default function BrailleSequence() {
   const [tip, setTip] = useState('');
 
   const containerRef = useRef<HTMLDivElement>(null);
-  const roundTimerRef = useRef<ReturnType<typeof setTimeout>>();
+  const roundTimerRef = useRef<ReturnType<typeof setTimeout> | undefined>(undefined);
   const scoreRef = useRef(score);
   scoreRef.current = score;
   // Refs for the check function to always read latest state

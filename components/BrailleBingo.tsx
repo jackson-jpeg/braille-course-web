@@ -39,8 +39,8 @@ export default function BrailleBingo() {
 
   const containerRef = useRef<HTMLDivElement>(null);
   const visibleRef = useRef(true);
-  const callTimerRef = useRef<ReturnType<typeof setInterval>>();
-  const shakeTimerRef = useRef<ReturnType<typeof setTimeout>>();
+  const callTimerRef = useRef<ReturnType<typeof setInterval> | undefined>(undefined);
+  const shakeTimerRef = useRef<ReturnType<typeof setTimeout> | undefined>(undefined);
   const calledRef = useRef<Set<string>>(new Set());
   const cardRef = useRef<string[]>(card);
   const markedRef = useRef<boolean[]>(marked);

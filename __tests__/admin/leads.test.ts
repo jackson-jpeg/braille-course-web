@@ -150,14 +150,14 @@ describe('soft delete and source', () => {
 
   it.each([
     ['app/api/admin/leads/route.ts', /where: ACTIVE_LEAD|where: \{ \.\.\.ACTIVE_LEAD/],
-    ['app/admin/page.tsx', /prisma\.lead\.findMany\(\{[^}]*deletedAt: null/s],
+    ['app/admin/page.tsx', /prisma\.lead\.findMany\(\{[^}]*deletedAt: null/],
   ])('%s hides soft-deleted leads', (file, re) => expect(read(file)).toMatch(re));
 
   it('no admin read of leads forgets the soft-delete filter', () => {
     const files = ['app/api/admin/leads/route.ts', 'app/admin/page.tsx', 'app/api/admin/analytics/route.ts'];
     for (const f of files) {
       if (!fs.existsSync(path.join(ROOT, f))) continue;
-      for (const m of read(f).matchAll(/prisma\.lead\.(findMany|count)\(([^;]*)/gs)) {
+      for (const m of read(f).matchAll(/prisma\.lead\.(findMany|count)\(([^;]*)/g)) {
         expect([f, /deletedAt: null|ACTIVE_LEAD/.test(m[2])]).toEqual([f, true]);
       }
     }

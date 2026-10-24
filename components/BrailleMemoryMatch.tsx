@@ -32,7 +32,7 @@ export default function BrailleMemoryMatch() {
   const [tip, setTip] = useState('');
 
   const containerRef = useRef<HTMLDivElement>(null);
-  const matchTimerRef = useRef<ReturnType<typeof setTimeout>>();
+  const matchTimerRef = useRef<ReturnType<typeof setTimeout> | undefined>(undefined);
   const movesRef = useRef(moves);
   movesRef.current = moves;
 

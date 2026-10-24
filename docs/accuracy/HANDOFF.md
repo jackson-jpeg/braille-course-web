@@ -7,7 +7,7 @@ Everything another session needs to continue, with no prior context.
 teachbraille.org teaches Unified English Braille (UEB) to sighted parents and family of blind and low
 vision children. It is run by Delaney Costello, a Teacher of the Visually Impaired (TVI). It has free
 lessons (`/learn`) and practice games (`/games`) with no signup. Repo: `jackson-jpeg/braille-course-web`
-(Next.js 14 App Router, TypeScript, Prisma/Neon, Stripe, Vercel). Owner: Jackson (realjacksons@gmail.com).
+(Next.js 15 App Router, React 19, TypeScript, Prisma/Neon, Stripe, Vercel). Owner: Jackson (realjacksons@gmail.com).
 
 **Mission of this work**: every braille pattern, explanation and game answer is provably correct, and
 the basics (capitals, numbers, punctuation) are taught. Accuracy over everything; Delaney is not
@@ -78,7 +78,8 @@ session runs them. Run all of them locally before merging any PR, and report the
    `liblouis-bin python3-louis`). A changed fixture must be committed only if the change is explained.
 3. `npm run braille:rulebook` when rulebook data or citations changed (needs `poppler-utils`).
 4. `NODE_ENV=production npm run build` (runs the whole jest suite first, as Vercel does).
-5. `npm run start -- -p 3100`, then against `http://localhost:3100`:
+5. `npm run start -- -p 3100`, then against `http://localhost:3100` (on the VPS, 3100 is PlotSlop's: use
+   any free port, e.g. 3190):
    - `npm run braille:geometry -- http://localhost:3100` (dot positions, captions, wording, overflow at
      1280/390/320px): must report 0 problems;
    - `npm run a11y:axe -- http://localhost:3100` (axe-core, every lesson and game page): must report 0

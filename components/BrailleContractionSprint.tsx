@@ -49,9 +49,9 @@ export default function BrailleContractionSprint() {
 
   const containerRef = useRef<HTMLDivElement>(null);
   const visibleRef = useRef(true);
-  const timerRef = useRef<ReturnType<typeof setInterval>>();
-  const feedbackTimerRef = useRef<ReturnType<typeof setTimeout>>();
-  const flashTimerRef = useRef<ReturnType<typeof setTimeout>>();
+  const timerRef = useRef<ReturnType<typeof setInterval> | undefined>(undefined);
+  const feedbackTimerRef = useRef<ReturnType<typeof setTimeout> | undefined>(undefined);
+  const flashTimerRef = useRef<ReturnType<typeof setTimeout> | undefined>(undefined);
   const scoreRef = useRef(score);
   const recentIdsRef = useRef<string[]>([]);
   const level = difficulty as SprintDifficulty;

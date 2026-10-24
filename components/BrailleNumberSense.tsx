@@ -46,7 +46,7 @@ export default function BrailleNumberSense() {
 
   const containerRef = useRef<HTMLDivElement>(null);
   const visibleRef = useRef(true);
-  const roundTimerRef = useRef<ReturnType<typeof setTimeout>>();
+  const roundTimerRef = useRef<ReturnType<typeof setTimeout> | undefined>(undefined);
   const scoreRef = useRef(score);
   scoreRef.current = score;
 
