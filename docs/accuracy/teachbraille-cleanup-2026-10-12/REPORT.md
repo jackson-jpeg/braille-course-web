@@ -22,7 +22,7 @@ Fixed in code, with no dashboard change:
 
 What GitHub showed at the time, for the record: the branch pushes got deployments that failed about a
 second after creation; from about 04:13 UTC Vercel posted nothing to GitHub for a while, though production
-kept deploying. Commits are authored as `jackson-jpeg <realjacksons@gmail.com>`; that is fine to keep but was
+kept deploying. Commits are authored as `jackson-jpeg` (his personal address); that is fine to keep but was
 never the fix.
 
 ## 2. AI worksheet generator: the model never writes braille

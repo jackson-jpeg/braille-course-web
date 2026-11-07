@@ -7,7 +7,7 @@ Everything another session needs to continue, with no prior context.
 teachbraille.org teaches Unified English Braille (UEB) to sighted parents and family of blind and low
 vision children. It is run by Delaney Costello, a Teacher of the Visually Impaired (TVI). It has free
 lessons (`/learn`) and practice games (`/games`) with no signup. Repo: `jackson-jpeg/braille-course-web`
-(Next.js 14 App Router, TypeScript, Prisma/Neon, Stripe, Vercel). Owner: Jackson (realjacksons@gmail.com).
+(Next.js 14 App Router, TypeScript, Prisma/Neon, Stripe, Vercel). Owner: Jackson (jackson@sang3r.com).
 
 **Mission of this work**: every braille pattern, explanation and game answer is provably correct, and
 the basics (capitals, numbers, punctuation) are taught. Accuracy over everything; Delaney is not
@@ -140,7 +140,7 @@ scripts/braille/plain-contracted-words.py`, then `npm run braille:oracle`.
 ## State at handoff
 
 - All work is merged to `master` (PRs #5–#10); merged branches are deleted, so start new work on a fresh
-  branch from `master`. Commits are authored as `jackson-jpeg <realjacksons@gmail.com>` (repo-local git
+  branch from `master`. Commits are authored as `jackson-jpeg` (his personal address) (repo-local git
   config).
 - All tests pass, none skipped. Numbers are in `VERIFICATION-RESULTS.md`.
 - The previous attempt (PR #3, a full redesign) was reverted by the owner in PR #4, and its branches
