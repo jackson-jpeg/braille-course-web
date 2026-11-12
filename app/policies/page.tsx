@@ -76,6 +76,14 @@ export default function PoliciesPage() {
               only to improve the course.
             </p>
 
+            <h3 id="app">TeachBraille iPhone and iPad App</h3>
+            <p>
+              The TeachBraille app collects no data. It has no accounts, no analytics, no advertising and no tracking,
+              and it works fully offline. Your progress, streaks and settings are saved only on your device, and
+              deleting the app deletes them. For help with the app, email{' '}
+              <a href="mailto:iOS@teachbraille.org">iOS@teachbraille.org</a>.
+            </p>
+
             <h3>Third-Party Services</h3>
             <ul>
               <li>
