@@ -60,6 +60,9 @@ export default function PoliciesPage() {
           {/* Privacy Policy */}
           <section id="privacy" className="policy-section">
             <h2>Privacy Policy</h2>
+            <p>
+              <em>Last updated: November 14, 2026</em>
+            </p>
 
             <h3>Data We Collect</h3>
             <p>
@@ -74,6 +77,16 @@ export default function PoliciesPage() {
               the site also records anonymous activity (which lessons are started and finished, and which games are
               played) under a random ID stored on your device. It is never linked to your name or email, and is used
               only to improve the course.
+            </p>
+
+            <h3 id="visitor-analytics">Visitor Analytics</h3>
+            <p>
+              We count visits to this website with Umami, running on our own server, so nothing goes to an analytics
+              company. It sets no cookies and does not follow you to other sites. For each visit it records the page,
+              the referring site, your browser, operating system, device type, screen size, language and an
+              approximate location (country, region and city, worked out from your IP address; the address itself is
+              not stored). Visit records are deleted after 24 months. For now the site also uses Vercel Web
+              Analytics, our host&rsquo;s anonymized, cookieless page-view count, which is being phased out.
             </p>
 
             <h3 id="app">TeachBraille iPhone and iPad App</h3>

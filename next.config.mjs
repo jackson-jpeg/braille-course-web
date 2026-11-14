@@ -32,11 +32,11 @@ const nextConfig = {
             key: 'Content-Security-Policy',
             value: [
               "default-src 'self'",
-              "script-src 'self' 'unsafe-inline' 'unsafe-eval' https://js.stripe.com https://va.vercel-scripts.com",
+              "script-src 'self' 'unsafe-inline' 'unsafe-eval' https://js.stripe.com https://va.vercel-scripts.com https://a.unpossible.studio",
               "style-src 'self' 'unsafe-inline' https://fonts.googleapis.com",
               "font-src 'self' https://fonts.gstatic.com",
               "img-src 'self' data: blob: https://*.public.blob.vercel-storage.com",
-              "connect-src 'self' https://api.stripe.com https://va.vercel-scripts.com",
+              "connect-src 'self' https://api.stripe.com https://va.vercel-scripts.com https://a.unpossible.studio",
               'frame-src https://js.stripe.com https://calendly.com',
               "frame-ancestors 'self' https://sang3r.com https://www.sang3r.com",
             ].join('; '),
