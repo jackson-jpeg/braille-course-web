@@ -85,8 +85,7 @@ export default function PoliciesPage() {
               company. It sets no cookies and does not follow you to other sites. For each visit it records the page,
               the referring site, your browser, operating system, device type, screen size, language and an
               approximate location (country, region and city, worked out from your IP address; the address itself is
-              not stored). Visit records are deleted after 24 months. For now the site also uses Vercel Web
-              Analytics, our host&rsquo;s anonymized, cookieless page-view count, which is being phased out.
+              not stored). Visit records are deleted after 24 months.
             </p>
 
             <h3 id="app">TeachBraille iPhone and iPad App</h3>
@@ -110,7 +109,7 @@ export default function PoliciesPage() {
                 <strong>Resend</strong>: transactional email delivery
               </li>
               <li>
-                <strong>Vercel</strong>: hosting and anonymized analytics
+                <strong>Vercel</strong>: hosting
               </li>
             </ul>
 

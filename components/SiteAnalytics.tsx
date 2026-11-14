@@ -1,9 +1,8 @@
 'use client';
 
-import { Analytics } from '@vercel/analytics/next';
 import Script from 'next/script';
 import { usePathname } from 'next/navigation';
-import { dropAdminEvents, isAdminPath, keepUmamiPayload } from '@/lib/analytics-filter';
+import { isAdminPath, keepUmamiPayload } from '@/lib/analytics-filter';
 
 // Self-hosted Umami visitor count (no cookies), disclosed on /policies.
 // Admin pages are never counted: the script is not loaded when a visit starts
@@ -17,18 +16,14 @@ if (typeof window !== 'undefined') {
 
 export default function SiteAnalytics() {
   const pathname = usePathname() ?? '/';
+  if (isAdminPath(pathname)) return null;
   return (
-    <>
-      <Analytics beforeSend={dropAdminEvents} />
-      {!isAdminPath(pathname) && (
-        <Script
-          src="https://a.unpossible.studio/a/sgj.js"
-          data-website-id="754bea88-a2bd-40d0-b36e-dbe468a48125"
-          data-host-url="https://a.unpossible.studio/a"
-          data-before-send={UMAMI_BEFORE_SEND}
-          strategy="afterInteractive"
-        />
-      )}
-    </>
+    <Script
+      src="https://a.unpossible.studio/a/sgj.js"
+      data-website-id="754bea88-a2bd-40d0-b36e-dbe468a48125"
+      data-host-url="https://a.unpossible.studio/a"
+      data-before-send={UMAMI_BEFORE_SEND}
+      strategy="afterInteractive"
+    />
   );
 }
