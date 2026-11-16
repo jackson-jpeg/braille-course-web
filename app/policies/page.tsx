@@ -61,7 +61,7 @@ export default function PoliciesPage() {
           <section id="privacy" className="policy-section">
             <h2>Privacy Policy</h2>
             <p>
-              <em>Last updated: November 14, 2026</em>
+              <em>Effective date: November 16, 2026</em>
             </p>
 
             <h3>Data We Collect</h3>
@@ -86,6 +86,27 @@ export default function PoliciesPage() {
               the referring site, your browser, operating system, device type, screen size, language and an
               approximate location (country, region and city, worked out from your IP address; the address itself is
               not stored). Visit records are deleted after 24 months.
+            </p>
+
+            <h3 id="cookies">Cookies, Browser Storage and Do Not Track</h3>
+            <p>
+              Browsing this website sets no cookies. Its fonts are served from teachbraille.org, and nothing is loaded
+              from other companies&apos; servers until you start checkout. The site keeps these items in your
+              browser&apos;s local storage, and they stay on your device: <code>brailleGames_progress</code> (your
+              lesson and game progress and settings, including whether you chose &ldquo;Skip tracking&rdquo;),{' '}
+              <code>brailleGames_hints</code> (which game hints you have seen) and, unless you chose &ldquo;Skip
+              tracking&rdquo;, <code>brailleGames_visitorId</code> (the random ID described above, sent with the
+              anonymous activity to our own server). Clearing your browser&apos;s site data removes them.
+            </p>
+            <p>
+              When you enroll, checkout takes place on Stripe, which sets its own cookies there to process the payment
+              securely and prevent fraud. These are strictly necessary for payment and are covered by Stripe&apos;s
+              privacy policy, linked below.
+            </p>
+            <p>
+              Because our visit counting does not follow you to other sites and sets no cookies, the site treats every
+              visitor the same way whether or not your browser sends a Do Not Track signal. The anonymous course
+              activity described above is controlled by the &ldquo;Skip tracking&rdquo; choice instead.
             </p>
 
             <h3 id="app">TeachBraille iPhone and iPad App</h3>
