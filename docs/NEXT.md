@@ -17,6 +17,13 @@ In order. The latest session handoff is `docs/handoffs/2026-11-17-world-braille-
          `docs/accuracy/HANDOFF.md` (oracle, build, geometry, axe), merge to `master` (that deploys), live by
          December 15. Then check the live page and the sitemap.
    - [ ] The outreach note waits for Delaney (Jackson, 2026-11-17). Nothing to do until she answers.
+**Mac on hold (Jackson, 2026-11-17)** for the macOS update and Xcode 27: start nothing on the Mac and queue no
+`mac-sim` jobs until the hold is released. Every simulator and all DerivedData were deleted (approved). Web work
+(0b, 0a items 1 and 2) needs no Mac. The 1.1.1 `submit` runs from the Mac (`asc-store.rb`), so it waits for the
+hold as well as for Jackson's word.
+
+00. **When the Mac is back, first job:** rebuild Teach Braille iOS and rerun its tests on the new iOS 27 simulator
+   (`ios build` / `ios test`, which take `mac-sim`). Details in `teachbraille-ios`'s own docs.
 0b. **Site audit fixes, in the next deploy** (Jackson, 2026-11-17; keep the World Braille Day branch separate: own
    worktree and branch off `master`, ship with (1) below or on its own when green):
    - [ ] Smart App Banner: `itunes: { appId: '6833681749' }` in the root `metadata` of `app/layout.tsx` (renders
