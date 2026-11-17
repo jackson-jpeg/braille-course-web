@@ -89,3 +89,34 @@ her paid lessons (one line linking `/services` is in, easy to drop); an alphabet
 - Left running: nothing. The server on 3190 is stopped; no `heavy` job of ours holds or waits.
 - Blocks hit: `require-pipefail` refused `ssh macbook "df -h / | tail -1"` (pipeline in a remote command); reran it without the pipe. Two background jobs were stopped by Claude Code for memory pressure (this capture, and last
   session's build).
+
+## Third session (17:30 to 18:40 UTC): approved, built, reviewed
+
+- **Jackson approved the build** (Inbox, 2026-11-17): "Build the /world-braille-day page as scoped. The outreach note
+  waits for Delaney. (Lead decision)". Read with the plan's dates: copy from Delaney by December 5, live by
+  December 15. So the merge to `master` (which deploys) waits for her copy, filed as Inbox `teachbraille-wbd-copy`
+  (due December 5; Approve there means go live with the draft as is).
+- `6de8b71` on `world-braille-day`, pushed:
+  - `/world-braille-day` in `app/sitemap.ts`.
+  - Home hero line "World Braille Day is January 4. Write your name in braille.", December 1 to January 31 UTC
+    (`isWorldBrailleDaySeason` in `lib/world-braille-day.ts`); `app/page.tsx` now has `revalidate = 3600` so it comes
+    and goes without a deploy. Link colour `--navy-light` (the subtitle's `--sage-dark` is about 3:1 on cream).
+  - Long rows on phones: at 390 px "Mary-Jane" overflows its row by 13 px and "MacKenzie-Rose" by 217 px even at the
+    smallest dots, because braille words never wrap. Before, the row scrolled silently, and a scrolling box with
+    nothing focusable fails axe `scrollable-region-focusable` (axe only ever saw "Louis"). Now, only while it
+    overflows (measured, ResizeObserver), the box is `role="region"`, labelled, `tabIndex=0`, with a visible line
+    "Scroll sideways to see the whole name." (`BrailleScroll` in `components/NameInBraille.tsx`).
+  - `scripts/a11y/check-axe.mjs` also types "MacKenzie-Rose" on `/world-braille-day` and checks the name box and card
+    at both widths.
+  - Tests: sitemap entry, season boundaries, home link in December and not in November, the scroll region both ways.
+- Checks, all through `heavy`: prettier, tsc, lint (no new warnings), `NODE_ENV=production npm run build` (46
+  suites, 1918 tests), `braille:geometry` (2963 cells, 0 problems), `a11y:axe` (0 violations, long name included).
+  No new braille strings, so the oracle fixture is unchanged. The hint's 20 px bottom margin was added after the
+  browser run (CSS only, prettier checked).
+- Not checked in a browser: the home link itself (it only renders in season); its colour is `--navy-light` on cream.
+- Review page (private to Jackson): https://claude.ai/artifact/Qdmre6tGd3F4GooD5Bi3QA. Desktop and phone full page,
+  a typed name, a long name on a phone, a refused name, the printed card.
+- The worktree `/root/braille-course-web-wbd` is removed (clean, all pushed). The branch stays.
+- Left running: nothing. The local server on 3190 is stopped (note: `full.sh`'s `kill` of the `npx` parent leaves
+  `next-server` running; kill it by port).
+- Blocks hit: none this session.
