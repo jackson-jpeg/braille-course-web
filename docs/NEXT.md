@@ -22,6 +22,11 @@ In order. The latest session handoff is `docs/handoffs/2026-11-17-world-braille-
 (0b, 0a items 1 and 2) needs no Mac. The 1.1.1 `submit` runs from the Mac (`asc-store.rb`), so it waits for the
 hold as well as for Jackson's word.
 
+000. **Xcode Cloud for Teach Braille iOS** (Jackson, 2026-11-17, Mac disk policy in `CLAUDE.md`; needs no Mac):
+   set up or fix the Xcode Cloud workflow (App Store Connect API from the VPS; key path in the Mac's
+   `~/.sanger-build/secrets.env`, so find the VPS-side copy or ask) and move the build and simulator tests there.
+   Check first what exists (ciProducts / ciWorkflows for app 6833681749). Stay within the 25 free hours; never pay.
+
 00. **When the Mac is back, first job:** rebuild Teach Braille iOS and rerun its tests on the new iOS 27 simulator
    (`ios build` / `ios test`, which take `mac-sim`). Details in `teachbraille-ios`'s own docs.
 0b. **Site audit fixes, in the next deploy** (Jackson, 2026-11-17; keep the World Braille Day branch separate: own

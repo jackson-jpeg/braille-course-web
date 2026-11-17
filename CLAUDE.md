@@ -96,3 +96,23 @@ prisma/               # Schema + seed script
 - `npm run build` runs the whole test suite first, so Vercel will not deploy with a failing accuracy test.
 - **No automatic CI**: GitHub Actions is manual-only (`workflow_dispatch`). Before every merge, run the local checklist in `docs/accuracy/HANDOFF.md` ("Before every merge"): oracle with a clean fixture diff, production build, browser geometry check and axe check. Do not trigger the workflow or enable Dependabot version updates unless the owner asks.
 - Full method and history: `docs/accuracy/` (start with `HANDOFF.md` and `MIGRATION-BRIEF.md`).
+
+## Mac disk policy (Jackson, standing rule, 2026-11-17)
+
+Decided after the Mac fell under 1 GB free because nobody owned the whole disk.
+
+1. **Xcode Cloud first** for iOS builds and simulator tests (25 free hours a month; never pay). The Mac is the
+   fallback when the hours run out, plus Jackson's plugged-in iPhone.
+2. **Exactly four shared simulators** on the Mac, newest runtime only: "Shared iPhone Pro Max A", "Shared iPhone Pro
+   Max B" (newest Pro Max), "Shared iPhone Duo", "Shared iPad". Take turns through the `mac-sim` lock. Never create a
+   simulator of your own. After each job, uninstall the job's app and erase what grows (app data, logs, crash
+   reports); keep the devices and the runtime.
+3. One runtime and one Xcode at a time; delete the old one once the new one works.
+4. Free-space floors, checked by the foreman before every Mac job: under 25 GB, the cleanup sweep runs first; under
+   5 GB, no Mac job starts, the sweep runs, and if still under, the lead gets an Inbox item.
+5. Repo copies on the Mac: keep while on the same version; delete when the next version starts.
+6. DerivedData: kept while a version is in progress, cleared when it ships or its branch or worktree is gone; global
+   cap 5 GB, oldest first.
+7. The foreman sweeps weekly (Homebrew cache, old DerivedData, simulator logs and crash reports, orphan simulators and
+   runtimes, stale repo copies, build artifacts in `~/Downloads`) and sends the lead one line: free before and after.
+8. sang3r Today shows the Mac's free disk with the floor lines.
