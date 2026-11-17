@@ -87,5 +87,5 @@ her paid lessons (one line linking `/services` is in, easy to drop); an alphabet
 - The worktree `/root/braille-course-web-wbd` is clean (everything pushed) and is kept only for the captures; remove
   it with `git worktree remove` after them.
 - Left running: nothing. The server on 3190 is stopped; no `heavy` job of ours holds or waits.
-- Blocks hit: none. Two background jobs were stopped by Claude Code for memory pressure (this capture, and last
+- Blocks hit: `require-pipefail` refused `ssh macbook "df -h / | tail -1"` (pipeline in a remote command); reran it without the pipe. Two background jobs were stopped by Claude Code for memory pressure (this capture, and last
   session's build).
