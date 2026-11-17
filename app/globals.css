@@ -3374,6 +3374,17 @@ details.faq-item.reveal:nth-child(6) {
   animation: fadeDown 1s ease-out 0.45s both;
 }
 
+.hub-hero-season {
+  font-size: 1.05rem;
+  margin: 0 0 24px;
+  animation: fadeDown 1s ease-out 0.55s both;
+}
+.hub-hero-season a {
+  color: var(--navy-light);
+  text-decoration: underline;
+  text-underline-offset: 3px;
+}
+
 .hub-hero-description {
   font-size: 1.05rem;
   line-height: 1.8;
@@ -19468,6 +19479,16 @@ details.faq-item.reveal:nth-child(6) {
 .wbd-braille-scroll {
   max-width: 100%;
   overflow-x: auto;
+}
+.wbd-braille-scroll:focus-visible {
+  outline: 2px solid var(--gold);
+  outline-offset: 3px;
+}
+.wbd-scroll-hint {
+  font-size: 0.92rem;
+  line-height: 1.6;
+  color: var(--text-secondary);
+  margin: 8px 0 20px;
 }
 .wbd-name-braille .braille-text-cell {
   grid-template-columns: repeat(2, var(--wbd-dot));

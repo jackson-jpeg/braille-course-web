@@ -58,6 +58,32 @@ for (const width of [1280, 390]) {
     }
     console.log(`${width}px ${path}: ${results.violations.length} violation(s), ${results.passes.length} rules passed`);
   }
+
+  // The name box with a long name: at 390px its braille row is wider than the screen and scrolls,
+  // which the default name never shows.
+  await page.goto(`${base}/world-braille-day`, { waitUntil: 'networkidle' });
+  await page.fill('.wbd-name-input', 'MacKenzie-Rose');
+  await page.evaluate(() =>
+    document.getAnimations().forEach((a) => {
+      try {
+        a.finish();
+      } catch {
+        // looping animations cannot be finished
+      }
+    }),
+  );
+  await page.waitForTimeout(300);
+  const named = await new AxeBuilder({ page })
+    .include('#write-your-name')
+    .include('#name-card')
+    .withTags(TAGS)
+    .analyze();
+  for (const v of named.violations) {
+    violations++;
+    console.log(`FAIL ${width}px /world-braille-day (long name): [${v.impact}] ${v.id} — ${v.help}`);
+  }
+  console.log(`${width}px /world-braille-day (long name): ${named.violations.length} violation(s)`);
+
   await context.close();
 }
 await browser.close();

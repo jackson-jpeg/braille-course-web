@@ -185,5 +185,14 @@ export function resolveStep(step: PathStep): ResolvedStep {
   return { when: step.when, href: '#write-your-name', label: 'Write your names in braille (on this page)' };
 }
 
+/**
+ * The home page links to this page during December and January only (World Braille Day is January 4,
+ * and January is Braille Literacy Month). Dates are the server's, read in UTC.
+ */
+export function isWorldBrailleDaySeason(now: Date): boolean {
+  const month = now.getUTCMonth();
+  return month === 11 || month === 0;
+}
+
 /** The iPhone and iPad app on the App Store. */
 export const APP_STORE_URL = 'https://apps.apple.com/app/id6833681749';

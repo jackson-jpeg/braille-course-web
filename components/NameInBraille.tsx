@@ -1,6 +1,6 @@
 'use client';
 
-import { type CSSProperties, useId, useState } from 'react';
+import { type CSSProperties, type ReactNode, useId, useLayoutEffect, useRef, useState } from 'react';
 import BrailleText from '@/components/BrailleText';
 import { EXAMPLE_NAME, NAME_MAX_LENGTH, type DotRow, dotRows, nameToBraille } from '@/lib/world-braille-day';
 
@@ -33,6 +33,47 @@ function longestWordCells(tokens: { kind: string; cells: readonly unknown[] }[])
     longest = Math.max(longest, current);
   }
   return Math.max(longest, 1);
+}
+
+/**
+ * The braille row's box. Braille words never wrap, so on a narrow screen a long name can be wider than
+ * the box even at the smallest dots. Then, and only then, the box says so in words and becomes a
+ * labelled region that can take keyboard focus, so it can be scrolled without a mouse or touch.
+ */
+function BrailleScroll({ watch, children }: { watch: string; children: ReactNode }) {
+  const ref = useRef<HTMLDivElement>(null);
+  const [overflowing, setOverflowing] = useState(false);
+  const hintId = useId();
+
+  useLayoutEffect(() => {
+    const el = ref.current;
+    if (!el) return;
+    const measure = () => setOverflowing(el.scrollWidth > el.clientWidth + 1);
+    measure();
+    if (typeof ResizeObserver === 'undefined') return;
+    const observer = new ResizeObserver(measure);
+    observer.observe(el);
+    return () => observer.disconnect();
+  }, [watch]);
+
+  return (
+    <>
+      <div
+        ref={ref}
+        className="wbd-braille-scroll"
+        {...(overflowing
+          ? { tabIndex: 0, role: 'region', 'aria-label': 'The name in braille', 'aria-describedby': hintId }
+          : {})}
+      >
+        {children}
+      </div>
+      {overflowing && (
+        <p id={hintId} className="wbd-scroll-hint wbd-noprint">
+          Scroll sideways to see the whole name.
+        </p>
+      )}
+    </>
+  );
 }
 
 function cellCount(n: number): string {
@@ -111,14 +152,14 @@ export default function NameInBraille() {
           {result.status === 'ok' && (
             <div className="wbd-name-output">
               <div className="wbd-fit" style={fit}>
-                <div className="wbd-braille-scroll">
+                <BrailleScroll watch={result.print}>
                   <BrailleText
                     tokens={result.tokens}
                     showLabels
                     className="braille-text wbd-name-braille"
                     label={label}
                   />
-                </div>
+                </BrailleScroll>
               </div>
               <h3 className="wbd-dot-heading">The dots, sign by sign</h3>
               <DotList rows={rows} className="wbd-dot-list" />
@@ -149,7 +190,7 @@ export default function NameInBraille() {
               <div className="wbd-card wbd-fit" style={fit}>
                 <p className="wbd-card-kicker">World Braille Day, January 4</p>
                 <p className="wbd-card-print">{result.print}</p>
-                <div className="wbd-braille-scroll">
+                <BrailleScroll watch={result.print}>
                   <BrailleText
                     tokens={result.tokens}
                     showLabels
@@ -158,7 +199,7 @@ export default function NameInBraille() {
                     dotClassName="wbd-card-dot"
                     label={label}
                   />
-                </div>
+                </BrailleScroll>
                 <DotList rows={rows} className="wbd-dot-list wbd-card-dots" />
                 <p className="wbd-card-note">
                   Uncontracted braille. These dots are printed flat: this card is for sighted learners to study, not for

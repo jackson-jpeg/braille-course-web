@@ -2,7 +2,12 @@ import type { Metadata } from 'next';
 import BrailleHero from '@/components/BrailleHero';
 import Footer from '@/components/Footer';
 import { PRICING } from '@/lib/pricing';
+import { isWorldBrailleDaySeason } from '@/lib/world-braille-day';
 import Link from 'next/link';
+
+// Regenerated hourly so the World Braille Day link appears on December 1 and goes on February 1
+// without a deploy.
+export const revalidate = 3600;
 
 export const metadata: Metadata = {
   title: {
@@ -33,6 +38,12 @@ export default function HubPage() {
           </h1>
 
           <p className="hub-hero-subtitle">Braille Instruction &amp; TVI Services</p>
+
+          {isWorldBrailleDaySeason(new Date()) && (
+            <p className="hub-hero-season">
+              <Link href="/world-braille-day">World Braille Day is January 4. Write your name in braille.</Link>
+            </p>
+          )}
         </div>
       </section>
 

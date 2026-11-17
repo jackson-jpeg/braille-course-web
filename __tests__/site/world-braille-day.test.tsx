@@ -3,6 +3,8 @@ import path from 'path';
 import { act, fireEvent, render, screen } from '@testing-library/react';
 import NameInBraille from '@/components/NameInBraille';
 import WorldBrailleDayPage from '@/app/world-braille-day/page';
+import HubPage, { revalidate as homeRevalidate } from '@/app/page';
+import sitemap from '@/app/sitemap';
 import { siteInventory } from '@/lib/braille/site-inventory';
 import { transcribe } from '@/lib/braille/transcribe';
 import { describeCells } from '@/lib/braille/prose';
@@ -16,6 +18,7 @@ import {
   SAMPLE_NAMES,
   brailleInventory,
   dotRows,
+  isWorldBrailleDaySeason,
   isWritable,
   nameToBraille,
   resolveStep,
@@ -138,6 +141,50 @@ describe('name box: the component', () => {
     for (const el of fits) expect(el.style.getPropertyValue('--wbd-cells')).toBe('11');
   });
 
+  test('a row wider than its box says so and can be scrolled from the keyboard; a row that fits stays plain', () => {
+    const proto = HTMLElement.prototype;
+    const original = {
+      scrollWidth: Object.getOwnPropertyDescriptor(proto, 'scrollWidth'),
+      clientWidth: Object.getOwnPropertyDescriptor(proto, 'clientWidth'),
+    };
+    let rowWidth = 300;
+    Object.defineProperty(proto, 'scrollWidth', {
+      configurable: true,
+      get(this: HTMLElement) {
+        return this.classList.contains('wbd-braille-scroll') ? rowWidth : 0;
+      },
+    });
+    Object.defineProperty(proto, 'clientWidth', { configurable: true, get: () => 340 });
+    try {
+      const fits = render(<NameInBraille />);
+      for (const el of fits.container.querySelectorAll('.wbd-braille-scroll')) {
+        expect(el.getAttribute('tabindex')).toBeNull();
+        expect(el.getAttribute('role')).toBeNull();
+      }
+      expect(fits.container.querySelector('.wbd-scroll-hint')).toBeNull();
+      fits.unmount();
+
+      rowWidth = 560;
+      const wide = render(<NameInBraille />);
+      typeName('MacKenzie-Rose');
+      const boxes = [...wide.container.querySelectorAll('.wbd-braille-scroll')];
+      expect(boxes).toHaveLength(2);
+      for (const el of boxes) {
+        expect(el.getAttribute('tabindex')).toBe('0');
+        expect(el.getAttribute('role')).toBe('region');
+        expect(el.getAttribute('aria-label')).toBe('The name in braille');
+        const hint = document.getElementById(el.getAttribute('aria-describedby') ?? '');
+        expect(hint?.textContent).toBe('Scroll sideways to see the whole name.');
+      }
+      wide.unmount();
+    } finally {
+      for (const [key, desc] of Object.entries(original)) {
+        if (desc) Object.defineProperty(proto, key, desc);
+        else delete (proto as unknown as Record<string, unknown>)[key];
+      }
+    }
+  });
+
   test('nothing typed is sent, stored or put in the address', () => {
     const fetchSpy = jest.fn();
     const beaconSpy = jest.fn();
@@ -215,5 +262,42 @@ describe('the page', () => {
     expect(container.querySelectorAll('h1')).toHaveLength(1);
     expect(checkAllCells(container)).toEqual([]);
     expect(container.textContent).not.toContain('—');
+  });
+});
+
+describe('going live: sitemap and the home page link', () => {
+  test('the page is in the sitemap, at the apex address', () => {
+    const urls = sitemap().map((e) => e.url);
+    expect(urls).toContain('https://teachbraille.org/world-braille-day');
+  });
+
+  test('the season is December 1 through January 31 (UTC), and nothing else', () => {
+    expect(isWorldBrailleDaySeason(new Date('2026-11-30T23:59:59Z'))).toBe(false);
+    expect(isWorldBrailleDaySeason(new Date('2026-12-01T00:00:00Z'))).toBe(true);
+    expect(isWorldBrailleDaySeason(new Date('2027-01-04T12:00:00Z'))).toBe(true);
+    expect(isWorldBrailleDaySeason(new Date('2027-01-31T23:59:59Z'))).toBe(true);
+    expect(isWorldBrailleDaySeason(new Date('2027-02-01T00:00:00Z'))).toBe(false);
+    for (let m = 1; m <= 10; m++) expect(isWorldBrailleDaySeason(new Date(Date.UTC(2027, m, 15)))).toBe(false);
+  });
+
+  test('the home page links to the page in season only, without an em dash, and regenerates hourly', () => {
+    const at = (iso: string) =>
+      jest.useFakeTimers({ doNotFake: ['setTimeout', 'setInterval'] }).setSystemTime(Date.parse(iso));
+    try {
+      at('2026-12-10T12:00:00Z');
+      const inSeason = render(<HubPage />);
+      const link = inSeason.container.querySelector('.hub-hero-season a');
+      expect(link?.getAttribute('href')).toBe('/world-braille-day');
+      expect(link?.textContent).not.toContain('—');
+      inSeason.unmount();
+
+      at('2026-11-17T12:00:00Z');
+      const outOfSeason = render(<HubPage />);
+      expect(outOfSeason.container.querySelector('.hub-hero-season')).toBeNull();
+      outOfSeason.unmount();
+    } finally {
+      jest.useRealTimers();
+    }
+    expect(homeRevalidate).toBe(3600);
   });
 });
