@@ -27,10 +27,10 @@ Tests: `__tests__/site/onboarding-consent.test.tsx`, `__tests__/lib/learn-analyt
 - Browsers that said yes under the old box stay on, including those where Escape was pressed (it counted as yes
   then). The two cannot be told apart.
 
-## Open, in Jackson's Inbox
+## Decided (Jackson, 2026-11-17)
 
-`teachbraille-optin-explicit-buttons`: whether the box should end with two equal buttons instead of Get Started
-being the yes, and whether to ask everyone who answered before today again.
+Inbox item `teachbraille-optin-explicit-buttons`, declined: the box stays as it is now (Get Started, the visible Skip
+tracking link and the sentence under it), and nobody who answered before is asked again.
 
 ## Checks (the "Before every merge" list)
 
