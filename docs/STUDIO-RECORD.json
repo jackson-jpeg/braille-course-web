@@ -1,0 +1,48 @@
+{
+  "id": "teachbraille",
+  "name": "Teach Braille",
+  "stage": "live",
+  "pitch": "Free braille practice games and lessons, plus Delaney Costello's TVI services and courses, at teachbraille.org and in the iPhone and iPad app.",
+  "repos": ["https://github.com/jackson-jpeg/braille-course-web"],
+  "vpsPath": "/root/braille-course-web",
+  "nextMd": "/root/braille-course-web/docs/NEXT.md",
+  "latestHandoff": "/root/braille-course-web/docs/sessions/2026-11-17.md",
+  "domains": ["teachbraille.org", "www.teachbraille.org"],
+  "systemdUnits": [],
+  "ports": [],
+  "databases": [{ "name": "Neon PostgreSQL (Prisma)", "engine": "postgresql", "backupPath": null }],
+  "storagePaths": ["Vercel Blob (course materials)"],
+  "timers": ["Vercel cron: /api/cron/finalize-balance", "Vercel cron: /api/cron/send-scheduled-emails"],
+  "deployCommand": "git push origin master (Vercel builds master only; the build runs the full test suite)",
+  "healthUrl": null,
+  "stagingUrl": null,
+  "apple": {
+    "appId": "6833681749",
+    "bundleId": "com.teachbraille.app",
+    "version": "1.1.1",
+    "state": "1.1 approved 2026-11-17; 1.1.1 PREPARE_FOR_SUBMISSION, submit waits on Jackson",
+    "testflightGroups": null,
+    "ascKeyPath": "Mac: ~/.sanger-build/secrets.env names the key file"
+  },
+  "money": { "stripe": "Stripe Embedded Checkout (summer course enrollment)", "affiliates": null, "monthlyCosts": null },
+  "audience": {
+    "analyticsSource": "Umami, studio tracker at a.unpossible.studio (plus Vercel Analytics)",
+    "analyticsId": "754bea88-a2bd-40d0-b36e-dbe468a48125",
+    "searchConsole": "verified by meta tag in app/layout.tsx",
+    "tiktok": null,
+    "emailList": null
+  },
+  "trust": {
+    "privacyUrl": null,
+    "termsUrl": null,
+    "supportUrl": null,
+    "storePolicies": "https://teachbraille.org/policies"
+  },
+  "rules": [
+    "Never run db:push against production (archive tables not in schema.prisma); apply generated SQL only.",
+    "All braille comes from lib/braille/; oracle, geometry and axe checks before every merge.",
+    "The apex https://teachbraille.org is canonical; www redirects to it.",
+    "GitHub Actions is manual only; run checks on the VPS through heavy.",
+    "No em dashes in user-facing copy; no decorative graphics."
+  ]
+}
