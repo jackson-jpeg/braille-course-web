@@ -71,3 +71,21 @@ her paid lessons (one line linking `/services` is in, easy to drop); an alphabet
 - In flight: only the uncommitted fit fix in `/root/braille-course-web-wbd` (3 files: `components/NameInBraille.tsx`,
   `app/globals.css`, `__tests__/site/world-braille-day.test.tsx`). Start there; `docs/NEXT.md` item 0 lists the steps.
 - The worktree's `.next` may hold a partial build; the next `npm run build` replaces it.
+
+## Second session (16:15 to 17:00 UTC)
+
+- The fit fix is verified and pushed: `18ea5ad` on `world-braille-day`. All through `heavy`: prettier, tsc, the page
+  test (94), lint (no new warnings), `NODE_ENV=production npm run build` (46 suites, 1914 tests), then on a local
+  production server `braille:geometry` (2956 cells, 0 problems) and `a11y:axe` (0 violations).
+- **Not done: the review captures.** First run failed because `playwright` does not resolve from the scratchpad;
+  the rerun from inside the worktree was stopped by Claude Code for low box memory (about 1 GB available, other
+  projects' jobs in both `heavy` slots). Nothing was captured. Next: when memory allows, in the worktree start
+  `npx next start -p 3190 -H 127.0.0.1` (the `.next` there is the verified build of `18ea5ad`), copy
+  `docs/handoffs/2026-11-17-wbd-capture.mjs` into the worktree, run it through `heavy` with the server URL and an
+  output folder, read the logged page and row overflow for the long names, look at every image and the PDF, then
+  publish the review page and link it to the lead. Stop the server and delete the copied script afterwards.
+- The worktree `/root/braille-course-web-wbd` is clean (everything pushed) and is kept only for the captures; remove
+  it with `git worktree remove` after them.
+- Left running: nothing. The server on 3190 is stopped; no `heavy` job of ours holds or waits.
+- Blocks hit: none. Two background jobs were stopped by Claude Code for memory pressure (this capture, and last
+  session's build).
