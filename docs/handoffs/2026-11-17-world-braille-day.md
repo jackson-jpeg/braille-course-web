@@ -120,3 +120,18 @@ her paid lessons (one line linking `/services` is in, easy to drop); an alphabet
 - Left running: nothing. The local server on 3190 is stopped (note: `full.sh`'s `kill` of the `npx` parent leaves
   `next-server` running; kill it by port).
 - Blocks hit: none this session.
+
+## At context clear (after the third session)
+
+- **Done:** `/world-braille-day` built and checked on branch `world-braille-day` (latest `6de8b71`, pushed). Review
+  page: https://claude.ai/artifact/Qdmre6tGd3F4GooD5Bi3QA. Worktree removed; the branch stays.
+- **In flight:** nothing running. No server, no `heavy` job, no worktree.
+- **Waiting:** Delaney's three answers (her paragraph, keep or drop the paid-lessons line, alphabet sheet or not).
+  Jackson's reply on Inbox `teachbraille-wbd-copy`: the lead emailed her from his Gmail and will pass her answers to
+  this session. Do not email or chase her.
+- **Next, when the answers arrive:** `git worktree add` on `world-braille-day`, `npm ci` there, put the copy in, run
+  the full "Before every merge" checklist in `docs/accuracy/HANDOFF.md` through `heavy` (oracle if braille changes,
+  build, geometry, axe), merge to `master` (that deploys), live by December 15, then check the live page and
+  `sitemap.xml`. `master` is ahead of the branch by docs only, so the merge is clean.
+- Files: page `app/world-braille-day/page.tsx`, `components/NameInBraille.tsx`, `lib/world-braille-day.ts`, tests
+  `__tests__/site/world-braille-day.test.tsx`; capture script `docs/handoffs/2026-11-17-wbd-capture.mjs`.
