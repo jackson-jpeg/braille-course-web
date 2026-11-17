@@ -19263,3 +19263,316 @@ details.faq-item.reveal:nth-child(6) {
   outline-offset: 2px;
   border-radius: 8px;
 }
+
+/* ============================================================
+   WORLD BRAILLE DAY PAGE (app/world-braille-day, components/NameInBraille.tsx)
+   Existing tokens only; no new colours or graphics.
+   ============================================================ */
+.wbd-section {
+  padding: 64px 24px;
+  background: white;
+}
+.wbd-section:nth-of-type(even) {
+  background: var(--section-bg);
+}
+.wbd-inner {
+  max-width: 760px;
+  margin: 0 auto;
+}
+.wbd-inner--wide {
+  max-width: 1040px;
+}
+.wbd-section h2 {
+  font-family: var(--font-heading), 'DM Serif Display', serif;
+  font-size: clamp(1.6rem, 3.5vw, 2.2rem);
+  color: var(--navy);
+  margin-bottom: 20px;
+}
+.wbd-text,
+.wbd-list li {
+  font-size: 1.02rem;
+  line-height: 1.8;
+  color: var(--text-secondary);
+  margin-bottom: 16px;
+}
+.wbd-list {
+  padding-left: 1.2em;
+  margin-bottom: 16px;
+}
+.wbd-list strong {
+  color: var(--navy);
+  font-weight: 600;
+}
+.wbd-section a {
+  color: var(--gold-text);
+  text-decoration: underline;
+  text-underline-offset: 2px;
+}
+
+/* -- Name box -- */
+.wbd-name-form {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  margin-bottom: 16px;
+}
+.wbd-name-label {
+  font-weight: 600;
+  color: var(--navy);
+}
+.wbd-name-input {
+  font: inherit;
+  font-size: 1.25rem;
+  padding: 12px 14px;
+  border: 1.5px solid rgba(27, 42, 74, 0.25);
+  border-radius: var(--radius-sm);
+  background: white;
+  color: var(--navy);
+  width: 100%;
+  max-width: 420px;
+}
+.wbd-name-input:focus-visible {
+  outline: 2px solid var(--gold);
+  outline-offset: 2px;
+  border-color: var(--gold);
+}
+.wbd-name-hint {
+  font-size: 0.92rem;
+  line-height: 1.6;
+  color: var(--text-secondary);
+}
+.wbd-name-status {
+  font-weight: 600;
+  color: var(--navy);
+  margin-bottom: 16px;
+}
+.wbd-name-status--problem {
+  color: var(--game-wrong);
+}
+.wbd-name-marked {
+  font-size: 1.4rem;
+  letter-spacing: 0.04em;
+  color: var(--navy);
+  margin-bottom: 16px;
+  overflow-wrap: anywhere;
+}
+.wbd-name-unwritable {
+  background: var(--game-wrong-bg);
+  color: var(--game-wrong);
+  outline: 2px solid var(--game-wrong);
+  border-radius: 3px;
+  padding: 0 2px;
+  text-decoration: underline wavy;
+}
+.wbd-name-output {
+  margin-top: 8px;
+}
+.wbd-name-braille {
+  margin-bottom: 24px;
+}
+.wbd-dot-heading {
+  font-size: 1rem;
+  font-weight: 600;
+  color: var(--navy);
+  margin-bottom: 8px;
+}
+.wbd-dot-list {
+  list-style: none;
+  padding: 0;
+  margin: 0 0 16px;
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(190px, 1fr));
+  gap: 6px 16px;
+}
+.wbd-dot-list li {
+  display: flex;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 6px 10px;
+  border-bottom: 1px solid rgba(27, 42, 74, 0.08);
+  font-size: 0.92rem;
+}
+.wbd-dot-name {
+  color: var(--text-secondary);
+}
+.wbd-dot-dots {
+  color: var(--navy);
+  font-weight: 600;
+  text-align: right;
+}
+
+/* -- Name card (screen preview; the print rules are below) -- */
+.wbd-print-btn {
+  font: inherit;
+  font-weight: 600;
+  padding: 12px 22px;
+  border: none;
+  border-radius: var(--radius-full);
+  background: var(--navy);
+  color: white;
+  cursor: pointer;
+  margin-bottom: 24px;
+}
+.wbd-print-btn:hover {
+  background: var(--navy-light);
+}
+.wbd-print-btn:focus-visible {
+  outline: 2px solid var(--gold);
+  outline-offset: 3px;
+}
+.wbd-card {
+  border: 1.5px solid rgba(27, 42, 74, 0.18);
+  border-radius: var(--radius-md);
+  padding: 32px 24px;
+  background: white;
+  text-align: center;
+}
+.wbd-card-kicker {
+  font-size: 0.85rem;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--gold-text);
+  font-weight: 600;
+  margin-bottom: 8px;
+}
+.wbd-card-print {
+  font-family: var(--font-heading), 'DM Serif Display', serif;
+  font-size: clamp(1.8rem, 6vw, 2.8rem);
+  color: var(--navy);
+  margin-bottom: 24px;
+  overflow-wrap: anywhere;
+}
+.wbd-card-braille {
+  justify-content: center;
+  margin-bottom: 24px;
+}
+.wbd-card-cell {
+  display: grid;
+  grid-template-columns: repeat(2, 18px);
+  grid-auto-rows: 18px;
+  gap: 6px;
+}
+.wbd-card-dot {
+  width: 18px;
+  height: 18px;
+  border-radius: 50%;
+}
+.wbd-card-dot.filled {
+  background: var(--navy);
+}
+.wbd-card-dot.empty {
+  border: 1.5px solid rgba(27, 42, 74, 0.2);
+}
+.wbd-card-dots {
+  text-align: left;
+}
+.wbd-card-note {
+  font-size: 0.85rem;
+  line-height: 1.6;
+  color: var(--text-secondary);
+  margin-top: 16px;
+}
+
+/* -- Classroom paths -- */
+.wbd-paths {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+  gap: 24px;
+}
+.wbd-path {
+  background: white;
+  border: 1px solid rgba(212, 168, 83, 0.25);
+  border-radius: var(--radius-lg);
+  padding: 24px;
+}
+.wbd-path h3 {
+  font-family: var(--font-heading), 'DM Serif Display', serif;
+  font-size: 1.35rem;
+  color: var(--navy);
+  margin-bottom: 8px;
+}
+.wbd-path p {
+  color: var(--text-secondary);
+  line-height: 1.6;
+  margin-bottom: 12px;
+}
+.wbd-path-steps {
+  padding-left: 1.3em;
+  line-height: 1.7;
+}
+.wbd-path-steps li {
+  margin-bottom: 6px;
+}
+.wbd-path-when {
+  font-weight: 600;
+  color: var(--navy);
+}
+
+@media (max-width: 480px) {
+  .wbd-section {
+    padding: 48px 16px;
+  }
+  .wbd-card {
+    padding: 24px 12px;
+  }
+  .wbd-card-cell {
+    grid-template-columns: repeat(2, 14px);
+    grid-auto-rows: 14px;
+    gap: 5px;
+  }
+  .wbd-card-dot {
+    width: 14px;
+    height: 14px;
+  }
+}
+
+/* -- Print: only the name card, on one sheet -- */
+@media print {
+  @page {
+    margin: 15mm;
+  }
+  .wbd-page > :not(.wbd-card-section),
+  .wbd-noprint {
+    display: none !important;
+  }
+  .wbd-card-section {
+    padding: 0;
+    background: white !important;
+  }
+  .wbd-card {
+    border: 1px solid #000;
+    padding: 12mm 8mm;
+    break-inside: avoid;
+    -webkit-print-color-adjust: exact;
+    print-color-adjust: exact;
+  }
+  .wbd-card-cell {
+    grid-template-columns: repeat(2, 7mm);
+    grid-auto-rows: 7mm;
+    gap: 2.5mm;
+  }
+  .wbd-card-dot {
+    width: 7mm;
+    height: 7mm;
+  }
+  .wbd-card-dot.filled {
+    background: #000;
+  }
+  .wbd-card-dot.empty {
+    border: 0.4mm solid #999;
+  }
+  .wbd-card-braille .braille-text-caption {
+    font-size: 11pt;
+    color: #000;
+    max-width: none;
+  }
+  .wbd-card-braille .braille-text-token--indicator {
+    background: none;
+    outline: 0.3mm dashed #999;
+  }
+  .wbd-card-print,
+  .wbd-dot-dots,
+  .wbd-card-kicker {
+    color: #000;
+  }
+}
