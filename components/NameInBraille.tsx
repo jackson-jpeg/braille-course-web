@@ -1,6 +1,6 @@
 'use client';
 
-import { useId, useState } from 'react';
+import { type CSSProperties, useId, useState } from 'react';
 import BrailleText from '@/components/BrailleText';
 import { EXAMPLE_NAME, NAME_MAX_LENGTH, type DotRow, dotRows, nameToBraille } from '@/lib/world-braille-day';
 
@@ -24,6 +24,17 @@ function DotList({ rows, className }: { rows: DotRow[]; className: string }) {
   );
 }
 
+/** Cells in the longest word: braille words never wrap, so the dots are sized to fit it (CSS). */
+function longestWordCells(tokens: { kind: string; cells: readonly unknown[] }[]): number {
+  let longest = 0;
+  let current = 0;
+  for (const t of tokens) {
+    current = t.kind === 'space' ? 0 : current + t.cells.length;
+    longest = Math.max(longest, current);
+  }
+  return Math.max(longest, 1);
+}
+
 function cellCount(n: number): string {
   return `${n} ${n === 1 ? 'cell' : 'cells'}`;
 }
@@ -35,6 +46,7 @@ export default function NameInBraille() {
   const result = nameToBraille(value);
   const rows = result.status === 'ok' ? dotRows(result.tokens) : [];
   const cells = result.status === 'ok' ? result.tokens.flatMap((t) => t.cells).length : 0;
+  const fit = { '--wbd-cells': result.status === 'ok' ? longestWordCells(result.tokens) : 1 } as CSSProperties;
   const label =
     result.status === 'ok' ? `${result.print} in braille: ${rows.map((r) => `${r.name}, ${r.dots}`).join('; ')}` : '';
 
@@ -98,7 +110,16 @@ export default function NameInBraille() {
 
           {result.status === 'ok' && (
             <div className="wbd-name-output">
-              <BrailleText tokens={result.tokens} showLabels className="braille-text wbd-name-braille" label={label} />
+              <div className="wbd-fit" style={fit}>
+                <div className="wbd-braille-scroll">
+                  <BrailleText
+                    tokens={result.tokens}
+                    showLabels
+                    className="braille-text wbd-name-braille"
+                    label={label}
+                  />
+                </div>
+              </div>
               <h3 className="wbd-dot-heading">The dots, sign by sign</h3>
               <DotList rows={rows} className="wbd-dot-list" />
               {result.tokens.some((t) => t.kind === 'indicator') && (
@@ -125,17 +146,19 @@ export default function NameInBraille() {
               <button type="button" className="wbd-print-btn wbd-noprint" onClick={() => window.print()}>
                 Print the name card
               </button>
-              <div className="wbd-card">
+              <div className="wbd-card wbd-fit" style={fit}>
                 <p className="wbd-card-kicker">World Braille Day, January 4</p>
                 <p className="wbd-card-print">{result.print}</p>
-                <BrailleText
-                  tokens={result.tokens}
-                  showLabels
-                  className="braille-text wbd-card-braille"
-                  cellClassName="wbd-card-cell"
-                  dotClassName="wbd-card-dot"
-                  label={label}
-                />
+                <div className="wbd-braille-scroll">
+                  <BrailleText
+                    tokens={result.tokens}
+                    showLabels
+                    className="braille-text wbd-card-braille"
+                    cellClassName="wbd-card-cell"
+                    dotClassName="wbd-card-dot"
+                    label={label}
+                  />
+                </div>
                 <DotList rows={rows} className="wbd-dot-list wbd-card-dots" />
                 <p className="wbd-card-note">
                   Uncontracted braille. These dots are printed flat: this card is for sighted learners to study, not for

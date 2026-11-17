@@ -19446,15 +19446,47 @@ details.faq-item.reveal:nth-child(6) {
   justify-content: center;
   margin-bottom: 24px;
 }
+/* Dot size fitted to the longest word (--wbd-cells, set by the component): braille words never
+   wrap, so the dots shrink to fit the width, down to a floor; past it the row scrolls in its box. */
+.wbd-fit {
+  container-type: inline-size;
+  --wbd-dot-max: 12px;
+  --wbd-dot-min: 7px;
+  --wbd-token-extra: 18px;
+}
+.wbd-card.wbd-fit {
+  --wbd-dot-max: 18px;
+}
+.wbd-fit > *,
+.wbd-card > * {
+  --wbd-dot: clamp(
+    var(--wbd-dot-min),
+    calc((100cqi - var(--wbd-cells) * var(--wbd-token-extra)) / (var(--wbd-cells) * 2.4)),
+    var(--wbd-dot-max)
+  );
+}
+.wbd-braille-scroll {
+  max-width: 100%;
+  overflow-x: auto;
+}
+.wbd-name-braille .braille-text-cell {
+  grid-template-columns: repeat(2, var(--wbd-dot));
+  grid-auto-rows: var(--wbd-dot);
+  gap: calc(var(--wbd-dot) / 3);
+}
+.wbd-name-braille .braille-text-dot {
+  width: var(--wbd-dot);
+  height: var(--wbd-dot);
+}
 .wbd-card-cell {
   display: grid;
-  grid-template-columns: repeat(2, 18px);
-  grid-auto-rows: 18px;
-  gap: 6px;
+  grid-template-columns: repeat(2, var(--wbd-dot));
+  grid-auto-rows: var(--wbd-dot);
+  gap: calc(var(--wbd-dot) / 3);
 }
 .wbd-card-dot {
-  width: 18px;
-  height: 18px;
+  width: var(--wbd-dot);
+  height: var(--wbd-dot);
   border-radius: 50%;
 }
 .wbd-card-dot.filled {
@@ -19515,15 +19547,6 @@ details.faq-item.reveal:nth-child(6) {
   .wbd-card {
     padding: 24px 12px;
   }
-  .wbd-card-cell {
-    grid-template-columns: repeat(2, 14px);
-    grid-auto-rows: 14px;
-    gap: 5px;
-  }
-  .wbd-card-dot {
-    width: 14px;
-    height: 14px;
-  }
 }
 
 /* -- Print: only the name card, on one sheet -- */
@@ -19546,14 +19569,16 @@ details.faq-item.reveal:nth-child(6) {
     -webkit-print-color-adjust: exact;
     print-color-adjust: exact;
   }
-  .wbd-card-cell {
-    grid-template-columns: repeat(2, 7mm);
-    grid-auto-rows: 7mm;
-    gap: 2.5mm;
+  .wbd-inner {
+    max-width: none;
   }
-  .wbd-card-dot {
-    width: 7mm;
-    height: 7mm;
+  .wbd-card.wbd-fit {
+    --wbd-dot-max: 7mm;
+    --wbd-dot-min: 3mm;
+    --wbd-token-extra: 5mm;
+  }
+  .wbd-braille-scroll {
+    overflow: visible;
   }
   .wbd-card-dot.filled {
     background: #000;
@@ -19562,7 +19587,7 @@ details.faq-item.reveal:nth-child(6) {
     border: 0.4mm solid #999;
   }
   .wbd-card-braille .braille-text-caption {
-    font-size: 11pt;
+    font-size: 9pt;
     color: #000;
     max-width: none;
   }

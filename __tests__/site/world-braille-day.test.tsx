@@ -130,6 +130,14 @@ describe('name box: the component', () => {
     expect(screen.queryByRole('button', { name: 'Print the name card' })).toBeNull();
   });
 
+  test('the dots are sized for the longest word (words never wrap), on screen and on the card', () => {
+    const { container } = render(<NameInBraille />);
+    typeName('Jo Mary-Jane'); // longest word: capital, m a r y, hyphen, capital, j a n e = 11 cells
+    const fits = [...container.querySelectorAll<HTMLElement>('.wbd-fit')];
+    expect(fits).toHaveLength(2);
+    for (const el of fits) expect(el.style.getPropertyValue('--wbd-cells')).toBe('11');
+  });
+
   test('nothing typed is sent, stored or put in the address', () => {
     const fetchSpy = jest.fn();
     const beaconSpy = jest.fn();
