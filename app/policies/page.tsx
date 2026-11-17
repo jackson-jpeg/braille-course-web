@@ -61,7 +61,7 @@ export default function PoliciesPage() {
           <section id="privacy" className="policy-section">
             <h2>Privacy Policy</h2>
             <p>
-              <em>Effective date: November 16, 2026</em>
+              <em>Effective date: November 17, 2026</em>
             </p>
 
             <h3>Data We Collect</h3>
@@ -73,19 +73,21 @@ export default function PoliciesPage() {
 
             <h3>Free Course and Games</h3>
             <p>
-              Your lesson and game progress is saved in your own browser. Unless you choose &ldquo;Skip tracking&rdquo;,
-              the site also records anonymous activity (which lessons are started and finished, and which games are
-              played) under a random ID stored on your device. It is never linked to your name or email, and is used
-              only to improve the course.
+              Your lesson and game progress is saved in your own browser. Anonymous activity counting is off unless you
+              turn it on: only if you choose &ldquo;Get Started&rdquo; at the end of the welcome box on the games page
+              does the site also record anonymous activity (which lessons are started and finished, and which games are
+              played) under a random ID stored on your device. Choosing &ldquo;Skip tracking&rdquo;, closing the box or
+              pressing Escape leaves it off, and no ID is kept. The activity is never linked to your name or email, and
+              is used only to improve the course.
             </p>
 
             <h3 id="visitor-analytics">Visitor Analytics</h3>
             <p>
               We count visits to this website with Umami, running on our own server, so nothing goes to an analytics
               company. It sets no cookies and does not follow you to other sites. For each visit it records the page,
-              the referring site, your browser, operating system, device type, screen size, language and an
-              approximate location (country, region and city, worked out from your IP address; the address itself is
-              not stored). Visit records are deleted after 24 months.
+              the referring site, your browser, operating system, device type, screen size, language and an approximate
+              location (country, region and city, worked out from your IP address; the address itself is not stored).
+              Visit records are deleted after 24 months.
             </p>
 
             <h3 id="cookies">Cookies, Browser Storage and Do Not Track</h3>
@@ -93,10 +95,10 @@ export default function PoliciesPage() {
               Browsing this website sets no cookies. Its fonts are served from teachbraille.org, and nothing is loaded
               from other companies&apos; servers until you start checkout. The site keeps these items in your
               browser&apos;s local storage, and they stay on your device: <code>brailleGames_progress</code> (your
-              lesson and game progress and settings, including whether you chose &ldquo;Skip tracking&rdquo;),{' '}
-              <code>brailleGames_hints</code> (which game hints you have seen) and, unless you chose &ldquo;Skip
-              tracking&rdquo;, <code>brailleGames_visitorId</code> (the random ID described above, sent with the
-              anonymous activity to our own server). Clearing your browser&apos;s site data removes them.
+              lesson and game progress and settings, including your answer about anonymous activity),{' '}
+              <code>brailleGames_hints</code> (which game hints you have seen) and, only if you turned anonymous
+              activity on, <code>brailleGames_visitorId</code> (the random ID described above, sent with the anonymous
+              activity to our own server). Clearing your browser&apos;s site data removes them.
             </p>
             <p>
               When you enroll, checkout takes place on Stripe, which sets its own cookies there to process the payment
@@ -106,7 +108,7 @@ export default function PoliciesPage() {
             <p>
               Because our visit counting does not follow you to other sites and sets no cookies, the site treats every
               visitor the same way whether or not your browser sends a Do Not Track signal. The anonymous course
-              activity described above is controlled by the &ldquo;Skip tracking&rdquo; choice instead.
+              activity described above is off unless you turn it on in the welcome box.
             </p>
 
             <h3 id="app">TeachBraille iPhone and iPad App</h3>

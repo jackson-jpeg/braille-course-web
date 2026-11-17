@@ -6,9 +6,7 @@ import { isAdminPath, keepUmamiPayload } from '@/lib/analytics-filter';
 describe('keepUmamiPayload', () => {
   const payload = { website: '754bea88-a2bd-40d0-b36e-dbe468a48125', url: '/' };
 
-  test.each(['/admin', '/admin/', '/admin/leads'])('drops %s', (p) =>
-    expect(keepUmamiPayload(p, payload)).toBe(false),
-  );
+  test.each(['/admin', '/admin/', '/admin/leads'])('drops %s', (p) => expect(keepUmamiPayload(p, payload)).toBe(false));
 
   test.each(['/', '/learn', '/policies', '/administrator-guide'])('keeps %s', (p) =>
     expect(keepUmamiPayload(p, payload)).toBe(payload),

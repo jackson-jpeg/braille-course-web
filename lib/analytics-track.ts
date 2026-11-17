@@ -1,18 +1,19 @@
 /**
  * Client-side sender for anonymous free-course & game engagement events.
  *
- * Privacy model: we mint a random per-device id in localStorage (no login, no
- * PII) and only send events when the learner's tracking consent is enabled —
- * the same `settings.trackingEnabled` flag that gates local progress storage.
+ * Privacy model: opt-in. Nothing is sent, and no id is kept, until the learner
+ * says yes in the welcome box. After a yes we mint a random per-device id in
+ * localStorage (no login, no PII) and send events with it. Without a yes any
+ * id left by an earlier version of the site is removed.
  * All failures are swallowed; tracking must never disrupt the learner.
  */
 
 'use client';
 
-import { loadProgress } from './progress-storage';
-import { VISITOR_ID_KEY, type AnalyticsEventType } from './learn-analytics';
+import { hasActivityConsent, removeVisitorId, VISITOR_ID_KEY } from './progress-storage';
+import type { AnalyticsEventType } from './learn-analytics';
 
-/** Get (or lazily create) the anonymous visitor id for this device. */
+/** Get (or lazily create) the anonymous visitor id for this device. Call only after a yes. */
 export function getVisitorId(): string | null {
   if (typeof window === 'undefined') return null;
   try {
@@ -31,15 +32,18 @@ export function getVisitorId(): string | null {
 }
 
 /**
- * Record an anonymous engagement event. No-ops silently when tracking consent
- * is off, on the server, or if the network call fails.
+ * Record an anonymous engagement event. No-ops silently unless the learner has
+ * said yes, on the server, or if the network call fails.
  */
 export function track(eventType: AnalyticsEventType, target: string, meta?: Record<string, unknown>): void {
   if (typeof window === 'undefined') return;
 
   try {
-    // Respect the same consent flag that gates local progress.
-    if (!loadProgress().settings.trackingEnabled) return;
+    // Opt-in: without an explicit yes nothing is sent and no id is kept.
+    if (!hasActivityConsent()) {
+      removeVisitorId();
+      return;
+    }
 
     const visitorId = getVisitorId();
     if (!visitorId) return;

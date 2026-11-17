@@ -13,8 +13,7 @@ const STEPS = [
   },
   {
     title: 'Track Your Progress',
-    description:
-      'Your scores, streaks, and achievements are saved locally on your device. Nothing is sent to any server.',
+    description: 'Your scores, streaks, and achievements are saved locally on your device.',
     icon: '📊',
   },
   {
@@ -47,11 +46,11 @@ export default function OnboardingModal() {
     }
   }, []);
 
-  // Escape key dismisses + focus trap
+  // Escape key dismisses + focus trap. Dismissing is not a yes: anonymous activity is opt-in.
   useEffect(() => {
     if (!visible) return;
     function onKeyDown(e: KeyboardEvent) {
-      if (e.key === 'Escape') handleClose(true);
+      if (e.key === 'Escape') handleClose(false);
       if (e.key === 'Tab' && modalRef.current) {
         const focusable = modalRef.current.querySelectorAll<HTMLElement>(
           'button, [href], input, [tabindex]:not([tabindex="-1"])',
@@ -95,7 +94,7 @@ export default function OnboardingModal() {
   return (
     <div className="onboarding-overlay" role="dialog" aria-modal="true" aria-labelledby="onboarding-title">
       <div className="onboarding-modal" ref={modalRef}>
-        <button className="onboarding-close" onClick={() => handleClose(true)} aria-label="Close">
+        <button className="onboarding-close" onClick={() => handleClose(false)} aria-label="Close">
           ×
         </button>
 
@@ -127,8 +126,8 @@ export default function OnboardingModal() {
 
         {isLast && (
           <p className="onboarding-privacy">
-            Your progress stays on your device. With tracking on, we also count anonymous lesson and game activity
-            (never your name or email).{' '}
+            Your progress stays on your device. If you choose Get Started, we also count anonymous lesson and game
+            activity (never your name or email). Closing this box or pressing Escape leaves it off.{' '}
             <button className="onboarding-privacy-link" onClick={() => handleClose(false)}>
               Skip tracking
             </button>

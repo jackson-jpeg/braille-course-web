@@ -14,9 +14,6 @@ import { LESSON_SLUGS } from './course-curriculum';
 export const ANALYTICS_EVENT_TYPES = ['lesson_start', 'lesson_complete', 'game_play'] as const;
 export type AnalyticsEventType = (typeof ANALYTICS_EVENT_TYPES)[number];
 
-/** localStorage key holding the anonymous per-device visitor id. */
-export const VISITOR_ID_KEY = 'brailleGames_visitorId';
-
 /** Human labels for each game. */
 export const GAME_LABELS: Record<GameId, string> = GAME_NAMES;
 

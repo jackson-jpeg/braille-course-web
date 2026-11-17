@@ -143,12 +143,39 @@ export function markOnboardingSeen(): void {
   saveProgress(progress);
 }
 
-/** Mark tracking consent */
+/**
+ * Record the learner's answer about anonymous activity (opt-in).
+ * Yes: activity may be sent (see `hasActivityConsent`). No: nothing is sent and the random visitor id is
+ * removed from this browser. Either way progress keeps being saved on the device.
+ */
 export function setTrackingConsent(consented: boolean): void {
   const progress = loadProgress();
-  progress.settings.hasConsentedToTracking = true;
-  progress.settings.trackingEnabled = consented;
+  progress.settings.hasConsentedToTracking = consented;
+  if (consented) progress.settings.trackingEnabled = true;
   saveProgress(progress);
+  if (!consented) removeVisitorId();
+}
+
+/**
+ * Whether anonymous activity may be sent: only after an explicit yes. Until the learner answers, and after a
+ * no, this is false. (`trackingEnabled` false is the older "Skip tracking" answer, which is still honoured.)
+ */
+export function hasActivityConsent(): boolean {
+  const { settings } = loadProgress();
+  return settings.hasConsentedToTracking === true && settings.trackingEnabled === true;
+}
+
+/** localStorage key holding the anonymous per-device visitor id (kept only after a yes). */
+export const VISITOR_ID_KEY = 'brailleGames_visitorId';
+
+/** Forget the random visitor id. */
+export function removeVisitorId(): void {
+  if (typeof window === 'undefined') return;
+  try {
+    localStorage.removeItem(VISITOR_ID_KEY);
+  } catch {
+    // localStorage may be unavailable
+  }
 }
 
 /** Export progress as JSON blob */
