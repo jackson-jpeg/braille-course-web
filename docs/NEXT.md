@@ -17,6 +17,18 @@ In order. The latest session handoff is `docs/handoffs/2026-11-17-world-braille-
          `docs/accuracy/HANDOFF.md` (oracle, build, geometry, axe), merge to `master` (that deploys), live by
          December 15. Then check the live page and the sitemap.
    - [ ] The outreach note waits for Delaney (Jackson, 2026-11-17). Nothing to do until she answers.
+0a. **Jackson, 2026-11-17 (Sessions message), next work, in this order:**
+   - [ ] **(1) The second world of the free practice:** letters k to t with the same Meet the Six mechanic, then u
+         to z. Same liblouis checks (`npm run braille:oracle`, inventory registration) and axe pass, all through
+         `heavy`, in a worktree. **Deployed when green** (his words; merge to `master` deploys). When it is live, file
+         **one** Inbox item with screenshots (`needs-you`, for the lead).
+   - [ ] **(2) World Braille Day launch ready to go live the minute Delaney answers** (he emailed her; answers by
+         December 5). Prepare everything short of her copy: a script or exact command list for copy in, checks,
+         merge, live check of the page and `sitemap.xml`. Keep the branch merge-clean with `master` (rebase or merge
+         `master` into it after (1) lands, then rerun checks).
+   - [ ] **(3) A Teach Braille playable update on unpossible.studio that shows the new world.** Find where that
+         lives first (a worktree `/root/braille-unpossible` on branch `unpossible-analytics` exists and may belong
+         to another session: look, do not touch until known). Follow that project's own deploy rules.
 1. **When Apple approves iOS 1.1**, on the Mac (`source ~/.sanger-build/secrets.env && cd ~/teachbraille-ios`):
    `TB_VERSION=1.1.1 ruby scripts/asc/asc-store.rb newversion`, `build 202611170158`, `whatsnew`, `notes`,
    `autorelease`, `attach ~/Downloads/TeachBraille-iOS/review-recording/TeachBraille-App-Review-1.1.1.mp4`. Then
