@@ -64,3 +64,10 @@ her paid lessons (one line linking `/services` is in, easy to drop); an alphabet
 
 - `require-pipefail` refused a `heavy -- bash -c '... | tail'`; ran it with output to a file instead.
 - Auto mode could not review one read-only Bash call the pipefail hook rewrote; reissued as instructed, it ran.
+
+## At context clear (16:15 UTC)
+
+- Nothing running: the local server on 3190 is stopped; no job holds or waits for `heavy`; no browser left open.
+- In flight: only the uncommitted fit fix in `/root/braille-course-web-wbd` (3 files: `components/NameInBraille.tsx`,
+  `app/globals.css`, `__tests__/site/world-braille-day.test.tsx`). Start there; `docs/NEXT.md` item 0 lists the steps.
+- The worktree's `.next` may hold a partial build; the next `npm run build` replaces it.
