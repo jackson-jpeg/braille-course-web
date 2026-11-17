@@ -10,8 +10,10 @@ In order. The latest session handoff is `docs/handoffs/2026-11-17-world-braille-
          rows on phones, axe now also checks a long name (`6de8b71`). All checks green (handoff, "Third session").
    - [x] Review page with screenshots and the print card; worktree removed.
    - [ ] **Waiting on Jackson's Inbox `teachbraille-wbd-copy`** (due December 5): Delaney's paragraph, keep or drop
-         the paid-lessons line, an alphabet sheet or not. Approve there means go live with the draft as is. When the
-         answer comes: new worktree on the branch, put the copy in, run the full "Before every merge" checklist in
+         the paid-lessons line, an alphabet sheet or not. Approve there means go live with the draft as is.
+         Jackson's reply, 2026-11-17: the lead emailed Delaney the three questions from his Gmail and watches for her
+         reply; the lead passes her answers to this session. Do not email her or chase. Keep the branch ready (no
+         changes to it meanwhile unless `master` moves under it). When the answers come: new worktree on the branch, put the copy in, run the full "Before every merge" checklist in
          `docs/accuracy/HANDOFF.md` (oracle, build, geometry, axe), merge to `master` (that deploys), live by
          December 15. Then check the live page and the sitemap.
    - [ ] The outreach note waits for Delaney (Jackson, 2026-11-17). Nothing to do until she answers.
