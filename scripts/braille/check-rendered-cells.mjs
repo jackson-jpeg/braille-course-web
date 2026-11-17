@@ -25,7 +25,15 @@ const { OTHER_CODE_RE, SUPERSEDED_TERMS } = terminology;
 const base = process.argv[2] ?? 'http://localhost:3000';
 const curriculum = fs.readFileSync(new URL('../../lib/course-curriculum.ts', import.meta.url), 'utf8');
 const slugs = [...curriculum.matchAll(/slug: '([a-z0-9-]+)'/g)].map((m) => m[1]);
-const pages = ['/', '/games', '/learn', '/intro', '/this-page-does-not-exist', ...slugs.map((s) => `/learn/${s}`)];
+const pages = [
+  '/',
+  '/games',
+  '/learn',
+  '/intro',
+  '/world-braille-day',
+  '/this-page-does-not-exist',
+  ...slugs.map((s) => `/learn/${s}`),
+];
 
 const launch = { headless: true };
 if (fs.existsSync('/opt/pw-browsers/chromium')) launch.executablePath = undefined;
