@@ -45,9 +45,12 @@ Each of these has an outreach arm that supports teachers across its state, which
   Literacy is the Perkins route anyway.
 - New York State School for the Blind (https://www.nysed.gov/new-york-state-school-blind/contact-us): the page would
   not load (certificate error).
-- Maryland School for the Blind: a search result gave info@mdschblind.org and 410-444-5000, but the contact page
-  address I tried did not exist, so treat both as unconfirmed.
-- Florida, Ohio and Kentucky state schools: not looked up yet.
+- Maryland School for the Blind: its Statewide Services page opens
+  (https://www.marylandschoolfortheblind.org/statewide-services/statewide-services/), but I found no contact page or
+  address on the site's pages I could load. A search result gave info@mdschblind.org and 410-444-5000; treat both as
+  unconfirmed.
+- Florida, Kentucky and Ohio state schools: their sites did not give a contact page I could read (Florida's home page
+  came back cut short, Kentucky's redirects, the Ohio address I tried does not exist). Not listed.
 
 ## Suggested order
 
