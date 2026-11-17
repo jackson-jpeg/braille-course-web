@@ -32,12 +32,12 @@ contact details from it. Anything I could not open is in the last section, not i
 
 Each of these has an outreach arm that supports teachers across its state, which is the right door.
 
-| School | Where to write (opened) | Notes |
-|---|---|---|
-| Texas School for the Blind and Visually Impaired | Outreach contact form: https://forms.gle/DEf8yrBBHttbDDbh8 (linked from https://www.tsbvi.edu/statewide-resources/services/about-outreach). General form: https://www.tsbvi.edu/contact | Switchboard (512) 454-8631. AFB's own braille page points to TSBVI, so a listing here carries weight. |
-| California School for the Blind | info@csb-cde.ca.gov, shown on https://www.csb-cde.ca.gov/ | Main office 510-794-3800. Their outside-resources pages start at https://www.csb-cde.ca.gov/resources/statenational/index.aspx |
-| Washington State School for the Blind | Contact form: https://www.wssb.wa.gov/webform/contact-us, or info@wssb.wa.gov (shown on https://www.wssb.wa.gov/) | I read the form's address from the home page's link and did not open the form itself. They publish a "Resources for Teaching Braille" sheet for new teachers. |
-| Indiana School for the Blind and Visually Impaired | https://www.in.gov/isbvi/contact/ | Weak: the page only offers the State Information Center (1-800-457-8283), not school staff. |
+| School                                             | Where to write (opened)                                                                                                                                                                 | Notes                                                                                                                                                         |
+| -------------------------------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Texas School for the Blind and Visually Impaired   | Outreach contact form: https://forms.gle/DEf8yrBBHttbDDbh8 (linked from https://www.tsbvi.edu/statewide-resources/services/about-outreach). General form: https://www.tsbvi.edu/contact | Switchboard (512) 454-8631. AFB's own braille page points to TSBVI, so a listing here carries weight.                                                         |
+| California School for the Blind                    | info@csb-cde.ca.gov, shown on https://www.csb-cde.ca.gov/                                                                                                                               | Main office 510-794-3800. Their outside-resources pages start at https://www.csb-cde.ca.gov/resources/statenational/index.aspx                                |
+| Washington State School for the Blind              | Contact form: https://www.wssb.wa.gov/webform/contact-us, or info@wssb.wa.gov (shown on https://www.wssb.wa.gov/)                                                                       | I read the form's address from the home page's link and did not open the form itself. They publish a "Resources for Teaching Braille" sheet for new teachers. |
+| Indiana School for the Blind and Visually Impaired | https://www.in.gov/isbvi/contact/                                                                                                                                                       | Weak: the page only offers the State Information Center (1-800-457-8283), not school staff.                                                                   |
 
 ## Could not open, so not listed above
 
