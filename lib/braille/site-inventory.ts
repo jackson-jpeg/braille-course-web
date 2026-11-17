@@ -23,6 +23,7 @@ import { brailleInventory as heroInventory } from '../games/hero';
 import { brailleInventory as explorerInventory } from '../games/explorer';
 import { brailleInventory as contractionSprintInventory } from '../games/contraction-sprint';
 import { brailleInventory as sentenceDecoderInventory } from '../games/sentence-decoder';
+import { brailleInventory as worldBrailleDayInventory } from '../world-braille-day';
 import { DISCREPANCIES } from './discrepancies';
 import { VERIFICATION_SAMPLES } from './verification-samples';
 import { ALPHABET, DIGITS_IN_ORDER, PUNCTUATION, SYMBOLS } from './ueb';
@@ -100,6 +101,7 @@ const SOURCES: (() => InventoryItem[])[] = [
   explorerInventory,
   contractionSprintInventory,
   sentenceDecoderInventory,
+  worldBrailleDayInventory,
 ];
 
 export function siteInventory(): InventoryItem[] {

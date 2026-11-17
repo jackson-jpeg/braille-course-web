@@ -23,6 +23,7 @@ export const HERO_WORDS: readonly string[] = [
   'INTRO TO BRAILLE',
   'BOOK AN APPOINTMENT',
   'INTERACTIVE',
+  'WORLD BRAILLE DAY',
 ];
 
 /** Words the lesson pages pass: each lesson title, upper-cased (app/learn/[lesson]/page.tsx). */
