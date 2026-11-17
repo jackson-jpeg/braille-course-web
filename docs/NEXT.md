@@ -33,6 +33,10 @@ In order. The latest session handoff is `docs/handoffs/2026-11-17-world-braille-
    `TB_VERSION=1.1.1 ruby scripts/asc/asc-store.rb newversion`, `build 202611170158`, `whatsnew`, `notes`,
    `autorelease`, `attach ~/Downloads/TeachBraille-iOS/review-recording/TeachBraille-App-Review-1.1.1.mp4`. Then
    `submit` only on Jackson's word, given in the session that runs it. Details: `teachbraille-ios/docs/1.1.1/HANDOFF.md`.
+   **Apple outage, 2026-11-17** (Jackson, from ~16:45 UTC; App Store Connect and Xcode Cloud down around 19:20 UTC,
+   recovery partial): check https://developer.apple.com/system-status/ first. Treat App Store Connect, TestFlight
+   or altool 5xx and timeouts as Apple's: retry at 1, 5, 15, 30 min, for up to 3 hours, before calling anything
+   broken. Never re-upload a build that already reached processing. No Inbox items for Apple 5xx alone.
 2. **Optional**: iPad audit and layout checks for 1.1.1 on a temporary iPad simulator, when the Mac has room.
 3. **Optional, needs a request first**: the website's Word Game is 50 px too tall to show board and keyboard together
    at 320 by 568 (fits at 375 by 667 and up). Not changed.
