@@ -17,6 +17,14 @@ In order. The latest session handoff is `docs/handoffs/2026-11-17-world-braille-
          `docs/accuracy/HANDOFF.md` (oracle, build, geometry, axe), merge to `master` (that deploys), live by
          December 15. Then check the live page and the sitemap.
    - [ ] The outreach note waits for Delaney (Jackson, 2026-11-17). Nothing to do until she answers.
+0b. **Site audit fixes, in the next deploy** (Jackson, 2026-11-17; keep the World Braille Day branch separate: own
+   worktree and branch off `master`, ship with (1) below or on its own when green):
+   - [ ] Smart App Banner: `itunes: { appId: '6833681749' }` in the root `metadata` of `app/layout.tsx` (renders
+         `<meta name="apple-itunes-app">`; none today). Test that it renders.
+   - [ ] A visible Privacy link on the home page. Today the footer (`components/Footer.tsx`) links only "Policies"
+         (`/policies`); check what `/policies` says about the studio tracker and analytics, link it as "Privacy"
+         (an anchor if it has a privacy section), and make sure the home page shows it. Test it; no em dashes.
+   - [ ] Checks through `heavy`: build, axe. Then merge to `master` (that deploys) and check live.
 0a. **Jackson, 2026-11-17 (Sessions message), next work, in this order:**
    - [ ] **(1) The second world of the free practice:** letters k to t with the same Meet the Six mechanic, then u
          to z. Same liblouis checks (`npm run braille:oracle`, inventory registration) and axe pass, all through
