@@ -30,9 +30,15 @@ case "${1:-}" in
     h oracle npm run braille:oracle
     git diff --exit-code -- __tests__/fixtures/liblouis-oracle.json
     h build env NODE_ENV=production npm run build
-    npm run start -- -p "$port" >/dev/null 2>&1 &
+    # A server already on the port would be checked instead of this build (2026-11-18: a next-server orphaned
+    # by an earlier run, from a deleted worktree, served old pages and the check went red on every page).
+    if ss -ltn "sport = :$port" | grep -q LISTEN; then
+      echo "port $port is already in use: stop that server or set WBD_PORT" >&2; exit 1
+    fi
+    # Its own process group, so the cleanup stops next-server too, not only npm.
+    setsid npm run start -- -p "$port" >/dev/null 2>&1 &
     server=$!
-    trap 'kill $server 2>/dev/null || true' EXIT
+    trap 'kill -- -$server 2>/dev/null || true' EXIT
     for _ in $(seq 60); do curl -fs "http://localhost:$port/world-braille-day" >/dev/null && break; sleep 1; done
     h geometry npm run braille:geometry -- "http://localhost:$port"
     h axe npm run a11y:axe -- "http://localhost:$port"
