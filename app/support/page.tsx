@@ -1,9 +1,9 @@
 import type { Metadata } from 'next';
 import Link from 'next/link';
 import Footer from '@/components/Footer';
+import { APP_STORE_URL } from '@/lib/app-store';
 
 const SUPPORT_EMAIL = 'Delaney@TeachBraille.org';
-const APP_STORE_URL = 'https://apps.apple.com/app/id6833681749';
 
 export const metadata: Metadata = {
   title: 'Support',

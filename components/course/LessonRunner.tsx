@@ -13,6 +13,7 @@ import { describeCells } from '@/lib/braille/prose';
 import BrailleText from '@/components/BrailleText';
 import { transcribe as transcribeCells } from '@/lib/braille/transcribe';
 import { track } from '@/lib/analytics-track';
+import { APP_STORE_URL } from '@/lib/app-store';
 import type { GameId } from '@/lib/progress-types';
 
 function GameSkeleton() {
@@ -276,7 +277,14 @@ export default function LessonRunner({ lesson, prev, next }: LessonRunnerProps) 
                 ) : (
                   <>
                     You&rsquo;ve reached the end of the course. Explore the <Link href="/games">practice games</Link>{' '}
-                    any time.
+                    any time.{' '}
+                    <span className="lesson-app-line">
+                      Or keep practicing on the go with{' '}
+                      <a href={APP_STORE_URL} target="_blank" rel="noopener noreferrer">
+                        Teach Braille, free for iPhone and iPad on the App Store
+                      </a>
+                      .
+                    </span>
                   </>
                 )}
               </p>
