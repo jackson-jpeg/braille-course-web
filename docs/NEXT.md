@@ -14,7 +14,8 @@ only through the foreman's `mac-sim` lock, Xcode Cloud first. Save every mockup,
 - [x] (2026-11-18 07:39Z GREEN: the 4 red tests rerun and passed on Shared iPhone Pro Max A (teachbraille-ios `966382c`), the other 6 passed at 05:58Z: World 2 and World 3 suites 10/10.) (2026-11-18: built, teachbraille-ios `c967ea2`, `23cfa46`: `PathTests` pin World 2's 8 stops and its cards, BrailleKit `swift test` 101/101 on the Mac; `World2Tests.swift` (audit, flat, largest text, map, eyes-free map to reward) and a `reward:<stop>` launch route. UI run 05:58Z: 6 of 10 passed; World 2 audit timed out (infra, rerun), World 3 eyes-free game player too weak for 4 choices (fix SliceRun.game, rerun); details docs/sessions/2026-11-17.md, last section (`ios test teachbraille --only TeachBrailleUITests/World2Tests --only TeachBrailleUITests/World3Tests`); tick when green. 2026-11-18 07:10Z: player fixed, teachbraille-ios `cdd9a0e` (reads the card through BrailleKit, learns from the miss panel); rerun of the 4 red tests next in the `mac-sim` queue since 06:21Z) World 2 (k to t) to World 1's test bar, in the app. Never change grouping or stop ids (saved progress). The website has no Meet the Six (only the unmerged `origin/redesign-oct-2026`): a web version is a new design, proposed to the lead, not built
 - [ ] (2026-11-18: (a) merged to `master` (`4bbb3ad`), NOT live: Vercel rate-limited the build until about 2026-11-19 03:36 UTC; `vercel.json` now skips docs-only pushes (`ignoreCommand`, committed locally, unpushed on purpose); push ONCE after the limit lifts, then check /support live. (b) done: promotional text set and read back on 1.1 (live) and 1.1.1; support URL set on 1.1.1 (Apple refuses it on live 1.1, 409, rides with 1.1.1). (c) done: store name "Teach Braille" set and read back on the 1.1.1 app info (`asc-store.rb name`); the on-device display name follows in the next build. (d) plan `teachbraille-ios/docs/1.1.1/APP-PREVIEWS.md`; built (`e94018e`): driver `RecordingTests.testPreviewTour`, cut `scripts/preview-cut.sh`, upload `asc-store.rb preview`. Cut tested on a synthetic clip 2026-11-18 (630 MB peak, checks pass, `966382c`). Turn script `scripts/preview-turn.sh iphone|ipad` (teachbraille-ios `f2263e9`; reward shot fixed `22b2d65` so "Next up" names s4, not the stop just won); iPhone turn queued 07:58Z, stopped unstarted for the clear: rerun it. Next: cut, review frames, the iPad turn, upload to 1.1.1) App Store listing fixes
   - BLOCKED 2026-11-18 08:37Z, two blocks. (a) Vercel's 24 h build limit, until about 2026-11-19 03:36 UTC (the
-    lead: no Vercel push tonight). Then: production build through heavy, push master once, read back /support.
+    lead: no Vercel push tonight). Then: production build through heavy, push master once, read back /support
+    and the Word Game on a 320x568 phone (`npm run a11y:wordgame-fit -- https://teachbraille.org`).
     (d) Mac load: the iPhone turn ran 08:25Z to 08:35Z and failed on its first step, `Timed out waiting for AX
 loaded notification` (Mac 1-minute load 80 to 128: `kernel_task`, `mediaanalysisd`; 174 MB RAM free). The
     lead's rule: start a Mac turn only when the 1-minute load is under 20. Still 102 at 08:37Z. Rerun the same
@@ -32,8 +33,9 @@ loaded notification` (Mac 1-minute load 80 to 128: `kernel_task`, `mediaanalysis
     2026-11-19. Send it the path (all four pictures) then.
 - [ ] (2026-11-18 08:55Z: every item above is blocked, so five next items went to the lead, Inbox `a2958c1b`:
       1 the iOS app offered at the end of the course, 2 Word Game fits 320 by 568, 3 website World 2 plan,
-      4 learner drop-off review, 5 iPad audit for 1.1.1. Lead's answer: 2 now (IN FLIGHT: branch `wordgame-small-phone`,
-      `/root/bcw-wordgame`, `58cd8ac`, one axe violation to identify, see the session handoff); 4 is Jackson's
+      4 learner drop-off review, 5 iPad audit for 1.1.1. Lead's answer: 2 now (DONE 2026-11-18 ~09:50Z: merged to `master` locally,
+      `e926824`, axe 0 on the production build (the earlier single violation did not recur), fit OK at 320x568,
+      375x667, 390x844, 430x932; NOT live: rides in the single push after the Vercel limit; worktree removed); 4 is Jackson's
       `d4048fe3`; 5 when the Mac allows; 1 is Jackson's `45cd71a2`; 3 waits) Next five
 
 ## Needs Jackson
