@@ -10,6 +10,14 @@ export default function Footer() {
           Delaney@TeachBraille.org
         </a>
         <span className="footer-sep">&middot;</span>
+        <Link href="/policies#privacy" className="footer-link">
+          Privacy
+        </Link>
+        <span className="footer-sep">&middot;</span>
+        <Link href="/support" className="footer-link">
+          Support
+        </Link>
+        <span className="footer-sep">&middot;</span>
         <Link href="/policies" className="footer-link">
           Policies
         </Link>
