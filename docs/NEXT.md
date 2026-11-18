@@ -1,6 +1,23 @@
-# Next (updated 2026-11-17)
+# Teach Braille: what is next
 
-## Next 5 (Jackson, 2026-11-18). Work these in order; details are in the numbered items below.
+Kept by the working session. `## Queue` is the work, top first, one line per item (the foreman's format); `## Needs
+Jackson` is what waits on him. The notes below are detail and history. Each item deploys when its checks pass
+(merge to `master`). When the queue runs dry, propose the next five toward users and revenue and start the first.
+
+## Queue
+
+- [ ] Practice world 2, letters k to t: the same Meet the Six mechanic and quality bar as a to j (every question enumerated and tested in `lib/games/`, `brailleInventory()` registered, `braille:oracle` clean, geometry and axe through `heavy`), in a worktree, deployed when green; one Inbox item with screenshots once live. Goal: learners who finish a to j have somewhere to go next
+- [ ] Site audit fixes, in the same deploy if ready: Smart App Banner (`itunes: { appId: '6833681749' }` in `app/layout.tsx`) and a visible Privacy link on the home page (today only "Policies" in the footer). Goal: app installs from Safari visitors, and trust
+- [ ] Xcode Cloud workflow for the iOS app (none on record; 22 of 25 free hours left), then the iOS 27.2 build and tests green there; one Inbox line with the first green run. Unblocks 1.1.1 and later releases without holding the Mac
+- [ ] Practice world 3, letters u to z, the same way, after world 2 is live. Completes the alphabet in the free practice
+- [ ] unpossible.studio: a playable Teach Braille update that shows the new world (find where the studio site lives first; `/root/braille-unpossible` may be another session's). Goal: reach for the free practice and the app
+
+## Needs Jackson
+
+- iOS 1.1.1 is set up in App Store Connect; `submit` only on his word, given in the session that runs it.
+- World Braille Day stays as is until Delaney's answers (due December 5, through the lead); then copy in, checks, merge.
+
+## Notes (detail for the queue; older items below)
 
 1. [ ] **Practice world 2, letters k to t** (Jackson: build it now, same quality bar as a to j, same Meet the Six
    mechanic). Find how world 1 (a to j) is built and tested first and match it: every question enumerated and tested
