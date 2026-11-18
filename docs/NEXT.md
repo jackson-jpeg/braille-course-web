@@ -1,27 +1,22 @@
 # Teach Braille: what is next
 
-Kept by the working session. `## Queue` - [ ] App Store listing fixes (Jackson, from a read-only App Store Connect review, 2026-11-19): (a) a real support page on teachbraille.org (e.g. `/support`: how to get help, contact, the app's basics, privacy link), deployed, then set it as the app's support URL through the API (`teachbraille-ios/scripts/asc/asc-listing.rb`; today it is the home page); (b) write and set promotional text through the API (no em dashes); (c) the store name is "TeachBraille" with no space: propose "Teach Braille" (the site's name) to Jackson with what changing it takes (a name change rides with a new version), filed with `needs-you`; (d) iPhone and iPad app previews: record through the foreman's `mac-sim` lock or the foreman's iPhone batch, upload through the API. Anything the API key cannot do: one Inbox item for the lead. Save proofs under `Assets/`
-is the work, top first, one line per item (the foreman's format); `## Needs
-Jackson` is what waits on him. The notes below are detail and history. Each item deploys when its checks pass
+Kept by the working session. The Queue section is the work, top first, one line per item (the foreman's format);
+Needs Jackson is what waits on him. The notes below are detail and history. Each item deploys when its checks pass
 (merge to `master`). When the queue runs dry, propose the next five toward users and revenue and start the first.
 
-Pause lifted (Jackson, 2026-11-19 after the reset): full speed. Mac and simulators only through the foreman's
-`mac-sim` lock, Xcode Cloud first. Save every mockup, proof or artifact under the project's `Assets/`. One FYI line
-(`needs-you`, bucket later) each time something ships.
-
-## Queue` is the work, top first, one line per item (the foreman's format); `## Needs
-Jackson` is what waits on him. The notes below are detail and history. Each item deploys when its checks pass
-(merge to `master`). When the queue runs dry, propose the next five toward users and revenue and start the first.
-
-**PAUSED (Jackson, 2026-11-18): studio at 90% of the weekly Claude limit. Start nothing until the lead wakes this session after the reset (2026-11-19 11:00 UTC).**
+Line rules (Jackson and the line lead, 2026-11-19): full speed. Finish the item in hand, post one FYI line
+(`needs-you`, bucket later), release any lock, start the next. Do not ask before testing, merging or deploying this
+project's own work; only money, Apple ID steps, credentials and Jackson's product rules go to him. Mac and simulators
+only through the foreman's `mac-sim` lock, Xcode Cloud first. Save every mockup, proof or artifact under `Assets/`.
 
 ## Queue
 
-- [ ] (line lead, 2026-11-18: build it in the iOS app first, the website after; Jackson gave no preference) (started 2026-11-18: found that "Meet the Six" is not on the live site's `master`; it is in the iOS app, `teachbraille-ios` docs/slice-1, docs/rollout-2, docs/1.1 and `Tests/TeachBrailleUITests/SliceTests.swift`, and on the web only on the unmerged branch `origin/redesign-oct-2026`, `components/games/DotQuest.tsx`. Read those first to learn where world 1, a to j, lives and whether world 2 belongs in the app, the web redesign, or both; if it is still unclear, ask the lead in one line and build in the app meanwhile) Practice world 2, letters k to t: the same Meet the Six mechanic and quality bar as a to j (every question enumerated and tested in `lib/games/`, `brailleInventory()` registered, `braille:oracle` clean, geometry and axe through `heavy`), in a worktree, deployed when green; one Inbox item with screenshots once live. Goal: learners who finish a to j have somewhere to go next
-- [ ] Site audit fixes, in the same deploy if ready: Smart App Banner (`itunes: { appId: '6833681749' }` in `app/layout.tsx`) and a visible Privacy link on the home page (today only "Policies" in the footer). Goal: app installs from Safari visitors, and trust
-- [ ] Xcode Cloud workflow for the iOS app (none on record; 22 of 25 free hours left), then the iOS 27.2 build and tests green there; one Inbox line with the first green run. Unblocks 1.1.1 and later releases without holding the Mac
-- [ ] Practice world 3, letters u to z, the same way, after world 2 is live. Completes the alphabet in the free practice
-- [ ] unpossible.studio: a playable Teach Braille update that shows the new world (find where the studio site lives first; `/root/braille-unpossible` may be another session's). Goal: reach for the free practice and the app
+- [ ] Practice world 2, letters k to t, in the iOS app first (`/root/teachbraille-ios`), the website after (line lead, 2026-11-18; Jackson gave no preference). Same Meet the Six mechanic and quality bar as a to j. Where a to j lives: `teachbraille-ios` docs/slice-1, docs/rollout-2, docs/1.1 and `Tests/TeachBrailleUITests/SliceTests.swift`; the web's version is only on the unmerged branch `origin/redesign-oct-2026` (`components/games/DotQuest.tsx`). Tests in Xcode Cloud first. Goal: learners who finish a to j have somewhere to go next
+- [ ] App Store listing fixes (Jackson's read-only ASC review, 2026-11-19): (a) a real support page on teachbraille.org (`/support`: getting help, contact, the app's basics, privacy link), deployed, then set it as the support URL through the API (`teachbraille-ios/scripts/asc/asc-listing.rb`; today it is the home page); (b) promotional text, set through the API (no em dashes); (c) the store name is "TeachBraille" with no space: propose "Teach Braille" to Jackson with what the change takes (it rides with a new version), via `needs-you`; (d) iPhone and iPad app previews, recorded through `mac-sim` or the foreman's iPhone batch, uploaded through the API. Anything the API key cannot do: one Inbox item for the lead
+- [ ] Site audit fixes: Smart App Banner (`itunes: { appId: '6833681749' }` in `app/layout.tsx`) and a visible Privacy link on the home page (today only "Policies" in the footer); can ride with the support page deploy. Goal: app installs from Safari visitors, and trust
+- [ ] Xcode Cloud workflow for the iOS app (none on record; 22 of 25 free hours left), then the iOS 27.2 build and tests green there; one Inbox line with the first green run
+- [ ] Practice world 3, letters u to z, the same way, after world 2 ships
+- [ ] unpossible.studio: a playable Teach Braille update that shows the new world (find where the studio site lives first; `/root/braille-unpossible` may be another session's)
 
 ## Needs Jackson
 
