@@ -1,5 +1,23 @@
 # Next (updated 2026-11-17)
 
+## Next 5 (Jackson, 2026-11-18). Work these in order; details are in the numbered items below.
+
+1. [ ] **Practice world 2, letters k to t** (Jackson: build it now, same quality bar as a to j, same Meet the Six
+   mechanic). Find how world 1 (a to j) is built and tested first and match it: every question enumerated and tested
+   in `lib/games/`, `brailleInventory()` registered, `npm run braille:oracle` clean, geometry and axe through `heavy`,
+   worktree, then merge to `master` (deploys) when green. Ship the site audit fixes (item 0b: app banner, home
+   Privacy link) in the same deploy if ready. One Inbox item with screenshots once it is live.
+2. [ ] **iOS on the 27.2 SDK**: read the result of the clean build and test run on Shared iPhone Pro Max A (log in the
+   previous session's scratchpad may be gone; rerun with `IOS_SIM_DEVICE="Shared iPhone Pro Max A" ios test
+   teachbraille`). One Inbox line with the first green run (item 00).
+3. [ ] **Xcode Cloud workflow** for the iOS app, builds and simulator tests (item 000).
+4. [ ] **Practice world 3, letters u to z**, the same way, after world 2 is live.
+5. [ ] **unpossible.studio**: a playable Teach Braille update showing the new world (item 0a (3)).
+
+Waiting, not to start: World Braille Day stays as is until Delaney's answers (due December 5, through the lead);
+the iOS 1.1.1 `submit` needs Jackson's word in the session that runs it.
+
+
 In order. The latest session handoff is `docs/handoffs/2026-11-17-world-braille-day.md`.
 
 0. **`/world-braille-day`: built, waiting on Delaney's copy** (Jackson approved the build, Inbox, 2026-11-17: "Build
