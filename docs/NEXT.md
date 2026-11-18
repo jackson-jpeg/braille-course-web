@@ -37,7 +37,6 @@ only through the foreman's `mac-sim` lock, Xcode Cloud first. Save every mockup,
 
 ## Needs Jackson
 
-- Inbox `45cd71a2`: approve the one app line at the end of the course.
 - Inbox `718cc276`: plug in his iPhone for the 1.1.1 review recording (app-review part 2).
 - iOS 1.1.1 is set up in App Store Connect; `submit` only on his word, given in the session that runs it.
 - World Braille Day stays as is until Delaney's answers (due December 5, through the lead); then copy in, checks, merge.
