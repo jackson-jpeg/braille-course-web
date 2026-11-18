@@ -1,6 +1,7 @@
 # Teach Braille: what is next
 
-Kept by the working session. `## Queue` is the work, top first, one line per item (the foreman's format); `## Needs
+Kept by the working session. `## Queue` - [ ] App Store listing fixes (Jackson, from a read-only App Store Connect review, 2026-11-19): (a) a real support page on teachbraille.org (e.g. `/support`: how to get help, contact, the app's basics, privacy link), deployed, then set it as the app's support URL through the API (`teachbraille-ios/scripts/asc/asc-listing.rb`; today it is the home page); (b) write and set promotional text through the API (no em dashes); (c) the store name is "TeachBraille" with no space: propose "Teach Braille" (the site's name) to Jackson with what changing it takes (a name change rides with a new version), filed with `needs-you`; (d) iPhone and iPad app previews: record through the foreman's `mac-sim` lock or the foreman's iPhone batch, upload through the API. Anything the API key cannot do: one Inbox item for the lead. Save proofs under `Assets/`
+is the work, top first, one line per item (the foreman's format); `## Needs
 Jackson` is what waits on him. The notes below are detail and history. Each item deploys when its checks pass
 (merge to `master`). When the queue runs dry, propose the next five toward users and revenue and start the first.
 
