@@ -33,13 +33,11 @@ only through the foreman's `mac-sim` lock, Xcode Cloud first. Save every mockup,
       1 the iOS app offered at the end of the course, 2 Word Game fits 320 by 568, 3 website World 2 plan,
       4 learner drop-off review, 5 iPad audit for 1.1.1. Lead's answer: 2 now (DONE 2026-11-18 ~09:50Z: merged to `master` locally,
       `e926824`, axe 0 on the production build (the earlier single violation did not recur), fit OK at 320x568,
-      375x667, 390x844, 430x932; NOT live: rides in the single push after the Vercel limit; worktree removed); 4 is Jackson's
-      `d4048fe3`; 5 when the Mac allows; 1 is Jackson's `45cd71a2`; 3 waits) Next five
+      375x667, 390x844, 430x932; NOT live: rides in the single push after the Vercel limit; worktree removed); 4 DONE 2026-11-18 ~14:15Z (Jackson approved `d4048fe3`; one read-only aggregate read, `docs/reviews/2026-11-18-learner-dropoff.md`, copied to the Mac: half who open a lesson never finish one, 80 of 129 finishers stop within lessons 1 to 3; four ideas proposed, nothing built); 5 when the Mac allows; 1 is Jackson's `45cd71a2`; 3 waits) Next five
 
 ## Needs Jackson
 
 - Inbox `45cd71a2`: approve the one app line at the end of the course.
-- Inbox `d4048fe3`: yes or no to one read-only count of learner events (drop-off review).
 - Inbox `718cc276`: plug in his iPhone for the 1.1.1 review recording (app-review part 2).
 - iOS 1.1.1 is set up in App Store Connect; `submit` only on his word, given in the session that runs it.
 - World Braille Day stays as is until Delaney's answers (due December 5, through the lead); then copy in, checks, merge.
