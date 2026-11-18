@@ -28,8 +28,12 @@ loaded notification` (Mac 1-minute load 80 to 128: `kernel_task`, `mediaanalysis
 - [x] (GREEN 2026-11-18 07:39Z with World 2, see above) (2026-11-18: built with World 2, `23cfa46`: `PathTests` pin its 5 stops (the course teaches w last, so the range reads "u to w"); `World3Tests` subclasses `World2Tests`; UI run queued with World 2's) World 3 (u to z) to the same test bar
 - [ ] (2026-11-18: the studio session `unpossible-studio-ac` owns it and built World 2 into https://unpossible.studio/play/teachbraille/ on its branch `tb-world2` (cells generated from our `lib/braille/ueb.ts` LETTER_CELLS on master; copy checked and approved here). Live when its light duty and Vercel limit lift; the "Teach Braille" rename there waits for 1.1.1's release. Left for us: send it the path of World 2 screenshots (taken 07:56Z, Mac `~/Downloads/TeachBraille-iOS/world2-studio/iphone`; the reward shot is being retaken in the queued preview turn, then check it and send the path). `/root/braille-unpossible` is a clean worktree of this repo on `unpossible-analytics`, already merged to `master`) unpossible.studio: a playable Teach Braille update that shows the new world
   - BLOCKED 2026-11-18 08:38Z on the reward retake (in the preview turn, which waits on Mac load under 20). Map,
-    lesson and Speed Match pictures are good. Telling the studio session failed (SendMessage to
-    `unpossible-studio-ac` failed); retry it with the reward path once the retake lands.
+    lesson and Speed Match pictures are good. Do not message the studio session: the lead, 08:45Z, says it is shut down until the afternoon of
+    2026-11-19. Send it the path (all four pictures) then.
+- [ ] (2026-11-18 08:55Z: every item above is blocked, so five next items went to the lead, Inbox `a2958c1b`:
+      1 the iOS app offered at the end of the course, 2 Word Game fits 320 by 568, 3 website World 2 plan,
+      4 learner drop-off review, 5 iPad audit for 1.1.1. Default if unanswered: 2, in a worktree, shipped in the
+      single push after the Vercel limit) Next five, waiting on the lead's pick
 
 ## Needs Jackson
 
