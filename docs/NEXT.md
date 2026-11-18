@@ -4,6 +4,8 @@ Kept by the working session. `## Queue` is the work, top first, one line per ite
 Jackson` is what waits on him. The notes below are detail and history. Each item deploys when its checks pass
 (merge to `master`). When the queue runs dry, propose the next five toward users and revenue and start the first.
 
+**PAUSED (Jackson, 2026-11-18): studio at 90% of the weekly Claude limit. Start nothing until the lead wakes this session after the reset (2026-11-19 11:00 UTC).**
+
 ## Queue
 
 - [ ] (started 2026-11-18: found that "Meet the Six" is not on the live site's `master`; it is in the iOS app, `teachbraille-ios` docs/slice-1, docs/rollout-2, docs/1.1 and `Tests/TeachBrailleUITests/SliceTests.swift`, and on the web only on the unmerged branch `origin/redesign-oct-2026`, `components/games/DotQuest.tsx`. Read those first to learn where world 1, a to j, lives and whether world 2 belongs in the app, the web redesign, or both; if it is still unclear, ask the lead in one line and build in the app meanwhile) Practice world 2, letters k to t: the same Meet the Six mechanic and quality bar as a to j (every question enumerated and tested in `lib/games/`, `brailleInventory()` registered, `braille:oracle` clean, geometry and axe through `heavy`), in a worktree, deployed when green; one Inbox item with screenshots once live. Goal: learners who finish a to j have somewhere to go next
