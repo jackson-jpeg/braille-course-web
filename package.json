@@ -18,7 +18,8 @@
     "braille:rulebook": "python3 scripts/braille/extract-rulebook-signs.py && python3 scripts/braille/verify-rulebook-examples.py",
     "test:accuracy": "NODE_ENV=test jest --ci",
     "braille:geometry": "tsx scripts/braille/check-rendered-cells.mjs",
-    "a11y:axe": "node scripts/a11y/check-axe.mjs"
+    "a11y:axe": "node scripts/a11y/check-axe.mjs",
+    "a11y:wordgame-fit": "node scripts/a11y/check-wordgame-fit.mjs"
   },
   "dependencies": {
     "@anthropic-ai/sdk": "^0.73.0",

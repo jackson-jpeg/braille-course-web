@@ -84,6 +84,9 @@ session runs them. Run all of them locally before merging any PR, and report the
      1280/390/320px): must report 0 problems;
    - `npm run a11y:axe -- http://localhost:3100` (axe-core, every lesson and game page): must report 0
      violations.
+   - `npm run a11y:wordgame-fit -- http://localhost:3100` (the Word Game's six rows and keyboard on one
+     screen under the pinned header at 320 by 568, 375 by 667, 390 by 844 and 430 by 932, nothing pinned
+     over a key): every size must say OK.
 6. After the merge deploys, run the same two browser checks against `https://teachbraille.org`.
 
 Do not trigger the GitHub workflow unless the owner asks. Dependabot version updates are off (no
