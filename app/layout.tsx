@@ -67,6 +67,8 @@ export const metadata: Metadata = {
   alternates: {
     canonical: 'https://teachbraille.org',
   },
+  // Smart App Banner in Safari on iPhone and iPad: the free Teach Braille app (App Store id 6833681749).
+  itunes: { appId: '6833681749' },
   robots: { index: true, follow: true },
 };
 
