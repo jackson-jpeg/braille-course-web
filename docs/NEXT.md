@@ -17,14 +17,9 @@ In order. The latest session handoff is `docs/handoffs/2026-11-17-world-braille-
          `docs/accuracy/HANDOFF.md` (oracle, build, geometry, axe), merge to `master` (that deploys), live by
          December 15. Then check the live page and the sitemap.
    - [ ] The outreach note waits for Delaney (Jackson, 2026-11-17). Nothing to do until she answers.
-**HARD STOP on the Mac (Jackson, 2026-11-17, macOS 27.2.1 install)**: until Jackson releases it, no ssh or scp to
-the Mac at all (`macbook`, `macbook-tunnel`), not even read-only checks or the usual handoff copy to `~/Downloads`
-(copy those after the release), no App Store Connect scripts through the Mac, no Xcode. VPS and Xcode Cloud only.
-After the update, the review recordings on Jackson's iPhone are run by the foreman, not by this session.
-Earlier note, still true: **Mac on hold (Jackson, 2026-11-17)** for the macOS update and Xcode 27: start nothing on the Mac and queue no
-`mac-sim` jobs until the hold is released. Every simulator and all DerivedData were deleted (approved). Web work
-(0b, 0a items 1 and 2) needs no Mac. The 1.1.1 `submit` runs from the Mac (`asc-store.rb`), so it waits for the
-hold as well as for Jackson's word.
+**Mac released (Jackson, 2026-11-18):** macOS 27.2.1, Xcode 27, iOS 27.2 runtimes; four shared simulators
+(Shared iPhone Pro Max A/B, Shared iPad, Shared iPhone Duo). Use them through `mac-sim` with
+`IOS_SIM_DEVICE="Shared iPhone Pro Max A"` (the app's own setting is `auto`). Follow the Mac disk policy in CLAUDE.md.
 
 000. **Xcode Cloud for Teach Braille iOS** (Jackson, 2026-11-17, Mac disk policy in `CLAUDE.md`; needs no Mac):
    set up or fix the Xcode Cloud workflow (App Store Connect API from the VPS; key path in the Mac's
