@@ -33,7 +33,33 @@ export default function QuickStartFAB() {
     };
   }, [expanded]);
 
-  if (!mounted || !rec) return null;
+  // While the Word Game's keyboard is on screen the button would sit on its bottom row (Backspace on
+  // short phones), so it steps aside until the keyboard scrolls away.
+  const [keyboardInView, setKeyboardInView] = useState(false);
+  useEffect(() => {
+    if (!mounted || typeof IntersectionObserver === 'undefined') return;
+    const observer = new IntersectionObserver(([entry]) => setKeyboardInView(entry.isIntersecting));
+    // The game loads lazily: wait for its keyboard to appear, then watch it.
+    const section = document.getElementById('wordgame');
+    let watching: Element | null = null;
+    const attach = () => {
+      const keyboard = document.querySelector('.wordgame-keyboard');
+      if (keyboard && keyboard !== watching) {
+        if (watching) observer.unobserve(watching);
+        observer.observe(keyboard);
+        watching = keyboard;
+      }
+    };
+    attach();
+    const mutations = section ? new MutationObserver(attach) : null;
+    if (section && mutations) mutations.observe(section, { childList: true, subtree: true });
+    return () => {
+      observer.disconnect();
+      mutations?.disconnect();
+    };
+  }, [mounted]);
+
+  if (!mounted || !rec || keyboardInView) return null;
 
   return (
     <div className={`quickstart-fab ${expanded ? 'expanded' : ''}`} ref={fabRef}>
