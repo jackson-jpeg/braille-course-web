@@ -58,6 +58,18 @@ for (const width of [1280, 390]) {
     // the last scroll position is reported as an obscured target.
     await page.evaluate(() => window.scrollTo(0, 0));
     await page.waitForTimeout(200);
+    // Scrolling back starts transitions of its own (the home and /summer floating "Reserve Your Spot"
+    // button fades out once the hero is back in view, 0.4 s): finish those too, or axe measures the
+    // button half faded into the page (2026-11-18: 1.06 contrast on /summer at 390 px, intermittent).
+    await page.evaluate(() =>
+      document.getAnimations().forEach((a) => {
+        try {
+          a.finish();
+        } catch {
+          // infinite (looping) animations cannot be finished; they are decorative
+        }
+      }),
+    );
     const results = await new AxeBuilder({ page }).withTags(TAGS).analyze();
     for (const v of results.violations) {
       violations++;
