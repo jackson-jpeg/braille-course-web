@@ -4,6 +4,14 @@ Kept by the working session. `## Queue` is the work, top first, one line per ite
 Jackson` is what waits on him. The notes below are detail and history. Each item deploys when its checks pass
 (merge to `master`). When the queue runs dry, propose the next five toward users and revenue and start the first.
 
+Pause lifted (Jackson, 2026-11-19 after the reset): full speed. Mac and simulators only through the foreman's
+`mac-sim` lock, Xcode Cloud first. Save every mockup, proof or artifact under the project's `Assets/`. One FYI line
+(`needs-you`, bucket later) each time something ships.
+
+## Queue` is the work, top first, one line per item (the foreman's format); `## Needs
+Jackson` is what waits on him. The notes below are detail and history. Each item deploys when its checks pass
+(merge to `master`). When the queue runs dry, propose the next five toward users and revenue and start the first.
+
 **PAUSED (Jackson, 2026-11-18): studio at 90% of the weekly Claude limit. Start nothing until the lead wakes this session after the reset (2026-11-19 11:00 UTC).**
 
 ## Queue
