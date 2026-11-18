@@ -32,11 +32,15 @@ loaded notification` (Mac 1-minute load 80 to 128: `kernel_task`, `mediaanalysis
     2026-11-19. Send it the path (all four pictures) then.
 - [ ] (2026-11-18 08:55Z: every item above is blocked, so five next items went to the lead, Inbox `a2958c1b`:
       1 the iOS app offered at the end of the course, 2 Word Game fits 320 by 568, 3 website World 2 plan,
-      4 learner drop-off review, 5 iPad audit for 1.1.1. Default if unanswered: 2, in a worktree, shipped in the
-      single push after the Vercel limit) Next five, waiting on the lead's pick
+      4 learner drop-off review, 5 iPad audit for 1.1.1. Lead's answer: 2 now (IN FLIGHT: branch `wordgame-small-phone`,
+      `/root/bcw-wordgame`, `58cd8ac`, one axe violation to identify, see the session handoff); 4 is Jackson's
+      `d4048fe3`; 5 when the Mac allows; 1 is Jackson's `45cd71a2`; 3 waits) Next five
 
 ## Needs Jackson
 
+- Inbox `45cd71a2`: approve the one app line at the end of the course.
+- Inbox `d4048fe3`: yes or no to one read-only count of learner events (drop-off review).
+- Inbox `718cc276`: plug in his iPhone for the 1.1.1 review recording (app-review part 2).
 - iOS 1.1.1 is set up in App Store Connect; `submit` only on his word, given in the session that runs it.
 - World Braille Day stays as is until Delaney's answers (due December 5, through the lead); then copy in, checks, merge.
 
