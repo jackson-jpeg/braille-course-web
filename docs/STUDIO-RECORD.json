@@ -24,7 +24,11 @@
     "testflightGroups": null,
     "ascKeyPath": "Mac: ~/.sanger-build/secrets.env names the key file"
   },
-  "money": { "stripe": "Stripe Embedded Checkout (summer course enrollment)", "affiliates": null, "monthlyCosts": null },
+  "money": {
+    "stripe": "Stripe Embedded Checkout (summer course enrollment)",
+    "affiliates": null,
+    "monthlyCosts": null
+  },
   "audience": {
     "analyticsSource": "Umami, studio tracker at a.unpossible.studio (plus Vercel Analytics)",
     "analyticsId": "754bea88-a2bd-40d0-b36e-dbe468a48125",

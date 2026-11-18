@@ -11,11 +11,11 @@ only through the foreman's `mac-sim` lock, Xcode Cloud first. Save every mockup,
 
 ## Queue
 
-- [ ] (2026-11-18: built, teachbraille-ios `c967ea2`, `23cfa46`: `PathTests` pin World 2's 8 stops and its cards, BrailleKit `swift test` 101/101 on the Mac; `World2Tests.swift` (audit, flat, largest text, map, eyes-free map to reward) and a `reward:<stop>` launch route. UI run 05:58Z: 6 of 10 passed; World 2 audit timed out (infra, rerun), World 3 eyes-free game player too weak for 4 choices (fix SliceRun.game, rerun); details docs/sessions/2026-11-17.md, last section (`ios test teachbraille --only TeachBrailleUITests/World2Tests --only TeachBrailleUITests/World3Tests`); tick when green) World 2 (k to t) to World 1's test bar, in the app. Never change grouping or stop ids (saved progress). The website has no Meet the Six (only the unmerged `origin/redesign-oct-2026`): a web version is a new design, proposed to the lead, not built
+- [x] (2026-11-18 07:39Z GREEN: the 4 red tests rerun and passed on Shared iPhone Pro Max A (teachbraille-ios `966382c`), the other 6 passed at 05:58Z: World 2 and World 3 suites 10/10.) (2026-11-18: built, teachbraille-ios `c967ea2`, `23cfa46`: `PathTests` pin World 2's 8 stops and its cards, BrailleKit `swift test` 101/101 on the Mac; `World2Tests.swift` (audit, flat, largest text, map, eyes-free map to reward) and a `reward:<stop>` launch route. UI run 05:58Z: 6 of 10 passed; World 2 audit timed out (infra, rerun), World 3 eyes-free game player too weak for 4 choices (fix SliceRun.game, rerun); details docs/sessions/2026-11-17.md, last section (`ios test teachbraille --only TeachBrailleUITests/World2Tests --only TeachBrailleUITests/World3Tests`); tick when green. 2026-11-18 07:10Z: player fixed, teachbraille-ios `cdd9a0e` (reads the card through BrailleKit, learns from the miss panel); rerun of the 4 red tests next in the `mac-sim` queue since 06:21Z) World 2 (k to t) to World 1's test bar, in the app. Never change grouping or stop ids (saved progress). The website has no Meet the Six (only the unmerged `origin/redesign-oct-2026`): a web version is a new design, proposed to the lead, not built
 - [ ] (2026-11-18: (a) merged to `master` (`4bbb3ad`), NOT live: Vercel rate-limited the build until about 2026-11-19 03:36 UTC; `vercel.json` now skips docs-only pushes (`ignoreCommand`, committed locally, unpushed on purpose); push ONCE after the limit lifts, then check /support live. (b) done: promotional text set and read back on 1.1 (live) and 1.1.1; support URL set on 1.1.1 (Apple refuses it on live 1.1, 409, rides with 1.1.1). (c) done: store name "Teach Braille" set and read back on the 1.1.1 app info (`asc-store.rb name`); the on-device display name follows in the next build. (d) plan `teachbraille-ios/docs/1.1.1/APP-PREVIEWS.md`; built (`e94018e`): driver `RecordingTests.testPreviewTour`, cut `scripts/preview-cut.sh`, upload `asc-store.rb preview`. Cut tested on a synthetic clip 2026-11-18 (630 MB peak, checks pass, `966382c`). Next: one `mac-sim` turn per device with `scripts/record.sh` (TB_UDID = the shared simulator), cut, review frames, upload to 1.1.1) App Store listing fixes
 - [ ] (merged with the support page, `4bbb3ad`; live with the same push) Site audit fixes: Smart App Banner (`itunes: { appId: '6833681749' }` in `app/layout.tsx`) and a visible Privacy link on the home page (today only "Policies" in the footer); can ride with the support page deploy. Goal: app installs from Safari visitors, and trust
 - [ ] (2026-11-18: no product exists; the API cannot make one. Tooling ported from Chirp, teachbraille-ios `b292ad4`: `ci_scripts/ci_post_clone.sh`, `scripts/asc/xcode_cloud.py` (status, setup, start, hours), `docs/xcode-cloud.md` with the click steps. Mac clone `~/teachbraille-ios-cloud` ready; the Create Workflow clicks (they need Jackson for the GitHub grant) are one step on sanger-1's noon item `fdfa8e51` (lead, 2026-11-18). Then: a CI test plan that skips RecordingTests, StoreShotTests and WorldShotTests; `setup`; `start tests`; delete the Mac clone) Xcode Cloud workflow for the iOS app (4.47 of 25 shared hours used this month), then the iOS 27.2 build and tests green there; one Inbox line with the first green run
-- [ ] (2026-11-18: built with World 2, `23cfa46`: `PathTests` pin its 5 stops (the course teaches w last, so the range reads "u to w"); `World3Tests` subclasses `World2Tests`; UI run queued with World 2's) World 3 (u to z) to the same test bar
+- [x] (GREEN 2026-11-18 07:39Z with World 2, see above) (2026-11-18: built with World 2, `23cfa46`: `PathTests` pin its 5 stops (the course teaches w last, so the range reads "u to w"); `World3Tests` subclasses `World2Tests`; UI run queued with World 2's) World 3 (u to z) to the same test bar
 - [ ] (2026-11-18: the studio session `unpossible-studio-ac` owns it and built World 2 into https://unpossible.studio/play/teachbraille/ on its branch `tb-world2` (cells generated from our `lib/braille/ueb.ts` LETTER_CELLS on master; copy checked and approved here). Live when its light duty and Vercel limit lift; the "Teach Braille" rename there waits for 1.1.1's release. Left for us: send it the path of World 2 screenshots from the next `mac-sim` turn. `/root/braille-unpossible` is a clean worktree of this repo on `unpossible-analytics`, already merged to `master`) unpossible.studio: a playable Teach Braille update that shows the new world
 
 ## Needs Jackson
@@ -26,22 +26,21 @@ only through the foreman's `mac-sim` lock, Xcode Cloud first. Save every mockup,
 ## Notes (detail for the queue; older items below)
 
 1. [ ] **Practice world 2, letters k to t** (Jackson: build it now, same quality bar as a to j, same Meet the Six
-   mechanic). Find how world 1 (a to j) is built and tested first and match it: every question enumerated and tested
-   in `lib/games/`, `brailleInventory()` registered, `npm run braille:oracle` clean, geometry and axe through `heavy`,
-   worktree, then merge to `master` (deploys) when green. Ship the site audit fixes (item 0b: app banner, home
-   Privacy link) in the same deploy if ready. One Inbox item with screenshots once it is live.
+       mechanic). Find how world 1 (a to j) is built and tested first and match it: every question enumerated and tested
+       in `lib/games/`, `brailleInventory()` registered, `npm run braille:oracle` clean, geometry and axe through `heavy`,
+       worktree, then merge to `master` (deploys) when green. Ship the site audit fixes (item 0b: app banner, home
+       Privacy link) in the same deploy if ready. One Inbox item with screenshots once it is live.
 2. [ ] **iOS on the 27.2 SDK, in Xcode Cloud** (lead via sanger-75, 2026-11-18: plain unit and simulator tests go to
-   Xcode Cloud first; `mac-sim` is only for XCUITest recordings and hinge tests). The `ios test` run on the Mac was
-   stopped 23 min in, before any test ran. No Xcode Cloud workflow is on record for Teach Braille (no `ci_scripts`;
-   API not queried): set one up (item 000), run the tests there (POST /v1/ciBuildRuns), then one Inbox line with the
-   first green run.
+       Xcode Cloud first; `mac-sim` is only for XCUITest recordings and hinge tests). The `ios test` run on the Mac was
+       stopped 23 min in, before any test ran. No Xcode Cloud workflow is on record for Teach Braille (no `ci_scripts`;
+       API not queried): set one up (item 000), run the tests there (POST /v1/ciBuildRuns), then one Inbox line with the
+       first green run.
 3. [ ] **Xcode Cloud workflow** for the iOS app, builds and simulator tests (item 000).
 4. [ ] **Practice world 3, letters u to z**, the same way, after world 2 is live.
 5. [ ] **unpossible.studio**: a playable Teach Braille update showing the new world (item 0a (3)).
 
 Waiting, not to start: World Braille Day stays as is until Delaney's answers (due December 5, through the lead);
 the iOS 1.1.1 `submit` needs Jackson's word in the session that runs it.
-
 
 In order. The latest session handoff is `docs/handoffs/2026-11-17-world-braille-day.md`.
 
@@ -60,37 +59,43 @@ In order. The latest session handoff is `docs/handoffs/2026-11-17-world-braille-
          `docs/accuracy/HANDOFF.md` (oracle, build, geometry, axe), merge to `master` (that deploys), live by
          December 15. Then check the live page and the sitemap.
    - [ ] The outreach note waits for Delaney (Jackson, 2026-11-17). Nothing to do until she answers.
-**Mac released (Jackson, 2026-11-18):** macOS 27.2.1, Xcode 27, iOS 27.2 runtimes; four shared simulators
-(Shared iPhone Pro Max A/B, Shared iPad, Shared iPhone Duo). Use them through `mac-sim` with
-`IOS_SIM_DEVICE="Shared iPhone Pro Max A"` (the app's own setting is `auto`). Follow the Mac disk policy in CLAUDE.md.
+         **Mac released (Jackson, 2026-11-18):** macOS 27.2.1, Xcode 27, iOS 27.2 runtimes; four shared simulators
+         (Shared iPhone Pro Max A/B, Shared iPad, Shared iPhone Duo). Use them through `mac-sim` with
+         `IOS_SIM_DEVICE="Shared iPhone Pro Max A"` (the app's own setting is `auto`). Follow the Mac disk policy in CLAUDE.md.
 
-000. **Xcode Cloud for Teach Braille iOS** (Jackson, 2026-11-17, Mac disk policy in `CLAUDE.md`; needs no Mac):
+1. **Xcode Cloud for Teach Braille iOS** (Jackson, 2026-11-17, Mac disk policy in `CLAUDE.md`; needs no Mac):
    set up or fix the Xcode Cloud workflow (App Store Connect API from the VPS; key path in the Mac's
    `~/.sanger-build/secrets.env`, so find the VPS-side copy or ask) and move the build and simulator tests there.
    Check first what exists (ciProducts / ciWorkflows for app 6833681749). Stay within the 25 free hours; never pay.
 
-00. **When the Mac is back, first job:** rebuild Teach Braille iOS and rerun its tests on the new iOS 27 simulator
+2. **When the Mac is back, first job:** rebuild Teach Braille iOS and rerun its tests on the new iOS 27 simulator
    (`ios build` / `ios test`, which take `mac-sim`). Details in `teachbraille-ios`'s own docs.
-0b. **Site audit fixes, in the next deploy** (Jackson, 2026-11-17; keep the World Braille Day branch separate: own
+   0b. **Site audit fixes, in the next deploy** (Jackson, 2026-11-17; keep the World Braille Day branch separate: own
    worktree and branch off `master`, ship with (1) below or on its own when green):
-   - [ ] Smart App Banner: `itunes: { appId: '6833681749' }` in the root `metadata` of `app/layout.tsx` (renders
-         `<meta name="apple-itunes-app">`; none today). Test that it renders.
-   - [ ] A visible Privacy link on the home page. Today the footer (`components/Footer.tsx`) links only "Policies"
-         (`/policies`); check what `/policies` says about the studio tracker and analytics, link it as "Privacy"
-         (an anchor if it has a privacy section), and make sure the home page shows it. Test it; no em dashes.
-   - [ ] Checks through `heavy`: build, axe. Then merge to `master` (that deploys) and check live.
-0a. **Jackson, 2026-11-17 (Sessions message), next work, in this order:**
-   - [ ] **(1) The second world of the free practice:** letters k to t with the same Meet the Six mechanic, then u
-         to z. Same liblouis checks (`npm run braille:oracle`, inventory registration) and axe pass, all through
-         `heavy`, in a worktree. **Deployed when green** (his words; merge to `master` deploys). When it is live, file
-         **one** Inbox item with screenshots (`needs-you`, for the lead).
-   - [ ] **(2) World Braille Day launch ready to go live the minute Delaney answers** (he emailed her; answers by
-         December 5). Prepare everything short of her copy: a script or exact command list for copy in, checks,
-         merge, live check of the page and `sitemap.xml`. Keep the branch merge-clean with `master` (rebase or merge
-         `master` into it after (1) lands, then rerun checks).
-   - [ ] **(3) A Teach Braille playable update on unpossible.studio that shows the new world.** Find where that
-         lives first (a worktree `/root/braille-unpossible` on branch `unpossible-analytics` exists and may belong
-         to another session: look, do not touch until known). Follow that project's own deploy rules.
+
+- [ ] Smart App Banner: `itunes: { appId: '6833681749' }` in the root `metadata` of `app/layout.tsx` (renders
+      `<meta name="apple-itunes-app">`; none today). Test that it renders.
+- [ ] A visible Privacy link on the home page. Today the footer (`components/Footer.tsx`) links only "Policies"
+      (`/policies`); check what `/policies` says about the studio tracker and analytics, link it as "Privacy"
+      (an anchor if it has a privacy section), and make sure the home page shows it. Test it; no em dashes.
+- [ ] Checks through `heavy`: build, axe. Then merge to `master` (that deploys) and check live.
+      0a. **Jackson, 2026-11-17 (Sessions message), next work, in this order:**
+- [ ] **(1) The second world of the free practice:** letters k to t with the same Meet the Six mechanic, then u
+      to z. Same liblouis checks (`npm run braille:oracle`, inventory registration) and axe pass, all through
+      `heavy`, in a worktree. **Deployed when green** (his words; merge to `master` deploys). When it is live, file
+      **one** Inbox item with screenshots (`needs-you`, for the lead).
+- [ ] (2026-11-18: master merged into the branch (`ec9b55b`, one conflict: the axe page list, now both
+      `/support` and `/world-braille-day`); `scripts/wbd-golive.sh` (`6670d23`): `check` runs the whole
+      merge list, `merge` merges and pushes master (deploys), `live` reads page, sitemap, geometry and axe
+      back from teachbraille.org. Worktree `/root/braille-wbd`; first `check` run in progress; branch push
+      after it passes) **(2) World Braille Day launch ready to go live the minute Delaney answers** (he emailed her; answers by
+      December 5). Prepare everything short of her copy: a script or exact command list for copy in, checks,
+      merge, live check of the page and `sitemap.xml`. Keep the branch merge-clean with `master` (rebase or merge
+      `master` into it after (1) lands, then rerun checks).
+- [ ] **(3) A Teach Braille playable update on unpossible.studio that shows the new world.** Find where that
+      lives first (a worktree `/root/braille-unpossible` on branch `unpossible-analytics` exists and may belong
+      to another session: look, do not touch until known). Follow that project's own deploy rules.
+
 1. **iOS 1.1.1: set up, not submitted** (1.1 approved, Jackson, 2026-11-17). Done in App Store Connect the same
    day: `newversion` (PREPARE_FOR_SUBMISSION), `build 202611170158`, `whatsnew` and `notes` (read back identical),
    `autorelease` (AFTER_APPROVAL), review recording attached (COMPLETE). **Left: `submit`, only on Jackson's word in
