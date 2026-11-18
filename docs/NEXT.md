@@ -110,7 +110,7 @@ In order. The latest session handoff is `docs/handoffs/2026-11-17-world-braille-
       whole merge list, `merge` merges and pushes master (deploys), `live` reads page, sitemap, geometry and
       axe back from teachbraille.org. First `check` all green: 1922 tests, oracle fixture unchanged, geometry
       0 problems in 2966 cells, axe 0. Branch pushed (`f587724`). When Delaney answers: copy in, commit,
-      `check`, `merge`, `live`. If master moves first: `git merge master` on the branch, rerun `check`) **(2) World Braille Day launch ready to go live the minute Delaney answers** (he emailed her; answers by
+      `check`, `merge`, `live`. If master moves first: `git merge master` on the branch, rerun `check`. 2026-11-18 ~13:40Z: master merged in again (`2c6f610`, pushed; a branch push costs 0 Vercel builds), `check` all green: geometry 0 problems in 2952 cells, axe 0, oracle fixture unchanged. On the way, fixed: `wbd-golive.sh` left next-server running and an orphan from a deleted worktree answered later checks (`43b4143`); master `d5d4ac3` (prettier on session notes), `575bd7c` (check-axe finishes the floating CTA's fade before measuring). The lead holds the merge to master until he has read what changes (the page goes live with the draft copy)) **(2) World Braille Day launch ready to go live the minute Delaney answers** (he emailed her; answers by
       December 5). Prepare everything short of her copy: a script or exact command list for copy in, checks,
       merge, live check of the page and `sitemap.xml`. Keep the branch merge-clean with `master` (rebase or merge
       `master` into it after (1) lands, then rerun checks).
