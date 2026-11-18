@@ -7,9 +7,11 @@
    in `lib/games/`, `brailleInventory()` registered, `npm run braille:oracle` clean, geometry and axe through `heavy`,
    worktree, then merge to `master` (deploys) when green. Ship the site audit fixes (item 0b: app banner, home
    Privacy link) in the same deploy if ready. One Inbox item with screenshots once it is live.
-2. [ ] **iOS on the 27.2 SDK**: read the result of the clean build and test run on Shared iPhone Pro Max A (log in the
-   previous session's scratchpad may be gone; rerun with `IOS_SIM_DEVICE="Shared iPhone Pro Max A" ios test
-   teachbraille`). One Inbox line with the first green run (item 00).
+2. [ ] **iOS on the 27.2 SDK, in Xcode Cloud** (lead via sanger-75, 2026-11-18: plain unit and simulator tests go to
+   Xcode Cloud first; `mac-sim` is only for XCUITest recordings and hinge tests). The `ios test` run on the Mac was
+   stopped 23 min in, before any test ran. No Xcode Cloud workflow is on record for Teach Braille (no `ci_scripts`;
+   API not queried): set one up (item 000), run the tests there (POST /v1/ciBuildRuns), then one Inbox line with the
+   first green run.
 3. [ ] **Xcode Cloud workflow** for the iOS app, builds and simulator tests (item 000).
 4. [ ] **Practice world 3, letters u to z**, the same way, after world 2 is live.
 5. [ ] **unpossible.studio**: a playable Teach Braille update showing the new world (item 0a (3)).
