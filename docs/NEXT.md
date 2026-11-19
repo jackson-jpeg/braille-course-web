@@ -84,7 +84,7 @@ notification`), the third because our own build-for-testing raises the Mac load 
 Waiting, not to start: World Braille Day stays as is until Delaney's answers (due December 5, through the lead);
 the iOS 1.1.1 `submit` needs Jackson's word in the session that runs it.
 
-In order. The latest session handoff is `docs/sessions/2026-11-18.md` (before it, `docs/handoffs/2026-11-17-world-braille-day.md`).
+In order. The latest session handoff is `docs/sessions/2026-11-19.md` (before it, `docs/sessions/2026-11-18.md`).
 
 0. **`/world-braille-day`: built, waiting on Delaney's copy** (Jackson approved the build, Inbox, 2026-11-17: "Build
    the /world-braille-day page as scoped. The outreach note waits for Delaney."). Branch `world-braille-day`, pushed,
