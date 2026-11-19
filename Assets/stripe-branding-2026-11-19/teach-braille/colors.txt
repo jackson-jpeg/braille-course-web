@@ -1,0 +1,7 @@
+Teach Braille (teachbraille.org), from the live site's CSS (app/globals.css :root), read 2026-11-19
+
+brand:  #1B2A4A   (--navy: headings, nav wordmark, icon background)
+accent: #D4A853   (--gold: braille dots, highlights)
+
+Also on the site, if a darker accent is needed for text on white:
+gold-text: #7A5F1A   (--gold-text, WCAG AA on cream and white)
