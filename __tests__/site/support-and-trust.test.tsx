@@ -1,4 +1,8 @@
+import fs from 'fs';
+import path from 'path';
 import { render } from '@testing-library/react';
+import CheckoutLayout from '@/app/summer/checkout/layout';
+import SuccessLayout from '@/app/summer/success/layout';
 import SupportPage from '@/app/support/page';
 import Footer from '@/components/Footer';
 import HubPage from '@/app/page';
@@ -25,6 +29,44 @@ describe('support page, privacy link and app banner', () => {
     expect(support?.getAttribute('href')).toBe('/support');
     const home = render(<HubPage />).container;
     expect([...home.querySelectorAll('a')].some((a) => a.textContent === 'Privacy')).toBe(true);
+  });
+
+  test('every public page renders the footer (and so the Privacy link), itself or through a layout', () => {
+    const appDir = path.join(__dirname, '..', '..', 'app');
+    const pages: string[] = [];
+    const walk = (dir: string) => {
+      for (const entry of fs.readdirSync(dir, { withFileTypes: true })) {
+        const full = path.join(dir, entry.name);
+        if (entry.isDirectory()) walk(full);
+        else if (entry.name === 'page.tsx') pages.push(full);
+      }
+    };
+    walk(appDir);
+    const usesFooter = (file: string) => fs.existsSync(file) && /<Footer\b/.test(fs.readFileSync(file, 'utf8'));
+    const missing = pages
+      .filter((page) => !path.relative(appDir, page).startsWith('admin' + path.sep))
+      .filter((page) => {
+        if (usesFooter(page)) return false;
+        for (let dir = path.dirname(page); dir.startsWith(appDir); dir = path.dirname(dir)) {
+          if (usesFooter(path.join(dir, 'layout.tsx'))) return false;
+        }
+        return true;
+      })
+      .map((page) => path.relative(appDir, page));
+    expect(pages.length).toBeGreaterThan(10);
+    expect(missing).toEqual([]);
+  });
+
+  test('the summer checkout and success layouts render the footer Privacy link', () => {
+    for (const Layout of [CheckoutLayout, SuccessLayout]) {
+      const { container } = render(
+        <Layout>
+          <main />
+        </Layout>,
+      );
+      const privacy = [...container.querySelectorAll('a')].find((a) => a.textContent === 'Privacy');
+      expect(privacy?.getAttribute('href')).toBe('/policies#privacy');
+    }
   });
 
   test('the support page is in the sitemap', () => {
