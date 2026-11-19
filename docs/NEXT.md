@@ -29,6 +29,15 @@ only through the foreman's `mac-sim` lock, Xcode Cloud first. Save every mockup,
     Expected: the lead corrected at ~23:20Z that Jackson has NOT started the Create Workflow yet (the earlier
     "clicks are done" was a suggested prompt, not his message). Step `teachbraille` not confirmed. Waits for the
     lead to say he has done the clicks; then `status`, `setup --dry-run`.
+  - 2026-11-19 ~00:55Z: the product EXISTS (TeachBraille `f51782f6`, repo `teachbraille-ios` `59b4ebec`, workflow
+    Default `ECB65507`, enabled, AUTOMATIC START on any branch change, 0 runs). Step `teachbraille` CONFIRMED on
+    /api/system/xcode-setup. `setup --dry-run` clean (would create TestFlight and Tests on `TeachBraille-CI`,
+    disable Default). The real `setup` was DENIED by the Claude Code auto-mode permission check
+    (Destructive or Unwanted Actions); not retried, not worked around; waits on Jackson or the lead to allow it.
+    Until Default is disabled, DO NOT push teachbraille-ios: any push starts a Default build and spends shared
+    hours. The yellow warning on the scheme: `TeachBraille.xcodeproj` is not in git (`ci_post_clone.sh` makes
+    it with xcodegen), so Apple cannot read the scheme when it looks at the repo; expected, proven or not only
+    by the first run (no other app has a green cloud run yet; ScreenReceipts' first three failed 00:20 to 00:36Z).
 - [x] (GREEN 2026-11-18 07:39Z with World 2, see above) (2026-11-18: built with World 2, `23cfa46`: `PathTests` pin its 5 stops (the course teaches w last, so the range reads "u to w"); `World3Tests` subclasses `World2Tests`; UI run queued with World 2's) World 3 (u to z) to the same test bar
 - [ ] (2026-11-18: the studio session `unpossible-studio-ac` owns it and built World 2 into https://unpossible.studio/play/teachbraille/ on its branch `tb-world2` (cells generated from our `lib/braille/ueb.ts` LETTER_CELLS on master; copy checked and approved here). Live when its light duty and Vercel limit lift; the "Teach Braille" rename there waits for 1.1.1's release. Left for us: send it the path of World 2 screenshots (taken 07:56Z, Mac `~/Downloads/TeachBraille-iOS/world2-studio/iphone`; the reward shot is being retaken in the queued preview turn, then check it and send the path). `/root/braille-unpossible` is a clean worktree of this repo on `unpossible-analytics`, already merged to `master`) unpossible.studio: a playable Teach Braille update that shows the new world
   - 2026-11-18 10:20Z: the reward retake is done and good (names s4, "New teams, o, p"); all four pictures are in
