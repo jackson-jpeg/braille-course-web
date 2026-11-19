@@ -41,6 +41,10 @@ only through the foreman's `mac-sim` lock, Xcode Cloud first. Save every mockup,
     simulator jobs unless Jackson himself asked; `heavy` holds new jobs until 19:00 too). Not a Jackson item and not
     filed: the block lifts by itself. Tried: 14:21Z swap 0 MB (`sysctl vm.swapusage`), `mac-sim` free, Mac awake.
     A timer in this session wakes it at 19:00Z to check swap and start. Nothing else in the Queue is open.
+  - 2026-11-19 19:01Z to 19:34Z: three tries, NOT RUN, each refused by the script's own guards after it got
+    `mac-sim` behind another project's test: load 26.5 (19:11Z), load 31.2 (19:24Z), swap 6649 MB (19:34Z). With the
+    lock free the Mac sat at load ~25 (a VM, Spotlight, Mail). Guards not raised. Filed to the lead
+    (`teachbraille-preview-contention`): needs a quiet Mac window. Next try: when the lead names one, or after 23:00Z.
 
 - **WAITS on the lead (09:01Z)**: of the Next five, 1, 2, 4 are done; 3 (website World 2 plan) waits on the lead; 5 (iPad audit for 1.1.1) needs the Mac, held by the same swap block as the preview turn. Return when the lead answers or swap reads under 6144. The item: (2026-11-18 08:55Z: every item above is blocked, so five next items went to the lead, Inbox `a2958c1b`:
   1 the iOS app offered at the end of the course, 2 Word Game fits 320 by 568, 3 website World 2 plan,
