@@ -38,7 +38,7 @@ describe('support page, privacy link and app banner', () => {
       for (const entry of fs.readdirSync(dir, { withFileTypes: true })) {
         const full = path.join(dir, entry.name);
         if (entry.isDirectory()) walk(full);
-        else if (entry.name === 'page.tsx') pages.push(full);
+        else if (entry.name === 'page.tsx' || entry.name === 'not-found.tsx') pages.push(full);
       }
     };
     walk(appDir);
