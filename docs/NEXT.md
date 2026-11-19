@@ -12,6 +12,15 @@ only through the foreman's `mac-sim` lock, Xcode Cloud first. Save every mockup,
 ## Queue
 
 - [ ] (from Xcode Cloud Tests run 1, 2026-11-19 19:03Z to 20:42Z, 99 min, FAILED: 56 of 58 passed; the 2 failures are `AuditTests.testEveryWorldMap` and `SliceTests.testAuditEveryScreen`, every issue "Contrast failed" on secondary labels ("done", "0 of 6 lessons done", lesson and game names on the map, "New teams"). Both passed with 0 failures on the Mac at the 1.1 handoff, so first find what differs in the cloud (simulator device or runtime, appearance, the audit itself): download the run's result bundle and look at the flagged frames before touching any color. Do not loosen the audit) Xcode Cloud: why the contrast audit fails only in the cloud
+  - 20:55Z findings (test log bundle, artifact `8f3bb044`; no test xcresult or screenshots were kept): 23 "Contrast
+    failed" lines, all from 2 tests. Every other audit passed in the cloud on the same simulator (iPhone 17 Pro Max,
+    iOS 27.2): testEveryScreen, testEveryGame, testLaterWorlds, World2/World3 audits, and the `-flat` (Increase
+    Contrast) variants except two "flat path" map entries. So it is the world MAP (group colours, labels over the map
+    art) plus one Slice screen ("New teams"), not the app at large. Next: run `AuditTests/testEveryWorldMap` on the
+    Mac's Shared iPhone Pro Max A (same device and runtime) through `ios test --only`, off-peak, when `mac-sim` and
+    swap allow. If it passes there, the cloud renders the map differently (pixel-based audit): propose to the lead
+    whether those two stay Mac-only in `TeachBraille-CI`; never loosen the audit. If it fails there too, it is a
+    real contrast regression since 1.1: fix the colours.
 - [x] (DONE 2026-11-19 ~10:45Z: `ffbd2f3`, lead `e81e4852`) Bingo pill target-size: html `scroll-padding-top: 60px`, and `a11y:axe` also checks /learn/wrap-up after Mark this lesson complete. Checks through heavy: production build 1827, prettier, lint, geometry 0 in 2868 cells, axe 0 (the 1280px /learn/lower-wordsigns flag seen once on live did not recur), Word Game fit OK x4. The pill loop was dropped: axe passes a focus or anchor scroll on live WITHOUT the fix, so no check can hold the CSS; said so to the lead
 - [x] (DONE 2026-11-19 ~08:55Z: `1f19795`, checks through heavy: jest 1827 in the production build, prettier, lint, tsc, oracle fixture unchanged, geometry 0 in 2875 cells, axe 0, Word Game fit OK x4; pushed once; live 404 read back for the Privacy link) Footer on the 404 page too (Jackson `f2e07040` "every page"): worktree `/root/braille-footer`, branch `footer-banner-deploy`, `app/not-found.tsx` renders Footer, the trust test now walks `not-found.tsx` too; UNCOMMITTED. Next: jest trust test, then the full "Before every merge" checks through heavy, ff `master`, push once, read back a 404 URL for the Privacy link, remove the worktree
 - [x] (MOVED to Needs Jackson 2026-11-19 08:56Z: blocked on the Mac's swap, lead item `teachbraille-preview-swap`) Listing (d1) to (d4): preview turn
