@@ -58,6 +58,11 @@
 }
 html {
   scroll-behavior: smooth;
+  /* The site nav stays pinned at the top (60px, 52px once scrolled). Anything scrolled into view by an
+     anchor, a focus move or scrollIntoView stops below it instead of under it (2026-11-19: Bingo's
+     difficulty pill on the finished wrap-up failed axe target-size when parked under the nav). No
+     automated check holds this: axe could not be made to fail on a focus or anchor scroll. */
+  scroll-padding-top: 60px;
 }
 
 body {

@@ -61,16 +61,45 @@ for (const width of [1280, 390]) {
         }
       }),
     );
-    const results = await new AxeBuilder({ page }).withTags(TAGS).analyze();
-    for (const v of results.violations) {
-      violations++;
-      console.log(`FAIL ${width}px ${path}: [${v.impact}] ${v.id} — ${v.help} (${v.nodes.length} element(s))`);
-      for (const n of v.nodes.slice(0, 5))
-        console.log(`    ${n.target.join(' ')} :: ${n.failureSummary?.split('\n').slice(1).join(' ')}`);
-    }
-    console.log(`${width}px ${path}: ${results.violations.length} violation(s), ${results.passes.length} rules passed`);
+    await analyze(page, width, path);
   }
+
+  // A finished lesson: the wrap-up after "Mark this lesson complete" shows what a learner sees at the end
+  // of the course (the app line, the games), which no page above reaches (2026-11-19: found while checking
+  // the app line). Measured from the top, like every page above: a target merely scrolled under the pinned
+  // nav is a scroll position, not a defect (html's scroll-padding-top keeps anchor and focus scrolls clear).
+  const finished = '/learn/wrap-up';
+  await page.goto(base + finished, { waitUntil: 'networkidle' });
+  await page.getByRole('button', { name: 'Mark this lesson complete' }).click();
+  await page.waitForTimeout(1500);
+  await finishAnimations(page);
+  await page.evaluate(() => window.scrollTo(0, 0));
+  await page.waitForTimeout(200);
+  await analyze(page, width, `${finished} (finished)`);
   await context.close();
+}
+
+async function finishAnimations(page) {
+  await page.evaluate(() =>
+    document.getAnimations().forEach((a) => {
+      try {
+        a.finish();
+      } catch {
+        // infinite (looping) animations cannot be finished; they are decorative
+      }
+    }),
+  );
+}
+
+async function analyze(page, width, label) {
+  const results = await new AxeBuilder({ page }).withTags(TAGS).analyze();
+  for (const v of results.violations) {
+    violations++;
+    console.log(`FAIL ${width}px ${label}: [${v.impact}] ${v.id} — ${v.help} (${v.nodes.length} element(s))`);
+    for (const n of v.nodes.slice(0, 5))
+      console.log(`    ${n.target.join(' ')} :: ${n.failureSummary?.split('\n').slice(1).join(' ')}`);
+  }
+  console.log(`${width}px ${label}: ${results.violations.length} violation(s), ${results.passes.length} rules passed`);
 }
 await browser.close();
 console.log(`${violations} accessibility violation(s)`);
