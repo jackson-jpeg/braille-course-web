@@ -72,7 +72,9 @@ only through the foreman's `mac-sim` lock, Xcode Cloud first. Save every mockup,
     FOLLOW-UP (later round, not 1.1.1): the 30 fps copy lost the Speed Match flick (it shows only under some
     seeks into the raw file), so this preview has no game. Make `preview-turn.sh` write a constant-frame-rate
     recording, or transcode on the Mac, and add Speed Match for the second preview.
-  - 01:22Z d3 QUEUED for `mac-sim` behind sanger-phone's test (swap 5805 MB, load 15.5); log scratchpad
+  - 01:30Z d3 NOT RUN: the queued job was stopped while still waiting for the lock (for the clear); rerun the
+    same command next (`TB_SKIP_STUDIO=1 hub-lock mac-sim --label "teachbraille preview turn ipad" -- bash scripts/preview-turn.sh ipad`).
+  - (was) 01:22Z d3 QUEUED for `mac-sim` behind sanger-phone's test (swap 5805 MB, load 15.5); log scratchpad
     `preview-ipad.log`. Cut it the same way (constant frame rate copy first, 1200x1600).
 
 - **WAITS on the lead (09:01Z)**: of the Next five, 1, 2, 4 are done; 3 (website World 2 plan) waits on the lead; 5 (iPad audit for 1.1.1) needs the Mac, held by the same swap block as the preview turn. Return when the lead answers or swap reads under 6144. The item: (2026-11-18 08:55Z: every item above is blocked, so five next items went to the lead, Inbox `a2958c1b`:
