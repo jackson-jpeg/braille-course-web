@@ -74,6 +74,10 @@ only through the foreman's `mac-sim` lock, Xcode Cloud first. Save every mockup,
     recording, or transcode on the Mac, and add Speed Match for the second preview.
   - 01:30Z d3 NOT RUN: the queued job was stopped while still waiting for the lock (for the clear); rerun the
     same command next (`TB_SKIP_STUDIO=1 hub-lock mac-sim --label "teachbraille preview turn ipad" -- bash scripts/preview-turn.sh ipad`).
+  - 01:35Z d3 NOT RUN: got `mac-sim`, the memory gate shut the simulators (swap 6725 MB), then the script's own
+    guard refused: Mac 1-minute load 31.1, not under 20 (exit 75). Guards not raised. A waiter in this session
+    (scratchpad `wait-ipad.sh`, log `preview-ipad.log.wait`) checks every 5 min until 04:10Z and starts the same
+    command once load is under 15 and swap under 6144 MB.
   - (was) 01:22Z d3 QUEUED for `mac-sim` behind sanger-phone's test (swap 5805 MB, load 15.5); log scratchpad
     `preview-ipad.log`. Cut it the same way (constant frame rate copy first, 1200x1600).
 
