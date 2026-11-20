@@ -11,7 +11,7 @@ only through the foreman's `mac-sim` lock, Xcode Cloud first. Save every mockup,
 
 ## Queue
 
-- [ ] (STARTED 2026-11-19 23:08Z: Tests run 2 `3cd43637` on main `070aee4`, 17.63 h used before it; a background poll in this session watches it) (Jackson chose A, Inbox e7743a23; teachbraille-ios `070aee4` on main: TeachBraille-CI skips `AuditTests/testEveryWorldMap()` and `SliceTests/testAuditEveryScreen()`, run on the Mac before each release, docs/xcode-cloud.md) Xcode Cloud Tests run 2, off-peak, to prove it green: `python3 scripts/asc/xcode_cloud.py start tests` (about 1.6 h of the shared 25; 17.63 used), then `hours`, one fyi
+- [ ] (IN PROGRESS, not blocked: 2026-11-20 00:37Z Apple reports RUNNING since 23:17Z, about 80 of ~100 min; a poll in this session reads it every 10 min, then `hours` and one fyi) (STARTED 2026-11-19 23:08Z: Tests run 2 `3cd43637` on main `070aee4`, 17.63 h used before it; a background poll in this session watches it) (Jackson chose A, Inbox e7743a23; teachbraille-ios `070aee4` on main: TeachBraille-CI skips `AuditTests/testEveryWorldMap()` and `SliceTests/testAuditEveryScreen()`, run on the Mac before each release, docs/xcode-cloud.md) Xcode Cloud Tests run 2, off-peak, to prove it green: `python3 scripts/asc/xcode_cloud.py start tests` (about 1.6 h of the shared 25; 17.63 used), then `hours`, one fyi
 - [x] (ANSWERED 2026-11-19 21:33Z: `testEveryWorldMap` PASSES on the Mac, 0 failures in 519 s (`ios test`, shared Pro Max); so the cloud renders the map differently, not a colour regression. Proposal with the lead, `teachbraille-cloud-contrast`: keep the two map/slice audits Mac-only in TeachBraille-CI, or keep them and accept a red cloud run; the audit itself is not loosened) (from Xcode Cloud Tests run 1, 2026-11-19 19:03Z to 20:42Z, 99 min, FAILED: 56 of 58 passed; the 2 failures are `AuditTests.testEveryWorldMap` and `SliceTests.testAuditEveryScreen`, every issue "Contrast failed" on secondary labels ("done", "0 of 6 lessons done", lesson and game names on the map, "New teams"). Both passed with 0 failures on the Mac at the 1.1 handoff, so first find what differs in the cloud (simulator device or runtime, appearance, the audit itself): download the run's result bundle and look at the flagged frames before touching any color. Do not loosen the audit) Xcode Cloud: why the contrast audit fails only in the cloud
   - 20:55Z findings (test log bundle, artifact `8f3bb044`; no test xcresult or screenshots were kept): 23 "Contrast
     failed" lines, all from 2 tests. Every other audit passed in the cloud on the same simulator (iPhone 17 Pro Max,
@@ -56,6 +56,11 @@ only through the foreman's `mac-sim` lock, Xcode Cloud first. Save every mockup,
     `mac-sim` behind another project's test: load 26.5 (19:11Z), load 31.2 (19:24Z), swap 6649 MB (19:34Z). With the
     lock free the Mac sat at load ~25 (a VM, Spotlight, Mail). Guards not raised. Filed to the lead
     (`teachbraille-preview-contention`): needs a quiet Mac window. Next try: when the lead names one, or after 23:00Z.
+  - 2026-11-19 23:08Z swap 8178 MB, not tried. 23:53Z STARTED: swap 5483 MB, load 6.6, `mac-sim` free; log in this
+    session's scratchpad `preview-iphone.log`.
+  - 2026-11-20 00:06Z d1 DONE: `testPreviewTour` passed (229 s), Mac
+    `~/Downloads/TeachBraille-iOS/previews-1.1.1/recordings/preview-iphone.mov` (164 MB, 760 s: the recorder also ran
+    through the 480 s load wait, so the tour is the last ~4 min). d2 (cut and frame review) in progress.
 
 - **WAITS on the lead (09:01Z)**: of the Next five, 1, 2, 4 are done; 3 (website World 2 plan) waits on the lead; 5 (iPad audit for 1.1.1) needs the Mac, held by the same swap block as the preview turn. Return when the lead answers or swap reads under 6144. The item: (2026-11-18 08:55Z: every item above is blocked, so five next items went to the lead, Inbox `a2958c1b`:
   1 the iOS app offered at the end of the course, 2 Word Game fits 320 by 568, 3 website World 2 plan,
