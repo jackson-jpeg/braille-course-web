@@ -62,6 +62,18 @@ only through the foreman's `mac-sim` lock, Xcode Cloud first. Save every mockup,
   - 2026-11-20 00:06Z d1 DONE: `testPreviewTour` passed (229 s), Mac
     `~/Downloads/TeachBraille-iOS/previews-1.1.1/recordings/preview-iphone.mov` (164 MB, 760 s: the recorder also ran
     through the 480 s load wait, so the tour is the last ~4 min). d2 (cut and frame review) in progress.
+  - 2026-11-20 01:20Z d2 DONE: `Assets/app-previews-1.1.1/preview-iphone-886x1920.mp4` (28.0 s, 886x1920, H.264
+    30 fps, stereo AAC, 11 MB) and its frame sheet `preview-iphone-frames.png`, both also on the Mac in
+    `previews-1.1.1/`. Every frame is the app (no home screen). Poster frame candidate: the reward, about 21 s.
+    LESSON: the simulator `.mov` has a variable frame rate, and seeking several times into it lands in the wrong
+    place (the first cut put Speed Match where the reward should be and ended on the home screen). Cut from a
+    constant-frame-rate copy: `ffmpeg -ss <start> -to <end> -i in.mov -vf fps=30,scale=886:-2 -g 30` first, then
+    `preview-cut.sh` on that copy with times read from a 1 fps frame sheet of it.
+    FOLLOW-UP (later round, not 1.1.1): the 30 fps copy lost the Speed Match flick (it shows only under some
+    seeks into the raw file), so this preview has no game. Make `preview-turn.sh` write a constant-frame-rate
+    recording, or transcode on the Mac, and add Speed Match for the second preview.
+  - 01:22Z d3 QUEUED for `mac-sim` behind sanger-phone's test (swap 5805 MB, load 15.5); log scratchpad
+    `preview-ipad.log`. Cut it the same way (constant frame rate copy first, 1200x1600).
 
 - **WAITS on the lead (09:01Z)**: of the Next five, 1, 2, 4 are done; 3 (website World 2 plan) waits on the lead; 5 (iPad audit for 1.1.1) needs the Mac, held by the same swap block as the preview turn. Return when the lead answers or swap reads under 6144. The item: (2026-11-18 08:55Z: every item above is blocked, so five next items went to the lead, Inbox `a2958c1b`:
   1 the iOS app offered at the end of the course, 2 Word Game fits 320 by 568, 3 website World 2 plan,
