@@ -46,7 +46,7 @@ only through the foreman's `mac-sim` lock, Xcode Cloud first. Save every mockup,
 
 ## Needs Jackson
 
-- **WAITS until 19:00Z UTC 2026-11-19 (peak hours, not a Jackson decision; lead item `teachbraille-preview-peak`)**: (UNBLOCKED 2026-11-19 14:21Z: Jackson restarted the Mac 14:17Z, swap 0 MB, `mac-sim` free. OFF-PEAK ONLY: start after 19:00Z. Check swap first (`ssh macbook "sysctl vm.swapusage"`, under 6144), then `cd /root/teachbraille-ios && git checkout preview-turn-split && TB_SKIP_STUDIO=1 hub-lock mac-sim --label "teachbraille preview turn iphone" -- bash scripts/preview-turn.sh iphone`, then d2 to d4 as in Needs Jackson. Do not push teachbraille-ios) Listing (d1) to (d4): preview turn, after 19:00Z
+- **DONE 2026-11-20 ~02:05Z: d1 to d4, both previews on 1.1.1 (COMPLETE), nothing submitted.** Was: **WAITS until 19:00Z UTC 2026-11-19 (peak hours, not a Jackson decision; lead item `teachbraille-preview-peak`)**: (UNBLOCKED 2026-11-19 14:21Z: Jackson restarted the Mac 14:17Z, swap 0 MB, `mac-sim` free. OFF-PEAK ONLY: start after 19:00Z. Check swap first (`ssh macbook "sysctl vm.swapusage"`, under 6144), then `cd /root/teachbraille-ios && git checkout preview-turn-split && TB_SKIP_STUDIO=1 hub-lock mac-sim --label "teachbraille preview turn iphone" -- bash scripts/preview-turn.sh iphone`, then d2 to d4 as in Needs Jackson. Do not push teachbraille-ios) Listing (d1) to (d4): preview turn, after 19:00Z
   - 2026-11-19 14:22Z: foreman sent it during peak (weekday 13:00 to 19:00 UTC); held, not started. Not a stop:
     it starts after 19:00Z.
   - BLOCKED until 19:00Z UTC today by the peak-hours rule (`/root/CLAUDE.md`: weekdays 13:00 to 19:00 UTC no
@@ -74,6 +74,13 @@ only through the foreman's `mac-sim` lock, Xcode Cloud first. Save every mockup,
     recording, or transcode on the Mac, and add Speed Match for the second preview.
   - 01:30Z d3 NOT RUN: the queued job was stopped while still waiting for the lock (for the clear); rerun the
     same command next (`TB_SKIP_STUDIO=1 hub-lock mac-sim --label "teachbraille preview turn ipad" -- bash scripts/preview-turn.sh ipad`).
+  - 2026-11-20 ~02:05Z d3 and d4 DONE. d3: the waiter started the turn 01:44Z (load 6.9, swap 5558 MB),
+    `testPreviewTour` passed on Shared iPad (269 s). Cut from a constant-frame-rate copy (raw 786 to 1045 s):
+    `Assets/app-previews-1.1.1/preview-ipad-1200x1600.mp4` (28.0 s, 1200x1600, H.264 30 fps, stereo AAC, 6 MB) and
+    `preview-ipad-frames.png`, also on the Mac. Pieces `25-29,42-46,75-78,98-103,158-161,214-217,237-240,250-253`;
+    every frame is the app, and this one has the Speed Match flick (~14.5 s). d4: `asc-store.rb preview` on 1.1.1,
+    IPHONE_67 poster 00:00:21:00 and IPAD_PRO_3GEN_129 poster 00:00:23:00 (the reward), each polled to COMPLETE.
+    Nothing submitted. The iPhone game follow-up below still stands.
   - 01:35Z d3 NOT RUN: got `mac-sim`, the memory gate shut the simulators (swap 6725 MB), then the script's own
     guard refused: Mac 1-minute load 31.1, not under 20 (exit 75). Guards not raised. A waiter in this session
     (scratchpad `wait-ipad.sh`, log `preview-ipad.log.wait`) checks every 5 min until 04:10Z and starts the same
